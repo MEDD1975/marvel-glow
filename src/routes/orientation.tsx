@@ -79,7 +79,6 @@ function OrientationPage() {
           <MedicalDisclaimer />
         </div>
       </main>
-    </div>
   );
 }
 

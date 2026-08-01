@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { MedicalDisclaimer } from "@/components/HomeBlocks";
 import { LegDiagram } from "@/components/LegDiagram";
+import { DoctorSummary } from "@/components/DoctorSummary";
 import {
   conditions,
   levelCopy,

@@ -93,6 +93,5 @@ function ParcoursPage() {
           <MedicalDisclaimer />
         </div>
       </main>
-    </div>
   );
 }

@@ -57,10 +57,11 @@ export function HomeHero() {
     <section className="py-12 md:py-16">
       <div className="mx-auto max-w-3xl text-center">
         <h1 className="text-3xl font-semibold tracking-tight text-foreground md:text-4xl">
-          Vous avez une entorse de cheville ?
+          Une douleur au genou, à la cheville, à la hanche ou au pied ?
         </h1>
         <p className="mt-4 text-lg text-muted-foreground">
-          Comprendre la suite, savoir qui consulter et à quel moment : un parcours simple pour ne plus être perdu.
+          Les troubles musculo-squelettiques les plus courants des membres inférieurs : comprendre la suite, savoir qui
+          consulter et à quel moment.
         </p>
       </div>
     </section>

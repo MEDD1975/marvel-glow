@@ -3,14 +3,14 @@ import { Link } from "@tanstack/react-router";
 export function Header() {
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur">
-      <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
+      <div className="mx-auto flex max-w-5xl flex-col gap-2 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
         <Link to="/" className="flex items-center gap-2 text-lg font-semibold text-foreground">
           <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-care text-care-foreground">
             🦶
           </span>
           <span>ChevilleClaire</span>
         </Link>
-        <nav className="flex items-center gap-4 text-sm">
+        <nav className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
           <Link
             to="/"
             activeProps={{ className: "font-medium text-foreground" }}

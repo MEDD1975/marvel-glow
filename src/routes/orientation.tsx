@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import {
   AlertTriangle,
@@ -6,6 +6,7 @@ import {
   HeartPulse,
   Info,
   Lightbulb,
+  Map as MapIcon,
   RefreshCcw,
   Stethoscope,
 } from "lucide-react";
@@ -316,6 +317,14 @@ function ResultView({
       </div>
 
       <div className="flex flex-wrap gap-3">
+        <Link
+          to="/parcours"
+          search={{ c: condition.id }}
+          className="inline-flex items-center gap-2 rounded-lg bg-care px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-care/90"
+        >
+          <MapIcon className="h-4 w-4" />
+          Voir le parcours de soin de {condition.name}
+        </Link>
         <button
           onClick={onReset}
           className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"

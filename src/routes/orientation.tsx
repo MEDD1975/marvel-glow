@@ -335,6 +335,8 @@ function ResultView({
         </dl>
       </div>
 
+      <DoctorSummary condition={condition} answers={answers} level={level} />
+
       <div className="rounded-xl bg-muted p-4">
         <p className="text-sm font-medium text-foreground">Vos réponses</p>
         <ul className="mt-2 space-y-1 text-sm text-muted-foreground">

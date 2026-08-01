@@ -355,6 +355,13 @@ function ResultView({
           <MapIcon className="h-4 w-4" />
           Voir le parcours de soin de {condition.name}
         </Link>
+        <Link
+          to="/conseils"
+          search={{ c: condition.id }}
+          className="inline-flex items-center gap-2 rounded-lg border border-border bg-card px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
+        >
+          Conseils adaptés à {condition.name}
+        </Link>
         <button
           onClick={onReset}
           className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"

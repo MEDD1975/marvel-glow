@@ -40,6 +40,13 @@ export function Header() {
           >
             Conseils
           </Link>
+          <Link
+            to="/cabinet"
+            activeProps={{ className: "font-medium text-foreground" }}
+            inactiveProps={{ className: "text-muted-foreground hover:text-foreground" }}
+          >
+            Cabinet
+          </Link>
         </nav>
       </div>
     </header>

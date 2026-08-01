@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { MedicalDisclaimer } from "@/components/HomeBlocks";
 import { LegDiagram } from "@/components/LegDiagram";
+import { DoctorSummary } from "@/components/DoctorSummary";
 import {
   conditions,
   levelCopy,
@@ -334,6 +335,8 @@ function ResultView({
           </div>
         </dl>
       </div>
+
+      <DoctorSummary condition={condition} answers={answers} level={level} />
 
       <div className="rounded-xl bg-muted p-4">
         <p className="text-sm font-medium text-foreground">Vos réponses</p>

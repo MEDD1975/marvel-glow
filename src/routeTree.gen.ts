@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CabinetRouteImport } from './routes/cabinet'
 import { Route as ConseilsRouteImport } from './routes/conseils'
 import { Route as OrientationRouteImport } from './routes/orientation'
 import { Route as ParcoursRouteImport } from './routes/parcours'
@@ -17,6 +18,11 @@ import { Route as ParcoursRouteImport } from './routes/parcours'
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CabinetRoute = CabinetRouteImport.update({
+  id: '/cabinet',
+  path: '/cabinet',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ConseilsRoute = ConseilsRouteImport.update({
@@ -37,12 +43,14 @@ const ParcoursRoute = ParcoursRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/cabinet': typeof CabinetRoute
   '/conseils': typeof ConseilsRoute
   '/orientation': typeof OrientationRoute
   '/parcours': typeof ParcoursRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/cabinet': typeof CabinetRoute
   '/conseils': typeof ConseilsRoute
   '/orientation': typeof OrientationRoute
   '/parcours': typeof ParcoursRoute
@@ -50,20 +58,22 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/cabinet': typeof CabinetRoute
   '/conseils': typeof ConseilsRoute
   '/orientation': typeof OrientationRoute
   '/parcours': typeof ParcoursRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/conseils' | '/orientation' | '/parcours'
+  fullPaths: '/' | '/cabinet' | '/conseils' | '/orientation' | '/parcours'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/conseils' | '/orientation' | '/parcours'
-  id: '__root__' | '/' | '/conseils' | '/orientation' | '/parcours'
+  to: '/' | '/cabinet' | '/conseils' | '/orientation' | '/parcours'
+  id: '__root__' | '/' | '/cabinet' | '/conseils' | '/orientation' | '/parcours'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CabinetRoute: typeof CabinetRoute
   ConseilsRoute: typeof ConseilsRoute
   OrientationRoute: typeof OrientationRoute
   ParcoursRoute: typeof ParcoursRoute
@@ -76,6 +86,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cabinet': {
+      id: '/cabinet'
+      path: '/cabinet'
+      fullPath: '/cabinet'
+      preLoaderRoute: typeof CabinetRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/conseils': {
@@ -104,6 +121,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CabinetRoute: CabinetRoute,
   ConseilsRoute: ConseilsRoute,
   OrientationRoute: OrientationRoute,
   ParcoursRoute: ParcoursRoute,
@@ -111,13 +129,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

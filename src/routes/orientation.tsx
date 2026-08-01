@@ -1,7 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { ArrowLeft, RefreshCcw, AlertTriangle, Stethoscope, HeartPulse, Info } from "lucide-react";
-import { Header } from "@/components/Header";
 import { MedicalDisclaimer } from "@/components/HomeBlocks";
 import { orientationTree, type OrientationStep, type OrientationResult } from "@/lib/care-data";
 
@@ -62,9 +61,7 @@ function OrientationPage() {
   const handleReset = () => setHistory([{ kind: "question", node: orientationTree[0]! }]);
 
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
-      <main className="mx-auto max-w-3xl px-4 py-10">
+    <main className="mx-auto max-w-3xl px-4 py-10">
         <h1 className="text-2xl font-semibold text-foreground">Orientation rapide</h1>
         <p className="mt-2 text-muted-foreground">
           Répondez à quelques questions simples pour savoir quel niveau de soins correspond à votre situation.

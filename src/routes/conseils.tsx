@@ -1,6 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AlertTriangle, Info, Thermometer, User, Users } from "lucide-react";
-import { Header } from "@/components/Header";
 import { MedicalDisclaimer } from "@/components/HomeBlocks";
 import { dailyTips, redFlags, professionals } from "@/lib/care-data";
 
@@ -20,9 +19,7 @@ export const Route = createFileRoute("/conseils")({
 
 function ConseilsPage() {
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
-      <main className="mx-auto max-w-4xl px-4 py-10">
+    <main className="mx-auto max-w-4xl px-4 py-10">
         <div className="text-center">
           <h1 className="text-2xl font-semibold text-foreground">Conseils pratiques</h1>
           <p className="mx-auto mt-2 max-w-2xl text-muted-foreground">

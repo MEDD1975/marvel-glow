@@ -12,13 +12,13 @@ export const Route = createFileRoute("/parcours")({
   }),
   head: () => ({
     meta: [
-      { title: "Parcours de soin gradué — ChevilleClaire" },
+      { title: "Parcours de soin gradué — Kivoir" },
       {
         name: "description",
         content:
           "Pour chaque trouble du membre inférieur : quel professionnel voir en premier, lesquels prennent le relais, dans quel délai et quand passer au recours spécialisé.",
       },
-      { property: "og:title", content: "Parcours de soin gradué — ChevilleClaire" },
+      { property: "og:title", content: "Parcours de soin gradué — Kivoir" },
       {
         property: "og:description",
         content:

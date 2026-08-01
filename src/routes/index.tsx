@@ -4,10 +4,10 @@ import { HomeHero, EntryGrid, MedicalDisclaimer } from "@/components/HomeBlocks"
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "ChevilleClaire — Entorse de cheville, parcours de soin" },
-      { name: "description", content: "Guide simple et rassurant pour comprendre la suite d'une entorse de cheville : qui consulter, à quel moment et comment suivre la récupération." },
-      { property: "og:title", content: "ChevilleClaire — Entorse de cheville, parcours de soin" },
-      { property: "og:description", content: "Guide simple et rassurant pour comprendre la suite d'une entorse de cheville : qui consulter, à quel moment et comment suivre la récupération." },
+      { title: "Kivoir — Qui voir, quand : douleurs du membre inférieur" },
+      { name: "description", content: "Genou, cheville, hanche, pied : identifiez votre trouble, sachez qui consulter, dans quel ordre et dans quel délai." },
+      { property: "og:title", content: "Kivoir — Qui voir, quand : douleurs du membre inférieur" },
+      { property: "og:description", content: "Genou, cheville, hanche, pied : identifiez votre trouble, sachez qui consulter, dans quel ordre et dans quel délai." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],

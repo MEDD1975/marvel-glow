@@ -8,7 +8,7 @@ export function Header() {
           <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-care text-care-foreground">
             🦶
           </span>
-          <span>ChevilleClaire</span>
+          <span>Kivoir</span>
         </Link>
         <nav className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
           <Link

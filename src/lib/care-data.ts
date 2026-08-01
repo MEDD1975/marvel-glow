@@ -1,19 +1,25 @@
+export type OrientationResult = {
+  level: "urgent" | "professional" | "self-care" | "monitor";
+  title: string;
+  message: string;
+  actions: string[];
+  whoToSee?: string;
+  when?: string;
+};
+
 export type OrientationNode = {
   id: string;
   question: string;
   options: {
     label: string;
     nextId?: string;
-    result?: {
-      level: "urgent" | "professional" | "self-care" | "monitor";
-      title: string;
-      message: string;
-      actions: string[];
-      whoToSee?: string;
-      when?: string;
-    };
+    result?: OrientationResult;
   }[];
 };
+
+export type OrientationStep =
+  | { kind: "question"; node: OrientationNode }
+  | { kind: "result"; result: OrientationResult };
 
 export const orientationTree: OrientationNode[] = [
   {

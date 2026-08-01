@@ -11,6 +11,7 @@ import {
   Stethoscope,
 } from "lucide-react";
 import { MedicalDisclaimer } from "@/components/HomeBlocks";
+import { LegDiagram } from "@/components/LegDiagram";
 import {
   conditions,
   levelCopy,
@@ -169,20 +170,38 @@ function ConditionPicker({ onSelect }: { onSelect: (condition: Condition) => voi
         example="Exemple de réponse : « J'ai mal sous le talon dès les premiers pas du matin » → Aponévrosite plantaire. Si vous hésitez, choisissez le trouble dont la description ressemble le plus à vos symptômes."
       />
 
-      <div className="grid gap-3">
+      <div className="grid gap-4">
         {conditions.map((item) => (
           <button
             key={item.id}
             onClick={() => onSelect(item)}
-            className="rounded-xl border border-border bg-background p-4 text-left transition-colors hover:border-care/40 hover:bg-care-muted/30"
+            className="flex gap-4 rounded-xl border border-border bg-background p-4 text-left transition-colors hover:border-care/40 hover:bg-care-muted/30"
           >
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="font-medium text-foreground">{item.name}</span>
-              <span className="rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground">
-                {item.zone}
+            <span className="w-14 shrink-0 sm:w-16">
+              <LegDiagram spot={item.spot} label={item.name} />
+            </span>
+            <span className="min-w-0 flex-1">
+              <span className="flex flex-wrap items-center gap-2">
+                <span className="font-medium text-foreground">{item.name}</span>
+                <span className="rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground">
+                  {item.zone}
+                </span>
               </span>
-            </div>
-            <p className="mt-1 text-sm text-muted-foreground">{item.typicalSigns}</p>
+              <span className="mt-2 block space-y-1.5 text-sm">
+                <span className="block text-muted-foreground">
+                  <span className="font-medium text-foreground">Où ça fait mal : </span>
+                  {item.location}
+                </span>
+                <span className="block text-muted-foreground">
+                  <span className="font-medium text-foreground">Ce que ça donne : </span>
+                  {item.feels}
+                </span>
+                <span className="block text-muted-foreground">
+                  <span className="font-medium text-foreground">Ça se déclenche quand : </span>
+                  {item.triggers}
+                </span>
+              </span>
+            </span>
           </button>
         ))}
       </div>
@@ -287,8 +306,19 @@ function ResultView({
       </div>
 
       <div className="rounded-xl border border-border bg-muted/60 p-4">
-        <h3 className="font-semibold text-foreground">{condition.name}</h3>
-        <p className="mt-1 text-sm text-muted-foreground">{condition.summary}</p>
+        <div className="flex gap-4">
+          <span className="w-14 shrink-0">
+            <LegDiagram spot={condition.spot} label={condition.name} />
+          </span>
+          <div className="min-w-0">
+            <h3 className="font-semibold text-foreground">{condition.name}</h3>
+            <p className="mt-1 text-sm text-muted-foreground">{condition.summary}</p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              <span className="font-medium text-foreground">Où ça fait mal : </span>
+              {condition.location}
+            </p>
+          </div>
+        </div>
         <dl className="mt-3 space-y-2 text-sm">
           <div>
             <dt className="inline font-medium text-foreground">Premier réflexe : </dt>

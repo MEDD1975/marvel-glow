@@ -3,6 +3,14 @@ export type Condition = {
   name: string;
   zone: "Cheville" | "Genou" | "Hanche" | "Pied";
   summary: string;
+  /** Où exactement se situe la douleur, en langage concret. */
+  location: string;
+  /** Image mentale de la sensation ressentie. */
+  feels: string;
+  /** Gestes ou moments qui déclenchent typiquement la douleur. */
+  triggers: string;
+  /** Repère (x, y) sur le schéma du membre inférieur (viewBox 120x300). */
+  spot: { x: number; y: number };
   typicalSigns: string;
   firstStep: string;
   whoToSee: string;
@@ -16,6 +24,10 @@ export const conditions: Condition[] = [
     name: "Entorse de cheville",
     zone: "Cheville",
     summary: "Étirement ou déchirure des ligaments de la cheville, le plus souvent après une torsion du pied vers l'intérieur.",
+    location: "Sur le côté externe de la cheville, juste sous la bosse osseuse (malléole), à un ou deux travers de doigt en avant d'elle.",
+    feels: "Comme une brûlure profonde au moment du faux pas, puis une cheville « en boule » qui semble trop grosse pour la chaussure.",
+    triggers: "Se tourner brusquement, poser le pied sur un trottoir ou un caillou, marcher sur un terrain irrégulier.",
+    spot: { x: 74, y: 238 },
     typicalSigns: "Douleur brutale après un faux pas, gonflement rapide, parfois un bleu sous la malléole.",
     firstStep: "Protection, glace, compression et surélévation pendant 48 à 72 heures, puis remise en charge progressive.",
     whoToSee: "Médecin généraliste, puis kinésithérapeute pour la rééducation et la proprioception.",
@@ -26,6 +38,10 @@ export const conditions: Condition[] = [
     name: "Arthrose du genou",
     zone: "Genou",
     summary: "Usure progressive du cartilage du genou, fréquente après 50 ans ou après un traumatisme ancien.",
+    location: "À l'intérieur du genou et tout autour de la rotule, parfois décrite avec la main posée à plat sur l'articulation.",
+    feels: "Comme une articulation rouillée qu'il faut « dérouiller » quelques minutes avant qu'elle glisse à nouveau.",
+    triggers: "Descendre un escalier, se relever d'une chaise basse, marcher longtemps, le froid et l'humidité.",
+    spot: { x: 52, y: 152 },
     typicalSigns: "Douleur mécanique qui augmente à la marche et dans les escaliers, raideur au réveil de moins de 30 minutes.",
     firstStep: "Maintenir une activité physique adaptée (vélo, marche, natation) et éviter l'immobilité prolongée.",
     whoToSee: "Médecin généraliste ou rhumatologue, kinésithérapeute pour le renforcement du quadriceps.",
@@ -36,6 +52,10 @@ export const conditions: Condition[] = [
     name: "Aponévrosite plantaire",
     zone: "Pied",
     summary: "Inflammation de l'aponévrose plantaire, la lame fibreuse qui soutient la voûte du pied.",
+    location: "Sous le talon, à l'endroit précis où le talon touche le sol, un peu vers l'intérieur du pied.",
+    feels: "Comme marcher sur un clou ou un galet pointu aux tout premiers pas du matin, puis ça s'estompe.",
+    triggers: "Les premiers pas au réveil, le redémarrage après être resté assis, la marche pieds nus sur du carrelage.",
+    spot: { x: 62, y: 272 },
     typicalSigns: "Douleur sous le talon, maximale aux premiers pas du matin ou après une période assise.",
     firstStep: "Étirements du mollet et de la voûte plantaire, chaussage amortissant, réduction temporaire des impacts.",
     whoToSee: "Médecin généraliste, kinésithérapeute, podologue si besoin de semelles.",
@@ -46,6 +66,10 @@ export const conditions: Condition[] = [
     name: "Syndrome rotulien",
     zone: "Genou",
     summary: "Douleur autour ou derrière la rotule liée à un défaut de glissement rotulien, fréquente chez le sportif et l'adulte jeune.",
+    location: "En avant du genou, autour et derrière la rotule ; on désigne souvent la douleur en encerclant la rotule avec les doigts.",
+    feels: "Comme un frottement ou un grincement derrière la rotule, avec un genou qui « lâche » parfois.",
+    triggers: "Descendre les escaliers, rester assis longtemps jambes pliées (voiture, cinéma), s'accroupir, courir en descente.",
+    spot: { x: 60, y: 148 },
     typicalSigns: "Douleur en descendant les escaliers, en position assise prolongée ou après une course.",
     firstStep: "Réduire les impacts, renforcer le quadriceps et les fessiers, éviter les squats profonds douloureux.",
     whoToSee: "Kinésithérapeute en première intention, médecin si la douleur persiste.",
@@ -56,6 +80,10 @@ export const conditions: Condition[] = [
     name: "Tendinopathie d'Achille",
     zone: "Cheville",
     summary: "Souffrance du tendon d'Achille par surcharge, souvent après une reprise ou une augmentation rapide de la course.",
+    location: "Derrière la cheville, sur le cordon du tendon d'Achille, 2 à 6 cm au-dessus du talon ; on peut le pincer entre deux doigts.",
+    feels: "Comme une corde raide et épaissie, chaude le matin, qui se dérouille à l'échauffement puis fait mal après l'effort.",
+    triggers: "Les premiers pas du matin, la reprise de la course, les côtes, le port de chaussures plates.",
+    spot: { x: 44, y: 240 },
     typicalSigns: "Douleur et raideur au-dessus du talon le matin, qui s'échauffe puis revient après l'effort.",
     firstStep: "Adapter la charge d'entraînement et commencer un travail excentrique du mollet encadré.",
     whoToSee: "Kinésithérapeute, médecin du sport si la douleur limite la marche.",
@@ -66,6 +94,10 @@ export const conditions: Condition[] = [
     name: "Lésion méniscale",
     zone: "Genou",
     summary: "Atteinte d'un ménisque, par traumatisme en rotation chez le sujet jeune ou par usure après 40 ans.",
+    location: "Sur la ligne horizontale du genou (l'interligne), le plus souvent côté intérieur ; on montre la douleur avec un seul doigt.",
+    feels: "Comme un caillou coincé dans l'articulation, avec des accrochages ou un genou qui reste bloqué en flexion.",
+    triggers: "Un mouvement de rotation genou fléchi, s'accroupir, pivoter sur la jambe d'appui.",
+    spot: { x: 42, y: 158 },
     typicalSigns: "Douleur sur l'interligne du genou, gonflement, parfois blocage ou sensation d'accrochage.",
     firstStep: "Repos relatif, glace, éviter les rotations en charge ; ne pas forcer un genou bloqué.",
     whoToSee: "Médecin généraliste, chirurgien orthopédiste en cas de blocage vrai.",
@@ -76,6 +108,10 @@ export const conditions: Condition[] = [
     name: "Arthrose de hanche",
     zone: "Hanche",
     summary: "Usure du cartilage de l'articulation coxo-fémorale (coxarthrose).",
+    location: "Au pli de l'aine, en avant de la hanche, avec une irradiation vers l'avant de la cuisse et parfois jusqu'au genou.",
+    feels: "Comme un blocage profond à l'aine qui raccourcit le pas et rend le membre difficile à écarter.",
+    triggers: "Enfiler chaussettes et chaussures, monter en voiture, marcher longtemps, se relever après une longue station assise.",
+    spot: { x: 38, y: 44 },
     typicalSigns: "Douleur au pli de l'aine irradiant vers la cuisse, gêne pour enfiler ses chaussettes, boiterie.",
     firstStep: "Activité en décharge (vélo, piscine), maintien de la mobilité, gestion du poids.",
     whoToSee: "Médecin généraliste ou rhumatologue, kinésithérapeute, chirurgien si le handicap devient majeur.",
@@ -86,6 +122,10 @@ export const conditions: Condition[] = [
     name: "Métatarsalgie",
     zone: "Pied",
     summary: "Douleur de l'avant-pied au niveau des têtes métatarsiennes, liée à une surcharge d'appui.",
+    location: "Sous l'avant-pied, à la base des orteils, sur le coussinet d'appui des têtes métatarsiennes.",
+    feels: "Comme marcher sur un caillou ou sur une couture de chaussette pliée, avec parfois une peau épaissie (durillon).",
+    triggers: "La marche prolongée, les chaussures à talons ou trop étroites, la fin de journée debout, la course.",
+    spot: { x: 94, y: 266 },
     typicalSigns: "Sensation de marcher sur un caillou, douleur sous les orteils en fin de journée ou après la marche.",
     firstStep: "Chaussage large à semelle amortissante, réduction des talons et des longues stations debout.",
     whoToSee: "Podologue pour l'analyse d'appui, médecin généraliste si la douleur persiste.",
@@ -96,6 +136,10 @@ export const conditions: Condition[] = [
     name: "Syndrome de l'essuie-glace (TFL)",
     zone: "Genou",
     summary: "Friction de la bandelette ilio-tibiale sur la face externe du genou, typique du coureur et du cycliste.",
+    location: "Sur la face externe du genou, sur la bosse osseuse latérale, à environ trois travers de doigt au-dessus de l'interligne.",
+    feels: "Comme une lame chauffante qui frotte sur le côté du genou, apparaissant toujours après la même distance.",
+    triggers: "Courir, surtout en descente ou sur route inclinée ; pédaler longtemps ; descendre un escalier.",
+    spot: { x: 78, y: 146 },
     typicalSigns: "Douleur externe du genou apparaissant après une distance ou une durée d'effort assez constante.",
     firstStep: "Réduire le volume et les descentes, renforcer les fessiers, étirer la chaîne latérale.",
     whoToSee: "Kinésithérapeute, médecin du sport si la douleur récidive à chaque reprise.",
@@ -106,6 +150,10 @@ export const conditions: Condition[] = [
     name: "Hallux valgus",
     zone: "Pied",
     summary: "Déviation progressive du gros orteil vers les autres orteils, avec saillie osseuse interne (« oignon »).",
+    location: "Au bord interne du pied, sur la saillie osseuse à la base du gros orteil (« l'oignon »).",
+    feels: "Comme une bosse qui frotte et chauffe contre la chaussure, avec un gros orteil qui part vers les autres.",
+    triggers: "Les chaussures étroites ou pointues, la marche prolongée, la station debout.",
+    spot: { x: 84, y: 262 },
     typicalSigns: "Bosse douloureuse au bord interne du pied, conflit avec la chaussure, rougeur cutanée.",
     firstStep: "Chaussures larges, orthèses de nuit ou de jour, soins locaux des zones de frottement.",
     whoToSee: "Podologue, puis chirurgien orthopédiste si la gêne devient permanente.",

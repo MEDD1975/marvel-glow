@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import {
   AlertTriangle,
@@ -6,6 +6,7 @@ import {
   HeartPulse,
   Info,
   Lightbulb,
+  Map as MapIcon,
   RefreshCcw,
   Stethoscope,
 } from "lucide-react";

@@ -4,7 +4,7 @@ import { MedicalDisclaimer } from "@/components/HomeBlocks";
 import { conditions } from "@/lib/conditions";
 import { lineLabels, pathways, type CareLine } from "@/lib/pathways";
 
-type ParcoursSearch = { c?: string };
+type ParcoursSearch = { c?: string | undefined };
 
 export const Route = createFileRoute("/parcours")({
   validateSearch: (search: Record<string, unknown>): ParcoursSearch => ({

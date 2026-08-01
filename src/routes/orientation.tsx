@@ -3,7 +3,7 @@ import { useState } from "react";
 import { ArrowLeft, RefreshCcw, AlertTriangle, Stethoscope, HeartPulse, Info } from "lucide-react";
 import { Header } from "@/components/Header";
 import { MedicalDisclaimer } from "@/components/HomeBlocks";
-import { orientationTree, type OrientationNode } from "@/lib/care-data";
+import { orientationTree, type OrientationStep, type OrientationResult } from "@/lib/care-data";
 
 export const Route = createFileRoute("/orientation")({
   head: () => ({
@@ -19,21 +19,21 @@ export const Route = createFileRoute("/orientation")({
   component: OrientationPage,
 });
 
-const levelIcons = {
+const levelIcons: Record<OrientationResult["level"], typeof AlertTriangle> = {
   urgent: AlertTriangle,
   professional: Stethoscope,
   "self-care": HeartPulse,
   monitor: Info,
 };
 
-const levelTitles = {
+const levelTitles: Record<OrientationResult["level"], string> = {
   urgent: "Urgent",
   professional: "Consultation médicale",
   "self-care": "Auto-soin surveillé",
   monitor: "Surveillance",
 };
 
-const levelClasses = {
+const levelClasses: Record<OrientationResult["level"], string> = {
   urgent: "border-urgent/20 bg-urgent/5 text-urgent",
   professional: "border-care/20 bg-care/5 text-care",
   "self-care": "border-soothe/40 bg-soothe/30 text-soothe-foreground",
@@ -41,15 +41,17 @@ const levelClasses = {
 };
 
 function OrientationPage() {
-  const [history, setHistory] = useState<OrientationNode[]>([orientationTree[0]]);
+  const [history, setHistory] = useState<OrientationStep[]>([
+    { kind: "question", node: orientationTree[0] },
+  ]);
   const current = history[history.length - 1];
 
-  const handleOption = (option: (typeof current.options)[number]) => {
+  const handleOption = (option: { label: string; nextId?: string; result?: OrientationResult }) => {
     if (option.result) {
-      setHistory([...history, { ...current, id: "result", question: option.result.title, options: [], resultData: option.result } as unknown as OrientationNode]);
+      setHistory([...history, { kind: "result", result: option.result }]);
     } else if (option.nextId) {
       const next = orientationTree.find((n) => n.id === option.nextId);
-      if (next) setHistory([...history, next]);
+      if (next) setHistory([...history, { kind: "question", node: next }]);
     }
   };
 
@@ -57,9 +59,7 @@ function OrientationPage() {
     if (history.length > 1) setHistory(history.slice(0, -1));
   };
 
-  const handleReset = () => setHistory([orientationTree[0]]);
-
-  const result = (current as unknown as { resultData?: ReturnType<typeof orientationTree.find>["options"][number]["result"] }).resultData;
+  const handleReset = () => setHistory([{ kind: "question", node: orientationTree[0] }]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -71,95 +71,10 @@ function OrientationPage() {
         </p>
 
         <div className="mt-8 rounded-2xl border border-border bg-card p-6 shadow-sm md:p-8">
-          {result ? (
-            <div className="space-y-6">
-              <div className={`flex items-center gap-3 rounded-xl border p-4 ${levelClasses[result.level]}`}>
-                {(() => {
-                  const Icon = levelIcons[result.level];
-                  return <Icon className="h-6 w-6 shrink-0" />;
-                })()}
-                <div>
-                  <p className="text-sm font-medium">{levelTitles[result.level]}</p>
-                  <p className="text-lg font-semibold">{result.title}</p>
-                </div>
-              </div>
-
-              <p className="text-foreground">{result.message}</p>
-
-              <div>
-                <h3 className="font-semibold text-foreground">Que faire ?</h3>
-                <ul className="mt-2 space-y-2">
-                  {result.actions.map((action, i) => (
-                    <li key={i} className="flex items-start gap-2 text-muted-foreground">
-                      <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-care" />
-                      {action}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              {(result.whoToSee || result.when) && (
-                <div className="rounded-xl bg-muted p-4">
-                  {result.whoToSee && (
-                    <p className="text-sm text-muted-foreground">
-                      <span className="font-medium text-foreground">Qui consulter :</span> {result.whoToSee}
-                    </p>
-                  )}
-                  {result.when && (
-                    <p className="mt-1 text-sm text-muted-foreground">
-                      <span className="font-medium text-foreground">Quand :</span> {result.when}
-                    </p>
-                  )}
-                </div>
-              )}
-
-              <div className="flex flex-wrap gap-3">
-                <button
-                  onClick={handleReset}
-                  className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-                >
-                  <RefreshCcw className="h-4 w-4" />
-                  Recommencer
-                </button>
-                <button
-                  onClick={handleBack}
-                  className="inline-flex items-center gap-2 rounded-lg border border-border bg-card px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
-                >
-                  <ArrowLeft className="h-4 w-4" />
-                  Retour
-                </button>
-              </div>
-            </div>
+          {current.kind === "result" ? (
+            <ResultView result={current.result} onBack={handleBack} onReset={handleReset} />
           ) : (
-            <div className="space-y-6">
-              <div className="flex items-center justify-between">
-                <h2 className="text-lg font-semibold text-card-foreground">{current.question}</h2>
-                <span className="text-xs text-muted-foreground">Étape {history.length}</span>
-              </div>
-              <div className="grid gap-3">
-                {current.options.map((option, index) => (
-                  <button
-                    key={index}
-                    onClick={() => handleOption(option)}
-                    className="flex items-start gap-3 rounded-xl border border-border bg-background p-4 text-left transition-colors hover:border-care/40 hover:bg-care-muted/30"
-                  >
-                    <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-care text-xs font-medium text-care">
-                      {index + 1}
-                    </span>
-                    <span className="text-foreground">{option.label}</span>
-                  </button>
-                ))}
-              </div>
-              {history.length > 1 && (
-                <button
-                  onClick={handleBack}
-                  className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
-                >
-                  <ArrowLeft className="h-4 w-4" />
-                  Revenir à la question précédente
-                </button>
-              )}
-            </div>
+            <QuestionView step={current} onOption={handleOption} onBack={handleBack} historyLength={history.length} />
           )}
         </div>
 
@@ -167,6 +82,123 @@ function OrientationPage() {
           <MedicalDisclaimer />
         </div>
       </main>
+    </div>
+  );
+}
+
+function ResultView({
+  result,
+  onBack,
+  onReset,
+}: {
+  result: OrientationResult;
+  onBack: () => void;
+  onReset: () => void;
+}) {
+  const Icon = levelIcons[result.level];
+  const levelTitle = levelTitles[result.level];
+  const levelClass = levelClasses[result.level];
+
+  return (
+    <div className="space-y-6">
+      <div className={`flex items-center gap-3 rounded-xl border p-4 ${levelClass}`}>
+        <Icon className="h-6 w-6 shrink-0" />
+        <div>
+          <p className="text-sm font-medium">{levelTitle}</p>
+          <p className="text-lg font-semibold">{result.title}</p>
+        </div>
+      </div>
+
+      <p className="text-foreground">{result.message}</p>
+
+      <div>
+        <h3 className="font-semibold text-foreground">Que faire ?</h3>
+        <ul className="mt-2 space-y-2">
+          {result.actions.map((action: string, i: number) => (
+            <li key={i} className="flex items-start gap-2 text-muted-foreground">
+              <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-care" />
+              {action}
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      {(result.whoToSee || result.when) && (
+        <div className="rounded-xl bg-muted p-4">
+          {result.whoToSee && (
+            <p className="text-sm text-muted-foreground">
+              <span className="font-medium text-foreground">Qui consulter :</span> {result.whoToSee}
+            </p>
+          )}
+          {result.when && (
+            <p className="mt-1 text-sm text-muted-foreground">
+              <span className="font-medium text-foreground">Quand :</span> {result.when}
+            </p>
+          )}
+        </div>
+      )}
+
+      <div className="flex flex-wrap gap-3">
+        <button
+          onClick={onReset}
+          className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+        >
+          <RefreshCcw className="h-4 w-4" />
+          Recommencer
+        </button>
+        <button
+          onClick={onBack}
+          className="inline-flex items-center gap-2 rounded-lg border border-border bg-card px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Retour
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function QuestionView({
+  step,
+  onOption,
+  onBack,
+  historyLength,
+}: {
+  step: Extract<OrientationStep, { kind: "question" }>;
+  onOption: (option: { label: string; nextId?: string; result?: OrientationResult }) => void;
+  onBack: () => void;
+  historyLength: number;
+}) {
+  const current = step.node;
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <h2 className="text-lg font-semibold text-card-foreground">{current.question}</h2>
+        <span className="text-xs text-muted-foreground">Étape {historyLength}</span>
+      </div>
+      <div className="grid gap-3">
+        {current.options.map((option, index) => (
+          <button
+            key={index}
+            onClick={() => onOption(option)}
+            className="flex items-start gap-3 rounded-xl border border-border bg-background p-4 text-left transition-colors hover:border-care/40 hover:bg-care-muted/30"
+          >
+            <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-care text-xs font-medium text-care">
+              {index + 1}
+            </span>
+            <span className="text-foreground">{option.label}</span>
+          </button>
+        ))}
+      </div>
+      {historyLength > 1 && (
+        <button
+          onClick={onBack}
+          className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Revenir à la question précédente
+        </button>
+      )}
     </div>
   );
 }

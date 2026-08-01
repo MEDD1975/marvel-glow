@@ -42,9 +42,9 @@ const levelClasses: Record<OrientationResult["level"], string> = {
 
 function OrientationPage() {
   const [history, setHistory] = useState<OrientationStep[]>([
-    { kind: "question", node: orientationTree[0] },
+    { kind: "question", node: orientationTree[0]! },
   ]);
-  const current = history[history.length - 1];
+  const current = history[history.length - 1]!;
 
   const handleOption = (option: { label: string; nextId?: string; result?: OrientationResult }) => {
     if (option.result) {
@@ -59,7 +59,7 @@ function OrientationPage() {
     if (history.length > 1) setHistory(history.slice(0, -1));
   };
 
-  const handleReset = () => setHistory([{ kind: "question", node: orientationTree[0] }]);
+  const handleReset = () => setHistory([{ kind: "question", node: orientationTree[0]! }]);
 
   return (
     <div className="min-h-screen bg-background">

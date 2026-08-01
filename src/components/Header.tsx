@@ -1,0 +1,47 @@
+import { Link } from "@tanstack/react-router";
+
+export function Header() {
+  return (
+    <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur">
+      <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
+        <Link to="/" className="flex items-center gap-2 text-lg font-semibold text-foreground">
+          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-care text-care-foreground">
+            🦶
+          </span>
+          <span>ChevilleClaire</span>
+        </Link>
+        <nav className="flex items-center gap-4 text-sm">
+          <Link
+            to="/"
+            activeProps={{ className: "font-medium text-foreground" }}
+            inactiveProps={{ className: "text-muted-foreground hover:text-foreground" }}
+            activeOptions={{ exact: true }}
+          >
+            Accueil
+          </Link>
+          <Link
+            to="/orientation"
+            activeProps={{ className: "font-medium text-foreground" }}
+            inactiveProps={{ className: "text-muted-foreground hover:text-foreground" }}
+          >
+            Orientation
+          </Link>
+          <Link
+            to="/parcours"
+            activeProps={{ className: "font-medium text-foreground" }}
+            inactiveProps={{ className: "text-muted-foreground hover:text-foreground" }}
+          >
+            Parcours
+          </Link>
+          <Link
+            to="/conseils"
+            activeProps={{ className: "font-medium text-foreground" }}
+            inactiveProps={{ className: "text-muted-foreground hover:text-foreground" }}
+          >
+            Conseils
+          </Link>
+        </nav>
+      </div>
+    </header>
+  );
+}

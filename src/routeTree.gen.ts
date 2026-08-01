@@ -10,33 +10,63 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ConseilsRouteImport } from './routes/conseils'
+import { Route as OrientationRouteImport } from './routes/orientation'
+import { Route as ParcoursRouteImport } from './routes/parcours'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ConseilsRoute = ConseilsRouteImport.update({
+  id: '/conseils',
+  path: '/conseils',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OrientationRoute = OrientationRouteImport.update({
+  id: '/orientation',
+  path: '/orientation',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ParcoursRoute = ParcoursRouteImport.update({
+  id: '/parcours',
+  path: '/parcours',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/conseils': typeof ConseilsRoute
+  '/orientation': typeof OrientationRoute
+  '/parcours': typeof ParcoursRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/conseils': typeof ConseilsRoute
+  '/orientation': typeof OrientationRoute
+  '/parcours': typeof ParcoursRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/conseils': typeof ConseilsRoute
+  '/orientation': typeof OrientationRoute
+  '/parcours': typeof ParcoursRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/conseils' | '/orientation' | '/parcours'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/conseils' | '/orientation' | '/parcours'
+  id: '__root__' | '/' | '/conseils' | '/orientation' | '/parcours'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ConseilsRoute: typeof ConseilsRoute
+  OrientationRoute: typeof OrientationRoute
+  ParcoursRoute: typeof ParcoursRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +78,35 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/conseils': {
+      id: '/conseils'
+      path: '/conseils'
+      fullPath: '/conseils'
+      preLoaderRoute: typeof ConseilsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/orientation': {
+      id: '/orientation'
+      path: '/orientation'
+      fullPath: '/orientation'
+      preLoaderRoute: typeof OrientationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/parcours': {
+      id: '/parcours'
+      path: '/parcours'
+      fullPath: '/parcours'
+      preLoaderRoute: typeof ParcoursRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ConseilsRoute: ConseilsRoute,
+  OrientationRoute: OrientationRoute,
+  ParcoursRoute: ParcoursRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

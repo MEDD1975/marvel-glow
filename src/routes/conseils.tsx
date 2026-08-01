@@ -95,6 +95,5 @@ function ConseilsPage() {
           <MedicalDisclaimer />
         </div>
       </main>
-    </div>
   );
 }

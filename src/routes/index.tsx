@@ -1,6 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { HomeHero, EntryGrid, MedicalDisclaimer } from "@/components/HomeBlocks";
-import { Header } from "@/components/Header";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -18,15 +17,12 @@ export const Route = createFileRoute("/")({
 
 function HomePage() {
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
-      <main>
-        <HomeHero />
-        <EntryGrid />
-        <section className="mx-auto max-w-4xl px-4 pb-16">
-          <MedicalDisclaimer />
-        </section>
-      </main>
-    </div>
+    <main>
+      <HomeHero />
+      <EntryGrid />
+      <section className="mx-auto max-w-4xl px-4 pb-16">
+        <MedicalDisclaimer />
+      </section>
+    </main>
   );
 }

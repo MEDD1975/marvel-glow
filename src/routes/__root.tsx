@@ -78,14 +78,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "ChevilleClaire" },
+      { title: "Kivoir" },
       { name: "description", content: "Guide simple et rassurant pour les patients ayant une entorse de cheville : orientation, parcours de soins et conseils pratiques." },
-      { name: "author", content: "ChevilleClaire" },
-      { property: "og:title", content: "ChevilleClaire" },
+      { name: "author", content: "Kivoir" },
+      { property: "og:title", content: "Kivoir" },
       { property: "og:description", content: "Guide simple et rassurant pour les patients ayant une entorse de cheville : orientation, parcours de soins et conseils pratiques." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
-      { name: "twitter:site", content: "@ChevilleClaire" },
+      { name: "twitter:site", content: "@Kivoir" },
     ],
     links: [
       {

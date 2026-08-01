@@ -23,13 +23,13 @@ import {
 export const Route = createFileRoute("/orientation")({
   head: () => ({
     meta: [
-      { title: "Orientation — ChevilleClaire" },
+      { title: "Orientation — Kivoir" },
       {
         name: "description",
         content:
           "Choisissez votre trouble musculo-squelettique du membre inférieur et répondez à trois questions expliquées pour savoir qui consulter et quand.",
       },
-      { property: "og:title", content: "Orientation — ChevilleClaire" },
+      { property: "og:title", content: "Orientation — Kivoir" },
       {
         property: "og:description",
         content:

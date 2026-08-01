@@ -6,9 +6,9 @@ import { dailyTips, redFlags, professionals } from "@/lib/care-data";
 export const Route = createFileRoute("/conseils")({
   head: () => ({
     meta: [
-      { title: "Conseils pratiques — ChevilleClaire" },
+      { title: "Conseils pratiques — Kivoir" },
       { name: "description", content: "Conseils quotidiens, signes d'alerte et guide des professionnels de santé pour une entorse de cheville." },
-      { property: "og:title", content: "Conseils pratiques — ChevilleClaire" },
+      { property: "og:title", content: "Conseils pratiques — Kivoir" },
       { property: "og:description", content: "Conseils quotidiens, signes d'alerte et guide des professionnels de santé pour une entorse de cheville." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

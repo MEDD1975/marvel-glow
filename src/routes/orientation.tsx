@@ -322,7 +322,7 @@ function ResultView({
           search={{ c: condition.id }}
           className="inline-flex items-center gap-2 rounded-lg bg-care px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-care/90"
         >
-          <Route2 className="h-4 w-4" />
+          <MapIcon className="h-4 w-4" />
           Voir le parcours de soin de {condition.name}
         </Link>
         <button

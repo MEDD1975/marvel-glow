@@ -1,19 +1,12 @@
 import { Link } from "@tanstack/react-router";
-import logoAsset from "@/assets/kivoir-logo.png.asset.json";
+import { Logo } from "@/components/Logo";
 
 export function Header() {
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur">
       <div className="mx-auto flex max-w-5xl flex-col gap-2 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
-        <Link to="/" className="flex items-center gap-2 text-lg font-semibold text-foreground">
-          <img
-            src={logoAsset.url}
-            alt="Kivoir"
-            width={36}
-            height={36}
-            className="h-9 w-9 rounded-lg object-contain"
-          />
-          <span>Kivoir</span>
+        <Link to="/" className="flex items-center gap-2 text-foreground">
+          <Logo size="sm" />
         </Link>
         <nav className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
           <Link

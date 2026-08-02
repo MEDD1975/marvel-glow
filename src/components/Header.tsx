@@ -32,6 +32,13 @@ export function Header() {
             Parcours
           </Link>
           <Link
+            to="/annuaire"
+            activeProps={{ className: "font-medium text-foreground" }}
+            inactiveProps={{ className: "text-muted-foreground hover:text-foreground" }}
+          >
+            Près de chez moi
+          </Link>
+          <Link
             to="/conseils"
             activeProps={{ className: "font-medium text-foreground" }}
             inactiveProps={{ className: "text-muted-foreground hover:text-foreground" }}

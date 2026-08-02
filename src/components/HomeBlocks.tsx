@@ -1,4 +1,4 @@
-import { AlertTriangle, ArrowRight, Clock, HeartPulse, Stethoscope } from "lucide-react";
+import { AlertTriangle, ArrowRight, Clock, HeartPulse, MapPin, Stethoscope } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 
 export const medicalDisclaimer = "Cette application est un outil d'information. Elle ne remplace pas un avis médical, un diagnostic ou un traitement. En cas de doute, consultez un professionnel de santé.";
@@ -94,11 +94,11 @@ export function EntryGrid() {
           tone="soothe"
         />
         <EntryCard
-          to="/orientation"
-          icon={AlertTriangle}
-          title="Signes d'alerte"
-          description="Apprenez à repérer les situations qui nécessitent une consultation urgente."
-          tone="urgent"
+          to="/annuaire"
+          icon={MapPin}
+          title="Qui voir près de chez moi"
+          description="Saint-Maur-des-Fossés : votre prochaine étape et les professionnels sur une carte."
+          tone="care"
         />
       </div>
     </section>

@@ -1,9 +1,10 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { AlertTriangle, Ban, Info, Thermometer, User, Users } from "lucide-react";
+import { AlertTriangle, Ban, Dumbbell, ExternalLink, Info, Play, Thermometer, User, Users } from "lucide-react";
 import { MedicalDisclaimer } from "@/components/HomeBlocks";
 import { dailyTips, professionals } from "@/lib/care-data";
 import { conditions } from "@/lib/conditions";
 import { conditionAdvice, generalRedFlags } from "@/lib/condition-advice";
+import { conditionResources, generalLinks } from "@/lib/condition-resources";
 import { pathways } from "@/lib/pathways";
 
 type ConseilsSearch = { c?: string | undefined };
@@ -40,6 +41,10 @@ function ConseilsPage() {
   const selected = conditions.find((item) => item.id === c) ?? null;
   const advice = selected ? conditionAdvice[selected.id] : undefined;
   const pathway = selected ? pathways[selected.id] : undefined;
+  const resources = selected ? conditionResources[selected.id] : undefined;
+  const exercises = resources?.exercises ?? [];
+  const links = resources ? [...resources.links, ...generalLinks] : generalLinks;
+
 
   const tips = advice?.tips ?? dailyTips;
   const avoid = advice?.avoid ?? [];
@@ -102,6 +107,53 @@ function ConseilsPage() {
               <h3 className="font-semibold text-card-foreground">{tip.title}</h3>
               <p className="mt-2 text-sm text-muted-foreground">{tip.content}</p>
             </div>
+          ))}
+        </div>
+      </section>
+
+      {exercises.length > 0 && (
+        <section className="mt-12">
+          <div className="flex items-center gap-2 text-lg font-semibold text-foreground">
+            <Dumbbell className="h-5 w-5 text-care" />
+            Exercices qui soulagent — {selected?.name}
+          </div>
+          <p className="mt-2 text-sm text-muted-foreground">
+            À faire chez soi, sans matériel ou presque. Arrêtez si la douleur dépasse 4/10 ou persiste plus de 24 h après.
+          </p>
+          <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {exercises.map((ex, i) => (
+              <div key={i} className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+                <h3 className="font-semibold text-card-foreground">{ex.title}</h3>
+                <p className="mt-2 text-sm text-muted-foreground">{ex.how}</p>
+                <p className="mt-3 inline-flex rounded-full bg-care/10 px-3 py-1 text-xs font-medium text-care">{ex.dosage}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      <section className="mt-12">
+        <div className="flex items-center gap-2 text-lg font-semibold text-foreground">
+          <Play className="h-5 w-5 text-care" />
+          Vidéos et sources d'information fiables
+        </div>
+        <div className="mt-4 grid gap-3 sm:grid-cols-2">
+          {links.map((link, i) => (
+            <a
+              key={i}
+              href={link.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-start gap-3 rounded-2xl border border-border bg-card p-4 shadow-sm transition-colors hover:bg-accent"
+            >
+              <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-care/10 text-care">
+                {link.kind === "video" ? <Play className="h-4 w-4" /> : <ExternalLink className="h-4 w-4" />}
+              </span>
+              <span>
+                <span className="block text-sm font-medium text-card-foreground">{link.label}</span>
+                <span className="mt-0.5 block text-xs text-muted-foreground">{link.source}</span>
+              </span>
+            </a>
           ))}
         </div>
       </section>

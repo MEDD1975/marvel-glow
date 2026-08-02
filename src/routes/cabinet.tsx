@@ -136,7 +136,7 @@ function CabinetPage() {
 
       {/* Poster editor */}
       <section className="mt-16 poster-section">
-        <div className="flex flex-wrap items-end justify-between gap-4">
+        <div className="flex flex-wrap items-end justify-between gap-4 print:hidden">
           <div>
             <h2 className="text-2xl font-semibold text-foreground">Votre affiche de salle d'attente</h2>
             <p className="mt-1 text-muted-foreground">

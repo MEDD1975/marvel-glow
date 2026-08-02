@@ -80,7 +80,7 @@ function AnnuairePage() {
   }, [professionFilter, recommended]);
 
   const setSearch = (next: Partial<Search>) =>
-    navigate({ search: (prev) => ({ ...prev, ...next }), resetScroll: false });
+    navigate({ search: (prev: Search) => ({ ...prev, ...next }), resetScroll: false });
 
   return (
     <main className="mx-auto max-w-5xl px-4 py-10">

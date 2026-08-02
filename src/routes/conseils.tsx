@@ -1,9 +1,10 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { AlertTriangle, Ban, Info, Thermometer, User, Users } from "lucide-react";
+import { AlertTriangle, Ban, Dumbbell, ExternalLink, Info, Play, Thermometer, User, Users } from "lucide-react";
 import { MedicalDisclaimer } from "@/components/HomeBlocks";
 import { dailyTips, professionals } from "@/lib/care-data";
 import { conditions } from "@/lib/conditions";
 import { conditionAdvice, generalRedFlags } from "@/lib/condition-advice";
+import { conditionResources, generalLinks } from "@/lib/condition-resources";
 import { pathways } from "@/lib/pathways";
 
 type ConseilsSearch = { c?: string | undefined };

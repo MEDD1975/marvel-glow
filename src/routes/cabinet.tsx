@@ -113,6 +113,25 @@ function CabinetPage() {
           Kivoir n'est pas prescrit : il est mis à disposition du patient comme un support d'information et de préparation
           à la consultation. Le médecin garde le libre choix de le proposer ou non, sans que cela soit un acte médical.
         </p>
+        <div className="mt-5 grid gap-4 md:grid-cols-2">
+          <div className="rounded-xl border border-border bg-card p-4">
+            <p className="text-xs font-semibold uppercase tracking-wide text-care">Avant la consultation</p>
+            <p className="mt-1 text-sm font-medium text-foreground">L'affiche QR en salle d'attente</p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Le patient répond au questionnaire pendant qu'il attend : vous gagnez du temps sur l'interrogatoire et
+              entrez plus vite dans l'examen clinique.
+            </p>
+          </div>
+          <div className="rounded-xl border border-border bg-card p-4">
+            <p className="text-xs font-semibold uppercase tracking-wide text-care">Après la consultation</p>
+            <p className="mt-1 text-sm font-medium text-foreground">La carte remise au patient</p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Il retrouve chez lui les informations sur son trouble, son parcours de soins et les vidéos d'exercices,
+              sans vous solliciter à nouveau.
+            </p>
+          </div>
+        </div>
+
         <ul className="mt-4 space-y-3">
           <li className="flex items-start gap-3 text-sm text-muted-foreground">
             <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-care" />
@@ -183,8 +202,9 @@ function CabinetPage() {
             </p>
           </div>
           <button
-            onClick={() => window.print()}
+            onClick={() => printWith("poster")}
             className="inline-flex items-center gap-2 rounded-lg bg-care px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-care/90 print:hidden"
+
           >
             <Printer className="h-4 w-4" />
             Imprimer l'affiche

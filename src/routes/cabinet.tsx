@@ -15,6 +15,8 @@ import {
 } from "lucide-react";
 import { MedicalDisclaimer } from "@/components/HomeBlocks";
 import { CabinetPoster, type PosterData } from "@/components/CabinetPoster";
+import { PatientCard } from "@/components/PatientCard";
+
 import { DoctorSummary } from "@/components/DoctorSummary";
 import { conditions, triageQuestions, type TriageOption } from "@/lib/conditions";
 

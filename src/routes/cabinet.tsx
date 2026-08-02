@@ -15,6 +15,8 @@ import {
 } from "lucide-react";
 import { MedicalDisclaimer } from "@/components/HomeBlocks";
 import { CabinetPoster, type PosterData } from "@/components/CabinetPoster";
+import { PatientCard } from "@/components/PatientCard";
+
 import { DoctorSummary } from "@/components/DoctorSummary";
 import { conditions, triageQuestions, type TriageOption } from "@/lib/conditions";
 
@@ -56,15 +58,24 @@ function CabinetPage() {
     qr: null,
   });
 
+  const [cardQr, setCardQr] = useState<{ url: string; qr: string | null }>({ url: "", qr: null });
+
   const [showDemo, setShowDemo] = useState(false);
 
   useEffect(() => {
     const target = `${window.location.origin}/orientation`;
+    const homeTarget = `${window.location.origin}/`;
     setPoster((prev) => ({ ...prev, url: target }));
+    setCardQr({ url: homeTarget, qr: null });
     let cancelled = false;
     void import("qrcode").then(async (mod) => {
-      const dataUrl = await mod.default.toDataURL(target, { width: 640, margin: 1, errorCorrectionLevel: "H" });
-      if (!cancelled) setPoster((prev) => ({ ...prev, qr: dataUrl }));
+      const [dataUrl, cardUrl] = await Promise.all([
+        mod.default.toDataURL(target, { width: 640, margin: 1, errorCorrectionLevel: "H" }),
+        mod.default.toDataURL(homeTarget, { width: 480, margin: 1, errorCorrectionLevel: "H" }),
+      ]);
+      if (cancelled) return;
+      setPoster((prev) => ({ ...prev, qr: dataUrl }));
+      setCardQr({ url: homeTarget, qr: cardUrl });
     });
     return () => {
       cancelled = true;
@@ -72,6 +83,13 @@ function CabinetPage() {
   }, []);
 
   const updatePoster = (patch: Partial<PosterData>) => setPoster((prev) => ({ ...prev, ...patch }));
+
+  const printWith = (mode: "poster" | "cards") => {
+    document.body.classList.toggle("printing-cards", mode === "cards");
+    window.print();
+    window.setTimeout(() => document.body.classList.remove("printing-cards"), 500);
+  };
+
 
   return (
     <main className="mx-auto max-w-5xl px-4 py-10 print:py-0">
@@ -97,6 +115,25 @@ function CabinetPage() {
           Kivoir n'est pas prescrit : il est mis à disposition du patient comme un support d'information et de préparation
           à la consultation. Le médecin garde le libre choix de le proposer ou non, sans que cela soit un acte médical.
         </p>
+        <div className="mt-5 grid gap-4 md:grid-cols-2">
+          <div className="rounded-xl border border-border bg-card p-4">
+            <p className="text-xs font-semibold uppercase tracking-wide text-care">Avant la consultation</p>
+            <p className="mt-1 text-sm font-medium text-foreground">L'affiche QR en salle d'attente</p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Le patient répond au questionnaire pendant qu'il attend : vous gagnez du temps sur l'interrogatoire et
+              entrez plus vite dans l'examen clinique.
+            </p>
+          </div>
+          <div className="rounded-xl border border-border bg-card p-4">
+            <p className="text-xs font-semibold uppercase tracking-wide text-care">Après la consultation</p>
+            <p className="mt-1 text-sm font-medium text-foreground">La carte remise au patient</p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Il retrouve chez lui les informations sur son trouble, son parcours de soins et les vidéos d'exercices,
+              sans vous solliciter à nouveau.
+            </p>
+          </div>
+        </div>
+
         <ul className="mt-4 space-y-3">
           <li className="flex items-start gap-3 text-sm text-muted-foreground">
             <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-care" />
@@ -167,8 +204,9 @@ function CabinetPage() {
             </p>
           </div>
           <button
-            onClick={() => window.print()}
+            onClick={() => printWith("poster")}
             className="inline-flex items-center gap-2 rounded-lg bg-care px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-care/90 print:hidden"
+
           >
             <Printer className="h-4 w-4" />
             Imprimer l'affiche
@@ -232,6 +270,42 @@ function CabinetPage() {
           </div>
         </div>
       </section>
+
+      {/* Patient pocket cards */}
+      <section className="mt-16 card-section">
+        <div className="flex flex-wrap items-end justify-between gap-4 print:hidden">
+          <div>
+            <h2 className="text-2xl font-semibold text-foreground">La carte à remettre au patient</h2>
+            <p className="mt-1 max-w-2xl text-muted-foreground">
+              À la fin de la consultation, donnez cette carte au patient : il scanne le QR code chez lui et retrouve les
+              informations sur son trouble, son parcours de soins et les vidéos d'exercices.
+            </p>
+          </div>
+          <button
+            onClick={() => printWith("cards")}
+            className="inline-flex items-center gap-2 rounded-lg border border-care bg-card px-4 py-2 text-sm font-medium text-care transition-colors hover:bg-care/10 print:hidden"
+          >
+            <Printer className="h-4 w-4" />
+            Imprimer 8 cartes
+          </button>
+        </div>
+
+        <div className="mt-6 flex justify-center print:hidden">
+          <PatientCard data={{ ...cardQr, cabinetName: poster.cabinetName, doctorName: poster.doctorName }} />
+        </div>
+
+        {/* Feuille d'impression : 8 cartes à découper */}
+        <div className="card-sheet hidden">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <PatientCard
+              key={i}
+              data={{ ...cardQr, cabinetName: poster.cabinetName, doctorName: poster.doctorName }}
+            />
+          ))}
+        </div>
+      </section>
+
+
 
       {/* Demo summary */}
       <section className="mt-16 print:hidden">

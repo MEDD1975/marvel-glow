@@ -122,3 +122,33 @@
 .prose-care li {
   margin-bottom: 0.25rem;
 }
+
+@media print {
+  /* Hide navigation, footer, and non-poster content */
+  header,
+  footer,
+  .no-print,
+  main > section:not(:has(> div [class*="CabinetPoster"])) {
+    display: none !important;
+  }
+
+  /* Ensure only the poster section and its poster are visible */
+  main > section:has(> div [class*="CabinetPoster"]),
+  main > section:has(> div [class*="CabinetPoster"]) > div,
+  main > section:has(> div [class*="CabinetPoster"]) [class*="CabinetPoster"] {
+    display: block !important;
+  }
+
+  [class*="CabinetPoster"] {
+    margin: 0 auto !important;
+    box-shadow: none !important;
+    border: 1px solid #ddd !important;
+    page-break-inside: avoid;
+  }
+
+  body {
+    background: white !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}

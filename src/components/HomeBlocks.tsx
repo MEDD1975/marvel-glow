@@ -1,4 +1,4 @@
-import { AlertTriangle, ArrowRight, Clock, HeartPulse, MapPin, Stethoscope } from "lucide-react";
+import { AlertTriangle, ArrowRight, HeartPulse, MapPin, PlayCircle, Stethoscope } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 
 export const medicalDisclaimer = "Cette application est un outil d'information. Elle ne remplace pas un avis médical, un diagnostic ou un traitement. En cas de doute, consultez un professionnel de santé.";
@@ -118,10 +118,10 @@ export function EntryGrid() {
         <div className="grid gap-4 sm:grid-cols-2">
           <EntryCard
             to="/conseils"
-            icon={Clock}
-            title="Conseils du quotidien"
-            description="Glace, repos, orthèse, sommeil : les bons réflexes entre deux consultations."
-            tone="soothe"
+            icon={PlayCircle}
+            title="Vidéos & exercices"
+            description="Choisissez votre trouble pour voir immédiatement des vidéos et des exercices adaptés."
+            tone="urgent"
           />
           <EntryCard
             to="/annuaire"

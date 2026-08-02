@@ -1,12 +1,12 @@
 import { Link } from "@tanstack/react-router";
-import { Home, HeartPulse, Route as RouteIcon, MapPin, Lightbulb } from "lucide-react";
+import { Home, HeartPulse, Route as RouteIcon, MapPin, PlayCircle } from "lucide-react";
 
 const items = [
   { to: "/", label: "Accueil", icon: Home, exact: true },
   { to: "/orientation", label: "Douleur", icon: HeartPulse, exact: false },
   { to: "/parcours", label: "Parcours", icon: RouteIcon, exact: false },
   { to: "/annuaire", label: "Près", icon: MapPin, exact: false },
-  { to: "/conseils", label: "Conseils", icon: Lightbulb, exact: false },
+  { to: "/conseils", label: "Vidéos", icon: PlayCircle, exact: false },
 ];
 
 /** Barre de navigation basse : accès en un geste aux 5 écrans clés sur mobile. */

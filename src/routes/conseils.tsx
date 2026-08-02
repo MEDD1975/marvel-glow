@@ -44,6 +44,8 @@ function ConseilsPage() {
   const resources = selected ? conditionResources[selected.id] : undefined;
   const exercises = resources?.exercises ?? [];
   const links = resources ? [...resources.links, ...generalLinks] : generalLinks;
+  const videoLinks = links.filter((l) => l.kind === "video");
+  const siteLinks = links.filter((l) => l.kind !== "video");
 
 
   const tips = advice?.tips ?? dailyTips;
@@ -96,6 +98,42 @@ function ConseilsPage() {
         </div>
       )}
 
+      <section className="mt-8 rounded-2xl border border-care/30 bg-care/5 p-5">
+        <div className="flex items-center gap-2 text-lg font-semibold text-foreground">
+          <Play className="h-5 w-5 text-care" />
+          Vidéos {selected ? `— ${selected.name}` : "d'information"}
+        </div>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Vidéos d'explication et d'exercices, sélectionnées auprès de kinésithérapeutes et de sources
+          médicales. Elles s'ouvrent sur YouTube dans un nouvel onglet.
+        </p>
+        <div className="mt-4 grid gap-3 sm:grid-cols-2">
+          {videoLinks.map((link, i) => (
+            <a
+              key={i}
+              href={link.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-4 rounded-2xl border border-border bg-card p-4 shadow-sm transition-colors hover:bg-accent"
+            >
+              <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-urgent/10 text-urgent">
+                <Play className="h-6 w-6 fill-current" />
+              </span>
+              <span>
+                <span className="block text-sm font-semibold text-card-foreground">{link.label}</span>
+                <span className="mt-0.5 block text-xs text-muted-foreground">Voir les vidéos · {link.source}</span>
+              </span>
+            </a>
+          ))}
+        </div>
+        {!selected && (
+          <p className="mt-4 text-xs text-muted-foreground">
+            Choisissez votre trouble ci-dessus pour obtenir des vidéos ciblées sur votre pathologie.
+          </p>
+        )}
+      </section>
+
+
       <section className="mt-10">
         <div className="flex items-center gap-2 text-lg font-semibold text-foreground">
           <Thermometer className="h-5 w-5 text-care" />
@@ -134,11 +172,11 @@ function ConseilsPage() {
 
       <section className="mt-12">
         <div className="flex items-center gap-2 text-lg font-semibold text-foreground">
-          <Play className="h-5 w-5 text-care" />
-          Vidéos et sources d'information fiables
+          <ExternalLink className="h-5 w-5 text-care" />
+          Sources d'information fiables
         </div>
         <div className="mt-4 grid gap-3 sm:grid-cols-2">
-          {links.map((link, i) => (
+          {siteLinks.map((link, i) => (
             <a
               key={i}
               href={link.url}
@@ -147,7 +185,7 @@ function ConseilsPage() {
               className="flex items-start gap-3 rounded-2xl border border-border bg-card p-4 shadow-sm transition-colors hover:bg-accent"
             >
               <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-care/10 text-care">
-                {link.kind === "video" ? <Play className="h-4 w-4" /> : <ExternalLink className="h-4 w-4" />}
+                <ExternalLink className="h-4 w-4" />
               </span>
               <span>
                 <span className="block text-sm font-medium text-card-foreground">{link.label}</span>
@@ -157,6 +195,7 @@ function ConseilsPage() {
           ))}
         </div>
       </section>
+
 
       {avoid.length > 0 && (
         <section className="mt-12">

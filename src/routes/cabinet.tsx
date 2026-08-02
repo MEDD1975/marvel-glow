@@ -42,9 +42,9 @@ export const Route = createFileRoute("/cabinet")({
 
 const demoCondition = conditions.find((c) => c.id === "entorse-cheville")!;
 const demoAnswers: TriageOption[] = [
-  triageQuestions[0].options[1]!, // appui possible mais douloureux
-  triageQuestions[1].options[1]!, // 2 jours à 6 semaines
-  triageQuestions[2].options[2]!, // aucun signe d'alerte
+  triageQuestions[0]!.options[1]!, // appui possible mais douloureux
+  triageQuestions[1]!.options[1]!, // 2 jours à 6 semaines
+  triageQuestions[2]!.options[2]!, // aucun signe d'alerte
 ];
 
 function CabinetPage() {

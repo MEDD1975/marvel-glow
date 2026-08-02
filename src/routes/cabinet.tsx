@@ -269,6 +269,42 @@ function CabinetPage() {
         </div>
       </section>
 
+      {/* Patient pocket cards */}
+      <section className="mt-16 card-section">
+        <div className="flex flex-wrap items-end justify-between gap-4 print:hidden">
+          <div>
+            <h2 className="text-2xl font-semibold text-foreground">La carte à remettre au patient</h2>
+            <p className="mt-1 max-w-2xl text-muted-foreground">
+              À la fin de la consultation, donnez cette carte au patient : il scanne le QR code chez lui et retrouve les
+              informations sur son trouble, son parcours de soins et les vidéos d'exercices.
+            </p>
+          </div>
+          <button
+            onClick={() => printWith("cards")}
+            className="inline-flex items-center gap-2 rounded-lg border border-care bg-card px-4 py-2 text-sm font-medium text-care transition-colors hover:bg-care/10 print:hidden"
+          >
+            <Printer className="h-4 w-4" />
+            Imprimer 8 cartes
+          </button>
+        </div>
+
+        <div className="mt-6 flex justify-center print:hidden">
+          <PatientCard data={{ ...cardQr, cabinetName: poster.cabinetName, doctorName: poster.doctorName }} />
+        </div>
+
+        {/* Feuille d'impression : 8 cartes à découper */}
+        <div className="card-sheet hidden">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <PatientCard
+              key={i}
+              data={{ ...cardQr, cabinetName: poster.cabinetName, doctorName: poster.doctorName }}
+            />
+          ))}
+        </div>
+      </section>
+
+
+
       {/* Demo summary */}
       <section className="mt-16 print:hidden">
         <div className="flex flex-wrap items-center justify-between gap-4">

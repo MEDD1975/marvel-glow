@@ -267,7 +267,7 @@ function CabinetPage() {
           />
           <FaqCard
             question="Comment le médecin récupère-t-il la synthèse ?"
-            answer="Le patient montre son écran. Le médecin appuie sur \"Copier la synthèse\" et la colle dans son logiciel."
+            answer='Le patient montre son écran. Le médecin appuie sur "Copier la synthèse" et la colle dans son logiciel.'
           />
           <FaqCard
             question="Kivoir remplace-t-il l'examen clinique ?"

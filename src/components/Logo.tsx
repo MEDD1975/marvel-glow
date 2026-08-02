@@ -8,54 +8,50 @@ interface LogoProps {
 
 export function Logo({ className, size = "md", showTagline = false }: LogoProps) {
   const heights = {
-    sm: 28,
-    md: 36,
-    lg: 48,
+    sm: 26,
+    md: 34,
+    lg: 46,
   };
 
   const h = heights[size];
-  const w = Math.round(h * 3.05);
+  const w = Math.round(h * 3.15);
 
   return (
     <div className={cn("inline-flex items-center gap-2", className)}>
       <svg
         width={w}
         height={h}
-        viewBox="0 0 120 40"
+        viewBox="0 0 130 40"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
         aria-label="Kivoir"
         role="img"
         className="text-current"
       >
-        {/* Single wordmark for consistent kerning */}
         <text
           x="0"
           y="31"
-          fontFamily="ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
-          fontSize="32"
-          fontWeight="600"
+          fontFamily="'Space Grotesk', ui-sans-serif, system-ui, sans-serif"
+          fontSize="34"
+          fontWeight="700"
           fill="currentColor"
-          letterSpacing="-0.02em"
+          letterSpacing="-0.03em"
         >
           Kivoir
         </text>
-        {/* Custom dot on the i, shifted slightly right to sit above the stem */}
-        <circle cx="45" cy="10" r="3" fill="currentColor" opacity="0.95" />
-        {/* Subtle baseline orientation line */}
         <line
           x1="2"
-          y1="36"
-          x2="118"
-          y2="36"
+          y1="37"
+          x2="128"
+          y2="37"
           stroke="currentColor"
           strokeWidth="2"
           strokeLinecap="round"
-          opacity="0.22"
+          opacity="0.2"
         />
       </svg>
       {showTagline && (
-        <span className="text-xs tracking-wide text-muted-foreground">
+        <span className="font-sans text-xs tracking-wide text-muted-foreground">
           Qui voir, quand
         </span>
       )}

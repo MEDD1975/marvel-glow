@@ -124,25 +124,26 @@
 }
 
 @media print {
-  /* Hide navigation, footer, and non-poster content */
   header,
   footer,
-  .no-print,
-  main > section:not(:has(> div [class*="CabinetPoster"])) {
+  nav,
+  .print-hidden {
     display: none !important;
   }
 
-  /* Ensure only the poster section and its poster are visible */
-  main > section:has(> div [class*="CabinetPoster"]),
-  main > section:has(> div [class*="CabinetPoster"]) > div,
-  main > section:has(> div [class*="CabinetPoster"]) [class*="CabinetPoster"] {
-    display: block !important;
+  .poster-section {
+    display: flex !important;
+    justify-content: center !important;
+    padding: 0 !important;
+    margin: 0 !important;
   }
 
-  [class*="CabinetPoster"] {
-    margin: 0 auto !important;
+  .poster-root {
     box-shadow: none !important;
-    border: 1px solid #ddd !important;
+    border: 1px solid #ccc !important;
+    max-width: 160mm !important;
+    width: 160mm !important;
+    padding: 12mm !important;
     page-break-inside: avoid;
   }
 

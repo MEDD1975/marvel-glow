@@ -1,5 +1,6 @@
-import { useState } from "react";
-import { ClipboardCheck, Copy, Maximize2, ShieldCheck, X } from "lucide-react";
+import { useEffect, useState } from "react";
+import { ClipboardCheck, Copy, Maximize2, QrCode, ShieldCheck, X } from "lucide-react";
+import QRCodeLib from "qrcode";
 import { buildDoctorSummary } from "@/lib/summary";
 import { triageQuestions, type Condition, type TriageLevel, type TriageOption } from "@/lib/conditions";
 
@@ -30,7 +31,26 @@ export function DoctorSummary({
 }) {
   const [copied, setCopied] = useState(false);
   const [handoff, setHandoff] = useState(false);
+  const [showQr, setShowQr] = useState(false);
+  const [qrUrl, setQrUrl] = useState<string | null>(null);
+  const [qrError, setQrError] = useState(false);
   const text = buildDoctorSummary(condition, answers, level);
+
+  useEffect(() => {
+    if (!showQr) return;
+    let active = true;
+    QRCodeLib.toDataURL(text, { errorCorrectionLevel: "L", margin: 1, width: 720 })
+      .then((url) => {
+        if (active) {
+          setQrUrl(url);
+          setQrError(false);
+        }
+      })
+      .catch(() => active && setQrError(true));
+    return () => {
+      active = false;
+    };
+  }, [showQr, text]);
 
   const handleCopy = async () => {
     try {
@@ -139,9 +159,41 @@ export function DoctorSummary({
 
             <div className="mt-5">{content(true)}</div>
 
+            <div className="mt-6 rounded-xl border border-care/30 bg-care/5 p-4">
+              <button
+                onClick={() => setShowQr((v) => !v)}
+                className="inline-flex items-center gap-2 text-base font-semibold text-care"
+              >
+                <QrCode className="h-5 w-5" />
+                {showQr ? "Masquer le QR code" : "Afficher le QR code pour le médecin"}
+              </button>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Le médecin scanne ce code depuis son ordinateur : le texte de la synthèse s'affiche chez lui, prêt à
+                coller dans le dossier. Rien ne transite par un serveur.
+              </p>
+              {showQr && (
+                <div className="mt-4 flex flex-col items-center gap-2">
+                  {qrError ? (
+                    <p className="text-sm text-destructive">
+                      Synthèse trop longue pour un QR code lisible : utilisez le bouton copier.
+                    </p>
+                  ) : qrUrl ? (
+                    <img
+                      src={qrUrl}
+                      alt="QR code contenant la synthèse de pré-consultation"
+                      className="h-64 w-64 rounded-lg bg-white p-2"
+                    />
+                  ) : (
+                    <p className="text-sm text-muted-foreground">Génération du QR code…</p>
+                  )}
+                  <p className="text-xs text-muted-foreground">Augmentez la luminosité de l'écran pour faciliter le scan.</p>
+                </div>
+              )}
+            </div>
+
             <button
               onClick={handleCopy}
-              className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-care px-4 py-4 text-lg font-semibold text-primary-foreground hover:bg-care/90"
+              className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-care px-4 py-4 text-lg font-semibold text-primary-foreground hover:bg-care/90"
             >
               {copied ? <ClipboardCheck className="h-5 w-5" /> : <Copy className="h-5 w-5" />}
               {copied ? "Copié dans le presse-papiers" : "Copier pour le dossier patient"}

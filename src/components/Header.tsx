@@ -9,9 +9,9 @@ export function Header() {
           <img
             src={logoAsset.url}
             alt="Kivoir"
-            width={32}
-            height={32}
-            className="h-8 w-8 rounded-lg object-contain"
+            width={36}
+            height={36}
+            className="h-9 w-9 rounded-lg object-contain"
           />
           <span>Kivoir</span>
         </Link>

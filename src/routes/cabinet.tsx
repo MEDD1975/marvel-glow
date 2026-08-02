@@ -56,15 +56,24 @@ function CabinetPage() {
     qr: null,
   });
 
+  const [cardQr, setCardQr] = useState<{ url: string; qr: string | null }>({ url: "", qr: null });
+
   const [showDemo, setShowDemo] = useState(false);
 
   useEffect(() => {
     const target = `${window.location.origin}/orientation`;
+    const homeTarget = `${window.location.origin}/`;
     setPoster((prev) => ({ ...prev, url: target }));
+    setCardQr({ url: homeTarget, qr: null });
     let cancelled = false;
     void import("qrcode").then(async (mod) => {
-      const dataUrl = await mod.default.toDataURL(target, { width: 640, margin: 1, errorCorrectionLevel: "H" });
-      if (!cancelled) setPoster((prev) => ({ ...prev, qr: dataUrl }));
+      const [dataUrl, cardUrl] = await Promise.all([
+        mod.default.toDataURL(target, { width: 640, margin: 1, errorCorrectionLevel: "H" }),
+        mod.default.toDataURL(homeTarget, { width: 480, margin: 1, errorCorrectionLevel: "H" }),
+      ]);
+      if (cancelled) return;
+      setPoster((prev) => ({ ...prev, qr: dataUrl }));
+      setCardQr({ url: homeTarget, qr: cardUrl });
     });
     return () => {
       cancelled = true;
@@ -72,6 +81,13 @@ function CabinetPage() {
   }, []);
 
   const updatePoster = (patch: Partial<PosterData>) => setPoster((prev) => ({ ...prev, ...patch }));
+
+  const printWith = (mode: "poster" | "cards") => {
+    document.body.classList.toggle("printing-cards", mode === "cards");
+    window.print();
+    window.setTimeout(() => document.body.classList.remove("printing-cards"), 500);
+  };
+
 
   return (
     <main className="mx-auto max-w-5xl px-4 py-10 print:py-0">

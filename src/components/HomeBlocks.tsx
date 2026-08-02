@@ -109,7 +109,7 @@ export function HomeHero({ source = "direct" }: { source?: HomeSource }) {
 
         <Link
           to="/parcours"
-          className="group flex flex-col gap-3 rounded-2xl border-2 border-care/30 bg-card p-6 text-left shadow-sm transition-all hover:shadow-md"
+          className={`group flex flex-col gap-3 rounded-2xl border-2 border-care/30 bg-card p-6 text-left shadow-sm transition-all hover:shadow-md ${carteFirst ? "order-1" : "order-2"}`}
         >
           <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-care/10 text-care">
             <Stethoscope className="h-6 w-6" />

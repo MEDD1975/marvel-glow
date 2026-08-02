@@ -21,6 +21,8 @@ export type ResourceLink = {
   /** Type de ressource, pour l'affichage. */
   kind: "video" | "site";
   source: string;
+  /** Identifiant d'une vidéo précise, utilisé pour afficher un vrai lecteur. */
+  videoId?: string;
 };
 
 export type ConditionResources = {
@@ -50,6 +52,7 @@ export const generalLinks: ResourceLink[] = [
     url: youtube("kinésithérapie exercices membre inférieur conseils kiné"),
     kind: "video",
     source: "Recherche YouTube",
+    videoId: "7aKWao5YeqE",
   },
 ];
 
@@ -61,7 +64,7 @@ export const conditionResources: Record<string, ConditionResources> = {
       { title: "Élastique en éversion", how: "Élastique autour de l'avant-pied, poussez le pied vers l'extérieur puis revenez lentement.", dosage: "3 x 15, un jour sur deux" },
     ],
     links: [
-      { label: "Rééducation d'entorse de cheville en vidéo", url: youtube("rééducation entorse cheville exercices kiné"), kind: "video", source: "Recherche YouTube" },
+      { label: "Rééducation d'entorse de cheville en vidéo", url: youtube("rééducation entorse cheville exercices kiné"), kind: "video", source: "YouTube", videoId: "ECa53rIOY4s" },
       { label: "Entorse de la cheville : que faire ?", url: "https://www.ameli.fr/assure/sante/themes/entorse-cheville", kind: "site", source: "Ameli" },
     ],
   },
@@ -73,7 +76,7 @@ export const conditionResources: Record<string, ConditionResources> = {
       { title: "Vélo d'appartement léger", how: "Selle haute, résistance faible, sans jamais forcer sur la douleur.", dosage: "10 à 20 minutes par jour" },
     ],
     links: [
-      { label: "Exercices pour l'arthrose du genou", url: youtube("exercices arthrose genou gonarthrose kiné"), kind: "video", source: "Recherche YouTube" },
+      { label: "Exercices pour l'arthrose du genou", url: youtube("exercices arthrose genou gonarthrose kiné"), kind: "video", source: "YouTube", videoId: "LTUNHQww74s" },
       { label: "Arthrose du genou (gonarthrose)", url: "https://www.ameli.fr/assure/sante/themes/arthrose-genou", kind: "site", source: "Ameli" },
     ],
   },
@@ -85,7 +88,7 @@ export const conditionResources: Record<string, ConditionResources> = {
       { title: "Montées sur pointes serviette", how: "Une serviette roulée sous les orteils, montez lentement sur la pointe puis redescendez.", dosage: "3 x 12, un jour sur deux" },
     ],
     links: [
-      { label: "Fasciite plantaire : exercices et étirements", url: youtube("aponévrosite plantaire fasciite exercices étirements kiné"), kind: "video", source: "Recherche YouTube" },
+      { label: "Fasciite plantaire : exercices et étirements", url: youtube("aponévrosite plantaire fasciite exercices étirements kiné"), kind: "video", source: "YouTube", videoId: "QuVv1IGD1Hc" },
       { label: "Douleur du talon : conseils", url: "https://www.ameli.fr/assure/sante/themes/douleur-pied", kind: "site", source: "Ameli" },
     ],
   },
@@ -97,7 +100,7 @@ export const conditionResources: Record<string, ConditionResources> = {
       { title: "Mini-squat mur", how: "Dos au mur, descendez seulement jusqu'à 45°, sans douleur.", dosage: "3 x 10, lentement" },
     ],
     links: [
-      { label: "Syndrome fémoro-patellaire : programme d'exercices", url: youtube("syndrome rotulien fémoro patellaire exercices kiné"), kind: "video", source: "Recherche YouTube" },
+      { label: "Syndrome fémoro-patellaire : programme d'exercices", url: youtube("syndrome rotulien fémoro patellaire exercices kiné"), kind: "video", source: "YouTube", videoId: "QUpmgt8DtZ0" },
       { label: "Douleur du genou : quand consulter", url: "https://www.ameli.fr/assure/sante/themes/douleur-genou", kind: "site", source: "Ameli" },
     ],
   },
@@ -109,7 +112,7 @@ export const conditionResources: Record<string, ConditionResources> = {
       { title: "Étirement du mollet au mur", how: "Jambe arrière tendue, talon au sol, avancez le bassin doucement.", dosage: "3 x 30 secondes, deux fois par jour" },
     ],
     links: [
-      { label: "Tendinopathie d'Achille : protocole excentrique", url: youtube("tendinopathie achille exercices excentriques protocole"), kind: "video", source: "Recherche YouTube" },
+      { label: "Tendinopathie d'Achille : protocole excentrique", url: youtube("tendinopathie achille exercices excentriques protocole"), kind: "video", source: "YouTube", videoId: "jLSybA_SLz0" },
       { label: "Tendinite : comprendre et soigner", url: "https://www.ameli.fr/assure/sante/themes/tendinite", kind: "site", source: "Ameli" },
     ],
   },
@@ -121,7 +124,7 @@ export const conditionResources: Record<string, ConditionResources> = {
       { title: "Vélo sans résistance", how: "Pédalage souple, selle un peu haute pour limiter la flexion.", dosage: "10 à 15 minutes par jour" },
     ],
     links: [
-      { label: "Lésion méniscale : rééducation sans chirurgie", url: youtube("lésion méniscale rééducation exercices kiné genou"), kind: "video", source: "Recherche YouTube" },
+      { label: "Lésion méniscale : rééducation sans chirurgie", url: youtube("lésion méniscale rééducation exercices kiné genou"), kind: "video", source: "YouTube", videoId: "HBoZIYbn4sQ" },
       { label: "Lésion du ménisque", url: "https://www.ameli.fr/assure/sante/themes/douleur-genou", kind: "site", source: "Ameli" },
     ],
   },
@@ -133,7 +136,7 @@ export const conditionResources: Record<string, ConditionResources> = {
       { title: "Vélo ou piscine", how: "Activités en décharge, sans impact, à intensité modérée.", dosage: "20 à 30 minutes, 3 fois par semaine" },
     ],
     links: [
-      { label: "Exercices pour l'arthrose de hanche", url: youtube("exercices arthrose hanche coxarthrose kiné"), kind: "video", source: "Recherche YouTube" },
+      { label: "Exercices pour l'arthrose de hanche", url: youtube("exercices arthrose hanche coxarthrose kiné"), kind: "video", source: "YouTube", videoId: "Yu_o2cHLkEw" },
       { label: "Arthrose de la hanche (coxarthrose)", url: "https://www.ameli.fr/assure/sante/themes/arthrose-hanche", kind: "site", source: "Ameli" },
     ],
   },
@@ -145,7 +148,7 @@ export const conditionResources: Record<string, ConditionResources> = {
       { title: "Étirement du mollet", how: "Contre un mur, jambe arrière tendue, talon collé au sol.", dosage: "3 x 30 secondes, matin et soir" },
     ],
     links: [
-      { label: "Métatarsalgie : exercices et conseils de chaussage", url: youtube("métatarsalgie exercices conseils podologue"), kind: "video", source: "Recherche YouTube" },
+      { label: "Métatarsalgie : exercices et conseils de chaussage", url: youtube("métatarsalgie exercices conseils podologue"), kind: "video", source: "YouTube", videoId: "LBdoYJv4Is0" },
       { label: "Douleurs du pied : conseils", url: "https://www.ameli.fr/assure/sante/themes/douleur-pied", kind: "site", source: "Ameli" },
     ],
   },
@@ -157,7 +160,7 @@ export const conditionResources: Record<string, ConditionResources> = {
       { title: "Marche latérale élastique", how: "Élastique au-dessus des genoux, pas chassés en demi-flexion.", dosage: "3 x 15 pas dans chaque sens" },
     ],
     links: [
-      { label: "Syndrome de la bandelette ilio-tibiale : exercices", url: youtube("syndrome essuie glace bandelette ilio-tibiale exercices coureur"), kind: "video", source: "Recherche YouTube" },
+      { label: "Syndrome de la bandelette ilio-tibiale : exercices", url: youtube("syndrome essuie glace bandelette ilio-tibiale exercices coureur"), kind: "video", source: "YouTube", videoId: "pv9pzpv12cY" },
       { label: "Douleur du genou chez le coureur", url: "https://www.ameli.fr/assure/sante/themes/douleur-genou", kind: "site", source: "Ameli" },
     ],
   },
@@ -169,7 +172,7 @@ export const conditionResources: Record<string, ConditionResources> = {
       { title: "Montées sur pointes contrôlées", how: "Montez lentement sur la pointe en gardant l'appui sur le gros orteil.", dosage: "3 x 12, un jour sur deux" },
     ],
     links: [
-      { label: "Hallux valgus : exercices et prévention", url: youtube("hallux valgus exercices podologue prévention"), kind: "video", source: "Recherche YouTube" },
+      { label: "Hallux valgus : exercices et prévention", url: youtube("hallux valgus exercices podologue prévention"), kind: "video", source: "YouTube", videoId: "tJxMf7q_ctw" },
       { label: "Hallux valgus (oignon du pied)", url: "https://www.ameli.fr/assure/sante/themes/hallux-valgus", kind: "site", source: "Ameli" },
     ],
   },

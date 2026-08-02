@@ -108,21 +108,29 @@ function ConseilsPage() {
         </p>
         <div className="mt-4 grid gap-3 sm:grid-cols-2">
           {videoLinks.map((link, i) => (
-            <a
-              key={i}
-              href={link.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-4 rounded-2xl border border-border bg-card p-4 shadow-sm transition-colors hover:bg-accent"
-            >
-              <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-urgent/10 text-urgent">
-                <Play className="h-6 w-6 fill-current" />
-              </span>
-              <span>
-                <span className="block text-sm font-semibold text-card-foreground">{link.label}</span>
-                <span className="mt-0.5 block text-xs text-muted-foreground">Voir les vidéos · {link.source}</span>
-              </span>
-            </a>
+            <article key={i} className="overflow-hidden rounded-lg border border-border bg-card shadow-sm">
+              {link.videoId && (
+                <iframe
+                  className="aspect-video w-full"
+                  src={`https://www.youtube-nocookie.com/embed/${link.videoId}?rel=0&hl=fr`}
+                  title={link.label}
+                  loading="lazy"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowFullScreen
+                />
+              )}
+              <div className="p-4">
+                <h3 className="text-sm font-semibold text-card-foreground">{link.label}</h3>
+                <a
+                  href={link.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-care hover:underline"
+                >
+                  Voir d'autres vidéos sur YouTube <ExternalLink className="h-3.5 w-3.5" />
+                </a>
+              </div>
+            </article>
           ))}
         </div>
         {!selected && (

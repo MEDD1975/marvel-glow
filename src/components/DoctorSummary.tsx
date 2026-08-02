@@ -1,7 +1,19 @@
 import { useState } from "react";
-import { ClipboardCheck, Copy, ShieldCheck } from "lucide-react";
+import { ClipboardCheck, Copy, Maximize2, ShieldCheck, X } from "lucide-react";
 import { buildDoctorSummary } from "@/lib/summary";
-import type { Condition, TriageLevel, TriageOption } from "@/lib/conditions";
+import { triageQuestions, type Condition, type TriageLevel, type TriageOption } from "@/lib/conditions";
+
+const levelWording: Record<TriageLevel, string> = {
+  urgent: "À évaluer sans délai",
+  professional: "Consultation médicale recommandée",
+  "self-care": "Auto-soin surveillé",
+};
+
+const levelStyle: Record<TriageLevel, string> = {
+  urgent: "bg-destructive/10 text-destructive border-destructive/30",
+  professional: "bg-care/10 text-care border-care/30",
+  "self-care": "bg-muted text-foreground border-border",
+};
 
 /**
  * Synthèse de pré-consultation à montrer ou coller au médecin.
@@ -17,6 +29,7 @@ export function DoctorSummary({
   level: TriageLevel;
 }) {
   const [copied, setCopied] = useState(false);
+  const [handoff, setHandoff] = useState(false);
   const text = buildDoctorSummary(condition, answers, level);
 
   const handleCopy = async () => {
@@ -29,33 +42,118 @@ export function DoctorSummary({
     }
   };
 
-  return (
-    <section className="rounded-xl border border-care/20 bg-care/5 p-4">
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <h3 className="font-semibold text-foreground">À montrer à votre médecin</h3>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Présentez cet écran en consultation, ou copiez le texte pour le coller dans le dossier.
-          </p>
-        </div>
-        <button
-          onClick={handleCopy}
-          className="inline-flex items-center gap-2 rounded-lg bg-care px-3 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-care/90 print:hidden"
-        >
-          {copied ? <ClipboardCheck className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
-          {copied ? "Copié" : "Copier la synthèse"}
-        </button>
+  const rows = answers.map((answer, i) => ({
+    question: triageQuestions[i]?.question ?? `Question ${i + 1}`,
+    answer: answer.label,
+  }));
+
+  const content = (big: boolean) => (
+    <div className={big ? "space-y-5" : "space-y-4"}>
+      <div>
+        <p className={big ? "text-sm uppercase tracking-wide text-muted-foreground" : "text-xs uppercase tracking-wide text-muted-foreground"}>
+          Trouble évoqué (déclaratif patient)
+        </p>
+        <p className={big ? "text-3xl font-bold text-foreground" : "text-lg font-semibold text-foreground"}>
+          {condition.name}
+        </p>
+        <p className={big ? "text-lg text-muted-foreground" : "text-sm text-muted-foreground"}>{condition.location}</p>
       </div>
 
-      <pre className="mt-3 overflow-x-auto whitespace-pre-wrap rounded-lg border border-border bg-background p-4 text-sm text-foreground">
-        {text}
-      </pre>
+      <span
+        className={`inline-block rounded-full border px-3 py-1 font-semibold ${levelStyle[level]} ${big ? "text-lg" : "text-sm"}`}
+      >
+        {levelWording[level]}
+      </span>
 
-      <p className="mt-3 flex items-start gap-2 text-xs text-muted-foreground">
-        <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-care" />
-        Aucune donnée n'est enregistrée ni envoyée : cette synthèse existe uniquement dans votre navigateur et disparaît
-        quand vous fermez la page.
-      </p>
-    </section>
+      <dl className={big ? "space-y-4" : "space-y-3"}>
+        {rows.map((row) => (
+          <div key={row.question} className="rounded-lg border border-border bg-background p-3">
+            <dt className={big ? "text-base text-muted-foreground" : "text-xs text-muted-foreground"}>{row.question}</dt>
+            <dd className={big ? "mt-1 text-2xl font-semibold text-foreground" : "mt-0.5 text-base font-medium text-foreground"}>
+              {row.answer}
+            </dd>
+          </div>
+        ))}
+      </dl>
+
+      <div className={big ? "text-lg text-muted-foreground" : "text-sm text-muted-foreground"}>
+        <p>Repère parcours : {condition.whoToSee}</p>
+        <p>Délai habituel : {condition.delay}</p>
+      </div>
+    </div>
+  );
+
+  return (
+    <>
+      <section className="rounded-xl border border-care/20 bg-care/5 p-4">
+        <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3 sm:flex sm:flex-wrap sm:justify-between">
+          <div className="min-w-0">
+            <h3 className="font-semibold text-foreground">À montrer à votre médecin</h3>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Montrez cet écran en consultation. Le médecin peut copier le texte en un clic.
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-3 flex flex-wrap gap-2 print:hidden">
+          <button
+            onClick={() => setHandoff(true)}
+            className="inline-flex items-center gap-2 rounded-lg bg-care px-4 py-3 text-base font-semibold text-primary-foreground transition-colors hover:bg-care/90"
+          >
+            <Maximize2 className="h-4 w-4" />
+            Passer au médecin
+          </button>
+          <button
+            onClick={handleCopy}
+            className="inline-flex items-center gap-2 rounded-lg border border-care/40 px-4 py-3 text-base font-medium text-care transition-colors hover:bg-care/10"
+          >
+            {copied ? <ClipboardCheck className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+            {copied ? "Copié" : "Copier la synthèse"}
+          </button>
+        </div>
+
+        <div className="mt-4">{content(false)}</div>
+
+        <p className="mt-3 flex items-start gap-2 text-xs text-muted-foreground">
+          <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-care" />
+          Aucune donnée n'est enregistrée ni envoyée : cette synthèse existe uniquement dans votre navigateur et disparaît
+          quand vous fermez la page.
+        </p>
+      </section>
+
+      {handoff && (
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-background p-5 sm:p-8">
+          <div className="mx-auto max-w-3xl">
+            <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
+              <p className="min-w-0 truncate text-sm font-semibold uppercase tracking-wide text-care">
+                Synthèse Kivoir — pré-consultation
+              </p>
+              <button
+                onClick={() => setHandoff(false)}
+                aria-label="Fermer"
+                className="shrink-0 rounded-lg border border-border p-2 text-muted-foreground hover:bg-muted"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <div className="mt-5">{content(true)}</div>
+
+            <button
+              onClick={handleCopy}
+              className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-care px-4 py-4 text-lg font-semibold text-primary-foreground hover:bg-care/90"
+            >
+              {copied ? <ClipboardCheck className="h-5 w-5" /> : <Copy className="h-5 w-5" />}
+              {copied ? "Copié dans le presse-papiers" : "Copier pour le dossier patient"}
+            </button>
+
+            <p className="mt-4 text-sm text-muted-foreground">
+              Déclaratif patient. Ne constitue ni un diagnostic, ni une aide à la décision médicale. Aucune donnée n'est
+              stockée.
+            </p>
+          </div>
+        </div>
+      )}
+    </>
   );
 }

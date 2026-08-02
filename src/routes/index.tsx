@@ -3,7 +3,7 @@ import { HomeHero, EntryGrid, MedicalDisclaimer, type HomeSource } from "@/compo
 
 export const Route = createFileRoute("/")({
   validateSearch: (search: Record<string, unknown>): { src: HomeSource } => {
-    const raw = String(search.src ?? "");
+    const raw = String(search["src"] ?? "");
     return { src: raw === "affiche" || raw === "carte" ? raw : "direct" };
   },
   head: () => ({

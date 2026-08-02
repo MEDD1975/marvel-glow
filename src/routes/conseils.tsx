@@ -44,6 +44,8 @@ function ConseilsPage() {
   const resources = selected ? conditionResources[selected.id] : undefined;
   const exercises = resources?.exercises ?? [];
   const links = resources ? [...resources.links, ...generalLinks] : generalLinks;
+  const videoLinks = links.filter((l) => l.kind === "video");
+  const siteLinks = links.filter((l) => l.kind !== "video");
 
 
   const tips = advice?.tips ?? dailyTips;

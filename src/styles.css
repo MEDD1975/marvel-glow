@@ -122,3 +122,34 @@
 .prose-care li {
   margin-bottom: 0.25rem;
 }
+
+@media print {
+  header,
+  footer,
+  nav,
+  .print-hidden {
+    display: none !important;
+  }
+
+  .poster-section {
+    display: flex !important;
+    justify-content: center !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .poster-root {
+    box-shadow: none !important;
+    border: 1px solid #ccc !important;
+    max-width: 160mm !important;
+    width: 160mm !important;
+    padding: 12mm !important;
+    page-break-inside: avoid;
+  }
+
+  body {
+    background: white !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}

@@ -60,10 +60,9 @@ function ConseilsPage() {
   return (
     <main className="mx-auto max-w-4xl px-4 py-10">
       <div className="text-center">
-        <h1 className="text-2xl font-semibold text-foreground">Conseils pratiques</h1>
+        <h1 className="text-2xl font-semibold text-foreground">Vidéos, exercices et conseils</h1>
         <p className="mx-auto mt-2 max-w-2xl text-muted-foreground">
-          Les conseils ne sont pas les mêmes selon le trouble. Choisissez le vôtre pour obtenir les bons
-          réflexes du quotidien, les erreurs à éviter et les signes qui doivent alerter.
+          Choisissez votre trouble : les vidéos adaptées apparaissent immédiatement juste en dessous.
         </p>
       </div>
 
@@ -101,7 +100,7 @@ function ConseilsPage() {
       <section className="mt-8 rounded-2xl border border-care/30 bg-care/5 p-5">
         <div className="flex items-center gap-2 text-lg font-semibold text-foreground">
           <Play className="h-5 w-5 text-care" />
-          Vidéos {selected ? `— ${selected.name}` : "d'information"}
+          Vidéos à regarder {selected ? `— ${selected.name}` : ""}
         </div>
         <p className="mt-1 text-sm text-muted-foreground">
           Vidéos d'explication et d'exercices, sélectionnées auprès de kinésithérapeutes et de sources
@@ -128,7 +127,7 @@ function ConseilsPage() {
         </div>
         {!selected && (
           <p className="mt-4 text-xs text-muted-foreground">
-            Choisissez votre trouble ci-dessus pour obtenir des vidéos ciblées sur votre pathologie.
+            Sélectionnez maintenant votre trouble dans la liste ci-dessus pour afficher sa vidéo adaptée.
           </p>
         )}
       </section>

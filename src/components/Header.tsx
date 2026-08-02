@@ -39,7 +39,7 @@ export function Header() {
               to={item.to}
               activeProps={{ className: "font-medium text-foreground" }}
               inactiveProps={{ className: "text-muted-foreground hover:text-foreground" }}
-              activeOptions={item.exact ? { exact: true } : undefined}
+              activeOptions={{ exact: item.exact ?? false }}
             >
               {item.label}
             </Link>
@@ -56,7 +56,7 @@ export function Header() {
               onClick={() => setOpen(false)}
               activeProps={{ className: "bg-care/10 font-semibold text-care" }}
               inactiveProps={{ className: "text-foreground hover:bg-muted" }}
-              activeOptions={item.exact ? { exact: true } : undefined}
+              activeOptions={{ exact: item.exact ?? false }}
               className="block rounded-lg px-3 py-3 text-base"
             >
               {item.label}

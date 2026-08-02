@@ -29,13 +29,13 @@ export const Route = createFileRoute("/orientation")({
       {
         name: "description",
         content:
-          "Choisissez votre trouble musculo-squelettique du membre inférieur et répondez à trois questions expliquées pour savoir qui consulter et quand.",
+          "Décrivez votre douleur, répondez à trois questions expliquées et découvrez quel trouble du membre inférieur correspond à votre situation.",
       },
       { property: "og:title", content: "Orientation — Kivoir" },
       {
         property: "og:description",
         content:
-          "Choisissez votre trouble musculo-squelettique du membre inférieur et répondez à trois questions expliquées pour savoir qui consulter et quand.",
+          "Décrivez votre douleur, répondez à trois questions expliquées et découvrez quel trouble du membre inférieur correspond à votre situation.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -43,6 +43,13 @@ export const Route = createFileRoute("/orientation")({
   }),
   component: OrientationPage,
 });
+
+const zones = [
+  { id: "Hanche", label: "Hanche", description: "Aine, fesse, haut de la cuisse" },
+  { id: "Genou", label: "Genou", description: "Rotule, interligne, face interne ou externe" },
+  { id: "Cheville", label: "Cheville", description: "Malléoles, tendon d'Achille, talon" },
+  { id: "Pied", label: "Pied", description: "Plante, avant-pied, orteils, bord interne" },
+];
 
 const levelIcons: Record<TriageLevel, typeof AlertTriangle> = {
   urgent: AlertTriangle,
@@ -68,33 +75,45 @@ const levelRank: Record<TriageLevel, number> = {
   urgent: 2,
 };
 
-const totalSteps = triageQuestions.length + 1;
+const totalSteps = triageQuestions.length + 3; // zone + 3 triage + 1 trouble choice
+
+type Step =
+  | { type: "zone" }
+  | { type: "triage"; index: number }
+  | { type: "condition" }
+  | { type: "result" };
 
 function OrientationPage() {
+  const [zone, setZone] = useState<string | null>(null);
   const [condition, setCondition] = useState<Condition | null>(null);
   const [answers, setAnswers] = useState<TriageOption[]>([]);
 
-  const questionIndex = answers.length;
-  const currentQuestion = triageQuestions[questionIndex];
-  const isFinished = condition !== null && questionIndex >= triageQuestions.length;
+  const step = getStep(zone, answers, condition);
+  const stepNumber = getStepNumber(step);
+  const currentQuestion = step.type === "triage" ? triageQuestions[step.index] : null;
+  const zoneConditions = zone ? conditions.filter((c) => c.zone === zone) : conditions;
 
   const handleBack = () => {
-    if (answers.length > 0) setAnswers(answers.slice(0, -1));
-    else setCondition(null);
+    if (condition) {
+      setCondition(null);
+    } else if (answers.length > 0) {
+      setAnswers(answers.slice(0, -1));
+    } else if (zone) {
+      setZone(null);
+    }
   };
 
   const handleReset = () => {
+    setZone(null);
     setCondition(null);
     setAnswers([]);
   };
-
-  const stepNumber = condition === null ? 1 : Math.min(questionIndex + 2, totalSteps);
 
   return (
     <main className="mx-auto max-w-3xl px-4 py-10">
       <h1 className="text-2xl font-semibold text-foreground">Orientation rapide</h1>
       <p className="mt-2 text-muted-foreground">
-        Chaque question est accompagnée de son contexte et d'un exemple de réponse, pour vous aider à choisir sans hésiter.
+        Dites-nous d'abord où vous avez mal, puis répondez à 3 questions expliquées. Kivoir vous proposera les troubles les plus probables et ce qu'il faut faire.
       </p>
 
       <div className="mt-6 flex items-center gap-2" aria-label={`Étape ${stepNumber} sur ${totalSteps}`}>
@@ -107,23 +126,29 @@ function OrientationPage() {
       </div>
 
       <div className="mt-6 rounded-2xl border border-border bg-card p-6 shadow-sm md:p-8">
-        {condition === null ? (
-          <ConditionPicker onSelect={setCondition} />
-        ) : isFinished ? (
+        {step.type === "zone" ? (
+          <ZonePicker onSelect={setZone} />
+        ) : step.type === "triage" && currentQuestion ? (
+          <QuestionView
+            key={currentQuestion.id}
+            question={currentQuestion}
+            stepNumber={stepNumber}
+            onSelect={(option) => setAnswers([...answers, option])}
+            onBack={handleBack}
+          />
+        ) : step.type === "condition" ? (
+          <ConditionPicker
+            zone={zone}
+            zoneConditions={zoneConditions}
+            onSelect={setCondition}
+            onBack={handleBack}
+          />
+        ) : condition ? (
           <ResultView
             condition={condition}
             answers={answers}
             onBack={handleBack}
             onReset={handleReset}
-          />
-        ) : currentQuestion ? (
-          <QuestionView
-            key={currentQuestion.id}
-            question={currentQuestion}
-            condition={condition}
-            stepNumber={stepNumber}
-            onSelect={(option) => setAnswers([...answers, option])}
-            onBack={handleBack}
           />
         ) : null}
       </div>
@@ -133,6 +158,26 @@ function OrientationPage() {
       </div>
     </main>
   );
+}
+
+function getStep(zone: string | null, answers: TriageOption[], condition: Condition | null): Step {
+  if (!zone) return { type: "zone" };
+  if (answers.length < triageQuestions.length) return { type: "triage", index: answers.length };
+  if (!condition) return { type: "condition" };
+  return { type: "result" };
+}
+
+function getStepNumber(step: Step): number {
+  switch (step.type) {
+    case "zone":
+      return 1;
+    case "triage":
+      return 2 + step.index;
+    case "condition":
+      return totalSteps;
+    case "result":
+      return totalSteps;
+  }
 }
 
 function ContextBlocks({ context, example }: { context: string; example: string }) {
@@ -156,23 +201,64 @@ function ContextBlocks({ context, example }: { context: string; example: string 
   );
 }
 
-function ConditionPicker({ onSelect }: { onSelect: (condition: Condition) => void }) {
+function ZonePicker({ onSelect }: { onSelect: (zone: string) => void }) {
   return (
     <div className="space-y-6">
       <div className="flex items-start justify-between gap-4">
         <h2 className="text-lg font-semibold text-card-foreground">
-          Quel trouble correspond le mieux à votre situation ?
+          Où situez-vous votre douleur principale ?
         </h2>
         <span className="shrink-0 text-xs text-muted-foreground">Étape 1</span>
       </div>
 
       <ContextBlocks
-        context="Les troubles musculo-squelettiques du membre inférieur n'ont pas le même parcours de soins. Choisir la zone et le trouble suspecté permet d'adapter les conseils, les délais et le professionnel à consulter."
-        example="Exemple de réponse : « J'ai mal sous le talon dès les premiers pas du matin » → Aponévrosite plantaire. Si vous hésitez, choisissez le trouble dont la description ressemble le plus à vos symptômes."
+        context="La localisation de la douleur est le premier élément qui permet d'orienter le diagnostic. Chaque zone du membre inférieur a ses pathologies typiques et son réseau de soins."
+        example="Exemple de réponse : « J'ai mal à l'intérieur du genou, juste sous la rotule, depuis quelques jours » → choisissez Genou."
+      />
+
+      <div className="grid gap-3 sm:grid-cols-2">
+        {zones.map((z) => (
+          <button
+            key={z.id}
+            onClick={() => onSelect(z.id)}
+            className="flex flex-col gap-1 rounded-xl border border-border bg-background p-4 text-left transition-colors hover:border-care/40 hover:bg-care-muted/30"
+          >
+            <span className="font-medium text-foreground">{z.label}</span>
+            <span className="text-sm text-muted-foreground">{z.description}</span>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function ConditionPicker({
+  zone,
+  zoneConditions,
+  onSelect,
+  onBack,
+}: {
+  zone: string | null;
+  zoneConditions: Condition[];
+  onSelect: (condition: Condition) => void;
+  onBack: () => void;
+}) {
+  return (
+    <div className="space-y-6">
+      <div className="flex items-start justify-between gap-4">
+        <h2 className="text-lg font-semibold text-card-foreground">
+          Quel trouble ressemble le plus à votre situation ?
+        </h2>
+        <span className="shrink-0 text-xs text-muted-foreground">Étape {totalSteps}</span>
+      </div>
+
+      <ContextBlocks
+        context="Vous avez indiqué la zone et les signes principaux. On affiche maintenant les troubles les plus fréquents de cette zone. Choisissez celui dont la description, la localisation et les déclencheurs correspondent le mieux à ce que vous ressentez."
+        example="Exemple de réponse : « Mal sous le talon aux premiers pas du matin » → Aponévrosite plantaire."
       />
 
       <div className="grid gap-4">
-        {conditions.map((item) => (
+        {zoneConditions.map((item) => (
           <button
             key={item.id}
             onClick={() => onSelect(item)}
@@ -206,19 +292,25 @@ function ConditionPicker({ onSelect }: { onSelect: (condition: Condition) => voi
           </button>
         ))}
       </div>
+
+      <button
+        onClick={onBack}
+        className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
+      >
+        <ArrowLeft className="h-4 w-4" />
+        Revenir aux questions
+      </button>
     </div>
   );
 }
 
 function QuestionView({
   question,
-  condition,
   stepNumber,
   onSelect,
   onBack,
 }: {
   question: (typeof triageQuestions)[number];
-  condition: Condition;
   stepNumber: number;
   onSelect: (option: TriageOption) => void;
   onBack: () => void;
@@ -227,8 +319,7 @@ function QuestionView({
     <div className="space-y-6">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <p className="text-xs font-medium uppercase tracking-wide text-care">{condition.name}</p>
-          <h2 className="mt-1 text-lg font-semibold text-card-foreground">{question.question}</h2>
+          <h2 className="text-lg font-semibold text-card-foreground">{question.question}</h2>
         </div>
         <span className="shrink-0 text-xs text-muted-foreground">Étape {stepNumber}</span>
       </div>
@@ -341,6 +432,9 @@ function ResultView({
       <div className="rounded-xl bg-muted p-4">
         <p className="text-sm font-medium text-foreground">Vos réponses</p>
         <ul className="mt-2 space-y-1 text-sm text-muted-foreground">
+          <li>
+            Zone de douleur — <span className="text-foreground">{condition.zone}</span>
+          </li>
           {answers.map((answer, i) => (
             <li key={i}>
               {triageQuestions[i]?.question} — <span className="text-foreground">{answer.label}</span>

@@ -91,7 +91,7 @@ export function HomeHero({ source = "direct" }: { source?: HomeSource }) {
       <div className="mx-auto mt-6 grid max-w-3xl gap-4 sm:grid-cols-2">
         <Link
           to="/orientation"
-          className="group flex flex-col gap-3 rounded-2xl border-2 border-urgent/30 bg-card p-6 text-left shadow-sm transition-all hover:shadow-md"
+          className={`group flex flex-col gap-3 rounded-2xl border-2 border-urgent/30 bg-card p-6 text-left shadow-sm transition-all hover:shadow-md ${carteFirst ? "order-2" : "order-1"}`}
         >
           <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-urgent/10 text-urgent">
             <HeartPulse className="h-6 w-6" />

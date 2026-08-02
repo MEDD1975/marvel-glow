@@ -7,54 +7,76 @@ interface LogoProps {
 }
 
 export function Logo({ className, size = "md", showTagline = false }: LogoProps) {
-  const heights = {
-    sm: 26,
-    md: 34,
-    lg: 46,
-  };
+  const scale = {
+    sm: 0.75,
+    md: 1,
+    lg: 1.35,
+  }[size];
 
-  const h = heights[size];
-  const w = Math.round(h * 3.15);
+  const h = Math.round(40 * scale);
 
   return (
-    <div className={cn("inline-flex items-center gap-2", className)}>
+    <div className={cn("inline-flex items-center gap-2.5", className)}>
+      {/* Badge K */}
       <svg
-        width={w}
+        width={h}
         height={h}
-        viewBox="0 0 130 40"
+        viewBox="0 0 40 40"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        aria-label="Kivoir"
-        role="img"
-        className="text-current"
+        aria-hidden="true"
+        className="shrink-0 text-current"
       >
-        <text
-          x="0"
-          y="31"
-          fontFamily="'Space Grotesk', ui-sans-serif, system-ui, sans-serif"
-          fontSize="34"
-          fontWeight="700"
-          fill="currentColor"
-          letterSpacing="-0.03em"
-        >
-          Kivoir
-        </text>
-        <line
-          x1="2"
-          y1="37"
-          x2="128"
-          y2="37"
+        <rect
+          x="2"
+          y="2"
+          width="36"
+          height="36"
+          rx="8"
+          stroke="currentColor"
+          strokeWidth="2.5"
+          fill="none"
+        />
+        <path
+          d="M12 10 V30"
+          stroke="currentColor"
+          strokeWidth="3"
+          strokeLinecap="round"
+        />
+        <path
+          d="M14 19 L26 10"
+          stroke="currentColor"
+          strokeWidth="3"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M14 21 L26 30"
+          stroke="currentColor"
+          strokeWidth="3"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        {/* Petit plus médical en haut à droite */}
+        <path
+          d="M30 6 V10 M28 8 H32"
           stroke="currentColor"
           strokeWidth="2"
           strokeLinecap="round"
-          opacity="0.2"
         />
       </svg>
-      {showTagline && (
-        <span className="font-sans text-xs tracking-wide text-muted-foreground">
-          Qui voir, quand
+
+      {/* Wordmark + tagline */}
+      <div className="flex flex-col leading-none">
+        <span className="font-display text-[1.5rem] font-bold tracking-tight text-foreground">
+          Kivoir
         </span>
-      )}
+        {showTagline && (
+          <span className="mt-0.5 text-[0.65rem] tracking-wide text-muted-foreground">
+            Qui voir, quand
+          </span>
+        )}
+      </div>
     </div>
   );
 }

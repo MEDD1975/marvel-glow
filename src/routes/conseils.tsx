@@ -41,6 +41,10 @@ function ConseilsPage() {
   const selected = conditions.find((item) => item.id === c) ?? null;
   const advice = selected ? conditionAdvice[selected.id] : undefined;
   const pathway = selected ? pathways[selected.id] : undefined;
+  const resources = selected ? conditionResources[selected.id] : undefined;
+  const exercises = resources?.exercises ?? [];
+  const links = resources ? [...resources.links, ...generalLinks] : generalLinks;
+
 
   const tips = advice?.tips ?? dailyTips;
   const avoid = advice?.avoid ?? [];

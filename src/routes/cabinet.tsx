@@ -85,8 +85,8 @@ function CabinetPage() {
           Gagnez du temps à chaque consultation
         </h1>
         <p className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground">
-          Vos patients préparent leur entretien en salle d'attente. Ils vous présentent une synthèse structurée que vous
-          copiez dans votre logiciel en un clic. Aucune donnée n'est enregistrée.
+          Proposez Kivoir à vos patients en salle d'attente. Ils préparent leur entretien et vous présentent une
+          synthèse structurée que vous copiez dans votre logiciel en un clic. Aucune donnée n'est enregistrée.
         </p>
       </section>
 

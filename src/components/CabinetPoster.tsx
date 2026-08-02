@@ -35,7 +35,7 @@ export function CabinetPoster({ data, size, className }: CabinetPosterProps) {
 
   return (
     <div className={cn("poster-root", posterVariants({ size }), className)}>
-      <p className="text-xs font-semibold uppercase tracking-widest text-care">Questionnaire pré-consultation</p>
+      <p className="text-xs font-semibold uppercase tracking-widest text-care">Votre médecin vous propose cet outil</p>
 
       <h2 className="mt-4 text-2xl font-semibold text-foreground">
         Douleur au genou, à la cheville, à la hanche ou au pied ?

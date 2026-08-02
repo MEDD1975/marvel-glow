@@ -76,7 +76,7 @@ function CabinetPage() {
   return (
     <main className="mx-auto max-w-5xl px-4 py-10">
       {/* Hero */}
-      <section className="text-center">
+      <section className="text-center print:hidden">
         <span className="inline-flex items-center gap-1.5 rounded-full border border-care/20 bg-care/5 px-3 py-1 text-xs font-medium text-care">
           <Stethoscope className="h-3.5 w-3.5" />
           Pour les professionnels de santé
@@ -91,7 +91,7 @@ function CabinetPage() {
       </section>
 
       {/* Value props */}
-      <section className="mt-12 grid gap-6 sm:grid-cols-3">
+      <section className="mt-12 grid gap-6 sm:grid-cols-3 print:hidden">
         <ValueCard
           icon={Clock}
           title="- 3 à 5 min par patient"
@@ -110,7 +110,7 @@ function CabinetPage() {
       </section>
 
       {/* How it works */}
-      <section className="mt-16">
+      <section className="mt-16 print:hidden">
         <h2 className="text-center text-2xl font-semibold text-foreground">Comment ça marche dans votre cabinet</h2>
         <div className="mt-8 grid gap-6 md:grid-cols-3">
           <StepCard
@@ -135,7 +135,7 @@ function CabinetPage() {
       </section>
 
       {/* Poster editor */}
-      <section className="mt-16">
+      <section className="mt-16 poster-section">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
             <h2 className="text-2xl font-semibold text-foreground">Votre affiche de salle d'attente</h2>

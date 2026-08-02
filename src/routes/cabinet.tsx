@@ -85,9 +85,32 @@ function CabinetPage() {
           Gagnez du temps à chaque consultation
         </h1>
         <p className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground">
-          Vos patients préparent leur entretien en salle d'attente. Ils vous présentent une synthèse structurée que vous
-          copiez dans votre logiciel en un clic. Aucune donnée n'est enregistrée.
+          Proposez Kivoir à vos patients en salle d'attente. Ils préparent leur entretien et vous présentent une
+          synthèse structurée que vous copiez dans votre logiciel en un clic. Aucune donnée n'est enregistrée.
         </p>
+      </section>
+
+      {/* Why propose Kivoir */}
+      <section className="mt-12 rounded-2xl border border-care/20 bg-care/5 p-6 md:p-8 print:hidden">
+        <h2 className="text-xl font-semibold text-foreground">Pourquoi proposer Kivoir au patient</h2>
+        <p className="mt-2 text-sm text-muted-foreground">
+          Kivoir n'est pas prescrit : il est mis à disposition du patient comme un support d'information et de préparation
+          à la consultation. Le médecin garde le libre choix de le proposer ou non, sans que cela soit un acte médical.
+        </p>
+        <ul className="mt-4 space-y-3">
+          <li className="flex items-start gap-3 text-sm text-muted-foreground">
+            <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-care" />
+            Le patient arrive avec un recueil déjà structuré : localisation, ancienneté, appui, signaux d'alerte.
+          </li>
+          <li className="flex items-start gap-3 text-sm text-muted-foreground">
+            <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-care" />
+            Il dispose de vidéos et de conseils adaptés à son trouble pour mieux comprendre et suivre sa prise en charge.
+          </li>
+          <li className="flex items-start gap-3 text-sm text-muted-foreground">
+            <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-care" />
+            Le médecin peut se concentrer sur l'examen clinique et la décision médicale, sans temps perdu en répétitions.
+          </li>
+        </ul>
       </section>
 
       {/* Value props */}

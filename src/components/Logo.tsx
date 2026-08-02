@@ -14,78 +14,44 @@ export function Logo({ className, size = "md", showTagline = false }: LogoProps)
   };
 
   const h = heights[size];
-  const w = Math.round(h * 3.1); // ratio largeur/hauteur du wordmark
+  const w = Math.round(h * 3.05);
 
   return (
     <div className={cn("inline-flex items-center gap-2", className)}>
       <svg
         width={w}
         height={h}
-        viewBox="0 0 124 40"
+        viewBox="0 0 120 40"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
         aria-label="Kivoir"
         role="img"
+        className="text-current"
       >
-        {/* K */}
+        {/* Single wordmark for consistent kerning */}
         <text
           x="0"
           y="31"
-          fontFamily="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
-          fontSize="32"
-          fontWeight="700"
-          fill="currentColor"
-          letterSpacing="-0.04em"
-        >
-          K
-        </text>
-        {/* i dot as orientation marker */}
-        <circle cx="42" cy="12" r="3.5" fill="currentColor" />
-        <text
-          x="34"
-          y="31"
-          fontFamily="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
+          fontFamily="ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
           fontSize="32"
           fontWeight="600"
           fill="currentColor"
-          letterSpacing="-0.04em"
+          letterSpacing="-0.02em"
         >
-          i
+          Kivoir
         </text>
-        {/* v */}
-        <text
-          x="46"
-          y="31"
-          fontFamily="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
-          fontSize="32"
-          fontWeight="600"
-          fill="currentColor"
-          letterSpacing="-0.04em"
-        >
-          v
-        </text>
-        {/* oir */}
-        <text
-          x="69"
-          y="31"
-          fontFamily="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
-          fontSize="32"
-          fontWeight="600"
-          fill="currentColor"
-          letterSpacing="-0.04em"
-        >
-          oir
-        </text>
-        {/* subtle orientation line under the baseline */}
+        {/* Custom dot on the i, shifted slightly right to sit above the stem */}
+        <circle cx="45" cy="10" r="3" fill="currentColor" opacity="0.95" />
+        {/* Subtle baseline orientation line */}
         <line
           x1="2"
           y1="36"
-          x2="122"
+          x2="118"
           y2="36"
           stroke="currentColor"
           strokeWidth="2"
           strokeLinecap="round"
-          opacity="0.25"
+          opacity="0.22"
         />
       </svg>
       {showTagline && (

@@ -74,7 +74,7 @@ function CabinetPage() {
   const updatePoster = (patch: Partial<PosterData>) => setPoster((prev) => ({ ...prev, ...patch }));
 
   return (
-    <main className="mx-auto max-w-5xl px-4 py-10">
+    <main className="mx-auto max-w-5xl px-4 py-10 print:py-0">
       {/* Hero */}
       <section className="text-center print:hidden">
         <span className="inline-flex items-center gap-1.5 rounded-full border border-care/20 bg-care/5 px-3 py-1 text-xs font-medium text-care">

@@ -34,7 +34,7 @@ export function CabinetPoster({ data, size, className }: CabinetPosterProps) {
   const { cabinetName, doctorName, message, url, qr } = data;
 
   return (
-    <div className={cn(posterVariants({ size }), className)}>
+    <div className={cn("poster-root", posterVariants({ size }), className)}>
       <p className="text-xs font-semibold uppercase tracking-widest text-care">Questionnaire pré-consultation</p>
 
       <h2 className="mt-4 text-2xl font-semibold text-foreground">

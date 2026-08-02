@@ -52,18 +52,41 @@ export function EntryCard({
   );
 }
 
-export function HomeHero() {
+export type HomeSource = "affiche" | "carte" | "direct";
+
+const sourceIntro: Record<HomeSource, { badge: string; title: string; lead: string }> = {
+  affiche: {
+    badge: "Vous êtes en salle d'attente",
+    title: "Préparez votre consultation en 3 minutes",
+    lead: "Votre médecin vous propose cet outil. Répondez à quelques questions : vous saurez qui consulter et votre médecin gagnera du temps.",
+  },
+  carte: {
+    badge: "Carte remise par votre médecin",
+    title: "Retrouvez tout sur votre trouble",
+    lead: "Comprendre votre douleur, savoir qui consulter et dans quel délai, et faire les bons exercices — après votre consultation.",
+  },
+  direct: {
+    badge: "Outil proposé par votre médecin",
+    title: "Une douleur au genou, à la cheville, à la hanche ou au pied ?",
+    lead: "Kivoir vous dit qui consulter, dans quel ordre et dans quel délai. Choisissez votre situation :",
+  },
+};
+
+export function HomeHero({ source = "direct" }: { source?: HomeSource }) {
+  const intro = sourceIntro[source];
+  const carteFirst = source === "carte";
+
   return (
     <section className="px-4 py-8 md:py-12">
       <div className="mx-auto max-w-3xl text-center">
-        <h1 className="text-2xl font-semibold tracking-tight text-foreground md:text-4xl">
-          Une douleur au genou, à la cheville, à la hanche ou au pied ?
-        </h1>
-        <p className="mt-3 text-base text-muted-foreground md:text-lg">
-          Kivoir vous dit <strong className="text-foreground">qui consulter</strong>, dans quel ordre et dans quel
-          délai. Choisissez votre situation :
-        </p>
+        <span className="inline-flex items-center gap-2 rounded-full bg-care/10 px-3 py-1 text-xs font-semibold text-care">
+          <Stethoscope className="h-3.5 w-3.5" />
+          {intro.badge}
+        </span>
+        <h1 className="mt-3 text-2xl font-semibold tracking-tight text-foreground md:text-4xl">{intro.title}</h1>
+        <p className="mt-3 text-base text-muted-foreground md:text-lg">{intro.lead}</p>
       </div>
+
 
       <div className="mx-auto mt-6 grid max-w-3xl gap-4 sm:grid-cols-2">
         <Link

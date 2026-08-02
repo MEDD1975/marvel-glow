@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import logoAsset from "@/assets/kivoir-logo.png.asset.json";
+import { Logo } from "@/components/Logo";
 
 export function Header() {
   return (

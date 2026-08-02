@@ -63,8 +63,8 @@ function CabinetPage() {
   const [showDemo, setShowDemo] = useState(false);
 
   useEffect(() => {
-    const target = `${window.location.origin}/orientation`;
-    const homeTarget = `${window.location.origin}/`;
+    const target = `${window.location.origin}/orientation?src=affiche`;
+    const homeTarget = `${window.location.origin}/?src=carte`;
     setPoster((prev) => ({ ...prev, url: target }));
     setCardQr({ url: homeTarget, qr: null });
     let cancelled = false;

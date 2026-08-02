@@ -54,39 +54,56 @@ export function EntryCard({
 
 export function HomeHero() {
   return (
-    <section className="px-4 py-10 md:py-14">
+    <section className="px-4 py-8 md:py-12">
       <div className="mx-auto max-w-3xl text-center">
-        <h1 className="text-3xl font-semibold tracking-tight text-foreground md:text-4xl">
+        <h1 className="text-2xl font-semibold tracking-tight text-foreground md:text-4xl">
           Une douleur au genou, à la cheville, à la hanche ou au pied ?
         </h1>
-        <p className="mt-4 text-lg text-muted-foreground">
+        <p className="mt-3 text-base text-muted-foreground md:text-lg">
           Kivoir vous dit <strong className="text-foreground">qui consulter</strong>, dans quel ordre et dans quel
-          délai. Trois minutes, sans compte, sans donnée enregistrée.
+          délai. Choisissez votre situation :
         </p>
+      </div>
 
+      <div className="mx-auto mt-6 grid max-w-3xl gap-4 sm:grid-cols-2">
         <Link
           to="/orientation"
-          className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-care px-6 py-4 text-base font-semibold text-primary-foreground transition-colors hover:bg-care/90 sm:w-auto"
+          className="group flex flex-col gap-3 rounded-2xl border-2 border-urgent/30 bg-card p-6 text-left shadow-sm transition-all hover:shadow-md"
         >
-          Commencer — je décris ma douleur
-          <ArrowRight className="h-5 w-5" />
+          <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-urgent/10 text-urgent">
+            <HeartPulse className="h-6 w-6" />
+          </span>
+          <h2 className="text-lg font-semibold text-card-foreground">
+            J'ai mal, je ne sais pas quoi faire
+          </h2>
+          <p className="text-sm text-muted-foreground">
+            3 questions pour repérer les signes d'urgence et savoir qui consulter en premier.
+          </p>
+          <span className="mt-auto inline-flex items-center gap-1 text-sm font-semibold text-urgent">
+            Décrire ma douleur <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+          </span>
         </Link>
 
-        <ol className="mx-auto mt-8 grid max-w-2xl gap-3 text-left sm:grid-cols-3">
-          {[
-            "Je choisis mon trouble",
-            "Je réponds à 3 questions",
-            "Je vois qui consulter et où",
-          ].map((step, i) => (
-            <li key={step} className="flex items-start gap-3 rounded-xl border border-border bg-card p-3">
-              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-care/10 text-sm font-semibold text-care">
-                {i + 1}
-              </span>
-              <span className="text-sm text-card-foreground">{step}</span>
-            </li>
-          ))}
-        </ol>
+        <Link
+          to="/parcours"
+          className="group flex flex-col gap-3 rounded-2xl border-2 border-care/30 bg-card p-6 text-left shadow-sm transition-all hover:shadow-md"
+        >
+          <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-care/10 text-care">
+            <Stethoscope className="h-6 w-6" />
+          </span>
+          <h2 className="text-lg font-semibold text-card-foreground">J'ai déjà un diagnostic</h2>
+          <p className="text-sm text-muted-foreground">
+            Voyez la suite du parcours : kiné, imagerie, spécialiste, délais et étapes à venir.
+          </p>
+          <span className="mt-auto inline-flex items-center gap-1 text-sm font-semibold text-care">
+            Voir mon parcours <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+          </span>
+        </Link>
       </div>
+
+      <p className="mx-auto mt-4 max-w-3xl text-center text-xs text-muted-foreground">
+        3 minutes, sans compte, sans donnée enregistrée.
+      </p>
     </section>
   );
 }
@@ -99,20 +116,6 @@ export function EntryGrid() {
           Ou allez directement à…
         </h2>
         <div className="grid gap-4 sm:grid-cols-2">
-          <EntryCard
-            to="/orientation"
-            icon={HeartPulse}
-            title="Je ressens une douleur"
-            description="Évaluez la situation et recevez une orientation vers le bon niveau de soins."
-            tone="urgent"
-          />
-          <EntryCard
-            to="/parcours"
-            icon={Stethoscope}
-            title="Le diagnostic est posé"
-            description="Découvrez la chronologie type : soins, kiné, rééducation et retour à l'activité."
-            tone="care"
-          />
           <EntryCard
             to="/conseils"
             icon={Clock}
@@ -132,4 +135,5 @@ export function EntryGrid() {
     </section>
   );
 }
+
 

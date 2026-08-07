@@ -1,4 +1,15 @@
-import { AlertTriangle, ArrowRight, HeartPulse, MapPin, PlayCircle, Stethoscope } from "lucide-react";
+import {
+  AlertTriangle,
+  ArrowRight,
+  Bone,
+  Footprints,
+  HeartPulse,
+  MapPin,
+  Move,
+  PersonStanding,
+  PlayCircle,
+  Stethoscope,
+} from "lucide-react";
 import { Link } from "@tanstack/react-router";
 
 export const medicalDisclaimer = "Cette application est un outil d'information. Elle ne remplace pas un avis médical, un diagnostic ou un traitement. En cas de doute, consultez un professionnel de santé.";
@@ -14,67 +25,32 @@ export function MedicalDisclaimer({ className = "" }: { className?: string }) {
   );
 }
 
-export function EntryCard({
-  to,
-  icon: Icon,
-  title,
-  description,
-  tone,
-}: {
-  to: string;
-  icon: React.ElementType;
-  title: string;
-  description: string;
-  tone: "care" | "urgent" | "soothe";
-}) {
-  const toneClasses = {
-    care: "bg-care/10 text-care hover:bg-care/15",
-    urgent: "bg-urgent/10 text-urgent hover:bg-urgent/15",
-    soothe: "bg-soothe/30 text-soothe-foreground hover:bg-soothe/40",
-  };
-
-  return (
-    <Link
-      to={to}
-      className="group flex flex-col gap-3 rounded-2xl border border-border bg-card p-6 shadow-sm transition-all hover:shadow-md"
-    >
-      <div className={`flex h-12 w-12 items-center justify-center rounded-xl ${toneClasses[tone]}`}>
-        <Icon className="h-6 w-6" />
-      </div>
-      <div>
-        <h3 className="text-lg font-semibold text-card-foreground">{title}</h3>
-        <p className="mt-1 text-sm text-muted-foreground">{description}</p>
-      </div>
-      <div className="mt-auto flex items-center gap-1 text-sm font-medium text-care">
-        Commencer <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-      </div>
-    </Link>
-  );
-}
-
 export type HomeSource = "affiche" | "carte" | "direct";
 
-const sourceIntro: Record<HomeSource, { badge: string; title: string; lead: string }> = {
+const sourceIntro: Record<HomeSource, { badge: string; title: string }> = {
   affiche: {
-    badge: "Vous êtes en salle d'attente",
+    badge: "En salle d'attente",
     title: "Préparez votre consultation en 3 minutes",
-    lead: "Votre médecin vous propose cet outil. Répondez à quelques questions : vous saurez qui consulter et votre médecin gagnera du temps.",
   },
   carte: {
-    badge: "Carte remise par votre médecin",
-    title: "Retrouvez tout sur votre trouble",
-    lead: "Comprendre votre douleur, savoir qui consulter et dans quel délai, et faire les bons exercices — après votre consultation.",
+    badge: "Carte de votre médecin",
+    title: "Tout savoir sur votre trouble",
   },
   direct: {
     badge: "Outil proposé par votre médecin",
-    title: "Une douleur au genou, à la cheville, à la hanche ou au pied ?",
-    lead: "Kivoir vous dit qui consulter, dans quel ordre et dans quel délai. Choisissez votre situation :",
+    title: "Où avez-vous mal ?",
   },
 };
 
+const zones: { label: string; icon: React.ElementType }[] = [
+  { label: "Genou", icon: Bone },
+  { label: "Cheville", icon: Move },
+  { label: "Hanche", icon: PersonStanding },
+  { label: "Pied", icon: Footprints },
+];
+
 export function HomeHero({ source = "direct" }: { source?: HomeSource }) {
   const intro = sourceIntro[source];
-  const carteFirst = source === "carte";
 
   return (
     <section className="px-4 py-8 md:py-12">
@@ -83,80 +59,95 @@ export function HomeHero({ source = "direct" }: { source?: HomeSource }) {
           <Stethoscope className="h-3.5 w-3.5" />
           {intro.badge}
         </span>
-        <h1 className="mt-3 text-2xl font-semibold tracking-tight text-foreground md:text-4xl">{intro.title}</h1>
-        <p className="mt-3 text-base text-muted-foreground md:text-lg">{intro.lead}</p>
+        <h1 className="mt-3 text-balance text-3xl font-semibold tracking-tight text-foreground md:text-4xl">
+          {intro.title}
+        </h1>
       </div>
 
-
-      <div className="mx-auto mt-6 grid max-w-3xl gap-4 sm:grid-cols-2">
-        <Link
-          to="/orientation"
-          className={`group flex flex-col gap-3 rounded-2xl border-2 border-urgent/30 bg-card p-6 text-left shadow-sm transition-all hover:shadow-md ${carteFirst ? "order-2" : "order-1"}`}
-        >
-          <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-urgent/10 text-urgent">
-            <HeartPulse className="h-6 w-6" />
-          </span>
-          <h2 className="text-lg font-semibold text-card-foreground">
-            J'ai mal, je ne sais pas quoi faire
-          </h2>
-          <p className="text-sm text-muted-foreground">
-            3 questions pour repérer les signes d'urgence et savoir qui consulter en premier.
-          </p>
-          <span className="mt-auto inline-flex items-center gap-1 text-sm font-semibold text-urgent">
-            Décrire ma douleur <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-          </span>
-        </Link>
-
-        <Link
-          to="/parcours"
-          className={`group flex flex-col gap-3 rounded-2xl border-2 border-care/30 bg-card p-6 text-left shadow-sm transition-all hover:shadow-md ${carteFirst ? "order-1" : "order-2"}`}
-        >
-          <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-care/10 text-care">
-            <Stethoscope className="h-6 w-6" />
-          </span>
-          <h2 className="text-lg font-semibold text-card-foreground">J'ai déjà un diagnostic</h2>
-          <p className="text-sm text-muted-foreground">
-            Voyez la suite du parcours : kiné, imagerie, spécialiste, délais et étapes à venir.
-          </p>
-          <span className="mt-auto inline-flex items-center gap-1 text-sm font-semibold text-care">
-            Voir mon parcours <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-          </span>
-        </Link>
+      {/* Sélecteur visuel par zone du corps */}
+      <div className="mx-auto mt-8 grid max-w-3xl grid-cols-2 gap-3 sm:grid-cols-4">
+        {zones.map(({ label, icon: Icon }) => (
+          <Link
+            key={label}
+            to="/orientation"
+            className="group flex flex-col items-center gap-3 rounded-2xl border border-border bg-card p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:border-care/40 hover:shadow-md"
+          >
+            <span className="flex h-16 w-16 items-center justify-center rounded-full bg-care/10 text-care transition-colors group-hover:bg-care group-hover:text-care-foreground">
+              <Icon className="h-8 w-8" />
+            </span>
+            <span className="text-sm font-semibold text-card-foreground">{label}</span>
+          </Link>
+        ))}
       </div>
 
-      <p className="mx-auto mt-4 max-w-3xl text-center text-xs text-muted-foreground">
-        3 minutes, sans compte, sans donnée enregistrée.
+      <p className="mx-auto mt-3 max-w-3xl text-center text-xs text-muted-foreground">
+        Sans compte, sans donnée enregistrée.
       </p>
     </section>
   );
 }
 
+const primaryActions: {
+  to: string;
+  icon: React.ElementType;
+  title: string;
+  tone: "urgent" | "care";
+}[] = [
+  { to: "/orientation", icon: HeartPulse, title: "J'ai mal, que faire ?", tone: "urgent" },
+  { to: "/parcours", icon: Stethoscope, title: "J'ai déjà un diagnostic", tone: "care" },
+];
+
 export function EntryGrid() {
+  const secondary = [
+    { to: "/conseils", icon: PlayCircle, title: "Vidéos & exercices" },
+    { to: "/annuaire", icon: MapPin, title: "Qui voir près de chez moi" },
+  ];
+
   return (
     <section className="px-4 pb-12 md:pb-16">
       <div className="mx-auto max-w-4xl">
-        <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-          Ou allez directement à…
-        </h2>
-        <div className="grid gap-4 sm:grid-cols-2">
-          <EntryCard
-            to="/conseils"
-            icon={PlayCircle}
-            title="Vidéos & exercices"
-            description="Choisissez votre trouble pour voir immédiatement des vidéos et des exercices adaptés."
-            tone="urgent"
-          />
-          <EntryCard
-            to="/annuaire"
-            icon={MapPin}
-            title="Qui voir près de chez moi"
-            description="Saint-Maur-des-Fossés : votre prochaine étape et les professionnels sur une carte."
-            tone="care"
-          />
+        <div className="grid gap-3 sm:grid-cols-2">
+          {primaryActions.map(({ to, icon: Icon, title, tone }) => (
+            <Link
+              key={to}
+              to={to}
+              className={`group flex items-center gap-4 rounded-2xl border-2 bg-card p-5 shadow-sm transition-all hover:shadow-md ${
+                tone === "urgent" ? "border-urgent/30 hover:border-urgent/60" : "border-care/30 hover:border-care/60"
+              }`}
+            >
+              <span
+                className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-xl ${
+                  tone === "urgent" ? "bg-urgent/10 text-urgent" : "bg-care/10 text-care"
+                }`}
+              >
+                <Icon className="h-7 w-7" />
+              </span>
+              <span className="text-lg font-semibold text-card-foreground">{title}</span>
+              <ArrowRight
+                className={`ml-auto h-5 w-5 transition-transform group-hover:translate-x-1 ${
+                  tone === "urgent" ? "text-urgent" : "text-care"
+                }`}
+              />
+            </Link>
+          ))}
+        </div>
+
+        <div className="mt-3 grid gap-3 sm:grid-cols-2">
+          {secondary.map(({ to, icon: Icon, title }) => (
+            <Link
+              key={to}
+              to={to}
+              className="group flex items-center gap-3 rounded-2xl border border-border bg-card p-4 shadow-sm transition-all hover:border-care/40 hover:shadow-md"
+            >
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-soothe/40 text-soothe-foreground">
+                <Icon className="h-5 w-5" />
+              </span>
+              <span className="text-sm font-medium text-card-foreground">{title}</span>
+              <ArrowRight className="ml-auto h-4 w-4 text-muted-foreground transition-transform group-hover:translate-x-1" />
+            </Link>
+          ))}
         </div>
       </div>
     </section>
   );
 }
-
-

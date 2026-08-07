@@ -22,7 +22,16 @@ import {
   type TriageOption,
 } from "@/lib/conditions";
 
+const zoneIds = ["Hanche", "Genou", "Cheville", "Pied"] as const;
+type ZoneId = (typeof zoneIds)[number];
+
 export const Route = createFileRoute("/orientation")({
+  validateSearch: (search: Record<string, unknown>): { zone?: ZoneId } => {
+    const zone = search.zone;
+    return typeof zone === "string" && (zoneIds as readonly string[]).includes(zone)
+      ? { zone: zone as ZoneId }
+      : {};
+  },
   head: () => ({
     meta: [
       { title: "Orientation — Kivoir" },
@@ -84,7 +93,8 @@ type Step =
   | { type: "result" };
 
 function OrientationPage() {
-  const [zone, setZone] = useState<string | null>(null);
+  const { zone: initialZone } = Route.useSearch();
+  const [zone, setZone] = useState<string | null>(initialZone ?? null);
   const [condition, setCondition] = useState<Condition | null>(null);
   const [answers, setAnswers] = useState<TriageOption[]>([]);
 

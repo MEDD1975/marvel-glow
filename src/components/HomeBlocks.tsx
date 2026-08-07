@@ -42,7 +42,7 @@ const sourceIntro: Record<HomeSource, { badge: string; title: string }> = {
   },
 };
 
-const zones: { label: string; icon: React.ElementType }[] = [
+const zones: { label: "Genou" | "Cheville" | "Hanche" | "Pied"; icon: React.ElementType }[] = [
   { label: "Genou", icon: Bone },
   { label: "Cheville", icon: Move },
   { label: "Hanche", icon: PersonStanding },
@@ -70,6 +70,7 @@ export function HomeHero({ source = "direct" }: { source?: HomeSource }) {
           <Link
             key={label}
             to="/orientation"
+            search={{ zone: label }}
             className="group flex flex-col items-center gap-3 rounded-2xl border border-border bg-card p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:border-care/40 hover:shadow-md"
           >
             <span className="flex h-16 w-16 items-center justify-center rounded-full bg-care/10 text-care transition-colors group-hover:bg-care group-hover:text-care-foreground">

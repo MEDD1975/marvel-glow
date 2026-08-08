@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { conditions, type TriageLevel } from "@/lib/conditions";
+import { conditions, type Condition, type TriageLevel } from "@/lib/conditions";
 import { pathways, lineLabels } from "@/lib/pathways";
 import { conditionAdvice, generalRedFlags } from "@/lib/condition-advice";
 
@@ -30,10 +30,10 @@ function detectZone(message: string): Condition["zone"] | null {
   return null;
 }
 
-function buildCarePlan(message: string): CarePlan {
+function buildCarePlan(message: string, selectedZone?: string): CarePlan {
   const normalized = message.toLowerCase();
   const urgent = [...generalRedFlags, "ne peux pas poser", "impossible de poser", "déformation", "essoufflement", "douleur thoracique", "faiblesse brutale"].some((signal) => normalized.includes(signal.toLowerCase()));
-  const detectedZone = detectZone(message);
+  const detectedZone = (["Hanche", "Genou", "Cheville", "Pied"].includes(selectedZone ?? "") ? selectedZone : detectZone(message)) as Condition["zone"] | null;
   const candidates = detectedZone ? conditions.filter((item) => item.zone === detectedZone) : [];
   const condition = candidates.length === 1 ? candidates[0] : candidates.find((item) => normalized.includes(item.name.toLowerCase())) ?? null;
   const selected = condition ? pathways[condition.id] : undefined;
@@ -58,8 +58,8 @@ function formatCarePlan(plan: CarePlan) {
   return JSON.stringify(plan);
 }
 
-function localCareGuidance(message: string) {
-  return formatCarePlan(buildCarePlan(message));
+function localCareGuidance(message: string, zone?: string) {
+  return formatCarePlan(buildCarePlan(message, zone));
 }
 
 export const askCareAgent = createServerFn({ method: "POST" })
@@ -67,5 +67,5 @@ export const askCareAgent = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     // Le parcours validé localement est la source de vérité : l'IA ne doit jamais
     // pouvoir remplacer une zone ou une orientation par une hypothèse.
-    return { text: localCareGuidance(data.message) };
+    return { text: localCareGuidance(data.message, data.zone) };
   });

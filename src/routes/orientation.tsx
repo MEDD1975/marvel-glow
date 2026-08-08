@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { FormEvent, useState } from "react";
 import {
   AlertTriangle,
   ArrowLeft,
@@ -11,6 +11,7 @@ import {
   Stethoscope,
 } from "lucide-react";
 import { MedicalDisclaimer } from "@/components/HomeBlocks";
+import { askCareAgent } from "@/lib/care-agent";
 import { LegDiagram } from "@/components/LegDiagram";
 import { DoctorSummary } from "@/components/DoctorSummary";
 import {
@@ -87,6 +88,24 @@ function OrientationPage() {
   const [zone, setZone] = useState<string | null>(null);
   const [condition, setCondition] = useState<Condition | null>(null);
   const [answers, setAnswers] = useState<TriageOption[]>([]);
+  const [agentMessage, setAgentMessage] = useState("");
+  const [agentReply, setAgentReply] = useState("");
+  const [agentLoading, setAgentLoading] = useState(false);
+
+  const handleAgentSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!agentMessage.trim() || agentLoading) return;
+    setAgentLoading(true);
+    setAgentReply("");
+    try {
+      const response = await askCareAgent({ data: { message: agentMessage, zone: zone ?? undefined } });
+      setAgentReply(response.text);
+    } catch {
+      setAgentReply("Je ne peux pas répondre pour le moment. Utilisez le parcours guidé ci-dessous ou demandez conseil à un professionnel de santé.");
+    } finally {
+      setAgentLoading(false);
+    }
+  };
 
   const step = getStep(zone, answers, condition);
   const stepNumber = getStepNumber(step);
@@ -124,6 +143,31 @@ function OrientationPage() {
           />
         ))}
       </div>
+
+      <section className="mt-6 rounded-2xl border border-care/20 bg-care/5 p-5 md:p-6" aria-labelledby="agent-title">
+        <div className="flex items-start gap-3">
+          <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-care text-primary-foreground"><HeartPulse aria-hidden="true" /></div>
+          <div>
+            <h2 id="agent-title" className="font-semibold text-foreground">Parler à l’assistant parcours de soins</h2>
+            <p className="mt-1 text-sm leading-6 text-muted-foreground">Décrivez votre douleur. L’assistant vous aide à trouver la prochaine étape parmi les 10 situations étudiées.</p>
+          </div>
+        </div>
+        <form className="mt-4 flex flex-col gap-2 sm:flex-row" onSubmit={handleAgentSubmit}>
+          <input
+            value={agentMessage}
+            onChange={(event) => setAgentMessage(event.target.value)}
+            placeholder="Ex. douleur sur le côté du genou depuis 2 semaines…"
+            aria-label="Décrivez votre douleur"
+            maxLength={800}
+            className="min-h-11 flex-1 rounded-xl border border-border bg-background px-4 text-sm outline-none ring-care transition focus:ring-2"
+          />
+          <button type="submit" disabled={agentLoading || agentMessage.trim().length < 3} className="min-h-11 rounded-xl bg-care px-5 text-sm font-semibold text-primary-foreground transition hover:bg-care/90 disabled:cursor-not-allowed disabled:opacity-50">
+            {agentLoading ? "Analyse…" : "Être orienté"}
+          </button>
+        </form>
+        {agentReply ? <div className="mt-4 rounded-xl border border-border bg-background p-4 text-sm leading-6 text-foreground" role="status"><p className="mb-1 text-xs font-semibold uppercase tracking-wide text-care">Réponse de l’assistant</p>{agentReply}</div> : null}
+        <p className="mt-3 text-xs text-muted-foreground">Cet assistant ne pose pas de diagnostic. En cas de signe inquiétant ou d’urgence, appelez le 15 ou le 112.</p>
+      </section>
 
       <div className="mt-6 rounded-2xl border border-border bg-card p-6 shadow-sm md:p-8">
         {step.type === "zone" ? (

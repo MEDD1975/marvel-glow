@@ -12,7 +12,7 @@ const items = [
 /** Barre de navigation basse : accès en un geste aux 5 écrans clés sur mobile. */
 export function MobileTabBar() {
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-50 border-t border-border bg-background/95 backdrop-blur sm:hidden print:hidden">
+    <nav className="fixed inset-x-3 bottom-3 z-50 overflow-hidden rounded-2xl border border-border/80 bg-background/90 shadow-[0_12px_40px_-22px_var(--foreground)] backdrop-blur-xl sm:hidden print:hidden">
       <ul className="grid grid-cols-5">
         {items.map((item) => (
           <li key={item.to}>

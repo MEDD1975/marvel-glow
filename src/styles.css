@@ -50,7 +50,7 @@
 }
 
 :root {
-  --radius: 0.75rem;
+  --radius: 1.25rem;
 
   --background: oklch(0.98 0.012 220);
   --foreground: oklch(0.24 0.045 230);
@@ -90,6 +90,10 @@
 }
 
 @layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
   * {
     border-color: var(--color-border);
   }

@@ -142,10 +142,11 @@ function OrientationPage() {
 
   return (
     <main className="mx-auto max-w-3xl px-4 py-10">
-      <h1 className="text-2xl font-semibold text-foreground">Orientation rapide</h1>
-      <p className="mt-2 text-muted-foreground">
-        Dites-nous d'abord où vous avez mal, puis répondez à 3 questions expliquées. Kivoir vous proposera les troubles les plus probables et ce qu'il faut faire.
-      </p>
+      <div className="max-w-2xl">
+        <p className="text-sm font-semibold uppercase tracking-wide text-care">Votre prochaine étape</p>
+        <h1 className="mt-2 text-3xl font-semibold tracking-tight text-foreground">On part de votre douleur, pas d’un diagnostic</h1>
+        <p className="mt-3 text-base leading-7 text-muted-foreground">Répondez d’abord au parcours guidé : il vous aide à préciser la zone, les signes importants et le bon niveau d’orientation. L’assistant libre est disponible si vous préférez commencer par vos propres mots.</p>
+      </div>
 
       <div className="mt-6 flex items-center gap-2" aria-label={`Étape ${stepNumber} sur ${totalSteps}`}>
         {Array.from({ length: totalSteps }).map((_, i) => (
@@ -160,8 +161,9 @@ function OrientationPage() {
         <div className="flex items-start gap-3">
           <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-care text-primary-foreground"><HeartPulse aria-hidden="true" /></div>
           <div>
-            <h2 id="agent-title" className="font-semibold text-foreground">Parler à l’assistant parcours de soins</h2>
-            <p className="mt-1 text-sm leading-6 text-muted-foreground">Décrivez votre douleur. L’assistant vous aide à trouver la prochaine étape parmi les 10 situations étudiées.</p>
+            <p className="text-xs font-semibold uppercase tracking-wide text-care">Option libre</p>
+            <h2 id="agent-title" className="font-semibold text-foreground">Décrire ma douleur avec mes mots</h2>
+            <p className="mt-1 text-sm leading-6 text-muted-foreground">Une aide pour formuler votre situation et trouver une première orientation. Pour un résultat plus précis, utilisez le parcours guidé ci-dessous.</p>
           </div>
         </div>
         <form className="mt-4 flex flex-col gap-2 sm:flex-row" onSubmit={handleAgentSubmit}>

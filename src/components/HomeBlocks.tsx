@@ -74,6 +74,11 @@ export function HomeHero({ source = "direct" }: { source?: HomeSource }) {
           </span>
           <h1 className="mt-4 max-w-xl text-balance text-3xl font-semibold tracking-tight text-foreground md:text-5xl">{intro.title}</h1>
           <p className="mt-3 max-w-lg text-base leading-6 text-muted-foreground md:text-lg">{intro.lead}</p>
+          <div className="mt-5 flex flex-wrap gap-2 text-xs font-medium text-muted-foreground" aria-label="Repères Kivoir">
+            <span className="rounded-full border border-border bg-card px-3 py-1.5">Pour comprendre</span>
+            <span className="rounded-full border border-border bg-card px-3 py-1.5">Pour savoir qui voir</span>
+            <span className="rounded-full border border-border bg-card px-3 py-1.5">Pour préparer la consultation</span>
+          </div>
         </div>
 
         <div className="mt-8 grid gap-4 sm:grid-cols-2">
@@ -86,7 +91,7 @@ export function HomeHero({ source = "direct" }: { source?: HomeSource }) {
             </span>
             <div>
               <h2 className="text-xl font-semibold text-card-foreground">J&apos;ai une douleur</h2>
-              <p className="mt-1 text-sm leading-6 text-muted-foreground">Urgence, professionnel à consulter, première étape.</p>
+              <p className="mt-1 text-sm leading-6 text-muted-foreground">Vous décrivez votre douleur et obtenez une prochaine étape claire.</p>
             </div>
             <span className="mt-auto inline-flex items-center gap-2 text-sm font-semibold text-urgent">Démarrer <ArrowRight aria-hidden="true" className="transition-transform group-hover:translate-x-1" /></span>
           </Link>
@@ -103,6 +108,17 @@ export function HomeHero({ source = "direct" }: { source?: HomeSource }) {
               <p className="mt-1 text-sm leading-6 text-muted-foreground">Les prochaines étapes, dans le bon ordre.</p>
             </div>
             <span className="mt-auto inline-flex items-center gap-2 text-sm font-semibold text-care">Voir la suite <ArrowRight aria-hidden="true" className="transition-transform group-hover:translate-x-1" /></span>
+          </Link>
+
+          <Link
+            to="/cabinet"
+            className="group flex min-h-40 flex-col gap-4 rounded-3xl border border-border bg-secondary/40 p-5 text-left transition-all hover:-translate-y-1 hover:border-care/40 hover:shadow-md sm:col-span-2"
+          >
+            <div className="flex items-center gap-3">
+              <span className="flex size-11 items-center justify-center rounded-xl bg-care/10 text-care"><Stethoscope aria-hidden="true" /></span>
+              <div><h2 className="text-lg font-semibold text-card-foreground">Je suis médecin ou professionnel de santé</h2><p className="mt-1 text-sm leading-6 text-muted-foreground">Découvrez les deux briques Kivoir : préparer l’interrogatoire et prolonger les conseils après la consultation.</p></div>
+            </div>
+            <span className="inline-flex items-center gap-2 text-sm font-semibold text-care">Voir l’espace cabinet <ArrowRight aria-hidden="true" /></span>
           </Link>
 
         </div>

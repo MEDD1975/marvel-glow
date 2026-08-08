@@ -103,7 +103,7 @@ function CabinetPage() {
           Votre cabinet, en deux briques simples
         </h1>
         <p className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground">
-          Un QR code avant la consultation. Une carte après. Le patient est mieux préparé et vous gagnez du temps.
+          Deux briques, un même objectif : mieux préparer le patient et prolonger vos explications après la consultation. Un QR code avant, une carte après.
         </p>
       </section>
 

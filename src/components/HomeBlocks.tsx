@@ -65,35 +65,38 @@ export function HomeHero({ source = "direct" }: { source?: HomeSource }) {
   const carteFirst = source === "carte";
 
   return (
-    <section className="px-4 pb-8 pt-8 md:pb-12 md:pt-14">
-      <div className="mx-auto max-w-4xl">
-        <div className="max-w-2xl">
-          <span className="inline-flex items-center gap-2 rounded-full bg-care/10 px-3 py-1 text-xs font-semibold text-care">
+    <section className="px-4 pb-10 pt-10 md:pb-16 md:pt-16">
+      <div className="mx-auto max-w-5xl">
+        <div className="mx-auto max-w-3xl text-center">
+          <span className="inline-flex items-center gap-2 rounded-full border border-care/20 bg-care/5 px-3 py-1 text-xs font-semibold text-care">
             <Stethoscope aria-hidden="true" />
             {intro.badge}
           </span>
-          <h1 className="mt-4 max-w-xl text-balance text-3xl font-semibold tracking-tight text-foreground md:text-5xl">{intro.title}</h1>
-          <p className="mt-3 max-w-lg text-base leading-6 text-muted-foreground md:text-lg">{intro.lead}</p>
+          <h1 className="mt-6 text-balance text-4xl font-semibold tracking-[-0.04em] text-foreground md:text-6xl">{intro.title}</h1>
+          <p className="mx-auto mt-5 max-w-2xl text-pretty text-base leading-7 text-muted-foreground md:text-xl">{intro.lead}</p>
+          <div className="mt-6 flex flex-wrap justify-center gap-x-5 gap-y-2 text-xs font-medium text-muted-foreground" aria-label="Repères Kivoir">
+            <span>Comprendre</span><span>Savoir qui voir</span><span>Préparer la consultation</span>
+          </div>
         </div>
 
-        <div className="mt-8 grid gap-4 sm:grid-cols-2">
+        <div className="mt-12 grid gap-4 sm:grid-cols-2">
           <Link
             to="/orientation"
-            className={`group flex min-h-48 flex-col gap-4 rounded-3xl border-2 border-urgent/25 bg-card p-6 text-left shadow-sm transition-all hover:-translate-y-1 hover:border-urgent/50 hover:shadow-lg ${carteFirst ? "order-2" : "order-1"}`}
+            className={`group flex min-h-56 flex-col gap-5 rounded-[2rem] border border-urgent/20 bg-card p-7 text-left shadow-[0_12px_40px_-24px_var(--urgent)] transition-all hover:-translate-y-1 hover:shadow-[0_20px_55px_-28px_var(--urgent)] ${carteFirst ? "order-2" : "order-1"}`}
           >
             <span className="flex size-14 items-center justify-center rounded-2xl bg-urgent/10 text-urgent">
               <HeartPulse aria-hidden="true" className="size-7" />
             </span>
             <div>
               <h2 className="text-xl font-semibold text-card-foreground">J&apos;ai une douleur</h2>
-              <p className="mt-1 text-sm leading-6 text-muted-foreground">Urgence, professionnel à consulter, première étape.</p>
+              <p className="mt-1 text-sm leading-6 text-muted-foreground">Vous décrivez votre douleur et obtenez une prochaine étape claire.</p>
             </div>
             <span className="mt-auto inline-flex items-center gap-2 text-sm font-semibold text-urgent">Démarrer <ArrowRight aria-hidden="true" className="transition-transform group-hover:translate-x-1" /></span>
           </Link>
 
           <Link
             to="/parcours"
-            className={`group flex min-h-48 flex-col gap-4 rounded-3xl border-2 border-care/25 bg-card p-6 text-left shadow-sm transition-all hover:-translate-y-1 hover:border-care/50 hover:shadow-lg ${carteFirst ? "order-1" : "order-2"}`}
+            className={`group flex min-h-56 flex-col gap-5 rounded-[2rem] border border-care/20 bg-card p-7 text-left shadow-[0_12px_40px_-24px_var(--care)] transition-all hover:-translate-y-1 hover:shadow-[0_20px_55px_-28px_var(--care)] ${carteFirst ? "order-1" : "order-2"}`}
           >
             <span className="flex size-14 items-center justify-center rounded-2xl bg-care/10 text-care">
               <Stethoscope aria-hidden="true" className="size-7" />
@@ -103,6 +106,17 @@ export function HomeHero({ source = "direct" }: { source?: HomeSource }) {
               <p className="mt-1 text-sm leading-6 text-muted-foreground">Les prochaines étapes, dans le bon ordre.</p>
             </div>
             <span className="mt-auto inline-flex items-center gap-2 text-sm font-semibold text-care">Voir la suite <ArrowRight aria-hidden="true" className="transition-transform group-hover:translate-x-1" /></span>
+          </Link>
+
+          <Link
+            to="/cabinet"
+            className="group flex min-h-40 flex-col gap-4 rounded-[2rem] border border-border bg-secondary/40 p-6 text-left transition-all hover:-translate-y-1 hover:border-care/40 hover:shadow-lg sm:col-span-2"
+          >
+            <div className="flex items-center gap-3">
+              <span className="flex size-11 items-center justify-center rounded-xl bg-care/10 text-care"><Stethoscope aria-hidden="true" /></span>
+              <div><h2 className="text-lg font-semibold text-card-foreground">Je suis médecin ou professionnel de santé</h2><p className="mt-1 text-sm leading-6 text-muted-foreground">Découvrez les deux briques Kivoir : préparer l’interrogatoire et prolonger les conseils après la consultation.</p></div>
+            </div>
+            <span className="inline-flex items-center gap-2 text-sm font-semibold text-care">Voir l’espace cabinet <ArrowRight aria-hidden="true" /></span>
           </Link>
 
         </div>

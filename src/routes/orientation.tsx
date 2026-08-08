@@ -142,10 +142,11 @@ function OrientationPage() {
 
   return (
     <main className="mx-auto max-w-3xl px-4 py-10">
-      <h1 className="text-2xl font-semibold text-foreground">Orientation rapide</h1>
-      <p className="mt-2 text-muted-foreground">
-        Dites-nous d'abord où vous avez mal, puis répondez à 3 questions expliquées. Kivoir vous proposera les troubles les plus probables et ce qu'il faut faire.
-      </p>
+      <div className="max-w-2xl">
+        <p className="text-sm font-semibold uppercase tracking-wide text-care">Votre prochaine étape</p>
+        <h1 className="mt-2 text-3xl font-semibold tracking-tight text-foreground">On part de votre douleur, pas d’un diagnostic</h1>
+        <p className="mt-3 text-base leading-7 text-muted-foreground">Répondez d’abord au parcours guidé : il vous aide à préciser la zone, les signes importants et le bon niveau d’orientation. L’assistant libre est disponible si vous préférez commencer par vos propres mots.</p>
+      </div>
 
       <div className="mt-6 flex items-center gap-2" aria-label={`Étape ${stepNumber} sur ${totalSteps}`}>
         {Array.from({ length: totalSteps }).map((_, i) => (
@@ -160,8 +161,9 @@ function OrientationPage() {
         <div className="flex items-start gap-3">
           <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-care text-primary-foreground"><HeartPulse aria-hidden="true" /></div>
           <div>
-            <h2 id="agent-title" className="font-semibold text-foreground">Parler à l’assistant parcours de soins</h2>
-            <p className="mt-1 text-sm leading-6 text-muted-foreground">Décrivez votre douleur. L’assistant vous aide à trouver la prochaine étape parmi les 10 situations étudiées.</p>
+            <p className="text-xs font-semibold uppercase tracking-wide text-care">Option libre</p>
+            <h2 id="agent-title" className="font-semibold text-foreground">Décrire ma douleur avec mes mots</h2>
+            <p className="mt-1 text-sm leading-6 text-muted-foreground">Une aide pour formuler votre situation et trouver une première orientation. Pour un résultat plus précis, utilisez le parcours guidé ci-dessous.</p>
           </div>
         </div>
         <form className="mt-4 flex flex-col gap-2 sm:flex-row" onSubmit={handleAgentSubmit}>
@@ -246,11 +248,11 @@ function CarePlanCard({ plan }: { plan: CarePlan }) {
       </div>
       <div className="mt-5 grid gap-3 sm:grid-cols-2">
         <div className="rounded-xl bg-background/70 p-4"><p className="text-xs font-semibold uppercase tracking-wide">Situation étudiée</p><p className="mt-1 font-medium">{plan.condition}</p></div>
-        <div className="rounded-xl bg-background/70 p-4"><p className="text-xs font-semibold uppercase tracking-wide">Prochaine étape · {plan.timeline}</p><p className="mt-1 font-medium">{plan.nextStep}</p></div>
+        <div className="rounded-xl bg-background/70 p-4"><p className="text-xs font-semibold uppercase tracking-wide">Professionnel à consulter · {plan.timeline}</p><p className="mt-1 font-medium">{plan.nextStep}</p></div>
       </div>
       <div className="mt-5"><p className="text-xs font-semibold uppercase tracking-wide">Votre parcours, dans l’ordre</p><ol className="mt-3 grid gap-3">{plan.stages.map((stage, index) => <li key={`${stage.title}-${index}`} className="flex gap-3 rounded-xl bg-background/70 p-3"><span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-care text-xs font-semibold text-primary-foreground">{index + 1}</span><div><p className="font-semibold">{stage.title}</p><p className="text-sm leading-6">{stage.detail}</p></div></li>)}</ol></div>
       <div className="mt-5"><p className="text-xs font-semibold uppercase tracking-wide">Quand accélérer</p><ul className="mt-2 grid gap-1 text-sm">{plan.escalation.map((item) => <li key={item}>• {item}</li>)}</ul></div>
-      <div className="mt-5 flex flex-wrap gap-2">{plan.resources.map((resource) => <span key={resource} className="rounded-full bg-background/70 px-3 py-1 text-xs font-medium">{resource}</span>)}</div>
+      <div className="mt-5 flex flex-wrap items-center gap-2"><Link to="/annuaire" className="rounded-full bg-care px-4 py-2 text-xs font-semibold text-primary-foreground transition-opacity hover:opacity-90">Voir les professionnels près de chez moi</Link>{plan.resources.map((resource) => <span key={resource} className="rounded-full bg-background/70 px-3 py-1 text-xs font-medium">{resource}</span>)}</div>
     </div>
   );
 }

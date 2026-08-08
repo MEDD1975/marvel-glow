@@ -16,7 +16,7 @@ export function Header() {
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur print:hidden">
+    <header className="sticky top-0 z-50 border-b border-border/70 bg-background/80 backdrop-blur-xl print:hidden">
       <div className="mx-auto grid max-w-5xl grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-4 py-3 sm:flex sm:justify-between">
         <Link to="/" className="flex min-w-0 items-center gap-2 text-foreground" onClick={() => setOpen(false)}>
           <Logo size="md" showTagline />

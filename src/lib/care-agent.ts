@@ -45,7 +45,7 @@ function buildCarePlan(message: string): CarePlan {
     level,
     title: level === "urgent" ? "Avis médical urgent" : level === "professional" ? "Consultation à organiser" : "Surveillance et premiers soins",
     summary: level === "urgent" ? "Votre description contient un élément qui justifie de ne pas attendre." : "Ce résultat propose une prochaine étape, sans poser de diagnostic.",
-    condition: condition ? condition.name : detectedZone ? `Douleur de la ${detectedZone.toLowerCase()}` : "Douleur du membre inférieur non identifiée",
+    condition: condition ? condition.name : detectedZone ? `Douleur ${detectedZone === "Hanche" ? "de la hanche" : detectedZone === "Cheville" ? "de la cheville" : detectedZone === "Pied" ? "du pied" : "du genou"}` : "Douleur du membre inférieur non identifiée",
     nextStep: level === "urgent" ? "Appelez le 15 ou le 112, ou rendez-vous aux urgences selon l'intensité et votre état." : firstActor ? `${firstActor.role} : ${firstActor.mission}` : "Prenez rendez-vous avec votre médecin généraliste pour une première évaluation.",
     timeline: level === "urgent" ? "Aujourd'hui" : firstActor?.delay ?? "Dans les prochains jours si la douleur persiste",
     stages: selected?.actors.slice(0, 3).map((actor) => ({ label: lineLabels[actor.line].label, title: actor.role, detail: `${actor.trigger} Délai indicatif : ${actor.delay}.` })) ?? [{ label: "1re ligne", title: "Médecin généraliste", detail: "Évalue la situation et vous oriente vers le professionnel adapté." }],

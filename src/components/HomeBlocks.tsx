@@ -1,4 +1,4 @@
-import { AlertTriangle, ArrowRight, HeartPulse, MapPin, PlayCircle, Stethoscope } from "lucide-react";
+import { AlertTriangle, ArrowRight, HeartPulse, MapPin, PlayCircle, QrCode, Stethoscope } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 
 export const medicalDisclaimer = "Cette application informe et ne remplace pas un avis médical. En cas de doute, consultez un professionnel de santé.";
@@ -76,7 +76,7 @@ export function HomeHero({ source = "direct" }: { source?: HomeSource }) {
           <p className="mt-3 max-w-lg text-base leading-6 text-muted-foreground md:text-lg">{intro.lead}</p>
         </div>
 
-        <div className="mt-8 grid gap-4 sm:grid-cols-2">
+        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <Link
             to="/orientation"
             className={`group flex min-h-48 flex-col gap-4 rounded-3xl border-2 border-urgent/25 bg-card p-6 text-left shadow-sm transition-all hover:-translate-y-1 hover:border-urgent/50 hover:shadow-lg ${carteFirst ? "order-2" : "order-1"}`}
@@ -103,6 +103,20 @@ export function HomeHero({ source = "direct" }: { source?: HomeSource }) {
               <p className="mt-1 text-sm leading-6 text-muted-foreground">Les prochaines étapes, dans le bon ordre.</p>
             </div>
             <span className="mt-auto inline-flex items-center gap-2 text-sm font-semibold text-care">Voir la suite <ArrowRight aria-hidden="true" className="transition-transform group-hover:translate-x-1" /></span>
+          </Link>
+
+          <Link
+            to="/cabinet"
+            className="group flex min-h-48 flex-col gap-4 rounded-3xl border-2 border-care/25 bg-care/5 p-6 text-left shadow-sm transition-all hover:-translate-y-1 hover:border-care/50 hover:bg-care/10 hover:shadow-lg"
+          >
+            <span className="flex size-14 items-center justify-center rounded-2xl bg-care/10 text-care">
+              <QrCode aria-hidden="true" className="size-7" />
+            </span>
+            <div>
+              <h2 className="text-xl font-semibold text-card-foreground">Je suis médecin</h2>
+              <p className="mt-1 text-sm leading-6 text-muted-foreground">Créez votre QR patient et votre carte de suivi.</p>
+            </div>
+            <span className="mt-auto inline-flex items-center gap-2 text-sm font-semibold text-care">Ouvrir Mon cabinet <ArrowRight aria-hidden="true" className="transition-transform group-hover:translate-x-1" /></span>
           </Link>
         </div>
 

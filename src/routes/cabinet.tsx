@@ -100,16 +100,20 @@ function CabinetPage() {
           Pour les professionnels de santé
         </span>
         <h1 className="mt-4 text-3xl font-semibold tracking-tight text-foreground md:text-4xl">
-          Gagnez du temps à chaque consultation
+          Votre cabinet, en deux briques simples
         </h1>
         <p className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground">
-          Proposez Kivoir à vos patients en salle d'attente. Ils préparent leur entretien et vous présentent une
-          synthèse structurée que vous copiez dans votre logiciel en un clic. Aucune donnée n'est enregistrée.
+          Un QR code avant la consultation. Une carte après. Le patient est mieux préparé et vous gagnez du temps.
         </p>
       </section>
 
+      <section className="mt-10 grid gap-4 md:grid-cols-2 print:hidden" aria-label="Parcours du cabinet">
+        <WorkflowCard icon={QrCode} step="1" title="Avant la consultation" text="Le patient scanne, répond et arrive avec une synthèse prête à montrer." />
+        <WorkflowCard icon={Users} step="2" title="Après la consultation" text="Vous remettez une carte pour retrouver conseils, vidéos et orientation." />
+      </section>
+
       {/* Why propose Kivoir */}
-      <section className="mt-12 rounded-2xl border border-care/20 bg-care/5 p-6 md:p-8 print:hidden">
+      <section className="mt-10 rounded-2xl border border-care/20 bg-care/5 p-6 md:p-8 print:hidden">
         <h2 className="text-xl font-semibold text-foreground">Pourquoi proposer Kivoir au patient</h2>
         <p className="mt-2 text-sm text-muted-foreground">
           Kivoir n'est pas prescrit : il est mis à disposition du patient comme un support d'information et de préparation
@@ -198,7 +202,7 @@ function CabinetPage() {
       <section className="mt-16 poster-section">
         <div className="flex flex-wrap items-end justify-between gap-4 print:hidden">
           <div>
-            <h2 className="text-2xl font-semibold text-foreground">Votre affiche de salle d'attente</h2>
+            <h2 className="text-2xl font-semibold text-foreground">Brique 1 — QR code patient</h2>
             <p className="mt-1 text-muted-foreground">
               Personnalisez le texte, puis imprimez ou affichez sur un écran.
             </p>
@@ -275,7 +279,7 @@ function CabinetPage() {
       <section className="mt-16 card-section">
         <div className="flex flex-wrap items-end justify-between gap-4 print:hidden">
           <div>
-            <h2 className="text-2xl font-semibold text-foreground">La carte à remettre au patient</h2>
+            <h2 className="text-2xl font-semibold text-foreground">Brique 2 — Carte patient</h2>
             <p className="mt-1 max-w-2xl text-muted-foreground">
               À la fin de la consultation, donnez cette carte au patient : il scanne le QR code chez lui et retrouve les
               informations sur son trouble, son parcours de soins et les vidéos d'exercices.
@@ -377,6 +381,22 @@ function CabinetPage() {
         <MedicalDisclaimer />
       </div>
     </main>
+  );
+}
+
+function WorkflowCard({ icon: Icon, step, title, text }: { icon: React.ElementType; step: string; title: string; text: string }) {
+  return (
+    <div className="flex items-start gap-4 rounded-2xl border border-care/20 bg-card p-5 shadow-sm">
+      <div className="relative flex size-12 shrink-0 items-center justify-center rounded-xl bg-care/10 text-care">
+        <Icon aria-hidden="true" />
+        <span className="absolute -right-2 -top-2 flex size-5 items-center justify-center rounded-full bg-care text-xs font-semibold text-primary-foreground">{step}</span>
+      </div>
+      <div>
+        <p className="text-xs font-semibold uppercase tracking-wide text-care">Brique cabinet</p>
+        <h2 className="mt-1 text-lg font-semibold text-card-foreground">{title}</h2>
+        <p className="mt-1 text-sm leading-6 text-muted-foreground">{text}</p>
+      </div>
+    </div>
   );
 }
 

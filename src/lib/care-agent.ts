@@ -52,14 +52,17 @@ function buildCarePlan(message: string, selectedZone?: string): CarePlan {
   const zoneFallback = detectedZone === "Pied" ? "Médecin généraliste ou podologue" : detectedZone === "Cheville" ? "Médecin généraliste ou kinésithérapeute" : detectedZone === "Genou" ? "Médecin généraliste ou kinésithérapeute" : detectedZone === "Hanche" ? "Médecin généraliste" : "Médecin généraliste";
   const actors = selected?.actors.filter((actor) => actor.line <= (level === "urgent" ? 1 : 2)) ?? [];
   const firstActor = actors[0];
+  const careProfessional = condition?.whoToSee ?? zoneFallback;
+  const firstStep = condition?.firstStep ?? "Décrivez précisément la douleur et surveillez son évolution.";
+  const adaptiveNextStep = firstActor ? `${firstActor.role} : ${firstActor.mission}` : `${careProfessional}. ${firstStep}`;
   return {
     level,
-    title: level === "urgent" ? "Avis médical urgent" : level === "professional" ? "Consultation à organiser" : "Surveillance et premiers soins",
-    summary: level === "urgent" ? "Votre description contient un élément qui justifie de ne pas attendre." : "Ce résultat propose une prochaine étape, sans poser de diagnostic.",
+    title: level === "urgent" ? "Avis médical urgent" : condition ? `Orientation pour ${condition.name}` : detectedZone ? `Orientation pour la zone : ${detectedZone.toLowerCase()}` : "Orientation à préciser",
+    summary: level === "urgent" ? "Votre description contient un élément qui justifie de ne pas attendre." : condition ? `${condition.summary} Cette orientation reste indicative et doit être confirmée par un professionnel.` : "Il manque des éléments pour proposer un professionnel précis.",
     condition: condition ? condition.name : detectedZone ? `Douleur ${detectedZone === "Hanche" ? "de la hanche" : detectedZone === "Cheville" ? "de la cheville" : detectedZone === "Pied" ? "du pied" : "du genou"}` : "Douleur du membre inférieur non identifiée",
-    nextStep: level === "urgent" ? "Appelez le 15 ou le 112, ou rendez-vous aux urgences selon l'intensité et votre état." : firstActor ? `${firstActor.role} : ${firstActor.mission}` : `Commencez par consulter un ${zoneFallback.toLowerCase()} pour examiner la douleur et vous orienter.`,
-    timeline: level === "urgent" ? "Aujourd'hui" : firstActor?.delay ?? "Dans les prochains jours si la douleur persiste",
-    stages: selected?.actors.slice(0, 3).map((actor) => ({ label: lineLabels[actor.line].label, title: actor.role, detail: `${actor.trigger} Délai indicatif : ${actor.delay}.` })) ?? [{ label: "1re ligne", title: zoneFallback, detail: "Examine la situation, écarte les signes d’alerte et vous oriente si nécessaire." }],
+    nextStep: level === "urgent" ? "Appelez le 15 ou le 112, ou rendez-vous aux urgences selon l'intensité et votre état." : adaptiveNextStep,
+    timeline: level === "urgent" ? "Aujourd'hui" : condition?.delay ?? firstActor?.delay ?? "Dans les prochains jours si la douleur persiste",
+    stages: selected?.actors.slice(0, 3).map((actor) => ({ label: lineLabels[actor.line].label, title: actor.role, detail: `${actor.trigger} Délai indicatif : ${actor.delay}.` })) ?? [{ label: "Première étape", title: careProfessional, detail: firstStep }],
     escalation: selected?.escalation.slice(0, 3) ?? generalRedFlags.slice(0, 3),
     resources: advice?.tips.slice(0, 3).map((tip) => tip.title) ?? ["Parcours guidé", "Conseils validés", "Annuaire des professionnels"],
   };

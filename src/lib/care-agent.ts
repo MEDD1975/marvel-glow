@@ -45,7 +45,7 @@ function buildCarePlan(message: string, selectedZone?: string): CarePlan {
   const detectedZone = (["Hanche", "Genou", "Cheville", "Pied"].includes(selectedZone ?? "") ? selectedZone : detectZone(message)) as Condition["zone"] | null;
   const candidates = detectedZone ? conditions.filter((item) => item.zone === detectedZone) : [];
   const ranked = candidates.map((item) => ({ item, score: scoreCondition(message, item) })).sort((a, b) => b.score - a.score);
-  const condition = ranked[0] && (ranked[0].score >= 2 || candidates.length === 1) ? ranked[0].item : null;
+  const condition = ranked[0] && ranked[0].score >= 3 && (ranked.length === 1 || ranked[0].score > (ranked[1]?.score ?? 0)) ? ranked[0].item : null;
   const selected = condition ? pathways[condition.id] : undefined;
   const advice = condition ? conditionAdvice[condition.id] : undefined;
   const level: TriageLevel = urgent ? "urgent" : message.length > 80 || normalized.includes("depuis") || normalized.includes("semaine") ? "professional" : "self-care";
@@ -57,8 +57,8 @@ function buildCarePlan(message: string, selectedZone?: string): CarePlan {
   const adaptiveNextStep = firstActor ? `${firstActor.role} : ${firstActor.mission}` : `${careProfessional}. ${firstStep}`;
   return {
     level,
-    title: level === "urgent" ? "Avis médical urgent" : condition ? `Orientation pour ${condition.name}` : detectedZone ? `Orientation pour la zone : ${detectedZone.toLowerCase()}` : "Orientation à préciser",
-    summary: level === "urgent" ? "Votre description contient un élément qui justifie de ne pas attendre." : condition ? `${condition.summary} Cette orientation reste indicative et doit être confirmée par un professionnel.` : "Il manque des éléments pour proposer un professionnel précis.",
+    title: level === "urgent" ? "Avis médical urgent" : detectedZone ? `Première orientation pour une douleur de ${detectedZone.toLowerCase()}` : "Première orientation à préciser",
+    summary: level === "urgent" ? "Votre description contient un élément qui justifie de ne pas attendre." : condition ? `Votre description peut correspondre à plusieurs situations, dont ${condition.name}. Seul un professionnel pourra confirmer la cause.` : "Plusieurs causes sont possibles. Un professionnel pourra examiner votre situation.",
     condition: condition ? condition.name : detectedZone ? `Douleur ${detectedZone === "Hanche" ? "de la hanche" : detectedZone === "Cheville" ? "de la cheville" : detectedZone === "Pied" ? "du pied" : "du genou"}` : "Douleur du membre inférieur non identifiée",
     nextStep: level === "urgent" ? "Appelez le 15 ou le 112, ou rendez-vous aux urgences selon l'intensité et votre état." : adaptiveNextStep,
     timeline: level === "urgent" ? "Aujourd'hui" : condition?.delay ?? firstActor?.delay ?? "Dans les prochains jours si la douleur persiste",

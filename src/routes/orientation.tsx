@@ -44,13 +44,13 @@ export const Route = createFileRoute("/orientation")({
       {
         name: "description",
         content:
-          "Décrivez votre douleur, répondez à trois questions expliquées et découvrez quel trouble du membre inférieur correspond à votre situation.",
+          "Décrivez votre douleur, répondez à quelques questions et obtenez une première orientation à discuter avec un professionnel.",
       },
       { property: "og:title", content: "Orientation — Kivoir" },
       {
         property: "og:description",
         content:
-          "Décrivez votre douleur, répondez à trois questions expliquées et découvrez quel trouble du membre inférieur correspond à votre situation.",
+          "Décrivez votre douleur, répondez à quelques questions et obtenez une première orientation à discuter avec un professionnel.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -248,10 +248,10 @@ function CarePlanCard({ plan }: { plan: CarePlan }) {
     <div className={`mt-4 rounded-2xl border p-5 ${levelClasses[plan.level]}`} role="status">
       <div className="flex items-start gap-3">
         <Icon aria-hidden="true" className="mt-0.5 shrink-0" />
-        <div><p className="text-xs font-semibold uppercase tracking-wide">Parcours proposé</p><h3 className="mt-1 text-xl font-semibold">{plan.title}</h3><p className="mt-1 text-sm leading-6">{plan.summary}</p></div>
+        <div><p className="text-xs font-semibold uppercase tracking-wide">Première orientation</p><h3 className="mt-1 text-xl font-semibold">Ce que votre description peut évoquer</h3><p className="mt-1 text-sm leading-6">{plan.summary}</p></div>
       </div>
       <div className="mt-5 grid gap-3 sm:grid-cols-2">
-        <div className="rounded-xl bg-background/70 p-4"><p className="text-xs font-semibold uppercase tracking-wide">Ce que l’on peut dire</p><p className="mt-1 font-medium">{plan.condition}</p></div>
+        <div className="rounded-xl bg-background/70 p-4"><p className="text-xs font-semibold uppercase tracking-wide">Hypothèse à discuter</p><p className="mt-1 font-medium">{plan.condition}</p><p className="mt-2 text-sm leading-6 text-muted-foreground">Ce n’est pas un diagnostic. Plusieurs causes peuvent donner des symptômes proches.</p></div>
         <div className="rounded-xl bg-background/70 p-4"><p className="text-xs font-semibold uppercase tracking-wide">Votre prochaine étape · {plan.timeline}</p><p className="mt-1 font-medium">{plan.nextStep}</p></div>
       </div>
       <div className="mt-5"><p className="text-xs font-semibold uppercase tracking-wide">Votre parcours, dans l’ordre</p><ol className="mt-3 grid gap-3">{plan.stages.map((stage, index) => <li key={`${stage.title}-${index}`} className="flex gap-3 rounded-xl bg-background/70 p-3"><span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-care text-xs font-semibold text-primary-foreground">{index + 1}</span><div><p className="font-semibold">{stage.title}</p><p className="text-sm leading-6">{stage.detail}</p></div></li>)}</ol></div>
@@ -351,7 +351,7 @@ function ConditionPicker({
         <span className="shrink-0 text-xs text-muted-foreground">Étape {totalSteps}</span>
       </div>
 
-      <p className="text-sm text-muted-foreground">Choisissez la description qui ressemble le plus à ce que vous ressentez.</p>
+      <p className="text-sm text-muted-foreground">Choisissez la description qui ressemble le plus à ce que vous ressentez. Il s’agit de pistes, pas d’un diagnostic.</p>
 
       <div className="grid gap-4">
         {zoneConditions.map((item) => (
@@ -484,7 +484,7 @@ function ResultView({
         <div className="flex items-start justify-between gap-4">
           <div>
             <p className="text-xs font-semibold uppercase tracking-wide text-care">À faire maintenant</p>
-            <h3 id="first-advice-title" className="mt-1 text-2xl font-semibold tracking-tight text-foreground">Vos premiers conseils</h3>
+            <h3 id="first-advice-title" className="mt-1 text-2xl font-semibold tracking-tight text-foreground">Premiers gestes prudents</h3>
           </div>
           <Lightbulb className="size-6 shrink-0 text-care" aria-hidden="true" />
         </div>
@@ -504,7 +504,7 @@ function ResultView({
             Trouver un professionnel <MapIcon aria-hidden="true" className="size-5" />
           </Link>
         </div>
-        <p className="mt-5 text-base leading-7 text-foreground"><span className="font-semibold">Première ligne :</span> {condition.whoToSee}</p>
+        <p className="mt-5 text-base leading-7 text-foreground"><span className="font-semibold">À discuter en première intention :</span> {condition.whoToSee}</p><p className="mt-3 text-sm leading-6 text-muted-foreground">Ces conseils ne remplacent pas un examen et ne permettent pas de confirmer une cause.</p>
       </section>
 
       <div className="rounded-xl border border-border bg-muted/60 p-4">

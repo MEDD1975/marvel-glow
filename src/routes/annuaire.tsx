@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { MedicalDisclaimer } from "@/components/HomeBlocks";
 import { conditions } from "@/lib/conditions";
+import { pathways } from "@/lib/pathways";
 import {
   cityCenter,
   distanceKm,
@@ -63,7 +64,21 @@ function AnnuairePage() {
   const condition = conditions.find((item) => item.id === c) ?? null;
   const currentStep = journeySteps.find((item) => item.id === step) ?? null;
 
-  const recommended = currentStep?.next ?? [];
+  const pathway = condition ? pathways[condition.id] : undefined;
+  const conditionProfessionals = pathway
+    ? pathway.actors
+        .filter((actor) => actor.line <= 2)
+        .map((actor) => {
+          if (actor.role.includes("Urgences")) return "Urgences" as Profession;
+          return professionOrder.find((profession) => actor.role.includes(profession));
+        })
+        .filter((profession): profession is Profession => Boolean(profession))
+        .filter((profession, index, all) => all.indexOf(profession) === index)
+    : [];
+  const recommended = conditionProfessionals.length > 0 ? conditionProfessionals : currentStep?.next ?? [];
+  const nextAdvice = condition
+    ? `${condition.name} : ${condition.firstStep} Professionnel à consulter : ${condition.whoToSee}`
+    : currentStep?.advice;
 
   const list = useMemo(() => {
     const base = providers.filter((provider) => {
@@ -161,7 +176,7 @@ function AnnuairePage() {
             Votre prochaine étape
           </h2>
           <div className="mt-3 flex flex-wrap items-center gap-2">
-            {currentStep.next.map((profession, index) => (
+            {recommended.map((profession, index) => (
               <span key={profession} className="flex items-center gap-2">
                 {index > 0 && <span className="text-xs text-muted-foreground">ou</span>}
                 <span
@@ -173,7 +188,7 @@ function AnnuairePage() {
               </span>
             ))}
           </div>
-          <p className="mt-3 text-sm text-foreground">{currentStep.advice}</p>
+          {nextAdvice && <p className="mt-3 text-sm text-foreground">{nextAdvice}</p>}
           {condition && (
             <p className="mt-2 text-sm text-muted-foreground">
               Pour {condition.name.toLowerCase()} : {condition.whoToSee}{" "}
@@ -207,7 +222,7 @@ function AnnuairePage() {
                 : "border-border bg-card text-muted-foreground hover:text-foreground"
             }`}
           >
-            {currentStep ? "Suggérés pour mon étape" : "Tous"}
+            {condition ? `Professionnels pour ${condition.name}` : currentStep ? "Suggérés pour mon étape" : "Tous"}
           </button>
           {professionOrder.map((profession) => {
             const active = professionFilter === profession;

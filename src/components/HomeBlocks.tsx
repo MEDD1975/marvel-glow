@@ -80,7 +80,7 @@ export function HomeHero({ source = "direct" }: { source?: HomeSource }) {
         </div>
 
         <div className="mt-12">
-          <p className="mb-4 text-center text-sm font-semibold text-muted-foreground">Je suis un particulier ou un patient</p>
+          <p className="mb-4 text-center text-sm font-semibold text-muted-foreground">Pour vous</p>
           <div className="grid gap-4 sm:grid-cols-2">
           <Link
             to="/orientation"
@@ -91,7 +91,7 @@ export function HomeHero({ source = "direct" }: { source?: HomeSource }) {
             </span>
             <div>
               <h2 className="text-xl font-semibold text-card-foreground">J&apos;ai une douleur</h2>
-              <p className="mt-1 text-sm leading-6 text-muted-foreground">Vous décrivez votre douleur et obtenez une prochaine étape claire.</p>
+              <p className="mt-1 text-sm leading-6 text-muted-foreground">Être orienté vers le bon professionnel.</p>
             </div>
             <span className="mt-auto inline-flex items-center gap-2 text-sm font-semibold text-urgent">Démarrer <ArrowRight aria-hidden="true" className="transition-transform group-hover:translate-x-1" /></span>
           </Link>
@@ -105,7 +105,7 @@ export function HomeHero({ source = "direct" }: { source?: HomeSource }) {
             </span>
             <div>
               <h2 className="text-xl font-semibold text-card-foreground">J&apos;ai déjà un diagnostic</h2>
-              <p className="mt-1 text-sm leading-6 text-muted-foreground">Les prochaines étapes, dans le bon ordre.</p>
+              <p className="mt-1 text-sm leading-6 text-muted-foreground">Suivre les étapes après un diagnostic.</p>
             </div>
             <span className="mt-auto inline-flex items-center gap-2 text-sm font-semibold text-care">Voir la suite <ArrowRight aria-hidden="true" className="transition-transform group-hover:translate-x-1" /></span>
           </Link>
@@ -116,7 +116,7 @@ export function HomeHero({ source = "direct" }: { source?: HomeSource }) {
         <div className="mt-8 rounded-[2rem] border border-border bg-secondary/40 p-6 text-left sm:p-7">
           <p className="text-sm font-semibold text-care">Je suis professionnel de santé</p>
           <div className="mt-2 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-            <p className="max-w-2xl text-sm leading-6 text-muted-foreground">Préparez l’interrogatoire avant la consultation et prolongez vos conseils après, avec les deux briques Kivoir.</p>
+            <p className="max-w-2xl text-sm leading-6 text-muted-foreground">Préparer la consultation. Prolonger les conseils.</p>
             <Link to="/cabinet" className="inline-flex shrink-0 items-center gap-2 text-sm font-semibold text-care">Découvrir l’espace cabinet <ArrowRight aria-hidden="true" /></Link>
           </div>
         </div>

@@ -143,9 +143,9 @@ function OrientationPage() {
   return (
     <main className="mx-auto max-w-3xl px-4 py-10">
       <div className="max-w-2xl">
-        <p className="text-sm font-semibold uppercase tracking-wide text-care">Votre prochaine étape</p>
-        <h1 className="mt-2 text-3xl font-semibold tracking-tight text-foreground">On part de votre douleur, pas d’un diagnostic</h1>
-        <p className="mt-3 text-base leading-7 text-muted-foreground">Répondez d’abord au parcours guidé : il vous aide à préciser la zone, les signes importants et le bon niveau d’orientation. L’assistant libre est disponible si vous préférez commencer par vos propres mots.</p>
+        <p className="text-sm font-semibold uppercase tracking-wide text-care">Orientation</p>
+        <h1 className="mt-2 text-3xl font-semibold tracking-tight text-foreground">Trouvez votre prochaine étape</h1>
+        <p className="mt-3 text-base leading-7 text-muted-foreground">Quelques choix simples, puis une recommandation claire.</p>
       </div>
 
       <div className="mt-6 flex items-center gap-2" aria-label={`Étape ${stepNumber} sur ${totalSteps}`}>
@@ -308,20 +308,18 @@ function ZonePicker({ onSelect }: { onSelect: (zone: string) => void }) {
         <span className="shrink-0 text-xs text-muted-foreground">Étape 1</span>
       </div>
 
-      <ContextBlocks
-        context="La localisation de la douleur est le premier élément qui permet d'orienter le diagnostic. Chaque zone du membre inférieur a ses pathologies typiques et son réseau de soins."
-        example="Exemple de réponse : « J'ai mal à l'intérieur du genou, juste sous la rotule, depuis quelques jours » → choisissez Genou."
-      />
+<p className="text-sm text-muted-foreground">Choisissez la zone qui vous gêne le plus.</p>
 
       <div className="grid gap-3 sm:grid-cols-2">
         {zones.map((z) => (
           <button
             key={z.id}
             onClick={() => onSelect(z.id)}
-            className="flex flex-col gap-1 rounded-xl border border-border bg-background p-4 text-left transition-colors hover:border-care/40 hover:bg-care-muted/30"
+            className="group flex min-h-28 flex-col justify-center gap-2 rounded-2xl border border-border bg-background p-5 text-left transition-all hover:-translate-y-0.5 hover:border-care/50 hover:bg-care-muted/30 hover:shadow-sm"
           >
-            <span className="font-medium text-foreground">{z.label}</span>
+            <span className="text-lg font-semibold text-foreground">{z.label}</span>
             <span className="text-sm text-muted-foreground">{z.description}</span>
+            <span className="mt-1 text-xs font-semibold text-care opacity-0 transition-opacity group-hover:opacity-100">Choisir</span>
           </button>
         ))}
       </div>
@@ -349,10 +347,7 @@ function ConditionPicker({
         <span className="shrink-0 text-xs text-muted-foreground">Étape {totalSteps}</span>
       </div>
 
-      <ContextBlocks
-        context="Vous avez indiqué la zone et les signes principaux. On affiche maintenant les troubles les plus fréquents de cette zone. Choisissez celui dont la description, la localisation et les déclencheurs correspondent le mieux à ce que vous ressentez."
-        example="Exemple de réponse : « Mal sous le talon aux premiers pas du matin » → Aponévrosite plantaire."
-      />
+      <p className="text-sm text-muted-foreground">Choisissez la description qui ressemble le plus à ce que vous ressentez.</p>
 
       <div className="grid gap-4">
         {zoneConditions.map((item) => (
@@ -371,20 +366,7 @@ function ConditionPicker({
                   {item.zone}
                 </span>
               </span>
-              <span className="mt-2 block space-y-1.5 text-sm">
-                <span className="block text-muted-foreground">
-                  <span className="font-medium text-foreground">Où ça fait mal : </span>
-                  {item.location}
-                </span>
-                <span className="block text-muted-foreground">
-                  <span className="font-medium text-foreground">Ce que ça donne : </span>
-                  {item.feels}
-                </span>
-                <span className="block text-muted-foreground">
-                  <span className="font-medium text-foreground">Ça se déclenche quand : </span>
-                  {item.triggers}
-                </span>
-              </span>
+              <span className="mt-2 block text-sm leading-6 text-muted-foreground">{item.location}</span>
             </span>
           </button>
         ))}

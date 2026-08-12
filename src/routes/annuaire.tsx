@@ -75,10 +75,14 @@ function AnnuairePage() {
         .filter((profession): profession is Profession => Boolean(profession))
         .filter((profession, index, all) => all.indexOf(profession) === index)
     : [];
-  const recommended = conditionProfessionals.length > 0 ? conditionProfessionals : currentStep?.next ?? [];
-  const nextAdvice = condition
-    ? `${condition.name} : ${condition.firstStep} Professionnel à consulter : ${condition.whoToSee}`
-    : currentStep?.advice;
+  // L’étape déclarée par le patient est prioritaire : elle décrit l’action immédiate.
+  // Le trouble complète ensuite le contexte et les étapes suivantes du parcours.
+  const recommended = currentStep?.next ?? conditionProfessionals;
+  const nextAdvice = currentStep
+    ? currentStep.advice
+    : condition
+      ? `${condition.name} : ${condition.firstStep} Professionnel à consulter : ${condition.whoToSee}`
+      : undefined;
 
   const list = useMemo(() => {
     const base = providers.filter((provider) => {

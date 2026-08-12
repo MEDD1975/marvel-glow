@@ -141,11 +141,12 @@ function OrientationPage() {
   };
 
   return (
-    <main className="mx-auto max-w-3xl px-4 py-10">
+    <main className="mx-auto max-w-4xl px-5 py-12 md:px-8 md:py-16">
       <div className="max-w-2xl">
         <p className="text-sm font-semibold uppercase tracking-wide text-care">Orientation</p>
-        <h1 className="mt-2 text-3xl font-semibold tracking-tight text-foreground">Trouvez votre prochaine étape</h1>
-        <p className="mt-3 text-base leading-7 text-muted-foreground">Quelques choix simples, puis une recommandation claire.</p>
+        <h1 className="mt-3 text-4xl font-semibold tracking-tight text-foreground md:text-5xl">Trouvez votre prochaine étape</h1>
+        <p className="mt-4 text-lg leading-8 text-muted-foreground">Quelques choix simples, puis une recommandation claire.</p>
+        <Link to="/conseils" className="mt-5 inline-flex min-h-11 items-center text-base font-semibold text-care hover:underline">Comprendre l’orientation <ArrowRight aria-hidden="true" className="ml-2 size-5" /></Link>
       </div>
 
       <div className="mt-6 flex items-center gap-2" aria-label={`Étape ${stepNumber} sur ${totalSteps}`}>
@@ -315,10 +316,10 @@ function ZonePicker({ onSelect }: { onSelect: (zone: string) => void }) {
           <button
             key={z.id}
             onClick={() => onSelect(z.id)}
-            className="group flex min-h-28 flex-col justify-center gap-2 rounded-2xl border border-border bg-background p-5 text-left transition-all hover:-translate-y-0.5 hover:border-care/50 hover:bg-care-muted/30 hover:shadow-sm"
+            className="group flex min-h-36 flex-col justify-center gap-3 rounded-3xl border border-border bg-background p-6 text-left transition-all hover:-translate-y-0.5 hover:border-care/50 hover:bg-care-muted/30 hover:shadow-sm"
           >
-            <span className="text-lg font-semibold text-foreground">{z.label}</span>
-            <span className="text-sm text-muted-foreground">{z.description}</span>
+            <span className="text-2xl font-semibold tracking-tight text-foreground">{z.label}</span>
+            <span className="text-base leading-6 text-muted-foreground">{z.description}</span>
             <span className="mt-1 text-xs font-semibold text-care opacity-0 transition-opacity group-hover:opacity-100">Choisir</span>
           </button>
         ))}

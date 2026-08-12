@@ -1,4 +1,4 @@
-import { AlertTriangle, ArrowRight, HeartPulse, MapPin, PlayCircle, Stethoscope } from "lucide-react";
+import { AlertTriangle, ArrowRight, MapPin, PlayCircle, Stethoscope } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 
 export const medicalDisclaimer = "Cette application informe et ne remplace pas un avis médical. En cas de doute, consultez un professionnel de santé.";
@@ -83,17 +83,17 @@ export function HomeHero({ source = "direct" }: { source?: HomeSource }) {
           <p className="mb-5 text-center text-base font-semibold text-muted-foreground">Pour vous</p>
           <div className="grid gap-5 sm:grid-cols-2">
           <Link
-            to="/orientation"
+            to="/parcours"
             className={`group flex min-h-72 flex-col gap-6 rounded-[2rem] border border-urgent/20 bg-card p-8 text-left shadow-[0_12px_40px_-24px_var(--urgent)] transition-all hover:-translate-y-1 hover:shadow-[0_20px_55px_-28px_var(--urgent)] ${carteFirst ? "order-2" : "order-1"}`}
           >
             <span className="flex size-14 items-center justify-center rounded-2xl bg-urgent/10 text-urgent">
-              <HeartPulse aria-hidden="true" className="size-7" />
+              <ArrowRight aria-hidden="true" className="size-7" />
             </span>
             <div>
-              <h2 className="text-2xl font-semibold tracking-tight text-card-foreground">J&apos;ai une douleur</h2>
-              <p className="mt-2 text-base leading-7 text-muted-foreground">Être orienté vers le bon professionnel.</p>
+              <h2 className="text-2xl font-semibold tracking-tight text-card-foreground">Je cherche la prochaine étape</h2>
+              <p className="mt-2 text-base leading-7 text-muted-foreground">Comprendre où vous en êtes et quoi préparer ensuite.</p>
             </div>
-            <span className="mt-auto inline-flex min-h-12 items-center gap-2 text-base font-semibold text-urgent">Commencer <ArrowRight aria-hidden="true" className="transition-transform group-hover:translate-x-1" /></span>
+            <span className="mt-auto inline-flex min-h-12 items-center gap-2 text-base font-semibold text-urgent">Voir les étapes <ArrowRight aria-hidden="true" className="transition-transform group-hover:translate-x-1" /></span>
           </Link>
 
           <Link
@@ -104,10 +104,10 @@ export function HomeHero({ source = "direct" }: { source?: HomeSource }) {
               <Stethoscope aria-hidden="true" className="size-7" />
             </span>
             <div>
-              <h2 className="text-2xl font-semibold tracking-tight text-card-foreground">J&apos;ai déjà un diagnostic</h2>
-              <p className="mt-2 text-base leading-7 text-muted-foreground">Suivre les étapes après un diagnostic.</p>
+              <h2 className="text-2xl font-semibold tracking-tight text-card-foreground">Je suis déjà accompagné</h2>
+              <p className="mt-2 text-base leading-7 text-muted-foreground">Retrouver la suite du parcours après une consultation.</p>
             </div>
-            <span className="mt-auto inline-flex min-h-12 items-center gap-2 text-base font-semibold text-care">Voir le parcours <ArrowRight aria-hidden="true" className="transition-transform group-hover:translate-x-1" /></span>
+            <span className="mt-auto inline-flex min-h-12 items-center gap-2 text-base font-semibold text-care">Reprendre le parcours <ArrowRight aria-hidden="true" className="transition-transform group-hover:translate-x-1" /></span>
           </Link>
 
           </div>

@@ -158,13 +158,13 @@ function OrientationPage() {
         ))}
       </div>
 
-      <section className="mt-6 rounded-2xl border border-care/20 bg-care/5 p-5 md:p-6" aria-labelledby="agent-title">
+      <section className="mt-8 rounded-3xl border border-border bg-card p-6 shadow-sm md:p-8" aria-labelledby="agent-title">
         <div className="flex items-start gap-3">
           <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-care text-primary-foreground"><HeartPulse aria-hidden="true" /></div>
           <div>
-            <p className="text-xs font-semibold uppercase tracking-wide text-care">Option libre</p>
-            <h2 id="agent-title" className="font-semibold text-foreground">Décrire ma douleur avec mes mots</h2>
-            <p className="mt-1 text-sm leading-6 text-muted-foreground">Une aide pour formuler votre situation et trouver une première orientation. Pour un résultat plus précis, utilisez le parcours guidé ci-dessous.</p>
+            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Besoin d’aide ?</p>
+            <h2 id="agent-title" className="mt-1 text-xl font-semibold text-foreground">Écrire ma douleur</h2>
+            <p className="mt-2 text-base leading-7 text-muted-foreground">Une alternative si vous préférez commencer par vos propres mots.</p>
           </div>
         </div>
         <form className="mt-4 flex flex-col gap-2 sm:flex-row" onSubmit={handleAgentSubmit}>
@@ -184,7 +184,8 @@ function OrientationPage() {
         <p className="mt-3 text-xs text-muted-foreground">Cet assistant ne pose pas de diagnostic. En cas de signe inquiétant ou d’urgence, appelez le 15 ou le 112.</p>
       </section>
 
-      <div className="mt-6 rounded-2xl border border-border bg-card p-6 shadow-sm md:p-8">
+      <div className="mt-8 rounded-3xl border border-care/25 bg-care/5 p-7 shadow-sm md:p-10">
+        <div className="mb-6"><p className="text-xs font-semibold uppercase tracking-wide text-care">Parcours guidé</p><h2 className="mt-1 text-2xl font-semibold tracking-tight text-foreground">Répondez à quelques questions</h2><p className="mt-1 text-base leading-7 text-muted-foreground">C’est la façon la plus simple d’obtenir une orientation adaptée.</p></div>
         {step.type === "zone" ? (
           <ZonePicker onSelect={setZone} />
         ) : step.type === "triage" && currentQuestion ? (

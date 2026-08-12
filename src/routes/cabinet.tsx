@@ -53,7 +53,7 @@ function CabinetPage() {
   const [poster, setPoster] = useState<PosterData>({
     cabinetName: "Cabinet médical",
     doctorName: "",
-    message: "Préparez votre consultation en 2 minutes. Aucune donnée enregistrée.",
+    message: "Préparez le parcours de votre patient. Aucune donnée enregistrée.",
     url: "",
     qr: null,
   });
@@ -63,7 +63,7 @@ function CabinetPage() {
   const [showDemo, setShowDemo] = useState(false);
 
   useEffect(() => {
-    const target = `${window.location.origin}/orientation?src=affiche`;
+    const target = `${window.location.origin}/parcours?src=affiche`;
     const homeTarget = `${window.location.origin}/?src=carte`;
     setPoster((prev) => ({ ...prev, url: target }));
     setCardQr({ url: homeTarget, qr: null });
@@ -100,10 +100,10 @@ function CabinetPage() {
           Pour les professionnels de santé
         </span>
         <h1 className="mt-4 text-3xl font-semibold tracking-tight text-foreground md:text-4xl">
-          Votre cabinet, en deux briques simples
+          Le parcours continue après la consultation
         </h1>
         <p className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground">
-          Deux briques, un même objectif : mieux préparer le patient et prolonger vos explications après la consultation. Un QR code avant, une carte après.
+          Kivoir vous aide à donner au patient une feuille de route claire : ce qui a été fait, ce qui vient ensuite et ce qu’il doit préparer. Un support simple avant et après votre échange.
         </p>
       </section>
 
@@ -124,8 +124,7 @@ function CabinetPage() {
             <p className="text-xs font-semibold uppercase tracking-wide text-care">Avant la consultation</p>
             <p className="mt-1 text-sm font-medium text-foreground">L'affiche QR en salle d'attente</p>
             <p className="mt-1 text-sm text-muted-foreground">
-              Le patient répond au questionnaire pendant qu'il attend : vous gagnez du temps sur l'interrogatoire et
-              entrez plus vite dans l'examen clinique.
+              Le patient découvre son parcours pendant qu'il attend : il arrive avec ses étapes déjà réalisées, ses questions et les documents utiles.
             </p>
           </div>
           <div className="rounded-xl border border-border bg-card p-4">
@@ -141,7 +140,7 @@ function CabinetPage() {
         <ul className="mt-4 space-y-3">
           <li className="flex items-start gap-3 text-sm text-muted-foreground">
             <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-care" />
-            Le patient arrive avec un recueil déjà structuré : localisation, ancienneté, appui, signaux d'alerte.
+            Le patient arrive avec un parcours lisible : étape actuelle, démarches déjà réalisées, questions et documents disponibles.
           </li>
           <li className="flex items-start gap-3 text-sm text-muted-foreground">
             <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-care" />
@@ -158,13 +157,13 @@ function CabinetPage() {
       <section className="mt-12 grid gap-6 sm:grid-cols-3 print:hidden">
         <ValueCard
           icon={Clock}
-          title="- 3 à 5 min par patient"
-          text="Le recueil déclaratif (localisation, appui, ancienneté, signaux d'alerte) est déjà fait à votre arrivée."
+          title="Moins de répétitions"
+          text="Le patient arrive avec son étape actuelle, ses questions et les éléments utiles à l’échange."
         />
         <ValueCard
           icon={ShieldCheck}
-          title="Zéro donnée conservée"
-          text="Les réponses restent dans le navigateur du patient et disparaissent à la fermeture. Rien n'est transmis ni hébergé."
+          title="Une suite plus claire"
+          text="Vous expliquez la prochaine étape ; le patient peut la retrouver ensuite sans solliciter le cabinet pour chaque détail."
         />
         <ValueCard
           icon={QrCode}
@@ -193,7 +192,7 @@ function CabinetPage() {
             number={3}
             icon={ClipboardCheck}
             title="Vous copiez la synthèse"
-            text="En consultation, le patient montre son écran. Un bouton copie le résumé prêt à coller."
+            text="En consultation, le patient montre son parcours. Vous pouvez vous concentrer sur l’échange et ajouter la prochaine étape à expliquer."
           />
         </div>
       </section>

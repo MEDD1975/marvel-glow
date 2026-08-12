@@ -13,11 +13,11 @@ export const Route = createFileRoute("/parcours")({
   }),
   head: () => ({
     meta: [
-      { title: "Parcours de soin gradué — Kivoir" },
+      { title: "Votre parcours de soin — Kivoir" },
       {
         name: "description",
         content:
-          "Pour chaque trouble du membre inférieur : quel professionnel voir en premier, lesquels prennent le relais, dans quel délai et quand passer au recours spécialisé.",
+          "Comprenez où vous en êtes, ce qui vient ensuite et comment préparer votre prochain échange avec un professionnel de santé.",
       },
       { property: "og:title", content: "Parcours de soin gradué — Kivoir" },
       {
@@ -78,8 +78,8 @@ function ParcoursPage() {
       {situation ? <div className="mt-6 rounded-2xl border border-care/20 bg-care/5 p-5 text-base leading-7 text-foreground">Votre situation est un point de départ. Choisissez ensuite le sujet de soin concerné pour voir les étapes habituelles, sans interprétation médicale.</div> : null}
 
       <div className="mt-12">
-        <h2 className="text-2xl font-semibold tracking-tight text-foreground">Choisissez le sujet de votre parcours</h2>
-        <p className="mt-2 text-base leading-7 text-muted-foreground">Les informations ci-dessous décrivent l’organisation des soins, pas un diagnostic.</p>
+        <h2 className="text-2xl font-semibold tracking-tight text-foreground">Choisissez le parcours qui vous concerne</h2>
+        <p className="mt-2 text-base leading-7 text-muted-foreground">Ces repères expliquent l’organisation des soins. Ils ne remplacent pas les consignes de votre professionnel.</p>
       </div>
 
       <div className="mt-6 flex flex-wrap gap-2">
@@ -120,6 +120,7 @@ function ParcoursPage() {
               </span>
             </div>
             <p className="mt-2 text-sm text-muted-foreground">{selected.summary}</p>
+            <p className="mt-3 text-sm leading-6 text-muted-foreground">Cette page sert de repère général. Votre médecin ou professionnel de santé reste la personne qui adapte votre parcours à votre situation.</p>
             <p className="mt-4 flex items-start gap-2 rounded-xl border border-care/20 bg-care/5 p-3 text-sm text-foreground">
               <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-care" />
               <span>
@@ -129,7 +130,7 @@ function ParcoursPage() {
             </p>
             <div className="mt-5 rounded-2xl border border-border bg-background p-4">
               <p className="text-xs font-semibold uppercase tracking-wide text-care">À préparer pour votre prochain échange</p>
-              <p className="mt-2 text-sm leading-6 text-muted-foreground">Notez vos symptômes, les étapes déjà réalisées, vos questions et les documents reçus.</p>
+              <p className="mt-2 text-sm leading-6 text-muted-foreground">Notez ce qui vous amène, les étapes déjà réalisées, vos questions et les documents reçus. Vous pourrez présenter ces éléments à votre professionnel.</p>
             </div>
           </div>
 

@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { FormEvent, useState } from "react";
+import { useState } from "react";
 import {
   AlertTriangle,
   ArrowLeft,
@@ -12,22 +12,9 @@ import {
   Stethoscope,
 } from "lucide-react";
 import { MedicalDisclaimer } from "@/components/HomeBlocks";
-import { askCareAgent } from "@/lib/care-agent";
 import { LegDiagram } from "@/components/LegDiagram";
 import { DoctorSummary } from "@/components/DoctorSummary";
 import { conditionAdvice } from "@/lib/condition-advice";
-type CarePlan = {
-  level: TriageLevel;
-  title: string;
-  summary: string;
-  condition: string;
-  nextStep: string;
-  timeline: string;
-  stages: { label: string; title: string; detail: string }[];
-  escalation: string[];
-  resources: string[];
-};
-
 import {
   conditions,
   levelCopy,
@@ -90,7 +77,7 @@ const levelRank: Record<TriageLevel, number> = {
   urgent: 2,
 };
 
-const totalSteps = triageQuestions.length + 3; // zone + 3 triage + 1 trouble choice
+const totalSteps = triageQuestions.length + 2; // zone + questions + précision de la zone
 
 type Step =
   | { type: "zone" }
@@ -102,25 +89,6 @@ function OrientationPage() {
   const [zone, setZone] = useState<string | null>(null);
   const [condition, setCondition] = useState<Condition | null>(null);
   const [answers, setAnswers] = useState<TriageOption[]>([]);
-  const [agentMessage, setAgentMessage] = useState("");
-  const [agentReply, setAgentReply] = useState<CarePlan | null>(null);
-  const [agentLoading, setAgentLoading] = useState(false);
-
-  const handleAgentSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    if (!agentMessage.trim() || agentLoading) return;
-    setAgentLoading(true);
-    setAgentReply(null);
-    try {
-      const response = await askCareAgent({ data: { message: agentMessage, zone: zone ?? undefined } });
-      setAgentReply(parseCarePlan(response.text));
-    } catch {
-      setAgentReply(null);
-    } finally {
-      setAgentLoading(false);
-    }
-  };
-
   const step = getStep(zone, answers, condition);
   const stepNumber = getStepNumber(step);
   const currentQuestion = step.type === "triage" ? triageQuestions[step.index] : null;
@@ -160,34 +128,8 @@ function OrientationPage() {
         ))}
       </div>
 
-      <section className="mt-8 rounded-3xl border border-border bg-card p-6 shadow-sm md:p-8" aria-labelledby="agent-title">
-        <div className="flex items-start gap-3">
-          <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-care text-primary-foreground"><HeartPulse aria-hidden="true" /></div>
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Besoin d’aide ?</p>
-            <h2 id="agent-title" className="mt-1 text-xl font-semibold text-foreground">Écrire ma douleur</h2>
-            <p className="mt-2 text-base leading-7 text-muted-foreground">Une alternative si vous préférez commencer par vos propres mots.</p>
-          </div>
-        </div>
-        <form className="mt-4 flex flex-col gap-2 sm:flex-row" onSubmit={handleAgentSubmit}>
-          <input
-            value={agentMessage}
-            onChange={(event) => setAgentMessage(event.target.value)}
-            placeholder="Ex. douleur sur le côté du genou depuis 2 semaines…"
-            aria-label="Décrivez votre douleur"
-            maxLength={800}
-            className="min-h-11 flex-1 rounded-xl border border-border bg-background px-4 text-sm outline-none ring-care transition focus:ring-2"
-          />
-          <button type="submit" disabled={agentLoading || agentMessage.trim().length < 3} className="min-h-11 rounded-xl bg-care px-5 text-sm font-semibold text-primary-foreground transition hover:bg-care/90 disabled:cursor-not-allowed disabled:opacity-50">
-            {agentLoading ? "Analyse…" : "Être orienté"}
-          </button>
-        </form>
-        {agentReply ? <CarePlanCard plan={agentReply} /> : null}
-        <p className="mt-3 text-xs text-muted-foreground">Cet assistant ne pose pas de diagnostic. En cas de signe inquiétant ou d’urgence, appelez le 15 ou le 112.</p>
-      </section>
-
       <div className="mt-8 rounded-3xl border border-care/25 bg-care/5 p-7 shadow-sm md:p-10">
-        <div className="mb-6"><p className="text-xs font-semibold uppercase tracking-wide text-care">Parcours guidé</p><h2 className="mt-1 text-2xl font-semibold tracking-tight text-foreground">Répondez à quelques questions</h2><p className="mt-1 text-base leading-7 text-muted-foreground">C’est la façon la plus simple d’obtenir une orientation adaptée.</p></div>
+        <div className="mb-6"><p className="text-xs font-semibold uppercase tracking-wide text-care">Parcours guidé</p><h2 className="mt-1 text-2xl font-semibold tracking-tight text-foreground">Répondez à quelques questions</h2><p className="mt-1 text-base leading-7 text-muted-foreground">5 questions essentielles pour vous guider sans poser de diagnostic.</p></div>
         {step.type === "zone" ? (
           <ZonePicker onSelect={setZone} />
         ) : step.type === "triage" && currentQuestion ? (
@@ -219,45 +161,6 @@ function OrientationPage() {
         <MedicalDisclaimer />
       </div>
     </main>
-  );
-}
-
-function parseCarePlan(text: string): CarePlan {
-  try {
-    const parsed = JSON.parse(text) as CarePlan;
-    if (parsed.title && parsed.nextStep && Array.isArray(parsed.stages)) return parsed;
-  } catch {
-    // The local fallback is always JSON; this protects the UI from a provider returning prose.
-  }
-  return {
-    level: "professional",
-    title: "Consultation à organiser",
-    summary: text,
-    condition: "Douleur du membre inférieur",
-    nextStep: "Prenez rendez-vous avec votre médecin généraliste pour une première évaluation.",
-    timeline: "Dans les prochains jours",
-    stages: [{ label: "1re ligne", title: "Médecin généraliste", detail: "Évalue la situation et vous oriente vers le professionnel adapté." }],
-    escalation: ["Douleur intense, aggravation ou signe inhabituel : demandez un avis rapidement."],
-    resources: ["Parcours guidé", "Conseils validés", "Annuaire des professionnels"],
-  };
-}
-
-function CarePlanCard({ plan }: { plan: CarePlan }) {
-  const Icon = levelIcons[plan.level];
-  return (
-    <div className={`mt-4 rounded-2xl border p-5 ${levelClasses[plan.level]}`} role="status">
-      <div className="flex items-start gap-3">
-        <Icon aria-hidden="true" className="mt-0.5 shrink-0" />
-        <div><p className="text-xs font-semibold uppercase tracking-wide">Première orientation</p><h3 className="mt-1 text-xl font-semibold">Ce que votre description peut évoquer</h3><p className="mt-1 text-sm leading-6">{plan.summary}</p></div>
-      </div>
-      <div className="mt-5 grid gap-3 sm:grid-cols-2">
-        <div className="rounded-xl bg-background/70 p-4"><p className="text-xs font-semibold uppercase tracking-wide">Hypothèse à discuter</p><p className="mt-1 font-medium">{plan.condition}</p><p className="mt-2 text-sm leading-6 text-muted-foreground">Ce n’est pas un diagnostic. Plusieurs causes peuvent donner des symptômes proches.</p></div>
-        <div className="rounded-xl bg-background/70 p-4"><p className="text-xs font-semibold uppercase tracking-wide">Votre prochaine étape · {plan.timeline}</p><p className="mt-1 font-medium">{plan.nextStep}</p></div>
-      </div>
-      <div className="mt-5"><p className="text-xs font-semibold uppercase tracking-wide">Votre parcours, dans l’ordre</p><ol className="mt-3 grid gap-3">{plan.stages.map((stage, index) => <li key={`${stage.title}-${index}`} className="flex gap-3 rounded-xl bg-background/70 p-3"><span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-care text-xs font-semibold text-primary-foreground">{index + 1}</span><div><p className="font-semibold">{stage.title}</p><p className="text-sm leading-6">{stage.detail}</p></div></li>)}</ol></div>
-      <div className="mt-4 rounded-xl border border-border bg-background/60 p-3 text-sm leading-6"><strong>Pourquoi cette orientation ?</strong> Le choix s’appuie sur le trouble ou la zone sélectionnée, ainsi que sur vos réponses. Le professionnel confirme la cause lors de l’examen.</div><div className="mt-5"><p className="text-xs font-semibold uppercase tracking-wide">Quand accélérer</p><ul className="mt-2 grid gap-1 text-sm">{plan.escalation.map((item) => <li key={item}>• {item}</li>)}</ul></div>
-      <div className="mt-5 flex flex-wrap items-center gap-2"><Link to="/annuaire" className="rounded-full bg-care px-4 py-2 text-xs font-semibold text-primary-foreground transition-opacity hover:opacity-90">Voir les professionnels près de chez moi</Link>{plan.resources.map((resource) => <span key={resource} className="rounded-full bg-background/70 px-3 py-1 text-xs font-medium">{resource}</span>)}</div>
-    </div>
   );
 }
 
@@ -346,12 +249,12 @@ function ConditionPicker({
     <div className="space-y-6">
       <div className="flex items-start justify-between gap-4">
         <h2 className="text-lg font-semibold text-card-foreground">
-          Quel trouble ressemble le plus à votre situation ?
+          Où se situe précisément la douleur ?
         </h2>
         <span className="shrink-0 text-xs text-muted-foreground">Étape {totalSteps}</span>
       </div>
 
-      <p className="text-sm text-muted-foreground">Choisissez la description qui ressemble le plus à ce que vous ressentez. Il s’agit de pistes, pas d’un diagnostic.</p>
+      <p className="text-sm text-muted-foreground">Cette dernière réponse aide à orienter les conseils. Elle ne sert pas à établir un diagnostic.</p>
 
       <div className="grid gap-4">
         {zoneConditions.map((item) => (
@@ -513,17 +416,17 @@ function ResultView({
             <LegDiagram spot={condition.spot} label={condition.name} />
           </span>
           <div className="min-w-0">
-            <h3 className="font-semibold text-foreground">{condition.name}</h3>
-            <p className="mt-1 text-sm text-muted-foreground">{condition.summary}</p>
+            <h3 className="font-semibold text-foreground">Zone et symptômes pris en compte</h3>
+            <p className="mt-1 text-sm text-muted-foreground">Vos réponses servent à proposer des conseils prudents et une première orientation. Elles ne confirment pas une cause.</p>
             <p className="mt-1 text-sm text-muted-foreground">
-              <span className="font-medium text-foreground">Où ça fait mal : </span>
-              {condition.location}
+              <span className="font-medium text-foreground">Zone décrite : </span>
+              {condition.zone}
             </p>
           </div>
         </div>
         <dl className="mt-3 space-y-2 text-sm">
           <div>
-            <dt className="inline font-medium text-foreground">Premier réflexe : </dt>
+            <dt className="inline font-medium text-foreground">Premier réflexe prudent : </dt>
             <dd className="inline text-muted-foreground">{condition.firstStep}</dd>
           </div>
           <div>

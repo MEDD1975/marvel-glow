@@ -255,9 +255,9 @@ export const journeySteps: JourneyStep[] = [
     label: "On m'a prescrit une imagerie",
     context: "Radio, échographie ou IRM a été prescrite pour confirmer ou éliminer un diagnostic.",
     example: "« J'ai une ordonnance pour une IRM du genou. »",
-    next: ["Imagerie médicale", "Médecin généraliste"],
+    next: ["Imagerie médicale"],
     advice:
-      "Faites l'examen puis rapportez le compte rendu au prescripteur : c'est lui qui décide de la suite du parcours.",
+      "Votre prochaine étape est de réaliser l'examen d'imagerie prescrit. Ensuite, rapportez le compte rendu au médecin prescripteur : il décidera de la suite du parcours.",
   },
   {
     id: "kine-en-cours",

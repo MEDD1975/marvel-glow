@@ -108,7 +108,7 @@ function OrientationPage() {
     event.preventDefault();
     if (!agentMessage.trim() || agentLoading) return;
     setAgentLoading(true);
-    setAgentReply("");
+    setAgentReply(null);
     try {
       const response = await askCareAgent({ data: { message: agentMessage, zone: zone ?? undefined } });
       setAgentReply(parseCarePlan(response.text));
@@ -247,11 +247,11 @@ function CarePlanCard({ plan }: { plan: CarePlan }) {
         <div><p className="text-xs font-semibold uppercase tracking-wide">Parcours proposé</p><h3 className="mt-1 text-xl font-semibold">{plan.title}</h3><p className="mt-1 text-sm leading-6">{plan.summary}</p></div>
       </div>
       <div className="mt-5 grid gap-3 sm:grid-cols-2">
-        <div className="rounded-xl bg-background/70 p-4"><p className="text-xs font-semibold uppercase tracking-wide">Situation étudiée</p><p className="mt-1 font-medium">{plan.condition}</p></div>
-        <div className="rounded-xl bg-background/70 p-4"><p className="text-xs font-semibold uppercase tracking-wide">Professionnel à consulter · {plan.timeline}</p><p className="mt-1 font-medium">{plan.nextStep}</p></div>
+        <div className="rounded-xl bg-background/70 p-4"><p className="text-xs font-semibold uppercase tracking-wide">Ce que l’on peut dire</p><p className="mt-1 font-medium">{plan.condition}</p></div>
+        <div className="rounded-xl bg-background/70 p-4"><p className="text-xs font-semibold uppercase tracking-wide">Votre prochaine étape · {plan.timeline}</p><p className="mt-1 font-medium">{plan.nextStep}</p></div>
       </div>
       <div className="mt-5"><p className="text-xs font-semibold uppercase tracking-wide">Votre parcours, dans l’ordre</p><ol className="mt-3 grid gap-3">{plan.stages.map((stage, index) => <li key={`${stage.title}-${index}`} className="flex gap-3 rounded-xl bg-background/70 p-3"><span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-care text-xs font-semibold text-primary-foreground">{index + 1}</span><div><p className="font-semibold">{stage.title}</p><p className="text-sm leading-6">{stage.detail}</p></div></li>)}</ol></div>
-      <div className="mt-5"><p className="text-xs font-semibold uppercase tracking-wide">Quand accélérer</p><ul className="mt-2 grid gap-1 text-sm">{plan.escalation.map((item) => <li key={item}>• {item}</li>)}</ul></div>
+      <div className="mt-4 rounded-xl border border-border bg-background/60 p-3 text-sm leading-6"><strong>Pourquoi cette orientation ?</strong> Le choix s’appuie sur le trouble ou la zone sélectionnée, ainsi que sur vos réponses. Le professionnel confirme la cause lors de l’examen.</div><div className="mt-5"><p className="text-xs font-semibold uppercase tracking-wide">Quand accélérer</p><ul className="mt-2 grid gap-1 text-sm">{plan.escalation.map((item) => <li key={item}>• {item}</li>)}</ul></div>
       <div className="mt-5 flex flex-wrap items-center gap-2"><Link to="/annuaire" className="rounded-full bg-care px-4 py-2 text-xs font-semibold text-primary-foreground transition-opacity hover:opacity-90">Voir les professionnels près de chez moi</Link>{plan.resources.map((resource) => <span key={resource} className="rounded-full bg-background/70 px-3 py-1 text-xs font-medium">{resource}</span>)}</div>
     </div>
   );

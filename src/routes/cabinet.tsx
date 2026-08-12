@@ -27,13 +27,13 @@ export const Route = createFileRoute("/cabinet")({
       {
         name: "description",
         content:
-          "Affichez un QR code en salle d'attente : le patient prépare son questionnaire musculo-squelettique et présente une synthèse prête à coller, sans aucune donnée enregistrée.",
+          "Créez une feuille de route simple : le patient comprend les étapes, prépare son échange et retrouve vos consignes après la consultation.",
       },
       { property: "og:title", content: "Espace cabinet — Kivoir" },
       {
         property: "og:description",
         content:
-          "QR code de salle d'attente et synthèse pré-consultation pour les troubles musculo-squelettiques du membre inférieur.",
+          "Un support partagé pour préparer la consultation et rendre la prochaine étape plus claire pour le patient.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -108,8 +108,8 @@ function CabinetPage() {
       </section>
 
       <section className="mt-10 grid gap-4 md:grid-cols-2 print:hidden" aria-label="Parcours du cabinet">
-        <WorkflowCard icon={QrCode} step="1" title="Avant la consultation" text="Le patient scanne, répond et arrive avec une synthèse prête à montrer." />
-        <WorkflowCard icon={Users} step="2" title="Après la consultation" text="Vous remettez une carte pour retrouver conseils, vidéos et orientation." />
+        <WorkflowCard icon={QrCode} step="1" title="Avant la consultation" text="Le patient repère son étape, prépare ses questions et rassemble ses documents." />
+        <WorkflowCard icon={Users} step="2" title="Après la consultation" text="Vous lui remettez une feuille de route : prochaine étape, consigne et éléments à préparer." />
       </section>
 
       {/* Why propose Kivoir */}
@@ -124,15 +124,14 @@ function CabinetPage() {
             <p className="text-xs font-semibold uppercase tracking-wide text-care">Avant la consultation</p>
             <p className="mt-1 text-sm font-medium text-foreground">L'affiche QR en salle d'attente</p>
             <p className="mt-1 text-sm text-muted-foreground">
-              Le patient découvre son parcours pendant qu'il attend : il arrive avec ses étapes déjà réalisées, ses questions et les documents utiles.
+              Le patient arrive avec son étape actuelle, ses questions et les documents utiles à l’échange.
             </p>
           </div>
           <div className="rounded-xl border border-border bg-card p-4">
             <p className="text-xs font-semibold uppercase tracking-wide text-care">Après la consultation</p>
             <p className="mt-1 text-sm font-medium text-foreground">La carte remise au patient</p>
             <p className="mt-1 text-sm text-muted-foreground">
-              Il retrouve chez lui les informations sur son trouble, son parcours de soins et les vidéos d'exercices,
-              sans vous solliciter à nouveau.
+              Il retrouve chez lui la feuille de route, la prochaine étape et vos consignes, sans vous solliciter à nouveau pour chaque détail.
             </p>
           </div>
         </div>
@@ -144,7 +143,7 @@ function CabinetPage() {
           </li>
           <li className="flex items-start gap-3 text-sm text-muted-foreground">
             <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-care" />
-            Il dispose de vidéos et de conseils adaptés à son trouble pour mieux comprendre et suivre sa prise en charge.
+            Il retrouve une feuille de route claire et peut préparer son prochain échange avec les bonnes informations.
           </li>
           <li className="flex items-start gap-3 text-sm text-muted-foreground">
             <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-care" />
@@ -185,8 +184,8 @@ function CabinetPage() {
           <StepCard
             number={2}
             icon={Users}
-            title="Le patient scanne"
-            text="En salle d'attente, le patient répond à 3 questions expliquées sur son téléphone."
+title="Le patient prépare"
+                text="En salle d'attente, le patient repère son étape, ses questions et les documents utiles sur son téléphone."
           />
           <StepCard
             number={3}
@@ -280,8 +279,7 @@ function CabinetPage() {
           <div>
             <h2 className="text-2xl font-semibold text-foreground">Brique 2 — Carte patient</h2>
             <p className="mt-1 max-w-2xl text-muted-foreground">
-              À la fin de la consultation, donnez cette carte au patient : il scanne le QR code chez lui et retrouve les
-              informations sur son trouble, son parcours de soins et les vidéos d'exercices.
+              À la fin de la consultation, donnez cette carte au patient : il retrouve la prochaine étape, vos consignes et les éléments à préparer pour la suite.
             </p>
           </div>
           <button
@@ -315,7 +313,7 @@ function CabinetPage() {
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
             <h2 className="text-2xl font-semibold text-foreground">Exemple de synthèse patient</h2>
-            <p className="mt-1 text-muted-foreground">Voici ce que le médecin voit après le questionnaire.</p>
+            <p className="mt-1 text-muted-foreground">Voici ce que le médecin peut retrouver avant l’échange.</p>
           </div>
           <button
             onClick={() => setShowDemo((s) => !s)}
@@ -359,7 +357,7 @@ function CabinetPage() {
         <div className="mt-6 grid gap-4 md:grid-cols-2">
           <FaqCard
             question="Est-ce que mes patients doivent créer un compte ?"
-            answer="Non. Ils scannent le QR code, répondent au questionnaire et voient le résultat directement."
+            answer="Non. Ils scannent le QR code et retrouvent directement le parcours partagé."
           />
           <FaqCard
             question="Où vont les données ?"
@@ -367,7 +365,7 @@ function CabinetPage() {
           />
           <FaqCard
             question="Comment le médecin récupère-t-il la synthèse ?"
-            answer='Le patient montre son écran. Le médecin appuie sur "Copier la synthèse" et la colle dans son logiciel.'
+            answer='Le patient montre sa feuille de route. Vous pouvez reprendre les éléments utiles et confirmer la prochaine étape.'
           />
           <FaqCard
             question="Kivoir remplace-t-il l'examen clinique ?"

@@ -5,12 +5,10 @@ import { MedicalDisclaimer } from "@/components/HomeBlocks";
 import { conditions } from "@/lib/conditions";
 import { lineLabels, pathways, type CareLine } from "@/lib/pathways";
 
-type ParcoursSearch = { c?: string | undefined };
+type ParcoursSearch = Record<string, never>;
 
 export const Route = createFileRoute("/parcours")({
-  validateSearch: (search: Record<string, unknown>): ParcoursSearch => ({
-    c: typeof search["c"] === "string" ? search["c"] : undefined,
-  }),
+  validateSearch: (): ParcoursSearch => ({}),
   head: () => ({
     meta: [
       { title: "Votre parcours de soin — Kivoir" },
@@ -19,11 +17,11 @@ export const Route = createFileRoute("/parcours")({
         content:
           "Comprenez où vous en êtes, ce qui vient ensuite et comment préparer votre prochain échange avec un professionnel de santé.",
       },
-      { property: "og:title", content: "Parcours de soin gradué — Kivoir" },
+      { property: "og:title", content: "Votre parcours de soin — Kivoir" },
       {
         property: "og:description",
         content:
-          "Le réseau de spécialistes autour de votre pathologie : 1re ligne, prise en charge spécialisée et recours, avec les délais.",
+          "Une feuille de route pour comprendre les étapes de soin et préparer vos échanges avec les professionnels.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -39,11 +37,9 @@ const lineClasses: Record<CareLine, string> = {
 };
 
 function ParcoursPage() {
-  const { c } = Route.useSearch();
-  const navigate = useNavigate({ from: "/parcours" });
-
-  const selected = conditions.find((item) => item.id === c) ?? null;
-  const pathway = selected ? pathways[selected.id] : undefined;
+  Route.useSearch();
+  const selected = null as any;
+  const pathway = null as any;
   const [situation, setSituation] = useState<string | null>(null);
   const situations = [
     { id: "start", title: "Je commence", detail: "Je ressens quelque chose et je ne sais pas par où commencer." },
@@ -51,9 +47,6 @@ function ParcoursPage() {
     { id: "exam", title: "J’ai un examen", detail: "Je veux savoir comment lire la suite de mon parcours." },
     { id: "rehab", title: "Je suis en rééducation", detail: "Je veux suivre les prochaines étapes et les relais utiles." },
   ];
-
-  const select = (id: string | undefined) =>
-    navigate({ search: { c: id }, resetScroll: false });
 
   return (
     <main className="mx-auto max-w-4xl px-4 py-10">
@@ -77,40 +70,26 @@ function ParcoursPage() {
 
       {situation ? <div className="mt-6 rounded-2xl border border-care/20 bg-care/5 p-5 text-base leading-7 text-foreground">Votre situation est un point de départ. Choisissez ensuite le sujet de soin concerné pour voir les étapes habituelles, sans interprétation médicale.</div> : null}
 
-      <div className="mt-12">
-        <h2 className="text-2xl font-semibold tracking-tight text-foreground">Choisissez le parcours qui vous concerne</h2>
-        <p className="mt-2 text-base leading-7 text-muted-foreground">Ces repères expliquent l’organisation des soins. Ils ne remplacent pas les consignes de votre professionnel.</p>
-      </div>
-
-      <div className="mt-6 flex flex-wrap gap-2">
-        {conditions.map((item) => {
-          const active = item.id === selected?.id;
-          return (
-            <button
-              key={item.id}
-              onClick={() => select(active ? undefined : item.id)}
-              className={`rounded-full border px-3 py-1.5 text-sm transition-colors ${
-                active
-                  ? "border-care bg-care text-primary-foreground"
-                  : "border-border bg-card text-muted-foreground hover:border-care/40 hover:text-foreground"
-              }`}
-            >
-              {item.name}
-            </button>
-          );
-        })}
-      </div>
-
-      {!selected || !pathway ? (
-        <div className="mt-8 rounded-2xl border border-dashed border-border bg-card p-8 text-center">
-          <Users className="mx-auto h-8 w-8 text-care" />
-          <p className="mt-3 font-medium text-foreground">Sélectionnez un trouble ci-dessus</p>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Vous obtiendrez le parcours complet : professionnels de 1re ligne, spécialistes du suivi,
-            recours en cas d'échec, chronologie et signaux qui doivent accélérer la prise en charge.
-          </p>
+      <section className="mt-12" aria-labelledby="roadmap-title">
+        <p className="text-sm font-semibold uppercase tracking-wide text-care">Votre feuille de route</p>
+        <h2 id="roadmap-title" className="mt-2 text-2xl font-semibold tracking-tight text-foreground">Les étapes qui structurent un parcours</h2>
+        <p className="mt-2 max-w-2xl text-base leading-7 text-muted-foreground">Kivoir ne cherche pas à interpréter votre situation. Le service vous aide à préparer les échanges et à suivre les étapes définies avec votre professionnel.</p>
+        <div className="mt-6 grid gap-4">
+          {[{ title: "Comprendre où vous en êtes", detail: "Notez la dernière étape réalisée, le professionnel rencontré et les documents reçus." }, { title: "Préparer le prochain échange", detail: "Rassemblez vos questions, vos symptômes tels que vous les ressentez et les éléments utiles à transmettre." }, { title: "Suivre la suite du parcours", detail: "Retrouvez la prochaine étape, le professionnel concerné et ce qui reste à faire." }].map((step, index) => (
+            <div key={step.title} className="flex gap-4 rounded-3xl border border-border bg-card p-5 shadow-sm">
+              <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-care text-sm font-semibold text-primary-foreground">{index + 1}</span>
+              <div><h3 className="font-semibold text-foreground">{step.title}</h3><p className="mt-1 text-sm leading-6 text-muted-foreground">{step.detail}</p></div>
+            </div>
+          ))}
         </div>
-      ) : (
+      </section>
+
+      <section className="mt-8 grid gap-4 md:grid-cols-2" aria-label="Actions du parcours">
+        <a href="/conseils" className="rounded-2xl border border-care/25 bg-care/5 p-5 transition hover:bg-care/10"><p className="font-semibold text-foreground">Voir les conseils généraux</p><p className="mt-1 text-sm leading-6 text-muted-foreground">Des repères d’information à consulter en complément de votre accompagnement.</p></a>
+        <a href="/annuaire" className="rounded-2xl border border-border bg-card p-5 transition hover:border-care/40"><p className="font-semibold text-foreground">Retrouver les professionnels</p><p className="mt-1 text-sm leading-6 text-muted-foreground">Consultez l’annuaire lorsque votre professionnel vous invite à poursuivre le parcours.</p></a>
+      </section>
+
+      {false ? (
         <div className="mt-8 space-y-8">
           <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
             <div className="flex flex-wrap items-center gap-2">
@@ -192,7 +171,7 @@ function ParcoursPage() {
             </ul>
           </section>
         </div>
-      )}
+          ) : null}
 
       <div className="mt-10">
         <MedicalDisclaimer />

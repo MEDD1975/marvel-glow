@@ -79,47 +79,44 @@ export function HomeHero({ source = "direct" }: { source?: HomeSource }) {
           </div>
         </div>
 
-        <div className="mt-12">
-          <p className="mb-4 text-center text-sm font-semibold text-muted-foreground">Je suis un particulier ou un patient</p>
-          <div className="grid gap-4 sm:grid-cols-2">
+        <div className="mt-14">
+          <p className="mb-5 text-center text-base font-semibold text-muted-foreground">Pour vous</p>
+          <div className="grid gap-5 sm:grid-cols-2">
           <Link
             to="/orientation"
-            className={`group flex min-h-56 flex-col gap-5 rounded-[2rem] border border-urgent/20 bg-card p-7 text-left shadow-[0_12px_40px_-24px_var(--urgent)] transition-all hover:-translate-y-1 hover:shadow-[0_20px_55px_-28px_var(--urgent)] ${carteFirst ? "order-2" : "order-1"}`}
+            className={`group flex min-h-72 flex-col gap-6 rounded-[2rem] border border-urgent/20 bg-card p-8 text-left shadow-[0_12px_40px_-24px_var(--urgent)] transition-all hover:-translate-y-1 hover:shadow-[0_20px_55px_-28px_var(--urgent)] ${carteFirst ? "order-2" : "order-1"}`}
           >
             <span className="flex size-14 items-center justify-center rounded-2xl bg-urgent/10 text-urgent">
               <HeartPulse aria-hidden="true" className="size-7" />
             </span>
             <div>
-              <h2 className="text-xl font-semibold text-card-foreground">J&apos;ai une douleur</h2>
-              <p className="mt-1 text-sm leading-6 text-muted-foreground">Vous décrivez votre douleur et obtenez une prochaine étape claire.</p>
+              <h2 className="text-2xl font-semibold tracking-tight text-card-foreground">J&apos;ai une douleur</h2>
+              <p className="mt-2 text-base leading-7 text-muted-foreground">Être orienté vers le bon professionnel.</p>
             </div>
-            <span className="mt-auto inline-flex items-center gap-2 text-sm font-semibold text-urgent">Démarrer <ArrowRight aria-hidden="true" className="transition-transform group-hover:translate-x-1" /></span>
+            <span className="mt-auto inline-flex min-h-12 items-center gap-2 text-base font-semibold text-urgent">Commencer <ArrowRight aria-hidden="true" className="transition-transform group-hover:translate-x-1" /></span>
           </Link>
 
           <Link
             to="/parcours"
-            className={`group flex min-h-56 flex-col gap-5 rounded-[2rem] border border-care/20 bg-card p-7 text-left shadow-[0_12px_40px_-24px_var(--care)] transition-all hover:-translate-y-1 hover:shadow-[0_20px_55px_-28px_var(--care)] ${carteFirst ? "order-1" : "order-2"}`}
+            className={`group flex min-h-72 flex-col gap-6 rounded-[2rem] border border-care/20 bg-card p-8 text-left shadow-[0_12px_40px_-24px_var(--care)] transition-all hover:-translate-y-1 hover:shadow-[0_20px_55px_-28px_var(--care)] ${carteFirst ? "order-1" : "order-2"}`}
           >
             <span className="flex size-14 items-center justify-center rounded-2xl bg-care/10 text-care">
               <Stethoscope aria-hidden="true" className="size-7" />
             </span>
             <div>
-              <h2 className="text-xl font-semibold text-card-foreground">J&apos;ai déjà un diagnostic</h2>
-              <p className="mt-1 text-sm leading-6 text-muted-foreground">Les prochaines étapes, dans le bon ordre.</p>
+              <h2 className="text-2xl font-semibold tracking-tight text-card-foreground">J&apos;ai déjà un diagnostic</h2>
+              <p className="mt-2 text-base leading-7 text-muted-foreground">Suivre les étapes après un diagnostic.</p>
             </div>
-            <span className="mt-auto inline-flex items-center gap-2 text-sm font-semibold text-care">Voir la suite <ArrowRight aria-hidden="true" className="transition-transform group-hover:translate-x-1" /></span>
+            <span className="mt-auto inline-flex min-h-12 items-center gap-2 text-base font-semibold text-care">Voir le parcours <ArrowRight aria-hidden="true" className="transition-transform group-hover:translate-x-1" /></span>
           </Link>
 
           </div>
         </div>
 
-        <div className="mt-8 rounded-[2rem] border border-border bg-secondary/40 p-6 text-left sm:p-7">
-          <p className="text-sm font-semibold text-care">Je suis professionnel de santé</p>
-          <div className="mt-2 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-            <p className="max-w-2xl text-sm leading-6 text-muted-foreground">Préparez l’interrogatoire avant la consultation et prolongez vos conseils après, avec les deux briques Kivoir.</p>
-            <Link to="/cabinet" className="inline-flex shrink-0 items-center gap-2 text-sm font-semibold text-care">Découvrir l’espace cabinet <ArrowRight aria-hidden="true" /></Link>
-          </div>
-        </div>
+        <Link to="/cabinet" className="group mt-10 flex min-h-24 flex-col justify-center rounded-2xl border border-border bg-secondary/40 p-6 text-left transition-all hover:border-care/40 hover:bg-care-muted/20 sm:flex-row sm:items-center sm:justify-between sm:p-7">
+          <div><p className="text-base font-semibold text-care">Je suis professionnel de santé</p><p className="mt-1 text-sm leading-6 text-muted-foreground">Préparer la consultation. Prolonger les conseils.</p></div>
+          <span className="mt-3 inline-flex items-center gap-2 text-base font-semibold text-care sm:mt-0">Espace cabinet <ArrowRight aria-hidden="true" className="transition-transform group-hover:translate-x-1" /></span>
+        </Link>
 
         <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-muted-foreground">
           <span>3 minutes</span><span>Sans compte</span><span>Aucune donnée enregistrée</span>

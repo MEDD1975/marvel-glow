@@ -1,8 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { FormEvent, useState } from "react";
+import { useState } from "react";
 import {
   AlertTriangle,
   ArrowLeft,
+  ArrowRight,
   HeartPulse,
   Info,
   Lightbulb,
@@ -11,21 +12,9 @@ import {
   Stethoscope,
 } from "lucide-react";
 import { MedicalDisclaimer } from "@/components/HomeBlocks";
-import { askCareAgent } from "@/lib/care-agent";
 import { LegDiagram } from "@/components/LegDiagram";
 import { DoctorSummary } from "@/components/DoctorSummary";
-type CarePlan = {
-  level: TriageLevel;
-  title: string;
-  summary: string;
-  condition: string;
-  nextStep: string;
-  timeline: string;
-  stages: { label: string; title: string; detail: string }[];
-  escalation: string[];
-  resources: string[];
-};
-
+import { conditionAdvice } from "@/lib/condition-advice";
 import {
   conditions,
   levelCopy,
@@ -42,13 +31,13 @@ export const Route = createFileRoute("/orientation")({
       {
         name: "description",
         content:
-          "Décrivez votre douleur, répondez à trois questions expliquées et découvrez quel trouble du membre inférieur correspond à votre situation.",
+          "Décrivez votre douleur, répondez à quelques questions et obtenez une première orientation à discuter avec un professionnel.",
       },
       { property: "og:title", content: "Orientation — Kivoir" },
       {
         property: "og:description",
         content:
-          "Décrivez votre douleur, répondez à trois questions expliquées et découvrez quel trouble du membre inférieur correspond à votre situation.",
+          "Décrivez votre douleur, répondez à quelques questions et obtenez une première orientation à discuter avec un professionnel.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -88,7 +77,7 @@ const levelRank: Record<TriageLevel, number> = {
   urgent: 2,
 };
 
-const totalSteps = triageQuestions.length + 3; // zone + 3 triage + 1 trouble choice
+const totalSteps = triageQuestions.length + 2; // zone + questions + précision de la zone
 
 type Step =
   | { type: "zone" }
@@ -100,25 +89,6 @@ function OrientationPage() {
   const [zone, setZone] = useState<string | null>(null);
   const [condition, setCondition] = useState<Condition | null>(null);
   const [answers, setAnswers] = useState<TriageOption[]>([]);
-  const [agentMessage, setAgentMessage] = useState("");
-  const [agentReply, setAgentReply] = useState<CarePlan | null>(null);
-  const [agentLoading, setAgentLoading] = useState(false);
-
-  const handleAgentSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    if (!agentMessage.trim() || agentLoading) return;
-    setAgentLoading(true);
-    setAgentReply(null);
-    try {
-      const response = await askCareAgent({ data: { message: agentMessage, zone: zone ?? undefined } });
-      setAgentReply(parseCarePlan(response.text));
-    } catch {
-      setAgentReply(null);
-    } finally {
-      setAgentLoading(false);
-    }
-  };
-
   const step = getStep(zone, answers, condition);
   const stepNumber = getStepNumber(step);
   const currentQuestion = step.type === "triage" ? triageQuestions[step.index] : null;
@@ -141,11 +111,12 @@ function OrientationPage() {
   };
 
   return (
-    <main className="mx-auto max-w-3xl px-4 py-10">
+    <main className="mx-auto max-w-4xl px-5 py-12 md:px-8 md:py-16">
       <div className="max-w-2xl">
-        <p className="text-sm font-semibold uppercase tracking-wide text-care">Votre prochaine étape</p>
-        <h1 className="mt-2 text-3xl font-semibold tracking-tight text-foreground">On part de votre douleur, pas d’un diagnostic</h1>
-        <p className="mt-3 text-base leading-7 text-muted-foreground">Répondez d’abord au parcours guidé : il vous aide à préciser la zone, les signes importants et le bon niveau d’orientation. L’assistant libre est disponible si vous préférez commencer par vos propres mots.</p>
+        <p className="text-sm font-semibold uppercase tracking-wide text-care">Orientation</p>
+        <h1 className="mt-3 text-4xl font-semibold tracking-tight text-foreground md:text-5xl">Trouvez votre prochaine étape</h1>
+        <p className="mt-4 text-lg leading-8 text-muted-foreground">Quelques choix simples, puis une recommandation claire.</p>
+        <Link to="/conseils" className="mt-5 inline-flex min-h-11 items-center text-base font-semibold text-care hover:underline">Comprendre l’orientation <ArrowRight aria-hidden="true" className="ml-2 size-5" /></Link>
       </div>
 
       <div className="mt-6 flex items-center gap-2" aria-label={`Étape ${stepNumber} sur ${totalSteps}`}>
@@ -157,33 +128,8 @@ function OrientationPage() {
         ))}
       </div>
 
-      <section className="mt-6 rounded-2xl border border-care/20 bg-care/5 p-5 md:p-6" aria-labelledby="agent-title">
-        <div className="flex items-start gap-3">
-          <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-care text-primary-foreground"><HeartPulse aria-hidden="true" /></div>
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-wide text-care">Option libre</p>
-            <h2 id="agent-title" className="font-semibold text-foreground">Décrire ma douleur avec mes mots</h2>
-            <p className="mt-1 text-sm leading-6 text-muted-foreground">Une aide pour formuler votre situation et trouver une première orientation. Pour un résultat plus précis, utilisez le parcours guidé ci-dessous.</p>
-          </div>
-        </div>
-        <form className="mt-4 flex flex-col gap-2 sm:flex-row" onSubmit={handleAgentSubmit}>
-          <input
-            value={agentMessage}
-            onChange={(event) => setAgentMessage(event.target.value)}
-            placeholder="Ex. douleur sur le côté du genou depuis 2 semaines…"
-            aria-label="Décrivez votre douleur"
-            maxLength={800}
-            className="min-h-11 flex-1 rounded-xl border border-border bg-background px-4 text-sm outline-none ring-care transition focus:ring-2"
-          />
-          <button type="submit" disabled={agentLoading || agentMessage.trim().length < 3} className="min-h-11 rounded-xl bg-care px-5 text-sm font-semibold text-primary-foreground transition hover:bg-care/90 disabled:cursor-not-allowed disabled:opacity-50">
-            {agentLoading ? "Analyse…" : "Être orienté"}
-          </button>
-        </form>
-        {agentReply ? <CarePlanCard plan={agentReply} /> : null}
-        <p className="mt-3 text-xs text-muted-foreground">Cet assistant ne pose pas de diagnostic. En cas de signe inquiétant ou d’urgence, appelez le 15 ou le 112.</p>
-      </section>
-
-      <div className="mt-6 rounded-2xl border border-border bg-card p-6 shadow-sm md:p-8">
+      <div className="mt-8 rounded-3xl border border-care/25 bg-care/5 p-7 shadow-sm md:p-10">
+        <div className="mb-6"><p className="text-xs font-semibold uppercase tracking-wide text-care">Parcours guidé</p><h2 className="mt-1 text-2xl font-semibold tracking-tight text-foreground">Répondez à quelques questions</h2><p className="mt-1 text-base leading-7 text-muted-foreground">5 questions essentielles pour vous guider sans poser de diagnostic.</p></div>
         {step.type === "zone" ? (
           <ZonePicker onSelect={setZone} />
         ) : step.type === "triage" && currentQuestion ? (
@@ -215,45 +161,6 @@ function OrientationPage() {
         <MedicalDisclaimer />
       </div>
     </main>
-  );
-}
-
-function parseCarePlan(text: string): CarePlan {
-  try {
-    const parsed = JSON.parse(text) as CarePlan;
-    if (parsed.title && parsed.nextStep && Array.isArray(parsed.stages)) return parsed;
-  } catch {
-    // The local fallback is always JSON; this protects the UI from a provider returning prose.
-  }
-  return {
-    level: "professional",
-    title: "Consultation à organiser",
-    summary: text,
-    condition: "Douleur du membre inférieur",
-    nextStep: "Prenez rendez-vous avec votre médecin généraliste pour une première évaluation.",
-    timeline: "Dans les prochains jours",
-    stages: [{ label: "1re ligne", title: "Médecin généraliste", detail: "Évalue la situation et vous oriente vers le professionnel adapté." }],
-    escalation: ["Douleur intense, aggravation ou signe inhabituel : demandez un avis rapidement."],
-    resources: ["Parcours guidé", "Conseils validés", "Annuaire des professionnels"],
-  };
-}
-
-function CarePlanCard({ plan }: { plan: CarePlan }) {
-  const Icon = levelIcons[plan.level];
-  return (
-    <div className={`mt-4 rounded-2xl border p-5 ${levelClasses[plan.level]}`} role="status">
-      <div className="flex items-start gap-3">
-        <Icon aria-hidden="true" className="mt-0.5 shrink-0" />
-        <div><p className="text-xs font-semibold uppercase tracking-wide">Parcours proposé</p><h3 className="mt-1 text-xl font-semibold">{plan.title}</h3><p className="mt-1 text-sm leading-6">{plan.summary}</p></div>
-      </div>
-      <div className="mt-5 grid gap-3 sm:grid-cols-2">
-        <div className="rounded-xl bg-background/70 p-4"><p className="text-xs font-semibold uppercase tracking-wide">Ce que l’on peut dire</p><p className="mt-1 font-medium">{plan.condition}</p></div>
-        <div className="rounded-xl bg-background/70 p-4"><p className="text-xs font-semibold uppercase tracking-wide">Votre prochaine étape · {plan.timeline}</p><p className="mt-1 font-medium">{plan.nextStep}</p></div>
-      </div>
-      <div className="mt-5"><p className="text-xs font-semibold uppercase tracking-wide">Votre parcours, dans l’ordre</p><ol className="mt-3 grid gap-3">{plan.stages.map((stage, index) => <li key={`${stage.title}-${index}`} className="flex gap-3 rounded-xl bg-background/70 p-3"><span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-care text-xs font-semibold text-primary-foreground">{index + 1}</span><div><p className="font-semibold">{stage.title}</p><p className="text-sm leading-6">{stage.detail}</p></div></li>)}</ol></div>
-      <div className="mt-4 rounded-xl border border-border bg-background/60 p-3 text-sm leading-6"><strong>Pourquoi cette orientation ?</strong> Le choix s’appuie sur le trouble ou la zone sélectionnée, ainsi que sur vos réponses. Le professionnel confirme la cause lors de l’examen.</div><div className="mt-5"><p className="text-xs font-semibold uppercase tracking-wide">Quand accélérer</p><ul className="mt-2 grid gap-1 text-sm">{plan.escalation.map((item) => <li key={item}>• {item}</li>)}</ul></div>
-      <div className="mt-5 flex flex-wrap items-center gap-2"><Link to="/annuaire" className="rounded-full bg-care px-4 py-2 text-xs font-semibold text-primary-foreground transition-opacity hover:opacity-90">Voir les professionnels près de chez moi</Link>{plan.resources.map((resource) => <span key={resource} className="rounded-full bg-background/70 px-3 py-1 text-xs font-medium">{resource}</span>)}</div>
-    </div>
   );
 }
 
@@ -308,20 +215,18 @@ function ZonePicker({ onSelect }: { onSelect: (zone: string) => void }) {
         <span className="shrink-0 text-xs text-muted-foreground">Étape 1</span>
       </div>
 
-      <ContextBlocks
-        context="La localisation de la douleur est le premier élément qui permet d'orienter le diagnostic. Chaque zone du membre inférieur a ses pathologies typiques et son réseau de soins."
-        example="Exemple de réponse : « J'ai mal à l'intérieur du genou, juste sous la rotule, depuis quelques jours » → choisissez Genou."
-      />
+<p className="text-sm text-muted-foreground">Choisissez la zone qui vous gêne le plus.</p>
 
       <div className="grid gap-3 sm:grid-cols-2">
         {zones.map((z) => (
           <button
             key={z.id}
             onClick={() => onSelect(z.id)}
-            className="flex flex-col gap-1 rounded-xl border border-border bg-background p-4 text-left transition-colors hover:border-care/40 hover:bg-care-muted/30"
+            className="group flex min-h-36 flex-col justify-center gap-3 rounded-3xl border border-border bg-background p-6 text-left transition-all hover:-translate-y-0.5 hover:border-care/50 hover:bg-care-muted/30 hover:shadow-sm"
           >
-            <span className="font-medium text-foreground">{z.label}</span>
-            <span className="text-sm text-muted-foreground">{z.description}</span>
+            <span className="text-2xl font-semibold tracking-tight text-foreground">{z.label}</span>
+            <span className="text-base leading-6 text-muted-foreground">{z.description}</span>
+            <span className="mt-1 text-xs font-semibold text-care opacity-0 transition-opacity group-hover:opacity-100">Choisir</span>
           </button>
         ))}
       </div>
@@ -344,15 +249,12 @@ function ConditionPicker({
     <div className="space-y-6">
       <div className="flex items-start justify-between gap-4">
         <h2 className="text-lg font-semibold text-card-foreground">
-          Quel trouble ressemble le plus à votre situation ?
+          Où se situe précisément la douleur ?
         </h2>
         <span className="shrink-0 text-xs text-muted-foreground">Étape {totalSteps}</span>
       </div>
 
-      <ContextBlocks
-        context="Vous avez indiqué la zone et les signes principaux. On affiche maintenant les troubles les plus fréquents de cette zone. Choisissez celui dont la description, la localisation et les déclencheurs correspondent le mieux à ce que vous ressentez."
-        example="Exemple de réponse : « Mal sous le talon aux premiers pas du matin » → Aponévrosite plantaire."
-      />
+      <p className="text-sm text-muted-foreground">Cette dernière réponse aide à orienter les conseils. Elle ne sert pas à établir un diagnostic.</p>
 
       <div className="grid gap-4">
         {zoneConditions.map((item) => (
@@ -371,20 +273,7 @@ function ConditionPicker({
                   {item.zone}
                 </span>
               </span>
-              <span className="mt-2 block space-y-1.5 text-sm">
-                <span className="block text-muted-foreground">
-                  <span className="font-medium text-foreground">Où ça fait mal : </span>
-                  {item.location}
-                </span>
-                <span className="block text-muted-foreground">
-                  <span className="font-medium text-foreground">Ce que ça donne : </span>
-                  {item.feels}
-                </span>
-                <span className="block text-muted-foreground">
-                  <span className="font-medium text-foreground">Ça se déclenche quand : </span>
-                  {item.triggers}
-                </span>
-              </span>
+              <span className="mt-2 block text-sm leading-6 text-muted-foreground">{item.location}</span>
             </span>
           </button>
         ))}
@@ -494,23 +383,50 @@ function ResultView({
         </ul>
       </div>
 
+      <section className="rounded-3xl border border-care/25 bg-care/5 p-6 md:p-7" aria-labelledby="first-advice-title">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-wide text-care">À faire maintenant</p>
+            <h3 id="first-advice-title" className="mt-1 text-2xl font-semibold tracking-tight text-foreground">Premiers gestes prudents</h3>
+          </div>
+          <Lightbulb className="size-6 shrink-0 text-care" aria-hidden="true" />
+        </div>
+        <div className="mt-5 grid gap-3">
+          {(conditionAdvice[condition.id]?.tips ?? []).slice(0, 3).map((tip) => (
+            <div key={tip.title} className="rounded-2xl bg-background/80 p-4">
+              <p className="text-base font-semibold text-foreground">{tip.title}</p>
+              <p className="mt-1 text-sm leading-6 text-muted-foreground">{tip.content}</p>
+            </div>
+          ))}
+        </div>
+        <div className="mt-5 flex flex-col gap-3 sm:flex-row">
+          <Link to="/conseils" search={{ c: condition.id }} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-care px-5 text-base font-semibold text-primary-foreground transition hover:bg-care/90">
+            Voir tous les conseils <ArrowRight aria-hidden="true" className="size-5" />
+          </Link>
+          <Link to="/annuaire" search={{ c: condition.id }} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-care/30 bg-background px-5 text-base font-semibold text-care transition hover:bg-care/10">
+            Trouver un professionnel <MapIcon aria-hidden="true" className="size-5" />
+          </Link>
+        </div>
+        <p className="mt-5 text-base leading-7 text-foreground"><span className="font-semibold">À discuter en première intention :</span> {condition.whoToSee}</p><p className="mt-3 text-sm leading-6 text-muted-foreground">Ces conseils ne remplacent pas un examen et ne permettent pas de confirmer une cause.</p>
+      </section>
+
       <div className="rounded-xl border border-border bg-muted/60 p-4">
         <div className="flex gap-4">
           <span className="w-14 shrink-0">
             <LegDiagram spot={condition.spot} label={condition.name} />
           </span>
           <div className="min-w-0">
-            <h3 className="font-semibold text-foreground">{condition.name}</h3>
-            <p className="mt-1 text-sm text-muted-foreground">{condition.summary}</p>
+            <h3 className="font-semibold text-foreground">Zone et symptômes pris en compte</h3>
+            <p className="mt-1 text-sm text-muted-foreground">Vos réponses servent à proposer des conseils prudents et une première orientation. Elles ne confirment pas une cause.</p>
             <p className="mt-1 text-sm text-muted-foreground">
-              <span className="font-medium text-foreground">Où ça fait mal : </span>
-              {condition.location}
+              <span className="font-medium text-foreground">Zone décrite : </span>
+              {condition.zone}
             </p>
           </div>
         </div>
         <dl className="mt-3 space-y-2 text-sm">
           <div>
-            <dt className="inline font-medium text-foreground">Premier réflexe : </dt>
+            <dt className="inline font-medium text-foreground">Premier réflexe prudent : </dt>
             <dd className="inline text-muted-foreground">{condition.firstStep}</dd>
           </div>
           <div>

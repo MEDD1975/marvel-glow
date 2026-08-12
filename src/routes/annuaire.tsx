@@ -165,7 +165,6 @@ function AnnuairePage() {
                   {active && <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-care" />}
                 </div>
                 <p className="mt-1 text-sm text-muted-foreground">{item.context}</p>
-                <p className="mt-2 text-xs italic text-muted-foreground">{item.example}</p>
               </button>
             );
           })}
@@ -175,8 +174,9 @@ function AnnuairePage() {
       {/* Prochaine étape */}
       {currentStep && (
         <section className="mt-8 rounded-2xl border border-care/30 bg-care/5 p-5">
-          <h2 className="flex items-center gap-2 text-base font-semibold text-foreground">
-            <Navigation className="h-4 w-4 text-care" />
+          <p className="text-xs font-semibold uppercase tracking-wide text-care">Maintenant</p>
+          <h2 className="mt-1 flex items-center gap-2 text-xl font-semibold text-foreground">
+            <Navigation className="h-5 w-5 text-care" />
             Votre prochaine étape
           </h2>
           <div className="mt-3 flex flex-wrap items-center gap-2">
@@ -192,7 +192,7 @@ function AnnuairePage() {
               </span>
             ))}
           </div>
-          {nextAdvice && <p className="mt-3 text-sm text-foreground">{nextAdvice}</p>}
+          {nextAdvice && <p className="mt-3 max-w-2xl text-base leading-7 text-foreground">{nextAdvice}</p>}
           {condition && (
             <p className="mt-2 text-sm text-muted-foreground">
               Pour {condition.name.toLowerCase()} : {condition.whoToSee}{" "}

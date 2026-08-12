@@ -3,6 +3,7 @@ import { FormEvent, useState } from "react";
 import {
   AlertTriangle,
   ArrowLeft,
+  ArrowRight,
   HeartPulse,
   Info,
   Lightbulb,
@@ -14,6 +15,7 @@ import { MedicalDisclaimer } from "@/components/HomeBlocks";
 import { askCareAgent } from "@/lib/care-agent";
 import { LegDiagram } from "@/components/LegDiagram";
 import { DoctorSummary } from "@/components/DoctorSummary";
+import { conditionAdvice } from "@/lib/condition-advice";
 type CarePlan = {
   level: TriageLevel;
   title: string;
@@ -477,6 +479,33 @@ function ResultView({
           ))}
         </ul>
       </div>
+
+      <section className="rounded-3xl border border-care/25 bg-care/5 p-6 md:p-7" aria-labelledby="first-advice-title">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-wide text-care">À faire maintenant</p>
+            <h3 id="first-advice-title" className="mt-1 text-2xl font-semibold tracking-tight text-foreground">Vos premiers conseils</h3>
+          </div>
+          <Lightbulb className="size-6 shrink-0 text-care" aria-hidden="true" />
+        </div>
+        <div className="mt-5 grid gap-3">
+          {(conditionAdvice[condition.id]?.tips ?? []).slice(0, 3).map((tip) => (
+            <div key={tip.title} className="rounded-2xl bg-background/80 p-4">
+              <p className="text-base font-semibold text-foreground">{tip.title}</p>
+              <p className="mt-1 text-sm leading-6 text-muted-foreground">{tip.content}</p>
+            </div>
+          ))}
+        </div>
+        <div className="mt-5 flex flex-col gap-3 sm:flex-row">
+          <Link to="/conseils" search={{ c: condition.id }} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-care px-5 text-base font-semibold text-primary-foreground transition hover:bg-care/90">
+            Voir tous les conseils <ArrowRight aria-hidden="true" className="size-5" />
+          </Link>
+          <Link to="/annuaire" search={{ c: condition.id }} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-care/30 bg-background px-5 text-base font-semibold text-care transition hover:bg-care/10">
+            Trouver un professionnel <MapIcon aria-hidden="true" className="size-5" />
+          </Link>
+        </div>
+        <p className="mt-5 text-base leading-7 text-foreground"><span className="font-semibold">Première ligne :</span> {condition.whoToSee}</p>
+      </section>
 
       <div className="rounded-xl border border-border bg-muted/60 p-4">
         <div className="flex gap-4">

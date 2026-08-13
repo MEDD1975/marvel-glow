@@ -31,13 +31,13 @@ export const Route = createFileRoute("/orientation")({
       {
         name: "description",
         content:
-          "Repérez les informations à préparer pour votre prochain échange avec un professionnel, sans interprétation de vos symptômes.",
+          "Décrivez votre douleur et votre gêne pour aider le professionnel à préparer la consultation.",
       },
       { property: "og:title", content: "Orientation — Kivoir" },
       {
         property: "og:description",
         content:
-          "Repérez les informations à préparer pour votre prochain échange avec un professionnel, sans interprétation de vos symptômes.",
+          "Décrivez votre douleur et votre gêne pour aider le professionnel à préparer la consultation.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -113,9 +113,9 @@ function OrientationPage() {
   return (
     <main className="mx-auto max-w-4xl px-5 py-12 md:px-8 md:py-16">
       <div className="max-w-2xl">
-        <p className="text-sm font-semibold uppercase tracking-wide text-care">Orientation</p>
-        <h1 className="mt-3 text-4xl font-semibold tracking-tight text-foreground md:text-5xl">Trouvez votre prochaine étape</h1>
-        <p className="mt-4 text-lg leading-8 text-muted-foreground">Quelques repères pour organiser votre prochain échange.</p>
+        <p className="text-sm font-semibold uppercase tracking-wide text-care">Questionnaire Kivoir</p>
+        <h1 className="mt-3 text-4xl font-semibold tracking-tight text-foreground md:text-5xl">Préparez votre consultation</h1>
+        <p className="mt-4 text-lg leading-8 text-muted-foreground">Quelques questions sur votre douleur pour permettre au médecin de gagner du temps pendant l’échange.</p>
         <Link to="/conseils" className="mt-5 inline-flex min-h-11 items-center text-base font-semibold text-care hover:underline">Comprendre l’orientation <ArrowRight aria-hidden="true" className="ml-2 size-5" /></Link>
       </div>
 
@@ -129,7 +129,7 @@ function OrientationPage() {
       </div>
 
       <div className="mt-8 rounded-3xl border border-care/25 bg-care/5 p-7 shadow-sm md:p-10">
-        <div className="mb-6"><p className="text-xs font-semibold uppercase tracking-wide text-care">Parcours guidé</p><h2 className="mt-1 text-2xl font-semibold tracking-tight text-foreground">Répondez à quelques questions</h2><p className="mt-1 text-base leading-7 text-muted-foreground">5 questions essentielles pour vous guider sans poser de diagnostic.</p></div>
+        <div className="mb-6"><p className="text-xs font-semibold uppercase tracking-wide text-care">Avant la consultation</p><h2 className="mt-1 text-2xl font-semibold tracking-tight text-foreground">Décrivez ce que vous ressentez</h2><p className="mt-1 text-base leading-7 text-muted-foreground">Vos réponses sont déclaratives. Le professionnel les interprète avec son examen clinique et décide de la suite.</p></div>
         {step.type === "zone" ? (
           <ZonePicker onSelect={setZone} />
         ) : step.type === "triage" && currentQuestion ? (

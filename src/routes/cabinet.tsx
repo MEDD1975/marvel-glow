@@ -104,6 +104,12 @@ function CabinetPage() {
         </p>
       </section>
 
+      <section className="mt-8 rounded-3xl border border-border bg-card p-6 md:p-8 print:hidden" aria-labelledby="questionnaire-title">
+        <div className="flex items-start gap-3"><ClipboardCheck className="mt-1 text-care" aria-hidden="true" /><div><p className="text-xs font-semibold uppercase tracking-wide text-care">Questionnaire en salle d’attente</p><h2 id="questionnaire-title" className="mt-2 text-2xl font-semibold text-foreground">Ce que le médecin retrouve avant la consultation</h2><p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">Le patient décrit ce qu’il ressent. Kivoir rassemble ces réponses dans une synthèse structurée ; le médecin les complète par son examen clinique et sa décision médicale.</p></div></div>
+        <div className="mt-6 grid gap-3 sm:grid-cols-3"><div className="rounded-2xl bg-background p-4"><p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Intensité</p><p className="mt-2 font-semibold text-foreground">0 à 10</p><p className="mt-1 text-sm text-muted-foreground">Niveau de douleur déclaré.</p></div><div className="rounded-2xl bg-background p-4"><p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Durée</p><p className="mt-2 font-semibold text-foreground">Depuis quand ?</p><p className="mt-1 text-sm text-muted-foreground">Début, évolution et fréquence.</p></div><div className="rounded-2xl bg-background p-4"><p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Qualité</p><p className="mt-2 font-semibold text-foreground">Comment ?</p><p className="mt-1 text-sm text-muted-foreground">Contexte, localisation et gêne.</p></div></div>
+        <div className="mt-5 rounded-2xl border border-care/20 bg-care/5 p-4 text-sm leading-6 text-muted-foreground"><span className="font-semibold text-foreground">Après lecture :</span> le professionnel confirme le diagnostic ou la situation, décide des examens et orientations nécessaires, puis attribue le parcours adapté.</div>
+      </section>
+
       <section className="mt-8 rounded-3xl border border-care/25 bg-care/5 p-6 md:p-8 print:hidden" aria-labelledby="pathway-choice-title">
         <p className="text-xs font-semibold uppercase tracking-wide text-care">Attribution professionnelle</p>
         <h2 id="pathway-choice-title" className="mt-2 text-2xl font-semibold text-foreground">Quel parcours voulez-vous attribuer au patient ?</h2>

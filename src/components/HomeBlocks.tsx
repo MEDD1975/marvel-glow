@@ -1,4 +1,4 @@
-import { AlertTriangle, ArrowRight, MapPin, PlayCircle, Stethoscope } from "lucide-react";
+import { AlertTriangle, ArrowRight, ClipboardCheck, MapPin, PlayCircle, Stethoscope } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 
 export const medicalDisclaimer = "Cette application informe et ne remplace pas un avis médical. En cas de doute, consultez un professionnel de santé.";
@@ -55,7 +55,7 @@ export function EntryCard({
 export type HomeSource = "affiche" | "carte" | "direct";
 
 const sourceIntro: Record<HomeSource, { badge: string; title: string; lead: string }> = {
-  affiche: { badge: "Proposé par votre médecin", title: "Trouvez la bonne prochaine étape", lead: "Répondez à 3 questions simples. Sans compte, sans jugement." },
+  affiche: { badge: "Questionnaire en salle d’attente", title: "Préparez votre consultation", lead: "Décrivez votre douleur en quelques minutes. Votre médecin retrouve une synthèse claire avant l’échange." },
   carte: { badge: "Votre parcours de soins", title: "Comprenez quoi faire maintenant", lead: "Des repères simples pour avancer sereinement." },
   direct: { badge: "Votre accès Kivoir", title: "Retrouvez votre parcours de soin", lead: "Votre professionnel vous remet un lien Kivoir pour retrouver le parcours correspondant à votre diagnostic." },
 };
@@ -82,10 +82,10 @@ export function HomeHero({ source = "direct" }: { source?: HomeSource }) {
         <div className="mt-14">
           <p className="mb-5 text-center text-base font-semibold text-muted-foreground">Pour commencer</p>
           <div className="mx-auto grid max-w-3xl gap-5 md:grid-cols-2">
-          <Link to="/parcours" className="group flex min-h-64 flex-col gap-5 rounded-[2rem] border border-care/25 bg-card p-7 text-left shadow-sm transition-all hover:-translate-y-1 hover:border-care/50 hover:shadow-md">
-            <span className="flex size-12 items-center justify-center rounded-2xl bg-care/10 text-care"><ArrowRight aria-hidden="true" className="size-6" /></span>
-            <div><h2 className="text-xl font-semibold tracking-tight text-card-foreground">J’ai reçu un lien</h2><p className="mt-2 text-sm leading-6 text-muted-foreground">Mon professionnel m’a remis un accès à mon parcours.</p></div>
-            <span className="mt-auto inline-flex items-center gap-2 text-sm font-semibold text-care">Ouvrir mon parcours <ArrowRight aria-hidden="true" /></span>
+          <Link to="/orientation" className="group flex min-h-64 flex-col gap-5 rounded-[2rem] border border-care/25 bg-card p-7 text-left shadow-sm transition-all hover:-translate-y-1 hover:border-care/50 hover:shadow-md">
+            <span className="flex size-12 items-center justify-center rounded-2xl bg-care/10 text-care"><ClipboardCheck aria-hidden="true" className="size-6" /></span>
+            <div><h2 className="text-xl font-semibold tracking-tight text-card-foreground">Je remplis le questionnaire</h2><p className="mt-2 text-sm leading-6 text-muted-foreground">Je décris ma douleur avant de rencontrer le médecin.</p></div>
+            <span className="mt-auto inline-flex items-center gap-2 text-sm font-semibold text-care">Commencer <ArrowRight aria-hidden="true" /></span>
           </Link>
           <Link to="/parcours" className="group flex min-h-64 flex-col gap-5 rounded-[2rem] border border-border bg-card p-7 text-left shadow-sm transition-all hover:-translate-y-1 hover:border-care/50 hover:shadow-md">
             <span className="flex size-12 items-center justify-center rounded-2xl bg-secondary text-care"><Stethoscope aria-hidden="true" className="size-6" /></span>

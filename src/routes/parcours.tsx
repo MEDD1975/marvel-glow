@@ -19,10 +19,10 @@ const journeySteps: JourneyStep[] = [
 ];
 
 const situations = [
-  { id: "start", title: "Je commence mon parcours", detail: "Je ne sais pas encore quelle est la première étape." },
-  { id: "accompanied", title: "Je suis déjà accompagné", detail: "J’ai rencontré un professionnel et je veux retrouver la suite." },
-  { id: "exam", title: "J’ai un examen ou un document", detail: "Je veux organiser ce que j’ai reçu et préparer la suite." },
-  { id: "follow-up", title: "Je suis en suivi", detail: "Je veux garder une vue claire des prochaines étapes." },
+  { id: "start", title: "Je commence mon parcours", detail: "Je ne sais pas encore quelle est la première étape.", completed: [] as string[], next: "Commencer par préparer votre échange" },
+  { id: "accompanied", title: "Je suis déjà accompagné", detail: "J’ai rencontré un professionnel et je veux retrouver la suite.", completed: ["consultation"], next: "Rassembler les éléments de votre dernière consultation" },
+  { id: "exam", title: "J’ai un examen ou un document", detail: "Je veux organiser ce que j’ai reçu et préparer la suite.", completed: ["consultation", "documents"], next: "Préparer l’échange autour de vos résultats" },
+  { id: "follow-up", title: "Je suis en suivi", detail: "Je veux garder une vue claire des prochaines étapes.", completed: ["consultation", "documents", "care"], next: "Préparer votre prochain point de suivi" },
 ];
 
 export const Route = createFileRoute("/parcours")({
@@ -38,6 +38,7 @@ export const Route = createFileRoute("/parcours")({
 function ParcoursPage() {
   const [situation, setSituation] = useState("accompanied");
   const [completed, setCompleted] = useState<string[]>(["consultation"]);
+  const selectedSituation = situations.find((item) => item.id === situation) ?? situations[0];
   const [questions, setQuestions] = useState("");
   const [documents, setDocuments] = useState("");
 
@@ -55,7 +56,7 @@ function ParcoursPage() {
       <section className="mt-10" aria-labelledby="situation-title">
         <div className="flex flex-wrap items-end justify-between gap-3"><div><p className="text-sm font-semibold text-care">Point de départ</p><h2 id="situation-title" className="mt-1 text-2xl font-semibold text-foreground">Où en êtes-vous aujourd’hui ?</h2></div><span className="text-sm text-muted-foreground">Aucune réponse médicale à déduire</span></div>
         <div className="mt-5 grid gap-3 sm:grid-cols-2">
-          {situations.map((item) => <button key={item.id} type="button" onClick={() => setSituation(item.id)} aria-pressed={situation === item.id} className={`rounded-2xl border p-5 text-left transition ${situation === item.id ? "border-care bg-care/10 shadow-sm" : "border-border bg-card hover:border-care/40"}`}><span className="font-semibold text-foreground">{item.title}</span><span className="mt-1 block text-sm leading-6 text-muted-foreground">{item.detail}</span></button>)}
+          {situations.map((item) => <button key={item.id} type="button" onClick={() => { setSituation(item.id); setCompleted(item.completed); }} aria-pressed={situation === item.id} className={`rounded-2xl border p-5 text-left transition ${situation === item.id ? "border-care bg-care/10 shadow-sm" : "border-border bg-card hover:border-care/40"}`}><span className="font-semibold text-foreground">{item.title}</span><span className="mt-1 block text-sm leading-6 text-muted-foreground">{item.detail}</span></button>)}
         </div>
       </section>
 
@@ -68,7 +69,7 @@ function ParcoursPage() {
         </div>
 
         <aside className="flex flex-col gap-4">
-          <div className="rounded-3xl border border-care/25 bg-care/5 p-6"><p className="text-xs font-semibold uppercase tracking-wide text-care">À faire maintenant</p><h2 className="mt-2 text-xl font-semibold text-foreground">{nextStep.title}</h2><p className="mt-2 text-sm leading-6 text-muted-foreground">{nextStep.action}. Cette étape est à confirmer avec votre professionnel.</p><div className="mt-5 flex items-center gap-2 text-sm font-semibold text-care"><UserRound aria-hidden="true" /> Professionnel concerné à confirmer</div></div>
+          <div className="rounded-3xl border border-care/25 bg-care/5 p-6"><p className="text-xs font-semibold uppercase tracking-wide text-care">À faire maintenant</p><h2 className="mt-2 text-xl font-semibold text-foreground">{nextStep.title}</h2><p className="mt-2 text-sm leading-6 text-muted-foreground">{selectedSituation.next}. {nextStep.action}. Cette étape est à confirmer avec votre professionnel.</p><div className="mt-5 flex items-center gap-2 text-sm font-semibold text-care"><UserRound aria-hidden="true" /> Professionnel concerné à confirmer</div></div>
           <div className="rounded-3xl border border-border bg-card p-6"><div className="flex items-center gap-2"><FileText className="text-care" aria-hidden="true" /><h2 className="font-semibold text-foreground">Préparer le prochain échange</h2></div><label htmlFor="questions" className="mt-4 block text-sm font-medium text-foreground">Mes questions</label><textarea id="questions" value={questions} onChange={(event) => setQuestions(event.target.value)} rows={3} placeholder="Ce que je veux demander…" className="mt-2 w-full rounded-xl border border-input bg-background p-3 text-sm text-foreground outline-none focus:ring-2 focus:ring-ring" /><label htmlFor="documents" className="mt-4 block text-sm font-medium text-foreground">Documents à retrouver</label><textarea id="documents" value={documents} onChange={(event) => setDocuments(event.target.value)} rows={3} placeholder="Résultat, compte rendu, ordonnance…" className="mt-2 w-full rounded-xl border border-input bg-background p-3 text-sm text-foreground outline-none focus:ring-2 focus:ring-ring" /></div>
           <div className="rounded-3xl border border-border bg-background p-5"><div className="flex items-start gap-3"><HelpCircle className="mt-0.5 shrink-0 text-care" aria-hidden="true" /><p className="text-sm leading-6 text-muted-foreground">Kivoir organise vos informations. La prochaine étape et les consignes sont définies avec votre professionnel de santé.</p></div></div>
         </aside>

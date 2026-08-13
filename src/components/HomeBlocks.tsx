@@ -57,7 +57,7 @@ export type HomeSource = "affiche" | "carte" | "direct";
 const sourceIntro: Record<HomeSource, { badge: string; title: string; lead: string }> = {
   affiche: { badge: "Proposé par votre médecin", title: "Trouvez la bonne prochaine étape", lead: "Répondez à 3 questions simples. Sans compte, sans jugement." },
   carte: { badge: "Votre parcours de soins", title: "Comprenez quoi faire maintenant", lead: "Des repères simples pour avancer sereinement." },
-  direct: { badge: "Votre guide santé", title: "Comment souhaitez-vous être aidé ?", lead: "Choisissez votre situation pour accéder au bon parcours, sans jargon médical." },
+  direct: { badge: "Votre accès Kivoir", title: "Retrouvez votre parcours de soin", lead: "Votre professionnel vous remet un lien Kivoir pour retrouver le parcours correspondant à votre diagnostic." },
 };
 
 export function HomeHero({ source = "direct" }: { source?: HomeSource }) {
@@ -82,15 +82,15 @@ export function HomeHero({ source = "direct" }: { source?: HomeSource }) {
         <div className="mt-14">
           <p className="mb-5 text-center text-base font-semibold text-muted-foreground">Pour commencer</p>
           <div className="mx-auto grid max-w-3xl gap-5 md:grid-cols-2">
-          <Link to="/parcours" search={{ situation: "start" }} className="group flex min-h-64 flex-col gap-5 rounded-[2rem] border border-care/25 bg-card p-7 text-left shadow-sm transition-all hover:-translate-y-1 hover:border-care/50 hover:shadow-md">
+          <Link to="/parcours" className="group flex min-h-64 flex-col gap-5 rounded-[2rem] border border-care/25 bg-card p-7 text-left shadow-sm transition-all hover:-translate-y-1 hover:border-care/50 hover:shadow-md">
             <span className="flex size-12 items-center justify-center rounded-2xl bg-care/10 text-care"><ArrowRight aria-hidden="true" className="size-6" /></span>
-            <div><h2 className="text-xl font-semibold tracking-tight text-card-foreground">Je commence</h2><p className="mt-2 text-sm leading-6 text-muted-foreground">Je veux comprendre la première étape de mon parcours.</p></div>
-            <span className="mt-auto inline-flex items-center gap-2 text-sm font-semibold text-care">Commencer <ArrowRight aria-hidden="true" /></span>
+            <div><h2 className="text-xl font-semibold tracking-tight text-card-foreground">J’ai reçu un lien</h2><p className="mt-2 text-sm leading-6 text-muted-foreground">Mon professionnel m’a remis un accès à mon parcours.</p></div>
+            <span className="mt-auto inline-flex items-center gap-2 text-sm font-semibold text-care">Ouvrir mon parcours <ArrowRight aria-hidden="true" /></span>
           </Link>
-          <Link to="/parcours" search={{ situation: "accompanied" }} className="group flex min-h-64 flex-col gap-5 rounded-[2rem] border border-care/25 bg-card p-7 text-left shadow-sm transition-all hover:-translate-y-1 hover:border-care/50 hover:shadow-md">
-            <span className="flex size-12 items-center justify-center rounded-2xl bg-care/10 text-care"><Stethoscope aria-hidden="true" className="size-6" /></span>
-            <div><h2 className="text-xl font-semibold tracking-tight text-card-foreground">Je suis accompagné</h2><p className="mt-2 text-sm leading-6 text-muted-foreground">Je veux retrouver la suite après une consultation.</p></div>
-            <span className="mt-auto inline-flex items-center gap-2 text-sm font-semibold text-care">Voir ma suite <ArrowRight aria-hidden="true" /></span>
+          <Link to="/parcours" className="group flex min-h-64 flex-col gap-5 rounded-[2rem] border border-border bg-card p-7 text-left shadow-sm transition-all hover:-translate-y-1 hover:border-care/50 hover:shadow-md">
+            <span className="flex size-12 items-center justify-center rounded-2xl bg-secondary text-care"><Stethoscope aria-hidden="true" className="size-6" /></span>
+            <div><h2 className="text-xl font-semibold tracking-tight text-card-foreground">Je découvre Kivoir</h2><p className="mt-2 text-sm leading-6 text-muted-foreground">Je n’ai pas encore de parcours attribué par un professionnel.</p></div>
+            <span className="mt-auto inline-flex items-center gap-2 text-sm font-semibold text-care">Comprendre le fonctionnement <ArrowRight aria-hidden="true" /></span>
           </Link>
           </div>
         </div>
@@ -114,7 +114,7 @@ export function EntryGrid() {
       <div className="mx-auto max-w-4xl">
         <h2 className="mb-4 text-sm font-semibold text-muted-foreground">Besoin d&apos;une autre aide ?</h2>
         <div className="grid gap-4 sm:grid-cols-2">
-          <EntryCard to="/conseils" icon={PlayCircle} title="Exercices adaptés" description="Vidéos et conseils selon votre trouble." tone="soothe" />
+          <EntryCard to="/conseils" icon={PlayCircle} title="Repères et conseils" description="Des informations générales pour préparer vos échanges." tone="soothe" />
           <EntryCard to="/annuaire" icon={MapPin} title="Trouver un professionnel" description="Les ressources utiles près de chez vous." tone="care" />
         </div>
       </div>

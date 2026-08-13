@@ -52,10 +52,16 @@ function CabinetPage() {
   const [cardQr, setCardQr] = useState<{ url: string; qr: string | null }>({ url: "", qr: null });
 
   const [showDemo, setShowDemo] = useState(false);
+  const [pathway, setPathway] = useState("entorse-cheville");
+  const pathwayLabels: Record<string, string> = {
+    "entorse-cheville": "Entorse de la cheville",
+    "douleur-lombaire": "Douleur lombaire",
+    "post-operatoire": "Suivi post-opératoire",
+  };
 
   useEffect(() => {
-    const target = `${window.location.origin}/parcours?situation=accompanied&src=affiche`;
-    const homeTarget = `${window.location.origin}/parcours?situation=accompanied&src=carte`;
+    const target = `${window.location.origin}/parcours?pathway=${pathway}&src=affiche`;
+    const homeTarget = `${window.location.origin}/parcours?pathway=${pathway}&src=carte`;
     setPoster((prev) => ({ ...prev, url: target }));
     setCardQr({ url: homeTarget, qr: null });
     let cancelled = false;
@@ -71,7 +77,7 @@ function CabinetPage() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [pathway]);
 
   const updatePoster = (patch: Partial<PosterData>) => setPoster((prev) => ({ ...prev, ...patch }));
 
@@ -96,6 +102,17 @@ function CabinetPage() {
         <p className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground">
           Kivoir vous aide à donner au patient une feuille de route claire : ce qui a été fait, ce qui vient ensuite et ce qu’il doit préparer. Un support simple avant et après votre échange.
         </p>
+      </section>
+
+      <section className="mt-8 rounded-3xl border border-care/25 bg-care/5 p-6 md:p-8 print:hidden" aria-labelledby="pathway-choice-title">
+        <p className="text-xs font-semibold uppercase tracking-wide text-care">Attribution professionnelle</p>
+        <h2 id="pathway-choice-title" className="mt-2 text-2xl font-semibold text-foreground">Quel parcours voulez-vous attribuer au patient ?</h2>
+        <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">Le patient ne choisit pas sa pathologie. Vous renseignez ou confirmez la situation, puis Kivoir lui présente le parcours correspondant.</p>
+        <label htmlFor="pathway" className="mt-5 block text-sm font-semibold text-foreground">Diagnostic ou situation confirmée</label>
+        <select id="pathway" value={pathway} onChange={(event) => setPathway(event.target.value)} className="mt-2 w-full rounded-xl border border-input bg-background px-3 py-3 text-sm text-foreground outline-none focus:ring-2 focus:ring-ring md:max-w-xl">
+          {Object.entries(pathwayLabels).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
+        </select>
+        <p className="mt-3 text-xs leading-5 text-muted-foreground">Kivoir n’interprète pas les symptômes et ne pose pas le diagnostic. Le professionnel reste responsable de la confirmation.</p>
       </section>
 
       <section className="mt-10 grid gap-4 md:grid-cols-2 print:hidden" aria-label="Parcours du cabinet">

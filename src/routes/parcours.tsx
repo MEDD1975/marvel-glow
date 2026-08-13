@@ -25,7 +25,12 @@ const situations = [
   { id: "follow-up", title: "Je suis en suivi", detail: "Je veux garder une vue claire des prochaines étapes.", completed: ["consultation", "documents", "care"], next: "Préparer votre prochain point de suivi" },
 ];
 
+type ParcoursSearch = { situation?: string };
+
 export const Route = createFileRoute("/parcours")({
+  validateSearch: (search: Record<string, unknown>): ParcoursSearch => ({
+    situation: typeof search.situation === "string" ? search.situation : undefined,
+  }),
   head: () => ({ meta: [
     { title: "Votre parcours de soin — Kivoir" },
     { name: "description", content: "Une feuille de route pour comprendre les étapes de soin et préparer vos échanges avec les professionnels." },
@@ -36,8 +41,10 @@ export const Route = createFileRoute("/parcours")({
 });
 
 function ParcoursPage() {
-  const [situation, setSituation] = useState("");
-  const [completed, setCompleted] = useState<string[]>([]);
+  const { situation: incomingSituation } = Route.useSearch();
+  const initialSituation = situations.some((item) => item.id === incomingSituation) ? incomingSituation ?? "" : "";
+  const [situation, setSituation] = useState(initialSituation);
+  const [completed, setCompleted] = useState<string[]>(situations.find((item) => item.id === initialSituation)?.completed ?? []);
   const selectedSituation = situations.find((item) => item.id === situation) ?? null;
   const [questions, setQuestions] = useState("");
   const [documents, setDocuments] = useState("");
@@ -52,13 +59,13 @@ function ParcoursPage() {
         <p className="mt-5 text-pretty text-lg leading-8 text-muted-foreground">Le médecin vous accompagne. Kivoir vous aide à retrouver ce qui a été fait, ce qui vient ensuite et ce qu’il faut préparer.</p>
       </section>
 
-      <section className="mt-10" aria-labelledby="situation-title">
-        <div className="flex flex-wrap items-end justify-between gap-3"><div><p className="text-sm font-semibold text-care">Point de départ</p><h2 id="situation-title" className="mt-1 text-2xl font-semibold text-foreground">Où en êtes-vous aujourd’hui ?</h2></div><span className="text-sm text-muted-foreground">Aucune réponse médicale à déduire</span></div>
+      {!incomingSituation ? <section className="mt-10" aria-labelledby="situation-title">
+        <div className="flex flex-wrap items-end justify-between gap-3"><div><p className="text-sm font-semibold text-care">Point de départ</p><h2 id="situation-title" className="mt-1 text-2xl font-semibold text-foreground">Choisissez votre situation</h2></div><span className="text-sm text-muted-foreground">Aucune réponse médicale à déduire</span></div>
         <p className="mt-3 text-sm leading-6 text-muted-foreground">Choisissez une seule réponse pour personnaliser la feuille de route. Ce choix ne constitue pas une évaluation médicale.</p>
         <div className="mt-5 grid gap-3 sm:grid-cols-2" role="radiogroup" aria-labelledby="situation-title">
           {situations.map((item) => { const isSelected = situation === item.id; return <button key={item.id} type="button" onClick={() => { setSituation(item.id); setCompleted(item.completed); }} role="radio" aria-checked={isSelected} className={`rounded-2xl border p-5 text-left transition ${isSelected ? "border-care bg-care/10 ring-2 ring-care/30" : "border-border bg-card hover:border-care/40"}`}><span className="flex items-start gap-3"><span aria-hidden="true" className={`mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full border-2 ${isSelected ? "border-care" : "border-muted-foreground/40"}`}><span className={isSelected ? "size-2.5 rounded-full bg-care" : "size-0"} /></span><span><span className="font-semibold text-foreground">{item.title}</span><span className="mt-1 block text-sm leading-6 text-muted-foreground">{item.detail}</span></span></span>{isSelected ? <span className="mt-4 block text-xs font-semibold uppercase tracking-wide text-care">Sélectionné</span> : null}</button>; })}
         </div>
-      </section>
+      </section> : <div className="mt-10 rounded-2xl border border-care/20 bg-care/5 px-5 py-4 text-sm text-muted-foreground"><span className="font-semibold text-foreground">Votre choix :</span> {selectedSituation?.title}</div>}
 
       <section className="mt-10 grid gap-6 lg:grid-cols-[1.25fr_0.75fr]" aria-labelledby="roadmap-title">
         <div className="rounded-3xl border border-border bg-card p-6 shadow-sm md:p-8">

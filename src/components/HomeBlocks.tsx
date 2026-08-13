@@ -80,19 +80,21 @@ export function HomeHero({ source = "direct" }: { source?: HomeSource }) {
         </div>
 
         <div className="mt-14">
-          <p className="mb-5 text-center text-base font-semibold text-muted-foreground">Pour commencer</p>
-          <div className="mx-auto grid max-w-3xl gap-5 md:grid-cols-2">
-          <Link to="/orientation" className="group flex min-h-64 flex-col gap-5 rounded-[2rem] border border-care/25 bg-card p-7 text-left shadow-sm transition-all hover:-translate-y-1 hover:border-care/50 hover:shadow-md">
-            <span className="flex size-12 items-center justify-center rounded-2xl bg-care/10 text-care"><ClipboardCheck aria-hidden="true" className="size-6" /></span>
-            <div><h2 className="text-xl font-semibold tracking-tight text-card-foreground">Je remplis le questionnaire</h2><p className="mt-2 text-sm leading-6 text-muted-foreground">Je décris ma douleur avant de rencontrer le médecin.</p></div>
-            <span className="mt-auto inline-flex items-center gap-2 text-sm font-semibold text-care">Commencer <ArrowRight aria-hidden="true" /></span>
-          </Link>
-          <Link to="/parcours" className="group flex min-h-64 flex-col gap-5 rounded-[2rem] border border-border bg-card p-7 text-left shadow-sm transition-all hover:-translate-y-1 hover:border-care/50 hover:shadow-md">
-            <span className="flex size-12 items-center justify-center rounded-2xl bg-secondary text-care"><Stethoscope aria-hidden="true" className="size-6" /></span>
-            <div><h2 className="text-xl font-semibold tracking-tight text-card-foreground">Je découvre Kivoir</h2><p className="mt-2 text-sm leading-6 text-muted-foreground">Je n’ai pas encore de parcours attribué par un professionnel.</p></div>
-            <span className="mt-auto inline-flex items-center gap-2 text-sm font-semibold text-care">Comprendre le fonctionnement <ArrowRight aria-hidden="true" /></span>
-          </Link>
-          </div>
+          <p className="mb-5 text-center text-base font-semibold text-muted-foreground">Comment ça marche</p>
+          <ol className="mx-auto grid max-w-3xl gap-5 md:grid-cols-3">
+            <li className="flex flex-col gap-4 rounded-[2rem] border border-border bg-card p-6 text-left">
+              <span className="flex size-12 items-center justify-center rounded-2xl bg-care/10 text-care"><ClipboardCheck aria-hidden="true" className="size-6" /></span>
+              <div><p className="text-xs font-semibold uppercase tracking-wide text-care">En salle d’attente</p><h3 className="mt-1 text-lg font-semibold text-card-foreground">Vous scannez le QR code</h3><p className="mt-2 text-sm leading-6 text-muted-foreground">Vous décrivez votre douleur en quelques minutes, depuis votre téléphone.</p></div>
+            </li>
+            <li className="flex flex-col gap-4 rounded-[2rem] border border-border bg-card p-6 text-left">
+              <span className="flex size-12 items-center justify-center rounded-2xl bg-care/10 text-care"><Stethoscope aria-hidden="true" className="size-6" /></span>
+              <div><p className="text-xs font-semibold uppercase tracking-wide text-care">Pendant la consultation</p><h3 className="mt-1 text-lg font-semibold text-card-foreground">Le médecin gagne du temps</h3><p className="mt-2 text-sm leading-6 text-muted-foreground">Il retrouve une synthèse claire, confirme le diagnostic et décide de la suite.</p></div>
+            </li>
+            <li className="flex flex-col gap-4 rounded-[2rem] border border-care/25 bg-card p-6 text-left">
+              <span className="flex size-12 items-center justify-center rounded-2xl bg-care/10 text-care"><ArrowRight aria-hidden="true" className="size-6" /></span>
+              <div><p className="text-xs font-semibold uppercase tracking-wide text-care">Après la consultation</p><h3 className="mt-1 text-lg font-semibold text-card-foreground">Vous suivez votre parcours</h3><p className="mt-2 text-sm leading-6 text-muted-foreground">Avec la carte remise, vous retrouvez les étapes, les professionnels et les consignes.</p></div>
+            </li>
+          </ol>
         </div>
 
         <Link to="/cabinet" className="group mt-10 flex min-h-24 flex-col justify-center rounded-2xl border border-border bg-secondary/40 p-6 text-left transition-all hover:border-care/40 hover:bg-care-muted/20 sm:flex-row sm:items-center sm:justify-between sm:p-7">

@@ -1,4 +1,4 @@
-import { AlertTriangle, ArrowRight, HeartPulse, MapPin, PlayCircle, Stethoscope } from "lucide-react";
+import { AlertTriangle, ArrowRight, FileText, MapPin, PlayCircle, Stethoscope } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 
 export const medicalDisclaimer = "Cette application informe et ne remplace pas un avis médical. En cas de doute, consultez un professionnel de santé.";
@@ -70,10 +70,10 @@ export function HomeHero({ source = "direct" }: { source?: HomeSource }) {
         <div className="mx-auto max-w-3xl text-center">
           <span className="inline-flex items-center gap-2 rounded-full border border-care/20 bg-care/5 px-3 py-1 text-xs font-semibold text-care">
             <Stethoscope aria-hidden="true" />
-            {intro.badge}
+            Kivoir · Qui voir, quand
           </span>
-          <h1 className="mt-6 text-balance text-4xl font-semibold tracking-[-0.04em] text-foreground md:text-6xl">{intro.title}</h1>
-          <p className="mx-auto mt-5 max-w-2xl text-pretty text-base leading-7 text-muted-foreground md:text-xl">{intro.lead}</p>
+          <h1 className="mt-6 text-balance text-4xl font-semibold tracking-[-0.04em] text-foreground md:text-6xl">Votre parcours de soin, enfin lisible.</h1>
+          <p className="mx-auto mt-5 max-w-2xl text-pretty text-base leading-7 text-muted-foreground md:text-xl">Comprenez où vous en êtes, préparez votre prochain échange et retrouvez ce que votre professionnel vous a recommandé.</p>
           <div className="mt-6 flex flex-wrap justify-center gap-x-5 gap-y-2 text-xs font-medium text-muted-foreground" aria-label="Repères Kivoir">
             <span>Comprendre</span><span>Savoir qui voir</span><span>Préparer la consultation</span>
           </div>
@@ -81,35 +81,22 @@ export function HomeHero({ source = "direct" }: { source?: HomeSource }) {
 
         <div className="mt-14">
           <p className="mb-5 text-center text-base font-semibold text-muted-foreground">Pour vous</p>
-          <div className="grid gap-5 sm:grid-cols-2">
-          <Link
-            to="/orientation"
-            className={`group flex min-h-72 flex-col gap-6 rounded-[2rem] border border-urgent/20 bg-card p-8 text-left shadow-[0_12px_40px_-24px_var(--urgent)] transition-all hover:-translate-y-1 hover:shadow-[0_20px_55px_-28px_var(--urgent)] ${carteFirst ? "order-2" : "order-1"}`}
-          >
-            <span className="flex size-14 items-center justify-center rounded-2xl bg-urgent/10 text-urgent">
-              <HeartPulse aria-hidden="true" className="size-7" />
-            </span>
-            <div>
-              <h2 className="text-2xl font-semibold tracking-tight text-card-foreground">J&apos;ai une douleur</h2>
-              <p className="mt-2 text-base leading-7 text-muted-foreground">Être orienté vers le bon professionnel.</p>
-            </div>
-            <span className="mt-auto inline-flex min-h-12 items-center gap-2 text-base font-semibold text-urgent">Commencer <ArrowRight aria-hidden="true" className="transition-transform group-hover:translate-x-1" /></span>
+          <div className="grid gap-5 md:grid-cols-3">
+          <Link to="/parcours" className="group flex min-h-64 flex-col gap-5 rounded-[2rem] border border-care/25 bg-card p-7 text-left shadow-sm transition-all hover:-translate-y-1 hover:border-care/50 hover:shadow-md">
+            <span className="flex size-12 items-center justify-center rounded-2xl bg-care/10 text-care"><ArrowRight aria-hidden="true" className="size-6" /></span>
+            <div><h2 className="text-xl font-semibold tracking-tight text-card-foreground">Je commence</h2><p className="mt-2 text-sm leading-6 text-muted-foreground">Je veux comprendre la première étape de mon parcours.</p></div>
+            <span className="mt-auto inline-flex items-center gap-2 text-sm font-semibold text-care">Voir les étapes <ArrowRight aria-hidden="true" /></span>
           </Link>
-
-          <Link
-            to="/parcours"
-            className={`group flex min-h-72 flex-col gap-6 rounded-[2rem] border border-care/20 bg-card p-8 text-left shadow-[0_12px_40px_-24px_var(--care)] transition-all hover:-translate-y-1 hover:shadow-[0_20px_55px_-28px_var(--care)] ${carteFirst ? "order-1" : "order-2"}`}
-          >
-            <span className="flex size-14 items-center justify-center rounded-2xl bg-care/10 text-care">
-              <Stethoscope aria-hidden="true" className="size-7" />
-            </span>
-            <div>
-              <h2 className="text-2xl font-semibold tracking-tight text-card-foreground">J&apos;ai déjà un diagnostic</h2>
-              <p className="mt-2 text-base leading-7 text-muted-foreground">Suivre les étapes après un diagnostic.</p>
-            </div>
-            <span className="mt-auto inline-flex min-h-12 items-center gap-2 text-base font-semibold text-care">Voir le parcours <ArrowRight aria-hidden="true" className="transition-transform group-hover:translate-x-1" /></span>
+          <Link to="/parcours" className="group flex min-h-64 flex-col gap-5 rounded-[2rem] border border-care/25 bg-card p-7 text-left shadow-sm transition-all hover:-translate-y-1 hover:border-care/50 hover:shadow-md">
+            <span className="flex size-12 items-center justify-center rounded-2xl bg-care/10 text-care"><Stethoscope aria-hidden="true" className="size-6" /></span>
+            <div><h2 className="text-xl font-semibold tracking-tight text-card-foreground">Je suis accompagné</h2><p className="mt-2 text-sm leading-6 text-muted-foreground">Je veux retrouver la suite après une consultation.</p></div>
+            <span className="mt-auto inline-flex items-center gap-2 text-sm font-semibold text-care">Reprendre <ArrowRight aria-hidden="true" /></span>
           </Link>
-
+          <Link to="/parcours" className="group flex min-h-64 flex-col gap-5 rounded-[2rem] border border-care/25 bg-card p-7 text-left shadow-sm transition-all hover:-translate-y-1 hover:border-care/50 hover:shadow-md">
+            <span className="flex size-12 items-center justify-center rounded-2xl bg-care/10 text-care"><FileText aria-hidden="true" className="size-6" /></span>
+            <div><h2 className="text-xl font-semibold tracking-tight text-card-foreground">Je prépare mon rendez-vous</h2><p className="mt-2 text-sm leading-6 text-muted-foreground">Je rassemble mes questions et mes documents utiles.</p></div>
+            <span className="mt-auto inline-flex items-center gap-2 text-sm font-semibold text-care">Préparer <ArrowRight aria-hidden="true" /></span>
+          </Link>
           </div>
         </div>
 

@@ -1,171 +1,82 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { AlertTriangle, ArrowRight, Clock, MapPin, Users } from "lucide-react";
+import { createFileRoute } from "@tanstack/react-router";
+import { useMemo, useState } from "react";
+import { ArrowRight, Check, FileText, HelpCircle, Printer, UserRound } from "lucide-react";
 import { MedicalDisclaimer } from "@/components/HomeBlocks";
-import { conditions } from "@/lib/conditions";
-import { lineLabels, pathways, type CareLine } from "@/lib/pathways";
 
-type ParcoursSearch = { c?: string | undefined };
+type JourneyStep = {
+  id: string;
+  label: string;
+  title: string;
+  description: string;
+  action: string;
+};
+
+const journeySteps: JourneyStep[] = [
+  { id: "consultation", label: "Étape 1", title: "Échange avec un professionnel", description: "Présentez ce qui vous amène et partagez vos questions.", action: "Préparer mes questions" },
+  { id: "documents", label: "Étape 2", title: "Examens et documents", description: "Rassemblez les résultats, comptes rendus et consignes déjà reçus.", action: "Rassembler mes documents" },
+  { id: "care", label: "Étape 3", title: "Prise en charge", description: "Suivez les consignes de votre professionnel et notez ce qui reste à faire.", action: "Noter ma prochaine action" },
+  { id: "follow-up", label: "Étape 4", title: "Point de suivi", description: "Préparez le prochain échange avec les éléments observés et vos nouvelles questions.", action: "Préparer mon suivi" },
+];
+
+const situations = [
+  { id: "start", title: "Je commence mon parcours", detail: "Je ne sais pas encore quelle est la première étape.", completed: [] as string[], next: "Commencer par préparer votre échange" },
+  { id: "accompanied", title: "Je suis déjà accompagné", detail: "J’ai rencontré un professionnel et je veux retrouver la suite.", completed: ["consultation"], next: "Rassembler les éléments de votre dernière consultation" },
+  { id: "exam", title: "J’ai un examen ou un document", detail: "Je veux organiser ce que j’ai reçu et préparer la suite.", completed: ["consultation", "documents"], next: "Préparer l’échange autour de vos résultats" },
+  { id: "follow-up", title: "Je suis en suivi", detail: "Je veux garder une vue claire des prochaines étapes.", completed: ["consultation", "documents", "care"], next: "Préparer votre prochain point de suivi" },
+];
 
 export const Route = createFileRoute("/parcours")({
-  validateSearch: (search: Record<string, unknown>): ParcoursSearch => ({
-    c: typeof search["c"] === "string" ? search["c"] : undefined,
-  }),
-  head: () => ({
-    meta: [
-      { title: "Parcours de soin gradué — Kivoir" },
-      {
-        name: "description",
-        content:
-          "Pour chaque trouble du membre inférieur : quel professionnel voir en premier, lesquels prennent le relais, dans quel délai et quand passer au recours spécialisé.",
-      },
-      { property: "og:title", content: "Parcours de soin gradué — Kivoir" },
-      {
-        property: "og:description",
-        content:
-          "Le réseau de spécialistes autour de votre pathologie : 1re ligne, prise en charge spécialisée et recours, avec les délais.",
-      },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
-    ],
-  }),
+  head: () => ({ meta: [
+    { title: "Votre parcours de soin — Kivoir" },
+    { name: "description", content: "Une feuille de route pour comprendre les étapes de soin et préparer vos échanges avec les professionnels." },
+    { property: "og:title", content: "Votre parcours de soin — Kivoir" },
+    { property: "og:description", content: "Comprendre où vous en êtes, quoi préparer et quelle est la prochaine étape." },
+  ] }),
   component: ParcoursPage,
 });
 
-const lineClasses: Record<CareLine, string> = {
-  1: "border-care/30 bg-care/5",
-  2: "border-soothe/50 bg-soothe/20",
-  3: "border-border bg-muted/50",
-};
-
 function ParcoursPage() {
-  const { c } = Route.useSearch();
-  const navigate = useNavigate({ from: "/parcours" });
+  const [situation, setSituation] = useState("accompanied");
+  const [completed, setCompleted] = useState<string[]>(["consultation"]);
+  const selectedSituation = situations.find((item) => item.id === situation) ?? situations[0];
+  const [questions, setQuestions] = useState("");
+  const [documents, setDocuments] = useState("");
 
-  const selected = conditions.find((item) => item.id === c) ?? null;
-  const pathway = selected ? pathways[selected.id] : undefined;
-
-  const select = (id: string | undefined) =>
-    navigate({ search: { c: id }, resetScroll: false });
+  const nextStep = useMemo(() => journeySteps.find((step) => !completed.includes(step.id)) ?? journeySteps[journeySteps.length - 1], [completed]);
+  const toggleStep = (id: string) => setCompleted((current) => current.includes(id) ? current.filter((step) => step !== id) : [...current, id]);
 
   return (
-    <main className="mx-auto max-w-4xl px-4 py-10">
-      <h1 className="text-2xl font-semibold text-foreground">Parcours de soin gradué</h1>
-      <p className="mt-2 max-w-2xl text-muted-foreground">
-        Chaque pathologie a son propre réseau de professionnels. Choisissez votre trouble pour voir qui
-        consulter en premier, qui prend le relais, dans quel délai, et à quel moment passer au recours
-        spécialisé.
-      </p>
+    <main className="mx-auto max-w-5xl px-4 py-10 md:py-14">
+      <section className="max-w-3xl">
+        <p className="text-sm font-semibold uppercase tracking-[0.16em] text-care">Kivoir · Qui voir, quand</p>
+        <h1 className="mt-4 text-balance text-4xl font-semibold tracking-tight text-foreground md:text-6xl">Votre parcours de soin, enfin lisible.</h1>
+        <p className="mt-5 text-pretty text-lg leading-8 text-muted-foreground">Le médecin vous accompagne. Kivoir vous aide à retrouver ce qui a été fait, ce qui vient ensuite et ce qu’il faut préparer.</p>
+      </section>
 
-      <div className="mt-6 flex flex-wrap gap-2">
-        {conditions.map((item) => {
-          const active = item.id === selected?.id;
-          return (
-            <button
-              key={item.id}
-              onClick={() => select(active ? undefined : item.id)}
-              className={`rounded-full border px-3 py-1.5 text-sm transition-colors ${
-                active
-                  ? "border-care bg-care text-primary-foreground"
-                  : "border-border bg-card text-muted-foreground hover:border-care/40 hover:text-foreground"
-              }`}
-            >
-              {item.name}
-            </button>
-          );
-        })}
-      </div>
-
-      {!selected || !pathway ? (
-        <div className="mt-8 rounded-2xl border border-dashed border-border bg-card p-8 text-center">
-          <Users className="mx-auto h-8 w-8 text-care" />
-          <p className="mt-3 font-medium text-foreground">Sélectionnez un trouble ci-dessus</p>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Vous obtiendrez le parcours complet : professionnels de 1re ligne, spécialistes du suivi,
-            recours en cas d'échec, chronologie et signaux qui doivent accélérer la prise en charge.
-          </p>
+      <section className="mt-10" aria-labelledby="situation-title">
+        <div className="flex flex-wrap items-end justify-between gap-3"><div><p className="text-sm font-semibold text-care">Point de départ</p><h2 id="situation-title" className="mt-1 text-2xl font-semibold text-foreground">Où en êtes-vous aujourd’hui ?</h2></div><span className="text-sm text-muted-foreground">Aucune réponse médicale à déduire</span></div>
+        <div className="mt-5 grid gap-3 sm:grid-cols-2">
+          {situations.map((item) => <button key={item.id} type="button" onClick={() => { setSituation(item.id); setCompleted(item.completed); }} aria-pressed={situation === item.id} className={`rounded-2xl border p-5 text-left transition ${situation === item.id ? "border-care bg-care/10 shadow-sm" : "border-border bg-card hover:border-care/40"}`}><span className="font-semibold text-foreground">{item.title}</span><span className="mt-1 block text-sm leading-6 text-muted-foreground">{item.detail}</span></button>)}
         </div>
-      ) : (
-        <div className="mt-8 space-y-8">
-          <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
-            <div className="flex flex-wrap items-center gap-2">
-              <h2 className="text-lg font-semibold text-card-foreground">{selected.name}</h2>
-              <span className="rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground">
-                {selected.zone}
-              </span>
-            </div>
-            <p className="mt-2 text-sm text-muted-foreground">{selected.summary}</p>
-            <p className="mt-4 flex items-start gap-2 rounded-xl border border-care/20 bg-care/5 p-3 text-sm text-foreground">
-              <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-care" />
-              <span>
-                <span className="font-medium">Par où commencer : </span>
-                {pathway.entry}
-              </span>
-            </p>
+      </section>
+
+      <section className="mt-10 grid gap-6 lg:grid-cols-[1.25fr_0.75fr]" aria-labelledby="roadmap-title">
+        <div className="rounded-3xl border border-border bg-card p-6 shadow-sm md:p-8">
+          <div className="flex items-start justify-between gap-4"><div><p className="text-sm font-semibold text-care">Feuille de route partagée</p><h2 id="roadmap-title" className="mt-1 text-2xl font-semibold text-foreground">Les étapes de votre parcours</h2></div><button type="button" onClick={() => window.print()} className="inline-flex items-center gap-2 rounded-full border border-border px-3 py-2 text-sm font-semibold text-foreground hover:border-care/40"><Printer aria-hidden="true" /> Imprimer</button></div>
+          <div className="mt-7 flex flex-col gap-3">
+            {journeySteps.map((step, index) => { const isDone = completed.includes(step.id); const isNext = step.id === nextStep.id; return <div key={step.id} className={`rounded-2xl border p-4 ${isNext ? "border-care/40 bg-care/5" : "border-border bg-background"}`}><div className="flex gap-3"><button type="button" onClick={() => toggleStep(step.id)} aria-label={`${isDone ? "Marquer" : "Valider"} ${step.title}`} className={`mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full border ${isDone ? "border-care bg-care text-primary-foreground" : "border-border text-transparent"}`}><Check aria-hidden="true" /></button><div className="min-w-0 flex-1"><div className="flex flex-wrap items-center gap-2"><span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{step.label}</span>{isNext ? <span className="rounded-full bg-care/15 px-2 py-0.5 text-xs font-semibold text-care">Prochaine étape</span> : null}</div><h3 className="mt-1 font-semibold text-foreground">{step.title}</h3><p className="mt-1 text-sm leading-6 text-muted-foreground">{step.description}</p></div></div></div>; })}
           </div>
-
-          {([1, 2, 3] as CareLine[]).map((line) => {
-            const actors = pathway.actors.filter((actor) => actor.line === line);
-            if (actors.length === 0) return null;
-            return (
-              <section key={line}>
-                <h3 className="text-base font-semibold text-foreground">{lineLabels[line].label}</h3>
-                <p className="mt-1 text-sm text-muted-foreground">{lineLabels[line].description}</p>
-                <div className="mt-3 grid gap-3 md:grid-cols-2">
-                  {actors.map((actor) => (
-                    <div key={actor.role} className={`rounded-xl border p-4 ${lineClasses[line]}`}>
-                      <p className="font-medium text-foreground">{actor.role}</p>
-                      <p className="mt-1 text-sm text-muted-foreground">{actor.mission}</p>
-                      <p className="mt-3 flex items-start gap-2 text-sm text-foreground">
-                        <ArrowRight className="mt-0.5 h-4 w-4 shrink-0 text-care" />
-                        <span>{actor.trigger}</span>
-                      </p>
-                      <p className="mt-2 inline-flex items-center gap-1 rounded-full bg-background px-2 py-0.5 text-xs text-muted-foreground">
-                        <Clock className="h-3 w-3" />
-                        Délai indicatif : {actor.delay}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              </section>
-            );
-          })}
-
-          <section>
-            <h3 className="text-base font-semibold text-foreground">Chronologie attendue</h3>
-            <ol className="mt-3 space-y-3 border-l border-border pl-5">
-              {pathway.milestones.map((milestone) => (
-                <li key={milestone.period} className="relative">
-                  <span className="absolute -left-[27px] top-1.5 h-3 w-3 rounded-full border-2 border-care bg-background" />
-                  <p className="text-xs font-medium uppercase tracking-wide text-care">
-                    {milestone.period}
-                  </p>
-                  <p className="font-medium text-foreground">{milestone.title}</p>
-                  <p className="text-sm text-muted-foreground">{milestone.goal}</p>
-                </li>
-              ))}
-            </ol>
-          </section>
-
-          <section className="rounded-2xl border border-urgent/20 bg-urgent/5 p-5">
-            <h3 className="flex items-center gap-2 text-base font-semibold text-urgent">
-              <AlertTriangle className="h-4 w-4" />
-              Ce qui doit accélérer le parcours
-            </h3>
-            <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
-              {pathway.escalation.map((item) => (
-                <li key={item} className="flex items-start gap-2">
-                  <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-urgent" />
-                  {item}
-                </li>
-              ))}
-            </ul>
-          </section>
         </div>
-      )}
 
-      <div className="mt-10">
-        <MedicalDisclaimer />
-      </div>
+        <aside className="flex flex-col gap-4">
+          <div className="rounded-3xl border border-care/25 bg-care/5 p-6"><p className="text-xs font-semibold uppercase tracking-wide text-care">À faire maintenant</p><h2 className="mt-2 text-xl font-semibold text-foreground">{nextStep.title}</h2><p className="mt-2 text-sm leading-6 text-muted-foreground">{selectedSituation.next}. {nextStep.action}. Cette étape est à confirmer avec votre professionnel.</p><div className="mt-5 flex items-center gap-2 text-sm font-semibold text-care"><UserRound aria-hidden="true" /> Professionnel concerné à confirmer</div></div>
+          <div className="rounded-3xl border border-border bg-card p-6"><div className="flex items-center gap-2"><FileText className="text-care" aria-hidden="true" /><h2 className="font-semibold text-foreground">Préparer le prochain échange</h2></div><label htmlFor="questions" className="mt-4 block text-sm font-medium text-foreground">Mes questions</label><textarea id="questions" value={questions} onChange={(event) => setQuestions(event.target.value)} rows={3} placeholder="Ce que je veux demander…" className="mt-2 w-full rounded-xl border border-input bg-background p-3 text-sm text-foreground outline-none focus:ring-2 focus:ring-ring" /><label htmlFor="documents" className="mt-4 block text-sm font-medium text-foreground">Documents à retrouver</label><textarea id="documents" value={documents} onChange={(event) => setDocuments(event.target.value)} rows={3} placeholder="Résultat, compte rendu, ordonnance…" className="mt-2 w-full rounded-xl border border-input bg-background p-3 text-sm text-foreground outline-none focus:ring-2 focus:ring-ring" /></div>
+          <div className="rounded-3xl border border-border bg-background p-5"><div className="flex items-start gap-3"><HelpCircle className="mt-0.5 shrink-0 text-care" aria-hidden="true" /><p className="text-sm leading-6 text-muted-foreground">Kivoir organise vos informations. La prochaine étape et les consignes sont définies avec votre professionnel de santé.</p></div></div>
+        </aside>
+      </section>
+
+      <section className="mt-8 grid gap-4 sm:grid-cols-2"><a href="/conseils" className="rounded-2xl border border-border bg-card p-5 hover:border-care/40"><p className="font-semibold text-foreground">Voir les conseils généraux</p><p className="mt-1 text-sm leading-6 text-muted-foreground">Des repères d’information à consulter en complément de votre accompagnement.</p></a><a href="/annuaire" className="rounded-2xl border border-border bg-card p-5 hover:border-care/40"><p className="font-semibold text-foreground">Retrouver les professionnels</p><p className="mt-1 text-sm leading-6 text-muted-foreground">Consultez l’annuaire lorsque votre professionnel vous invite à poursuivre le parcours.</p></a></section>
+      <div className="mt-10"><MedicalDisclaimer /></div>
     </main>
   );
 }

@@ -15,11 +15,11 @@ export const Route = createFileRoute("/conseils")({
   }),
   head: () => ({
     meta: [
-      { title: "Conseils pratiques par trouble — Kivoir" },
+      { title: "Repères pour préparer votre parcours — Kivoir" },
       {
         name: "description",
         content:
-          "Bons réflexes du quotidien, erreurs à éviter et signes d'alerte, adaptés à chaque trouble musculo-squelettique du membre inférieur.",
+          "Des repères généraux pour préparer vos échanges et retrouver les consignes données par votre professionnel.",
       },
       { property: "og:title", content: "Conseils pratiques par trouble — Kivoir" },
       {
@@ -62,7 +62,7 @@ function ConseilsPage() {
       <div className="text-center">
         <h1 className="text-2xl font-semibold text-foreground">Vidéos, exercices et conseils</h1>
         <p className="mx-auto mt-2 max-w-2xl text-muted-foreground">
-          Choisissez votre trouble : les vidéos adaptées apparaissent immédiatement juste en dessous.
+          Consultez ces repères pour préparer votre prochain échange. Ils ne remplacent pas les consignes de votre professionnel.
         </p>
       </div>
 

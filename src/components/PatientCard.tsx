@@ -13,9 +13,8 @@ export interface PatientCardProps {
 }
 
 /**
- * Carte de poche remise au patient en fin de consultation :
- * il retrouve chez lui les informations sur son trouble, son parcours de soins
- * et les vidéos d'exercices. Aucune donnée n'est enregistrée.
+ * Carte de poche remise au patient : elle ouvre directement la feuille de route
+ * pour retrouver la prochaine étape et les consignes du professionnel.
  */
 export function PatientCard({ data, className }: PatientCardProps) {
   const { cabinetName, doctorName, url, qr } = data;
@@ -38,12 +37,12 @@ export function PatientCard({ data, className }: PatientCardProps) {
       <div className="min-w-0">
         <p className="text-[9px] font-semibold uppercase tracking-widest text-care">Kivoir — qui voir, quand</p>
         <p className="mt-1 text-[11px] font-semibold leading-snug text-foreground">
-          Retrouvez chez vous les informations sur votre douleur
+          Retrouvez votre feuille de route après la consultation
         </p>
         <ul className="mt-1.5 space-y-0.5 text-[9px] leading-snug text-muted-foreground">
-          <li>• Comprendre votre trouble</li>
-          <li>• Savoir qui consulter et quand</li>
-          <li>• Vidéos et exercices adaptés</li>
+          <li>• Voir où vous en êtes</li>
+          <li>• Retrouver la prochaine étape</li>
+          <li>• Préparer votre prochain échange</li>
         </ul>
         <p className="mt-1.5 truncate text-[8px] text-muted-foreground">{url}</p>
         <p className="mt-1 truncate text-[9px] font-medium text-foreground">

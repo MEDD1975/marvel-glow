@@ -17,8 +17,6 @@ import { MedicalDisclaimer } from "@/components/HomeBlocks";
 import { CabinetPoster, type PosterData } from "@/components/CabinetPoster";
 import { PatientCard } from "@/components/PatientCard";
 
-import { DoctorSummary } from "@/components/DoctorSummary";
-import { conditions, triageQuestions, type TriageOption } from "@/lib/conditions";
 
 export const Route = createFileRoute("/cabinet")({
   head: () => ({
@@ -42,13 +40,6 @@ export const Route = createFileRoute("/cabinet")({
   component: CabinetPage,
 });
 
-const demoCondition = conditions.find((c) => c.id === "entorse-cheville")!;
-const demoAnswers: TriageOption[] = [
-  triageQuestions[0]!.options[1]!, // appui possible mais douloureux
-  triageQuestions[1]!.options[1]!, // 2 jours à 6 semaines
-  triageQuestions[2]!.options[2]!, // aucun signe d'alerte
-];
-
 function CabinetPage() {
   const [poster, setPoster] = useState<PosterData>({
     cabinetName: "Cabinet médical",
@@ -63,8 +54,8 @@ function CabinetPage() {
   const [showDemo, setShowDemo] = useState(false);
 
   useEffect(() => {
-    const target = `${window.location.origin}/parcours?src=affiche`;
-    const homeTarget = `${window.location.origin}/?src=carte`;
+    const target = `${window.location.origin}/parcours?situation=accompanied&src=affiche`;
+    const homeTarget = `${window.location.origin}/parcours?situation=accompanied&src=carte`;
     setPoster((prev) => ({ ...prev, url: target }));
     setCardQr({ url: homeTarget, qr: null });
     let cancelled = false;
@@ -190,8 +181,8 @@ title="Le patient prépare"
           <StepCard
             number={3}
             icon={ClipboardCheck}
-            title="Vous copiez la synthèse"
-            text="En consultation, le patient montre son parcours. Vous pouvez vous concentrer sur l’échange et ajouter la prochaine étape à expliquer."
+title="Vous validez la feuille"
+  text="En consultation, vous confirmez l’étape actuelle, la prochaine étape et les consignes à retrouver après l’échange."
           />
         </div>
       </section>
@@ -261,8 +252,8 @@ title="Le patient prépare"
                 Conseil
               </p>
               <p className="mt-2 text-sm text-muted-foreground">
-                Placez l'affiche près des sièges de la salle d'attente. Le patient scanne, répond et montre le résultat
-                en consultation.
+Placez l'affiche près des sièges de la salle d'attente. Le patient scanne et ouvre directement sa feuille de route
+              pour préparer l’échange.
               </p>
             </div>
           </div>
@@ -312,8 +303,8 @@ title="Le patient prépare"
       <section className="mt-16 print:hidden">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
-            <h2 className="text-2xl font-semibold text-foreground">Exemple de synthèse patient</h2>
-            <p className="mt-1 text-muted-foreground">Voici ce que le médecin peut retrouver avant l’échange.</p>
+            <h2 className="text-2xl font-semibold text-foreground">Exemple de feuille de route</h2>
+            <p className="mt-1 text-muted-foreground">Voici ce que le patient retrouve après votre validation.</p>
           </div>
           <button
             onClick={() => setShowDemo((s) => !s)}
@@ -325,8 +316,15 @@ title="Le patient prépare"
         </div>
 
         {showDemo && (
-          <div className="mt-6">
-            <DoctorSummary condition={demoCondition} answers={demoAnswers} level="professional" />
+          <div className="mt-6 rounded-3xl border border-care/20 bg-card p-6">
+            <p className="text-xs font-semibold uppercase tracking-wide text-care">Feuille validée</p>
+            <h3 className="mt-2 text-xl font-semibold text-foreground">Après la consultation</h3>
+            <div className="mt-5 grid gap-3 sm:grid-cols-3">
+              <div className="rounded-2xl bg-background p-4"><p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Étape actuelle</p><p className="mt-2 font-semibold text-foreground">Consultation réalisée</p></div>
+              <div className="rounded-2xl bg-care/5 p-4"><p className="text-xs font-semibold uppercase tracking-wide text-care">Prochaine étape</p><p className="mt-2 font-semibold text-foreground">Rassembler les documents utiles</p></div>
+              <div className="rounded-2xl bg-background p-4"><p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">À préparer</p><p className="mt-2 font-semibold text-foreground">Questions pour le prochain échange</p></div>
+            </div>
+            <p className="mt-5 text-sm leading-6 text-muted-foreground">Le patient retrouve cette feuille via le QR code. Vous confirmez les éléments et ajoutez vos consignes avant de la lui remettre.</p>
           </div>
         )}
       </section>

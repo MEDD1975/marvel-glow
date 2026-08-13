@@ -27,17 +27,17 @@ import {
 export const Route = createFileRoute("/orientation")({
   head: () => ({
     meta: [
-      { title: "Orientation — Kivoir" },
+      { title: "Repérer sa prochaine étape — Kivoir" },
       {
         name: "description",
         content:
-          "Décrivez votre douleur, répondez à quelques questions et obtenez une première orientation à discuter avec un professionnel.",
+          "Repérez les informations à préparer pour votre prochain échange avec un professionnel, sans interprétation de vos symptômes.",
       },
       { property: "og:title", content: "Orientation — Kivoir" },
       {
         property: "og:description",
         content:
-          "Décrivez votre douleur, répondez à quelques questions et obtenez une première orientation à discuter avec un professionnel.",
+          "Repérez les informations à préparer pour votre prochain échange avec un professionnel, sans interprétation de vos symptômes.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -115,7 +115,7 @@ function OrientationPage() {
       <div className="max-w-2xl">
         <p className="text-sm font-semibold uppercase tracking-wide text-care">Orientation</p>
         <h1 className="mt-3 text-4xl font-semibold tracking-tight text-foreground md:text-5xl">Trouvez votre prochaine étape</h1>
-        <p className="mt-4 text-lg leading-8 text-muted-foreground">Quelques choix simples, puis une recommandation claire.</p>
+        <p className="mt-4 text-lg leading-8 text-muted-foreground">Quelques repères pour organiser votre prochain échange.</p>
         <Link to="/conseils" className="mt-5 inline-flex min-h-11 items-center text-base font-semibold text-care hover:underline">Comprendre l’orientation <ArrowRight aria-hidden="true" className="ml-2 size-5" /></Link>
       </div>
 

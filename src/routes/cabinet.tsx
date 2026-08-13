@@ -53,26 +53,37 @@ function CabinetPage() {
 
   const [showDemo, setShowDemo] = useState(false);
   const [pathway, setPathway] = useState("entorse-cheville");
+  const [cardNote, setCardNote] = useState("");
   const pathwayLabels: Record<string, string> = {
     "entorse-cheville": "Entorse de la cheville",
     "douleur-lombaire": "Douleur lombaire",
     "post-operatoire": "Suivi post-opératoire",
   };
 
+  // Affiche salle d'attente → ouvre le questionnaire de pré-consultation.
   useEffect(() => {
-    const target = `${window.location.origin}/parcours?pathway=${pathway}&src=affiche`;
-    const homeTarget = `${window.location.origin}/parcours?pathway=${pathway}&src=carte`;
+    const target = `${window.location.origin}/orientation?src=affiche`;
     setPoster((prev) => ({ ...prev, url: target }));
-    setCardQr({ url: homeTarget, qr: null });
     let cancelled = false;
     void import("qrcode").then(async (mod) => {
-      const [dataUrl, cardUrl] = await Promise.all([
-        mod.default.toDataURL(target, { width: 640, margin: 1, errorCorrectionLevel: "H" }),
-        mod.default.toDataURL(homeTarget, { width: 480, margin: 1, errorCorrectionLevel: "H" }),
-      ]);
+      const dataUrl = await mod.default.toDataURL(target, { width: 640, margin: 1, errorCorrectionLevel: "H" });
       if (cancelled) return;
       setPoster((prev) => ({ ...prev, qr: dataUrl }));
-      setCardQr({ url: homeTarget, qr: cardUrl });
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  // Carte remise au patient → ouvre le parcours attribué (étapes, conseils, vidéos, professionnels).
+  useEffect(() => {
+    const cardTarget = `${window.location.origin}/parcours?pathway=${pathway}&src=carte`;
+    setCardQr({ url: cardTarget, qr: null });
+    let cancelled = false;
+    void import("qrcode").then(async (mod) => {
+      const cardUrl = await mod.default.toDataURL(cardTarget, { width: 480, margin: 1, errorCorrectionLevel: "H" });
+      if (cancelled) return;
+      setCardQr({ url: cardTarget, qr: cardUrl });
     });
     return () => {
       cancelled = true;
@@ -112,12 +123,8 @@ function CabinetPage() {
 
       <section className="mt-8 rounded-3xl border border-care/25 bg-care/5 p-6 md:p-8 print:hidden" aria-labelledby="pathway-choice-title">
         <p className="text-xs font-semibold uppercase tracking-wide text-care">Attribution professionnelle</p>
-        <h2 id="pathway-choice-title" className="mt-2 text-2xl font-semibold text-foreground">Quel parcours voulez-vous attribuer au patient ?</h2>
-        <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">Le patient ne choisit pas sa pathologie. Vous renseignez ou confirmez la situation, puis Kivoir lui présente le parcours correspondant.</p>
-        <label htmlFor="pathway" className="mt-5 block text-sm font-semibold text-foreground">Diagnostic ou situation confirmée</label>
-        <select id="pathway" value={pathway} onChange={(event) => setPathway(event.target.value)} className="mt-2 w-full rounded-xl border border-input bg-background px-3 py-3 text-sm text-foreground outline-none focus:ring-2 focus:ring-ring md:max-w-xl">
-          {Object.entries(pathwayLabels).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
-        </select>
+        <h2 id="pathway-choice-title" className="mt-2 text-2xl font-semibold text-foreground">C’est vous qui attribuez le parcours</h2>
+        <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">Le patient ne choisit pas sa pathologie. Après la consultation, vous confirmez le diagnostic ou la situation, puis vous choisissez le parcours directement sur la carte remise au patient (plus bas).</p>
         <p className="mt-3 text-xs leading-5 text-muted-foreground">Kivoir n’interprète pas les symptômes et ne pose pas le diagnostic. Le professionnel reste responsable de la confirmation.</p>
       </section>
 
@@ -214,9 +221,9 @@ title="Vous validez la feuille"
       <section className="mt-16 poster-section">
         <div className="flex flex-wrap items-end justify-between gap-4 print:hidden">
           <div>
-            <h2 className="text-2xl font-semibold text-foreground">Brique 1 — QR code patient</h2>
+            <h2 className="text-2xl font-semibold text-foreground">Brique 1 — Affiche questionnaire</h2>
             <p className="mt-1 text-muted-foreground">
-              Personnalisez le texte, puis imprimez ou affichez sur un écran.
+              Le QR code ouvre le questionnaire de pré-consultation. Personnalisez le texte, puis imprimez ou affichez sur un écran en salle d’attente.
             </p>
           </div>
           <button
@@ -275,8 +282,8 @@ title="Vous validez la feuille"
                 Conseil
               </p>
               <p className="mt-2 text-sm text-muted-foreground">
-Placez l'affiche près des sièges de la salle d'attente. Le patient scanne et ouvre directement sa feuille de route
-              pour préparer l’échange.
+Placez l'affiche près des sièges de la salle d'attente. Le patient scanne et remplit le questionnaire
+              avant d’entrer en consultation.
               </p>
             </div>
           </div>
@@ -293,7 +300,7 @@ Placez l'affiche près des sièges de la salle d'attente. Le patient scanne et o
           <div>
             <h2 className="text-2xl font-semibold text-foreground">Brique 2 — Carte patient</h2>
             <p className="mt-1 max-w-2xl text-muted-foreground">
-              À la fin de la consultation, donnez cette carte au patient : il retrouve la prochaine étape, vos consignes et les éléments à préparer pour la suite.
+              À la fin de la consultation, remettez cette carte : le patient retrouve son parcours, des conseils et vidéos adaptés, et la suite de sa prise en charge.
             </p>
           </div>
           <button
@@ -305,8 +312,44 @@ Placez l'affiche près des sièges de la salle d'attente. Le patient scanne et o
           </button>
         </div>
 
-        <div className="mt-6 flex justify-center print:hidden">
-          <PatientCard data={{ ...cardQr, cabinetName: poster.cabinetName, doctorName: poster.doctorName }} />
+        <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_auto]">
+          <div className="space-y-4 rounded-2xl border border-border bg-card p-6 print:hidden">
+            <div>
+              <label htmlFor="cardPathway" className="block text-sm font-medium text-foreground">
+                Parcours ouvert par la carte
+              </label>
+              <select
+                id="cardPathway"
+                value={pathway}
+                onChange={(e) => setPathway(e.target.value)}
+                className="mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground outline-none focus:ring-2 focus:ring-ring"
+              >
+                {Object.entries(pathwayLabels).map(([value, label]) => (
+                  <option key={value} value={value}>{label}</option>
+                ))}
+              </select>
+              <p className="mt-1 text-xs text-muted-foreground">La carte ouvre ce parcours : étapes, conseils, vidéos et professionnels à consulter.</p>
+            </div>
+            <div>
+              <label htmlFor="cardNote" className="block text-sm font-medium text-foreground">
+                Consigne personnalisée (optionnel)
+              </label>
+              <textarea
+                id="cardNote"
+                rows={2}
+                value={cardNote}
+                maxLength={90}
+                onChange={(e) => setCardNote(e.target.value)}
+                placeholder="Ex : Contrôle dans 3 semaines si la gêne persiste."
+                className="mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground outline-none focus:ring-2 focus:ring-ring"
+              />
+              <p className="mt-1 text-xs text-muted-foreground">Un mot manuscrit ou imprimé qui apparaît directement sur la carte.</p>
+            </div>
+          </div>
+
+          <div className="flex items-start justify-center">
+            <PatientCard data={{ ...cardQr, cabinetName: poster.cabinetName, doctorName: poster.doctorName, pathwayLabel: pathwayLabels[pathway], note: cardNote }} />
+          </div>
         </div>
 
         {/* Feuille d'impression : 8 cartes à découper */}
@@ -314,7 +357,7 @@ Placez l'affiche près des sièges de la salle d'attente. Le patient scanne et o
           {Array.from({ length: 8 }).map((_, i) => (
             <PatientCard
               key={i}
-              data={{ ...cardQr, cabinetName: poster.cabinetName, doctorName: poster.doctorName }}
+              data={{ ...cardQr, cabinetName: poster.cabinetName, doctorName: poster.doctorName, pathwayLabel: pathwayLabels[pathway], note: cardNote }}
             />
           ))}
         </div>
@@ -386,7 +429,7 @@ Placez l'affiche près des sièges de la salle d'attente. Le patient scanne et o
           />
           <FaqCard
             question="Comment le médecin récupère-t-il la synthèse ?"
-            answer='Le patient montre sa feuille de route. Vous pouvez reprendre les éléments utiles et confirmer la prochaine étape.'
+            answer="À la fin du questionnaire, un QR code s'affiche. Vous le scannez depuis votre poste : le texte structuré s'ouvre, prêt à copier-coller dans votre compte rendu."
           />
           <FaqCard
             question="Kivoir remplace-t-il l'examen clinique ?"

@@ -5,6 +5,8 @@ export interface PatientCardData {
   doctorName: string;
   url: string;
   qr: string | null;
+  pathwayLabel?: string;
+  note?: string;
 }
 
 export interface PatientCardProps {
@@ -17,7 +19,7 @@ export interface PatientCardProps {
  * pour retrouver la prochaine étape et les consignes du professionnel.
  */
 export function PatientCard({ data, className }: PatientCardProps) {
-  const { cabinetName, doctorName, url, qr } = data;
+  const { cabinetName, doctorName, url, qr, pathwayLabel, note } = data;
 
   return (
     <div
@@ -35,15 +37,18 @@ export function PatientCard({ data, className }: PatientCardProps) {
       </div>
 
       <div className="min-w-0">
-        <p className="text-[9px] font-semibold uppercase tracking-widest text-care">Kivoir — qui voir, quand</p>
+        <p className="text-[9px] font-semibold uppercase tracking-widest text-care">Kivoir — votre parcours de soin</p>
         <p className="mt-1 text-[11px] font-semibold leading-snug text-foreground">
-          Retrouvez votre feuille de route après la consultation
+          {pathwayLabel ? pathwayLabel : "Retrouvez votre parcours après la consultation"}
         </p>
         <ul className="mt-1.5 space-y-0.5 text-[9px] leading-snug text-muted-foreground">
-          <li>• Voir où vous en êtes</li>
-          <li>• Retrouver la prochaine étape</li>
-          <li>• Préparer votre prochain échange</li>
+          <li>• Conseils et vidéos adaptés</li>
+          <li>• La suite de votre parcours</li>
+          <li>• Les professionnels à consulter</li>
         </ul>
+        {note ? (
+          <p className="mt-1.5 rounded bg-care/10 px-1.5 py-1 text-[9px] font-medium leading-snug text-care">{note}</p>
+        ) : null}
         <p className="mt-1.5 truncate text-[8px] text-muted-foreground">{url}</p>
         <p className="mt-1 truncate text-[9px] font-medium text-foreground">
           {cabinetName || "Cabinet médical"}

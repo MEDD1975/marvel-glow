@@ -52,18 +52,7 @@ export function EntryCard({
   );
 }
 
-export type HomeSource = "affiche" | "carte" | "direct";
-
-const sourceIntro: Record<HomeSource, { badge: string; title: string; lead: string }> = {
-  affiche: { badge: "Questionnaire en salle d’attente", title: "Préparez votre consultation", lead: "Décrivez votre douleur en quelques minutes. Votre médecin retrouve une synthèse claire avant l’échange." },
-  carte: { badge: "Votre parcours de soins", title: "Comprenez quoi faire maintenant", lead: "Des repères simples pour avancer sereinement." },
-  direct: { badge: "Votre accès Kivoir", title: "Retrouvez votre parcours de soin", lead: "Votre professionnel vous remet un lien Kivoir pour retrouver le parcours correspondant à votre diagnostic." },
-};
-
-export function HomeHero({ source = "direct" }: { source?: HomeSource }) {
-  const intro = sourceIntro[source];
-  const carteFirst = source === "carte";
-
+export function HomeHero() {
   return (
     <section className="px-4 pb-10 pt-10 md:pb-16 md:pt-16">
       <div className="mx-auto max-w-5xl">

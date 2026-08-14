@@ -1,11 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { HomeHero, EntryGrid, MedicalDisclaimer, type HomeSource } from "@/components/HomeBlocks";
+import { HomeHero, EntryGrid, MedicalDisclaimer } from "@/components/HomeBlocks";
 
 export const Route = createFileRoute("/")({
-  validateSearch: (search: Record<string, unknown>): { src: HomeSource } => {
-    const raw = String(search["src"] ?? "");
-    return { src: raw === "affiche" || raw === "carte" ? raw : "direct" };
-  },
   head: () => ({
     meta: [
       { title: "Kivoir — Qui voir, quand : douleurs du membre inférieur" },
@@ -20,11 +16,9 @@ export const Route = createFileRoute("/")({
 });
 
 function HomePage() {
-  const { src } = Route.useSearch();
-
   return (
     <main>
-      <HomeHero source={src} />
+      <HomeHero />
       <EntryGrid />
       <section className="mx-auto max-w-4xl px-4 pb-16">
         <MedicalDisclaimer />

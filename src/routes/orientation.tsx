@@ -219,12 +219,12 @@ function ConditionPicker({
     <div className="space-y-6">
       <div className="flex items-start justify-between gap-4">
         <h2 className="text-lg font-semibold text-card-foreground">
-          Où se situe précisément la douleur ?
+          Quelle zone décrit le mieux votre douleur ?
         </h2>
         <span className="shrink-0 text-xs text-muted-foreground">Étape {totalSteps}</span>
       </div>
 
-      <p className="text-sm text-muted-foreground">Cette dernière réponse aide à orienter les conseils. Elle ne sert pas à établir un diagnostic.</p>
+      <p className="text-sm text-muted-foreground">Cette précision complète votre description. Elle n’établit aucun diagnostic : c’est le médecin qui l’interprète.</p>
 
       <div className="grid gap-4">
         {zoneConditions.map((item) => (
@@ -337,7 +337,7 @@ function ResultView({
         examen et vous expliquera la suite : examens éventuels, traitement et professionnels à voir.
       </p>
 
-      <DoctorSummary condition={condition} answers={answers} level="professional" />
+      <DoctorSummary condition={condition} answers={answers} />
 
       <div className="rounded-xl border border-border bg-muted/60 p-4">
         <div className="flex gap-4">

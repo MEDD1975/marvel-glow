@@ -15,17 +15,17 @@ export const Route = createFileRoute("/conseils")({
   }),
   head: () => ({
     meta: [
-      { title: "Repères pour préparer votre parcours — Kivoir" },
+      { title: "Conseils et vidéos — Kivoir" },
       {
         name: "description",
         content:
-          "Des repères généraux pour préparer vos échanges et retrouver les consignes données par votre professionnel.",
+          "Vidéos, exercices, bons réflexes et signes d’alerte adaptés à votre trouble, en complément des consignes de votre professionnel.",
       },
-      { property: "og:title", content: "Conseils pratiques par trouble — Kivoir" },
+      { property: "og:title", content: "Conseils et vidéos — Kivoir" },
       {
         property: "og:description",
         content:
-          "Choisissez votre trouble pour obtenir des conseils quotidiens ciblés, les erreurs fréquentes et les signes qui doivent alerter.",
+          "Vidéos, exercices, bons réflexes et signes d’alerte adaptés à votre trouble, en complément des consignes de votre professionnel.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

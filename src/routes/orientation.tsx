@@ -1,39 +1,33 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import {
-  AlertTriangle,
   ArrowLeft,
   ArrowRight,
-  HeartPulse,
+  CheckCircle2,
   Info,
   Lightbulb,
-  Map as MapIcon,
   RefreshCcw,
-  Stethoscope,
 } from "lucide-react";
 import { MedicalDisclaimer } from "@/components/HomeBlocks";
 import { LegDiagram } from "@/components/LegDiagram";
 import { DoctorSummary } from "@/components/DoctorSummary";
-import { conditionAdvice } from "@/lib/condition-advice";
 import {
   conditions,
-  levelCopy,
   triageQuestions,
   type Condition,
-  type TriageLevel,
   type TriageOption,
 } from "@/lib/conditions";
 
 export const Route = createFileRoute("/orientation")({
   head: () => ({
     meta: [
-      { title: "Repérer sa prochaine étape — Kivoir" },
+      { title: "Questionnaire de pré-consultation — Kivoir" },
       {
         name: "description",
         content:
           "Décrivez votre douleur et votre gêne pour aider le professionnel à préparer la consultation.",
       },
-      { property: "og:title", content: "Orientation — Kivoir" },
+      { property: "og:title", content: "Questionnaire de pré-consultation — Kivoir" },
       {
         property: "og:description",
         content:
@@ -52,30 +46,6 @@ const zones = [
   { id: "Cheville", label: "Cheville", description: "Malléoles, tendon d'Achille, talon" },
   { id: "Pied", label: "Pied", description: "Plante, avant-pied, orteils, bord interne" },
 ];
-
-const levelIcons: Record<TriageLevel, typeof AlertTriangle> = {
-  urgent: AlertTriangle,
-  professional: Stethoscope,
-  "self-care": HeartPulse,
-};
-
-const levelLabels: Record<TriageLevel, string> = {
-  urgent: "Urgent",
-  professional: "Consultation médicale",
-  "self-care": "Auto-soin surveillé",
-};
-
-const levelClasses: Record<TriageLevel, string> = {
-  urgent: "border-urgent/20 bg-urgent/5 text-urgent",
-  professional: "border-care/20 bg-care/5 text-care",
-  "self-care": "border-soothe/40 bg-soothe/30 text-soothe-foreground",
-};
-
-const levelRank: Record<TriageLevel, number> = {
-  "self-care": 0,
-  professional: 1,
-  urgent: 2,
-};
 
 const totalSteps = triageQuestions.length + 2; // zone + questions + précision de la zone
 
@@ -115,8 +85,8 @@ function OrientationPage() {
       <div className="max-w-2xl">
         <p className="text-sm font-semibold uppercase tracking-wide text-care">Questionnaire Kivoir</p>
         <h1 className="mt-3 text-4xl font-semibold tracking-tight text-foreground md:text-5xl">Préparez votre consultation</h1>
-        <p className="mt-4 text-lg leading-8 text-muted-foreground">Quelques questions sur votre douleur pour permettre au médecin de gagner du temps pendant l’échange.</p>
-        <Link to="/conseils" className="mt-5 inline-flex min-h-11 items-center text-base font-semibold text-care hover:underline">Comprendre l’orientation <ArrowRight aria-hidden="true" className="ml-2 size-5" /></Link>
+        <p className="mt-4 text-lg leading-8 text-muted-foreground">Quelques questions sur votre douleur pour permettre au médecin de gagner du temps pendant l’échange. À la fin, un QR code résume vos réponses pour votre médecin.</p>
+        <Link to="/conseils" className="mt-5 inline-flex min-h-11 items-center text-base font-semibold text-care hover:underline">Voir les conseils et vidéos <ArrowRight aria-hidden="true" className="ml-2 size-5" /></Link>
       </div>
 
       <div className="mt-6 flex items-center gap-2" aria-label={`Étape ${stepNumber} sur ${totalSteps}`}>
@@ -352,63 +322,22 @@ function ResultView({
   onBack: () => void;
   onReset: () => void;
 }) {
-  const level = answers.reduce<TriageLevel>(
-    (worst, answer) => (levelRank[answer.level] > levelRank[worst] ? answer.level : worst),
-    "self-care",
-  );
-  const copy = levelCopy[level];
-  const Icon = levelIcons[level];
-
   return (
     <div className="space-y-6">
-      <div className={`flex items-center gap-3 rounded-xl border p-4 ${levelClasses[level]}`}>
-        <Icon className="h-6 w-6 shrink-0" />
+      <div className="flex items-center gap-3 rounded-xl border border-care/20 bg-care/5 p-4 text-care">
+        <CheckCircle2 className="h-6 w-6 shrink-0" />
         <div>
-          <p className="text-sm font-medium">{levelLabels[level]}</p>
-          <p className="text-lg font-semibold">{copy.title}</p>
+          <p className="text-sm font-medium">Questionnaire terminé</p>
+          <p className="text-lg font-semibold text-foreground">Merci, votre description est prête pour le médecin</p>
         </div>
       </div>
 
-      <p className="text-foreground">{copy.message}</p>
+      <p className="text-muted-foreground">
+        Vos réponses sont déclaratives et n’établissent aucun diagnostic. Le médecin les consultera, réalisera son
+        examen et vous expliquera la suite : examens éventuels, traitement et professionnels à voir.
+      </p>
 
-      <div>
-        <h3 className="font-semibold text-foreground">Que faire maintenant ?</h3>
-        <ul className="mt-2 space-y-2">
-          {copy.actions.map((action) => (
-            <li key={action} className="flex items-start gap-2 text-muted-foreground">
-              <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-care" />
-              {action}
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      <section className="rounded-3xl border border-care/25 bg-care/5 p-6 md:p-7" aria-labelledby="first-advice-title">
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-wide text-care">À faire maintenant</p>
-            <h3 id="first-advice-title" className="mt-1 text-2xl font-semibold tracking-tight text-foreground">Premiers gestes prudents</h3>
-          </div>
-          <Lightbulb className="size-6 shrink-0 text-care" aria-hidden="true" />
-        </div>
-        <div className="mt-5 grid gap-3">
-          {(conditionAdvice[condition.id]?.tips ?? []).slice(0, 3).map((tip) => (
-            <div key={tip.title} className="rounded-2xl bg-background/80 p-4">
-              <p className="text-base font-semibold text-foreground">{tip.title}</p>
-              <p className="mt-1 text-sm leading-6 text-muted-foreground">{tip.content}</p>
-            </div>
-          ))}
-        </div>
-        <div className="mt-5 flex flex-col gap-3 sm:flex-row">
-          <Link to="/conseils" search={{ c: condition.id }} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-care px-5 text-base font-semibold text-primary-foreground transition hover:bg-care/90">
-            Voir tous les conseils <ArrowRight aria-hidden="true" className="size-5" />
-          </Link>
-          <Link to="/annuaire" search={{ c: condition.id }} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-care/30 bg-background px-5 text-base font-semibold text-care transition hover:bg-care/10">
-            Trouver un professionnel <MapIcon aria-hidden="true" className="size-5" />
-          </Link>
-        </div>
-        <p className="mt-5 text-base leading-7 text-foreground"><span className="font-semibold">À discuter en première intention :</span> {condition.whoToSee}</p><p className="mt-3 text-sm leading-6 text-muted-foreground">Ces conseils ne remplacent pas un examen et ne permettent pas de confirmer une cause.</p>
-      </section>
+      <DoctorSummary condition={condition} answers={answers} level="professional" />
 
       <div className="rounded-xl border border-border bg-muted/60 p-4">
         <div className="flex gap-4">
@@ -416,31 +345,13 @@ function ResultView({
             <LegDiagram spot={condition.spot} label={condition.name} />
           </span>
           <div className="min-w-0">
-            <h3 className="font-semibold text-foreground">Zone et symptômes pris en compte</h3>
-            <p className="mt-1 text-sm text-muted-foreground">Vos réponses servent à proposer des conseils prudents et une première orientation. Elles ne confirment pas une cause.</p>
+            <h3 className="font-semibold text-foreground">Zone décrite</h3>
             <p className="mt-1 text-sm text-muted-foreground">
-              <span className="font-medium text-foreground">Zone décrite : </span>
-              {condition.zone}
+              <span className="font-medium text-foreground">{condition.zone}</span> — {condition.location}
             </p>
           </div>
         </div>
-        <dl className="mt-3 space-y-2 text-sm">
-          <div>
-            <dt className="inline font-medium text-foreground">Premier réflexe prudent : </dt>
-            <dd className="inline text-muted-foreground">{condition.firstStep}</dd>
-          </div>
-          <div>
-            <dt className="inline font-medium text-foreground">Qui consulter : </dt>
-            <dd className="inline text-muted-foreground">{condition.whoToSee}</dd>
-          </div>
-          <div>
-            <dt className="inline font-medium text-foreground">Délais habituels : </dt>
-            <dd className="inline text-muted-foreground">{condition.delay}</dd>
-          </div>
-        </dl>
       </div>
-
-      <DoctorSummary condition={condition} answers={answers} level={level} />
 
       <div className="rounded-xl bg-muted p-4">
         <p className="text-sm font-medium text-foreground">Vos réponses</p>
@@ -457,21 +368,6 @@ function ResultView({
       </div>
 
       <div className="flex flex-wrap gap-3">
-        <Link
-          to="/parcours"
-          search={{ c: condition.id }}
-          className="inline-flex items-center gap-2 rounded-lg bg-care px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-care/90"
-        >
-          <MapIcon className="h-4 w-4" />
-          Voir le parcours de soin de {condition.name}
-        </Link>
-        <Link
-          to="/conseils"
-          search={{ c: condition.id }}
-          className="inline-flex items-center gap-2 rounded-lg border border-border bg-card px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
-        >
-          Conseils adaptés à {condition.name}
-        </Link>
         <button
           onClick={onReset}
           className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"

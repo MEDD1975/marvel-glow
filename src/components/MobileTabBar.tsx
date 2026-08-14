@@ -1,12 +1,12 @@
 import { Link } from "@tanstack/react-router";
-import { Home, Route as RouteIcon, MapPin, PlayCircle } from "lucide-react";
+import { Home, ClipboardList, Route as RouteIcon, MapPin, PlayCircle } from "lucide-react";
 
 const items = [
   { to: "/", label: "Accueil", icon: Home, exact: true },
-  { to: "/orientation", label: "Repères", icon: RouteIcon, exact: false },
+  { to: "/orientation", label: "Questionnaire", icon: ClipboardList, exact: false },
   { to: "/parcours", label: "Parcours", icon: RouteIcon, exact: false },
-  { to: "/annuaire", label: "Près", icon: MapPin, exact: false },
-  { to: "/conseils", label: "Vidéos", icon: PlayCircle, exact: false },
+  { to: "/annuaire", label: "Annuaire", icon: MapPin, exact: false },
+  { to: "/conseils", label: "Conseils", icon: PlayCircle, exact: false },
 ];
 
 /** Barre de navigation basse : accès en un geste aux 5 écrans clés sur mobile. */

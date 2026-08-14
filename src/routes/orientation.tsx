@@ -12,10 +12,10 @@ import { MedicalDisclaimer } from "@/components/HomeBlocks";
 import { LegDiagram } from "@/components/LegDiagram";
 import { DoctorSummary } from "@/components/DoctorSummary";
 import {
-  conditions,
   getQuestionsForZone,
   questionsPerFlow,
-  type Condition,
+  zoneDescriptions,
+  zoneSpots,
   type TriageOption,
   type TriageQuestion,
   type Zone,
@@ -50,28 +50,23 @@ const zones: { id: Zone; label: string; description: string }[] = [
   { id: "Pied", label: "Pied", description: "Plante, avant-pied, orteils, bord interne" },
 ];
 
-const totalSteps = questionsPerFlow + 2; // zone + questions (tronc + zone + alerte) + précision de la zone
+const totalSteps = questionsPerFlow + 1; // zone + questions (tronc + zone + alerte)
 
 type Step =
   | { type: "zone" }
   | { type: "triage"; index: number }
-  | { type: "condition" }
   | { type: "result" };
 
 function OrientationPage() {
   const [zone, setZone] = useState<Zone | null>(null);
-  const [condition, setCondition] = useState<Condition | null>(null);
   const [answers, setAnswers] = useState<TriageOption[]>([]);
   const questions: TriageQuestion[] = zone ? getQuestionsForZone(zone) : [];
-  const step = getStep(zone, answers, condition, questions);
+  const step = getStep(zone, answers, questions);
   const stepNumber = getStepNumber(step);
   const currentQuestion = step.type === "triage" ? questions[step.index] : null;
-  const zoneConditions = zone ? conditions.filter((c) => c.zone === zone) : conditions;
 
   const handleBack = () => {
-    if (condition) {
-      setCondition(null);
-    } else if (answers.length > 0) {
+    if (answers.length > 0) {
       setAnswers(answers.slice(0, -1));
     } else if (zone) {
       setZone(null);
@@ -80,7 +75,6 @@ function OrientationPage() {
 
   const handleReset = () => {
     setZone(null);
-    setCondition(null);
     setAnswers([]);
   };
 
@@ -114,16 +108,9 @@ function OrientationPage() {
             onSelect={(option) => setAnswers([...answers, option])}
             onBack={handleBack}
           />
-        ) : step.type === "condition" ? (
-          <ConditionPicker
-            zone={zone}
-            zoneConditions={zoneConditions}
-            onSelect={setCondition}
-            onBack={handleBack}
-          />
-        ) : condition ? (
+        ) : zone ? (
           <ResultView
-            condition={condition}
+            zone={zone}
             answers={answers}
             questions={questions}
             onBack={handleBack}
@@ -142,12 +129,10 @@ function OrientationPage() {
 function getStep(
   zone: Zone | null,
   answers: TriageOption[],
-  condition: Condition | null,
   questions: TriageQuestion[],
 ): Step {
   if (!zone) return { type: "zone" };
   if (answers.length < questions.length) return { type: "triage", index: answers.length };
-  if (!condition) return { type: "condition" };
   return { type: "result" };
 }
 
@@ -157,8 +142,6 @@ function getStepNumber(step: Step): number {
       return 1;
     case "triage":
       return 2 + step.index;
-    case "condition":
-      return totalSteps;
     case "result":
       return totalSteps;
   }
@@ -210,62 +193,6 @@ function ZonePicker({ onSelect }: { onSelect: (zone: Zone) => void }) {
           </button>
         ))}
       </div>
-    </div>
-  );
-}
-
-function ConditionPicker({
-  zone,
-  zoneConditions,
-  onSelect,
-  onBack,
-}: {
-  zone: string | null;
-  zoneConditions: Condition[];
-  onSelect: (condition: Condition) => void;
-  onBack: () => void;
-}) {
-  return (
-    <div className="space-y-6">
-      <div className="flex items-start justify-between gap-4">
-        <h2 className="text-lg font-semibold text-card-foreground">
-          Quelle zone décrit le mieux votre douleur ?
-        </h2>
-        <span className="shrink-0 text-xs text-muted-foreground">Étape {totalSteps}</span>
-      </div>
-
-      <p className="text-sm text-muted-foreground">Cette précision complète votre description. Elle n’établit aucun diagnostic : c’est le médecin qui l’interprète.</p>
-
-      <div className="grid gap-4">
-        {zoneConditions.map((item) => (
-          <button
-            key={item.id}
-            onClick={() => onSelect(item)}
-            className="flex gap-4 rounded-xl border border-border bg-background p-4 text-left transition-colors hover:border-care/40 hover:bg-care-muted/30"
-          >
-            <span className="w-14 shrink-0 sm:w-16">
-              <LegDiagram spot={item.spot} label={item.name} />
-            </span>
-            <span className="min-w-0 flex-1">
-              <span className="flex flex-wrap items-center gap-2">
-                <span className="font-medium text-foreground">{item.name}</span>
-                <span className="rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground">
-                  {item.zone}
-                </span>
-              </span>
-              <span className="mt-2 block text-sm leading-6 text-muted-foreground">{item.location}</span>
-            </span>
-          </button>
-        ))}
-      </div>
-
-      <button
-        onClick={onBack}
-        className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
-      >
-        <ArrowLeft className="h-4 w-4" />
-        Revenir aux questions
-      </button>
     </div>
   );
 }
@@ -322,13 +249,13 @@ function QuestionView({
 }
 
 function ResultView({
-  condition,
+  zone,
   answers,
   questions,
   onBack,
   onReset,
 }: {
-  condition: Condition;
+  zone: Zone;
   answers: TriageOption[];
   questions: TriageQuestion[];
   onBack: () => void;
@@ -349,17 +276,17 @@ function ResultView({
         examen et vous expliquera la suite : examens éventuels, traitement et professionnels à voir.
       </p>
 
-      <DoctorSummary condition={condition} answers={answers} questions={questions} />
+      <DoctorSummary zone={zone} answers={answers} questions={questions} />
 
       <div className="rounded-xl border border-border bg-muted/60 p-4">
         <div className="flex gap-4">
           <span className="w-14 shrink-0">
-            <LegDiagram spot={condition.spot} label={condition.name} />
+            <LegDiagram spot={zoneSpots[zone]} label={zone} />
           </span>
           <div className="min-w-0">
             <h3 className="font-semibold text-foreground">Zone décrite</h3>
             <p className="mt-1 text-sm text-muted-foreground">
-              <span className="font-medium text-foreground">{condition.zone}</span> — {condition.location}
+              <span className="font-medium text-foreground">{zone}</span> — {zoneDescriptions[zone]}
             </p>
           </div>
         </div>
@@ -369,7 +296,7 @@ function ResultView({
         <p className="text-sm font-medium text-foreground">Vos réponses</p>
         <ul className="mt-2 space-y-1 text-sm text-muted-foreground">
           <li>
-            Zone de douleur — <span className="text-foreground">{condition.zone}</span>
+            Zone de douleur — <span className="text-foreground">{zone}</span>
           </li>
           {answers.map((answer, i) => (
             <li key={i}>

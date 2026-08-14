@@ -1,5 +1,21 @@
 export type Zone = "Cheville" | "Genou" | "Hanche" | "Pied";
 
+/** Repère (x, y) représentatif de chaque zone sur le schéma du membre inférieur (viewBox 120x300). */
+export const zoneSpots: Record<Zone, { x: number; y: number }> = {
+  Hanche: { x: 82, y: 38 },
+  Genou: { x: 60, y: 152 },
+  Cheville: { x: 60, y: 238 },
+  Pied: { x: 92, y: 266 },
+};
+
+/** Description concrète de chaque zone, en langage patient. */
+export const zoneDescriptions: Record<Zone, string> = {
+  Hanche: "Aine, fesse ou haut de la cuisse",
+  Genou: "Rotule, interligne, face interne ou externe du genou",
+  Cheville: "Malléoles, tendon d'Achille ou talon",
+  Pied: "Plante, avant-pied, orteils ou bord interne du pied",
+};
+
 export type Condition = {
   id: string;
   name: string;

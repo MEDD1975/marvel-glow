@@ -2,19 +2,19 @@ import { useEffect, useState } from "react";
 import { ClipboardCheck, Copy, Maximize2, QrCode, ShieldCheck, X } from "lucide-react";
 import QRCodeLib from "qrcode";
 import { buildDoctorSummary } from "@/lib/summary";
-import { type Condition, type TriageOption, type TriageQuestion } from "@/lib/conditions";
+import { zoneDescriptions, type TriageOption, type TriageQuestion, type Zone } from "@/lib/conditions";
 
 /**
  * Synthèse de pré-consultation à montrer ou coller au médecin.
  * Générée localement : rien n'est enregistré ni transmis.
- * Strictement déclaratif : aucun verdict ni orientation n'est affiché.
+ * Strictement déclaratif : aucun nom de diagnostic ni orientation n'est affiché.
  */
 export function DoctorSummary({
-  condition,
+  zone,
   answers,
   questions,
 }: {
-  condition: Condition;
+  zone: Zone;
   answers: TriageOption[];
   questions: TriageQuestion[];
 }) {
@@ -23,7 +23,7 @@ export function DoctorSummary({
   const [showQr, setShowQr] = useState(false);
   const [qrUrl, setQrUrl] = useState<string | null>(null);
   const [qrError, setQrError] = useState(false);
-  const text = buildDoctorSummary(condition, answers, questions);
+  const text = buildDoctorSummary(zone, answers, questions);
 
   useEffect(() => {
     if (!showQr) return;
@@ -63,9 +63,9 @@ export function DoctorSummary({
           Zone décrite (déclaratif patient)
         </p>
         <p className={big ? "text-3xl font-bold text-foreground" : "text-lg font-semibold text-foreground"}>
-          {condition.zone}
+          {zone}
         </p>
-        <p className={big ? "text-lg text-muted-foreground" : "text-sm text-muted-foreground"}>{condition.location}</p>
+        <p className={big ? "text-lg text-muted-foreground" : "text-sm text-muted-foreground"}>{zoneDescriptions[zone]}</p>
       </div>
 
       <dl className={big ? "space-y-4" : "space-y-3"}>

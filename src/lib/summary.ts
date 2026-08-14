@@ -1,15 +1,15 @@
-import { type Condition, type TriageOption, type TriageQuestion } from "@/lib/conditions";
+import { zoneDescriptions, type TriageOption, type TriageQuestion, type Zone } from "@/lib/conditions";
 
 /**
  * Texte de synthèse destiné au médecin, à coller dans le dossier patient.
  * Aucune donnée n'est enregistrée : le texte est généré à la volée dans le navigateur.
- * Strictement déclaratif : aucun niveau de triage ni orientation n'est suggéré.
+ * Strictement déclaratif : aucun nom de diagnostic ni orientation n'est suggéré.
  */
-export function buildDoctorSummary(condition: Condition, answers: TriageOption[], questions: TriageQuestion[]) {
+export function buildDoctorSummary(zone: Zone, answers: TriageOption[], questions: TriageQuestion[]) {
   const lines: string[] = [];
   lines.push(`Questionnaire Kivoir — pré-consultation (déclaratif patient)`);
-  lines.push(`Zone décrite par le patient : ${condition.zone}`);
-  lines.push(`Localisation : ${condition.location}`);
+  lines.push(`Zone décrite par le patient : ${zone}`);
+  lines.push(`Localisation : ${zoneDescriptions[zone]}`);
   lines.push("");
   lines.push("Réponses du patient :");
   answers.forEach((answer, i) => {

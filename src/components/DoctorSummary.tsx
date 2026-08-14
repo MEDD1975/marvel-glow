@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { ClipboardCheck, Copy, Maximize2, QrCode, ShieldCheck, X } from "lucide-react";
 import QRCodeLib from "qrcode";
 import { buildDoctorSummary } from "@/lib/summary";
-import { triageQuestions, type Condition, type TriageOption } from "@/lib/conditions";
+import { type Condition, type TriageOption, type TriageQuestion } from "@/lib/conditions";
 
 /**
  * Synthèse de pré-consultation à montrer ou coller au médecin.
@@ -12,16 +12,18 @@ import { triageQuestions, type Condition, type TriageOption } from "@/lib/condit
 export function DoctorSummary({
   condition,
   answers,
+  questions,
 }: {
   condition: Condition;
   answers: TriageOption[];
+  questions: TriageQuestion[];
 }) {
   const [copied, setCopied] = useState(false);
   const [handoff, setHandoff] = useState(false);
   const [showQr, setShowQr] = useState(false);
   const [qrUrl, setQrUrl] = useState<string | null>(null);
   const [qrError, setQrError] = useState(false);
-  const text = buildDoctorSummary(condition, answers);
+  const text = buildDoctorSummary(condition, answers, questions);
 
   useEffect(() => {
     if (!showQr) return;
@@ -50,7 +52,7 @@ export function DoctorSummary({
   };
 
   const rows = answers.map((answer, i) => ({
-    question: triageQuestions[i]?.question ?? `Question ${i + 1}`,
+    question: questions[i]?.question ?? `Question ${i + 1}`,
     answer: answer.label,
   }));
 

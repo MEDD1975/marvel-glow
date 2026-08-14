@@ -89,7 +89,7 @@ function OrientationPage() {
       <div className="max-w-2xl">
         <p className="text-sm font-semibold uppercase tracking-wide text-care">Questionnaire Kivoir</p>
         <h1 className="mt-3 text-4xl font-semibold tracking-tight text-foreground md:text-5xl">Préparez votre consultation</h1>
-        <p className="mt-4 text-lg leading-8 text-muted-foreground">Des questions adaptées à la zone qui vous fait mal, pour permettre au médecin de gagner du temps pendant l’échange. À la fin, un QR code résume vos réponses pour votre médecin.</p>
+        <p className="mt-4 text-lg leading-8 text-muted-foreground">Des questions adaptées à votre douleur du membre inférieur (hanche, genou, cheville, pied), pour permettre au médecin de gagner du temps pendant l’échange. À la fin, un QR code résume vos réponses pour votre médecin.</p>
         <Link to="/conseils" className="mt-5 inline-flex min-h-11 items-center text-base font-semibold text-care hover:underline">Voir les conseils et vidéos <ArrowRight aria-hidden="true" className="ml-2 size-5" /></Link>
       </div>
 
@@ -195,7 +195,7 @@ function ZonePicker({ onSelect }: { onSelect: (zone: Zone) => void }) {
         <span className="shrink-0 text-xs text-muted-foreground">Étape 1</span>
       </div>
 
-<p className="text-sm text-muted-foreground">Choisissez la zone qui vous gêne le plus.</p>
+<p className="text-sm text-muted-foreground">Choisissez la zone qui vous gêne le plus. Kivoir accompagne uniquement les douleurs du membre inférieur (hanche, genou, cheville, pied).</p>
 
       <div className="grid gap-3 sm:grid-cols-2">
         {zones.map((z) => (

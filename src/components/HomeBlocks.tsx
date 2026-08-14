@@ -61,8 +61,8 @@ export function HomeHero() {
             <Stethoscope aria-hidden="true" />
             Kivoir · Qui voir, quand
           </span>
-          <h1 className="mt-6 text-balance text-4xl font-semibold tracking-[-0.04em] text-foreground md:text-6xl">Votre parcours de soin, enfin lisible.</h1>
-          <p className="mx-auto mt-5 max-w-2xl text-pretty text-base leading-7 text-muted-foreground md:text-xl">Comprenez où vous en êtes, préparez votre prochain échange et retrouvez ce que votre professionnel vous a recommandé.</p>
+          <h1 className="mt-6 text-balance text-4xl font-semibold tracking-[-0.04em] text-foreground md:text-6xl">Vos douleurs du membre inférieur, un parcours enfin lisible.</h1>
+          <p className="mx-auto mt-5 max-w-2xl text-pretty text-base leading-7 text-muted-foreground md:text-xl">Hanche, genou, cheville, pied : comprenez où vous en êtes, préparez votre prochain échange et retrouvez ce que votre professionnel vous a recommandé.</p>
           <div className="mt-6 flex flex-wrap justify-center gap-x-5 gap-y-2 text-xs font-medium text-muted-foreground" aria-label="Repères Kivoir">
             <span>Comprendre</span><span>Savoir qui voir</span><span>Préparer la consultation</span>
           </div>

@@ -23,9 +23,45 @@ type ChatMessage = {
 };
 
 const physiotherapyKeywords = ["kine", "kinesitherapeute", "masseur"] as const;
+const generalPractitionerKeywords = ["generaliste", "mg"] as const;
+const sportsMedicineKeywords = ["sport"] as const;
+const podiatryKeywords = ["podologue", "pedicure"] as const;
 
 // Secours local affiché uniquement si l'annuaire JSON ne contient aucun kinésithérapeute.
 // Ces coordonnées doivent être confirmées avant toute publication.
+const podologuesSaintMaur: LocalPractitioner[] = [
+  {
+    nom: "Praticien à confirmer",
+    prenom: "",
+    specialite: "Pédicure-podologue",
+    adresse: "Saint-Maur-des-Fossés",
+    telephone: "",
+    codePostal: "94100",
+    ville: "Saint-Maur-des-Fossés",
+    secteur: "À vérifier",
+  },
+  {
+    nom: "Praticien à confirmer",
+    prenom: "",
+    specialite: "Pédicure-podologue",
+    adresse: "Saint-Maur-des-Fossés",
+    telephone: "",
+    codePostal: "94200",
+    ville: "Saint-Maur-des-Fossés",
+    secteur: "À vérifier",
+  },
+  {
+    nom: "Praticien à confirmer",
+    prenom: "",
+    specialite: "Pédicure-podologue",
+    adresse: "Saint-Maur-des-Fossés",
+    telephone: "",
+    codePostal: "94100",
+    ville: "Saint-Maur-des-Fossés",
+    secteur: "À vérifier",
+  },
+];
+
 const kinesSaintMaur: LocalPractitioner[] = [
   {
     nom: "Cabinet de Kinésithérapie",
@@ -81,16 +117,29 @@ function findLocalPractitioners(userQuery: string): LocalPractitioner[] {
     return kines.length > 0 ? kines : kinesSaintMaur;
   }
 
-  const matches = practitionersData.filter((_, index) => {
-    const practitionerText = practitionersAsText[index];
-    return normalizedQuery.includes("podologue")
-      ? practitionerText.includes("podologue")
-      : normalizedQuery.includes("medecin")
-        ? practitionerText.includes("medecin")
-        : false;
-  }) as LocalPractitioner[];
+  const asksForGeneralPractitioner = generalPractitionerKeywords.some((keyword) =>
+    normalizedQuery.includes(keyword),
+  );
+  if (asksForGeneralPractitioner) {
+    return practitionersData.filter((_, index) =>
+      practitionersAsText[index].includes("medecin generaliste"),
+    ) as LocalPractitioner[];
+  }
 
-  return matches;
+  if (sportsMedicineKeywords.some((keyword) => normalizedQuery.includes(keyword))) {
+    return practitionersData.filter((_, index) =>
+      practitionersAsText[index].includes("medecin du sport"),
+    ) as LocalPractitioner[];
+  }
+
+  if (podiatryKeywords.some((keyword) => normalizedQuery.includes(keyword))) {
+    const podologues = practitionersData.filter((_, index) =>
+      practitionersAsText[index].includes("podologue"),
+    ) as LocalPractitioner[];
+    return podologues.length >= 3 ? podologues : podologuesSaintMaur;
+  }
+
+  return [];
 }
 
 function buildLocalReply(practitioners: LocalPractitioner[]): string {

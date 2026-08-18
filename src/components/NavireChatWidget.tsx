@@ -22,33 +22,36 @@ type ChatMessage = {
   practitioners?: LocalPractitioner[];
 };
 
-const specialtyKeywords = ["kine", "kinesitherapeute", "masseur", "podologue", "medecin"] as const;
-
-type SpecialtyKeyword = (typeof specialtyKeywords)[number];
+const physiotherapyKeywords = ["kine", "kinesitherapeute", "masseur"] as const;
 
 function normalizeText(value: string) {
   return value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 }
 
 function findLocalPractitioners(userQuery: string): LocalPractitioner[] {
-  console.log("[v0] Assistant Kivoir practitioner lookup", userQuery, practitionersData);
   const normalizedQuery = normalizeText(userQuery);
-  const keyword = specialtyKeywords.find((item) => normalizedQuery.includes(item));
-  if (!keyword) return [];
+  const practitionersAsText = practitionersData.map((practitioner) =>
+    normalizeText(JSON.stringify(practitioner)),
+  );
+  const asksForPhysiotherapy = physiotherapyKeywords.some((keyword) =>
+    normalizedQuery.includes(keyword),
+  );
 
-  const matches = practitionersData.filter((practitioner) => {
-    const professionValue = "profession" in practitioner && typeof practitioner.profession === "string" ? practitioner.profession : "";
-    const profession = normalizeText(`${practitioner.specialite} ${professionValue}`);
-    if (["kine", "kinesitherapeute", "masseur"].includes(keyword)) {
-      return /kine|kinesitherapeute|masseur/.test(profession);
+  const matches = practitionersData.filter((_, index) => {
+    const practitionerText = practitionersAsText[index];
+    if (asksForPhysiotherapy) {
+      return ["kine", "kinesitherapeute", "masseur", "physio"].some((term) =>
+        practitionerText.includes(term),
+      );
     }
-    if (keyword === "medecin") return profession.includes("medecin");
-    if (keyword === "podologue") return profession.includes("podologue");
-    return false;
+    return normalizedQuery.includes("podologue")
+      ? practitionerText.includes("podologue")
+      : normalizedQuery.includes("medecin")
+        ? practitionerText.includes("medecin")
+        : false;
   }) as LocalPractitioner[];
 
-  if (["kine", "kinesitherapeute", "masseur"].includes(keyword)) return matches;
-  return matches.length > 0 ? matches : (practitionersData.slice(0, 3) as LocalPractitioner[]);
+  return matches.length > 0 ? matches : (practitionersData as LocalPractitioner[]);
 }
 
 function buildLocalReply(practitioners: LocalPractitioner[]): string {

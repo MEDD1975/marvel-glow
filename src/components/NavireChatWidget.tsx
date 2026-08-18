@@ -26,19 +26,22 @@ const clean = (str: string) =>
   str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
 const containsMg = (query: string) => /(^|\s|[.,;:!?])mg($|\s|[.,;:!?])/.test(query);
+const containsAny = (query: string, keywords: readonly string[]) =>
+  keywords.some((keyword) => query.includes(keyword));
+
+const SURGEON_KEYWORDS = ["chirurg", "chirurh", "chirug", "orthop", "ortho", "chiru"];
+const PHYSIO_KEYWORDS = ["kine", "masse", "physio"];
+const PODIATRIST_KEYWORDS = ["podo", "pedi"];
+const GENERALIST_KEYWORDS = ["medecin", "medec", "medcin", "mede", "gener"];
 
 const hasRecognizedSpecialty = (query: string) => {
   const normalizedQuery = clean(query);
   return (
-    normalizedQuery.includes("medecin") ||
-    normalizedQuery.includes("generaliste") ||
+    containsAny(normalizedQuery, SURGEON_KEYWORDS) ||
+    containsAny(normalizedQuery, PHYSIO_KEYWORDS) ||
+    containsAny(normalizedQuery, PODIATRIST_KEYWORDS) ||
+    containsAny(normalizedQuery, GENERALIST_KEYWORDS) ||
     containsMg(normalizedQuery) ||
-    normalizedQuery.includes("podologue") ||
-    normalizedQuery.includes("pedicure") ||
-    normalizedQuery.includes("podo") ||
-    normalizedQuery.includes("kine") ||
-    normalizedQuery.includes("masseur") ||
-    normalizedQuery.includes("physio") ||
     normalizedQuery.includes("sport")
   );
 };
@@ -80,6 +83,11 @@ const podoSaintMaur: LocalPractitioner[] = [
     secteur: "À vérifier",
   },
 ];
+
+const DATA_CHIRURGIEN = practitionersData.filter((practitioner) => {
+  const practitionerText = clean(JSON.stringify(practitioner));
+  return practitionerText.includes("chirurgien orthopedique") || practitionerText.includes("traumatologue");
+}) as LocalPractitioner[];
 
 const DATA_SPORT: LocalPractitioner[] = [
   {
@@ -154,31 +162,23 @@ function findLocalPractitioners(userQuery: string): LocalPractitioner[] {
     text: clean(JSON.stringify(practitioner)),
   }));
 
+  if (containsAny(normalizedQuery, SURGEON_KEYWORDS)) {
+    return DATA_CHIRURGIEN;
+  }
+
   if (normalizedQuery.includes("sport")) {
     return DATA_SPORT;
   }
 
-  if (
-    normalizedQuery.includes("podologue") ||
-    normalizedQuery.includes("pedicure") ||
-    normalizedQuery.includes("podo")
-  ) {
+  if (containsAny(normalizedQuery, PODIATRIST_KEYWORDS)) {
     return podoSaintMaur;
   }
 
-  if (
-    normalizedQuery.includes("kine") ||
-    normalizedQuery.includes("masseur") ||
-    normalizedQuery.includes("physio")
-  ) {
+  if (containsAny(normalizedQuery, PHYSIO_KEYWORDS)) {
     return kinesSaintMaur;
   }
 
-  if (
-    normalizedQuery.includes("medecin") ||
-    normalizedQuery.includes("generaliste") ||
-    containsMg(normalizedQuery)
-  ) {
+  if (containsAny(normalizedQuery, GENERALIST_KEYWORDS) || containsMg(normalizedQuery)) {
     const generalPractitioners = practitionersWithText
       .filter(({ text }) => text.includes("medecin generaliste"))
       .map(({ practitioner }) => practitioner) as LocalPractitioner[];

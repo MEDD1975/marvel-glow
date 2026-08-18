@@ -3,7 +3,7 @@ import { Bot, LoaderCircle, MessageCircle, Send, X } from "lucide-react";
 import { askCareAgent } from "@/lib/care-agent";
 
 const welcomeMessage =
-  "Bonjour, je suis Navire. Je peux vous aider à mieux comprendre votre orientation pour une douleur de hanche, genou, cheville ou pied.";
+  "Bonjour, je suis Assistant Kivoir. Je peux vous aider à mieux comprendre votre orientation pour une douleur de hanche, genou, cheville ou pied.";
 
 export function NavireChatWidget() {
   const [open, setOpen] = useState(false);
@@ -43,7 +43,7 @@ export function NavireChatWidget() {
       {open ? (
         <section
           id="navire-chat-widget"
-          aria-label="Discussion avec Navire"
+          aria-label="Discussion avec Assistant Kivoir"
           className="flex h-[min(620px,calc(100vh-120px))] w-[min(390px,calc(100vw-32px))] flex-col overflow-hidden rounded-2xl border border-border bg-card text-card-foreground shadow-2xl shadow-primary/10"
         >
           <header className="flex items-center justify-between border-b border-border bg-primary px-4 py-3 text-primary-foreground">
@@ -52,7 +52,7 @@ export function NavireChatWidget() {
                 <Bot className="h-5 w-5" aria-hidden="true" />
               </span>
               <div>
-                <h2 className="font-semibold">Navire</h2>
+                <h2 className="font-semibold">Assistant Kivoir</h2>
                 <p className="text-xs text-primary-foreground/75">Orientation membre inférieur</p>
               </div>
             </div>
@@ -84,16 +84,16 @@ export function NavireChatWidget() {
               </div>
             ))}
             {isSending ? (
-              <div className="flex items-center gap-2 text-sm text-muted-foreground" aria-label="Navire répond">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground" aria-label="Assistant Kivoir répond">
                 <LoaderCircle className="h-4 w-4 animate-spin" aria-hidden="true" />
-                Navire prépare sa réponse…
+                Assistant Kivoir prépare sa réponse…
               </div>
             ) : null}
           </div>
 
           <form onSubmit={handleSubmit} className="border-t border-border bg-card p-3">
             <label htmlFor="navire-message" className="sr-only">
-              Votre message à Navire
+              Votre message à Assistant Kivoir
             </label>
             <div className="flex items-end gap-2 rounded-xl border border-input bg-background p-1.5 focus-within:ring-2 focus-within:ring-ring">
               <textarea
@@ -122,7 +122,7 @@ export function NavireChatWidget() {
               </button>
             </div>
             <p className="mt-2 px-1 text-[11px] leading-4 text-muted-foreground">
-              Navire ne pose pas de diagnostic et ne remplace pas un professionnel de santé.
+              Assistant Kivoir ne pose pas de diagnostic et ne remplace pas un professionnel de santé.
             </p>
           </form>
         </section>
@@ -133,7 +133,7 @@ export function NavireChatWidget() {
         onClick={() => setOpen((current) => !current)}
         aria-expanded={open}
         aria-controls="navire-chat-widget"
-        aria-label={open ? "Fermer Navire" : "Ouvrir Navire"}
+        aria-label={open ? "Fermer Assistant Kivoir" : "Ouvrir Assistant Kivoir"}
         className="flex h-14 w-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/25 transition-transform hover:scale-105 hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
       >
         {open ? <X className="h-6 w-6" aria-hidden="true" /> : <MessageCircle className="h-6 w-6" aria-hidden="true" />}

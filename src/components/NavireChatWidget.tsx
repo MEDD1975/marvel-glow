@@ -24,6 +24,13 @@ type ChatMessage = {
 
 const DIRECTORY_NOTICE =
   "Cette liste est donnée à titre indicatif pour vous aider à trouver un praticien près de chez vous.";
+const SAFETY_NOTICE =
+  "Kivoir est un outil d'accompagnement au parcours de soin et ne remplace pas une consultation médicale.";
+
+function visibleMessageText(item: ChatMessage) {
+  if (!item.practitioners?.length) return item.text;
+  return item.text.replace(`⚠️ ${SAFETY_NOTICE}`, "").trim();
+}
 
 export function NavireChatWidget() {
   const [open, setOpen] = useState(false);
@@ -95,7 +102,7 @@ export function NavireChatWidget() {
                 key={`${item.role}-${index}`}
                 className={`flex ${item.role === "user" ? "justify-end" : "justify-start"}`}
               >
-                <div className="flex w-full flex-col items-start gap-0">
+                <div className="flex w-full flex-col items-start gap-2">
                   <p
                     className={`max-w-[88%] whitespace-pre-wrap rounded-2xl px-3.5 py-2.5 text-sm leading-6 ${
                       item.role === "user"
@@ -103,28 +110,49 @@ export function NavireChatWidget() {
                         : "rounded-bl-md border border-border bg-card text-card-foreground"
                     }`}
                   >
-                    {item.text}
+                    {visibleMessageText(item)}
                   </p>
                   {item.practitioners?.length ? (
-                    <div className="mt-2 w-full max-w-[92%] rounded border border-border bg-slate-100 p-2 text-slate-900">
-                      <p className="mb-2 text-xs font-semibold">Professionnels à Saint-Maur-des-Fossés</p>
-                      <div className="space-y-2">
+                    <section
+                      aria-label="Résultats de l'annuaire à Saint-Maur-des-Fossés"
+                      className="w-full rounded-xl border border-border bg-card p-3 shadow-sm"
+                    >
+                      <div className="flex items-center justify-between gap-3 border-b border-border pb-2">
+                        <h3 className="text-sm font-semibold text-card-foreground">
+                          Professionnels à Saint-Maur-des-Fossés
+                        </h3>
+                        <span className="shrink-0 rounded-full bg-primary/10 px-2 py-1 text-xs font-medium text-primary">
+                          {item.practitioners.length} résultat{item.practitioners.length > 1 ? "s" : ""}
+                        </span>
+                      </div>
+                      <div className="flex flex-col gap-2 pt-3">
                         {item.practitioners.map((practitioner) => (
-                          <article key={`${practitioner.nom}-${practitioner.prenom}-${practitioner.adresse}`} className="rounded-xl border border-border bg-card p-3 text-xs text-card-foreground">
-                            <p className="font-semibold">{practitioner.prenom} {practitioner.nom}</p>
-                            <p className="mt-1 text-muted-foreground">{practitioner.specialite}</p>
-                            <p className="mt-1">{practitioner.adresse}, {practitioner.codePostal} {practitioner.ville}</p>
+                          <article
+                            key={`${practitioner.nom}-${practitioner.prenom}-${practitioner.adresse}`}
+                            className="rounded-xl border border-border bg-muted/40 p-3 text-sm text-card-foreground"
+                          >
+                            <p className="font-semibold text-balance">
+                              {[practitioner.prenom, practitioner.nom].filter(Boolean).join(" ")}
+                            </p>
+                            <p className="mt-1 text-xs font-medium text-primary">{practitioner.specialite}</p>
+                            <address className="mt-2 not-italic leading-5 text-muted-foreground">
+                              {practitioner.adresse}
+                              <br />
+                              {practitioner.codePostal} {practitioner.ville}
+                            </address>
                             {practitioner.telephone ? (
-                              <a className="mt-1 inline-block font-medium text-primary underline-offset-2 hover:underline" href={`tel:${practitioner.telephone}`}>
+                              <a
+                                className="mt-2 inline-flex font-semibold text-primary underline-offset-2 hover:underline"
+                                href={`tel:${practitioner.telephone}`}
+                              >
                                 {practitioner.telephone.replace(/(\d{2})(?=\d)/g, "$1 ")}
                               </a>
                             ) : null}
-                            <p className="mt-1 text-muted-foreground">{practitioner.secteur}</p>
                           </article>
                         ))}
                       </div>
-                      <p className="mt-2 text-xs leading-5 text-slate-700">{DIRECTORY_NOTICE}</p>
-                    </div>
+                      <p className="pt-3 text-xs leading-5 text-muted-foreground">{DIRECTORY_NOTICE}</p>
+                    </section>
                   ) : null}
                 </div>
               </div>
@@ -168,7 +196,7 @@ export function NavireChatWidget() {
               </button>
             </div>
             <p className="mt-2 px-1 text-[11px] leading-4 text-muted-foreground">
-              Kivoir est un outil d'accompagnement au parcours de soin et ne remplace pas une consultation médicale.
+              {SAFETY_NOTICE}
             </p>
           </form>
         </section>

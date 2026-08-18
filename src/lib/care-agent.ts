@@ -252,6 +252,13 @@ function ensureDisclaimer(text: string) {
   return clean.includes("ne remplace pas une consultation") ? clean : `${clean}\n\n${DISCLAIMER}`;
 }
 
+function directoryResponse(specialty: PractitionerSpecialty, count: number) {
+  const label = directorySpecialtyLabels[specialty].toLocaleLowerCase("fr-FR");
+  return ensureDisclaimer(
+    `${count} ${count > 1 ? "professionnels correspondent" : "professionnel correspond"} à votre recherche de ${label} à Saint-Maur-des-Fossés. Leurs coordonnées sont affichées ci-dessous.`,
+  );
+}
+
 export const askCareAgent = createServerFn({ method: "POST" })
   .validator((data: unknown) => requestSchema.parse(data))
   .handler(async ({ data }) => {
@@ -285,7 +292,10 @@ export const askCareAgent = createServerFn({ method: "POST" })
       const practitioners = output?.praticiens ?? [];
 
       return {
-        text: ensureDisclaimer(result.text),
+        text:
+          specialty && practitioners.length > 0
+            ? directoryResponse(specialty, practitioners.length)
+            : ensureDisclaimer(result.text),
         emergency: false,
         specialty,
         practitioners,
@@ -293,11 +303,15 @@ export const askCareAgent = createServerFn({ method: "POST" })
     } catch (error) {
       console.log("[v0] Assistant Kivoir — repli déterministe (échec IA) :", error instanceof Error ? error.message : error);
       const specialty = detectSpecialty(data.message);
+      const practitioners = specialty ? searchLocalPractitioners(specialty) : [];
       return {
-        text: fallbackText(plan),
+        text:
+          specialty && practitioners.length > 0
+            ? directoryResponse(specialty, practitioners.length)
+            : fallbackText(plan),
         emergency: false,
         specialty,
-        practitioners: specialty ? searchLocalPractitioners(specialty) : [],
+        practitioners,
       };
     }
   });

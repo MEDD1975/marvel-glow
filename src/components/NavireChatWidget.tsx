@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from "react";
-import { Bot, LoaderCircle, MessageCircle, Send, X } from "lucide-react";
-import { askCareAgent } from "@/lib/care-agent";
+import { Bot, MessageCircle, Send, X } from "lucide-react";
+import practitionersData from "../../data/praticiens_saint_maur.json";
 
 const welcomeMessage =
   "Bonjour, je suis Assistant Kivoir. Je peux vous aider à mieux comprendre votre orientation pour une douleur de hanche, genou, cheville ou pied.";
@@ -22,6 +22,28 @@ type ChatMessage = {
   practitioners?: LocalPractitioner[];
 };
 
+const specialtyKeywords = ["kiné", "kinésithérapeute", "podologue", "médecin"];
+
+function findLocalPractitioners(message: string): LocalPractitioner[] {
+  const normalizedMessage = message.toLocaleLowerCase("fr-FR");
+  const keyword = specialtyKeywords.find((item) => normalizedMessage.includes(item));
+  if (!keyword) return [];
+
+  return practitionersData.filter((practitioner) => {
+    const specialty = practitioner.specialite.toLocaleLowerCase("fr-FR");
+    if (keyword === "médecin") return specialty.includes("médecin");
+    if (keyword === "podologue") return specialty.includes("podologue");
+    return specialty.includes("kinésithérapeute") || specialty.includes("kiné");
+  }) as LocalPractitioner[];
+}
+
+function buildLocalReply(practitioners: LocalPractitioner[]): string {
+  if (practitioners.length > 0) {
+    return "Voici les professionnels correspondants recensés à Saint-Maur-des-Fossés. Le choix du professionnel et la prise de rendez-vous restent à confirmer avec votre médecin.";
+  }
+  return "Je peux vous présenter les professionnels locaux si vous recherchez un médecin, un kinésithérapeute ou un podologue à Saint-Maur-des-Fossés. Précisez votre besoin.";
+}
+
 export function NavireChatWidget() {
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState("");
@@ -30,32 +52,19 @@ export function NavireChatWidget() {
   ]);
   const [isSending, setIsSending] = useState(false);
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const trimmed = message.trim();
     if (!trimmed || isSending) return;
 
+    const practitioners = findLocalPractitioners(trimmed);
+    const responseText = `${buildLocalReply(practitioners)}\n\n⚠️ Kivoir est un outil d'accompagnement au parcours de soin et ne remplace pas une consultation médicale.`;
     setMessage("");
-    setMessages((current) => [...current, { role: "user", text: trimmed }]);
-    setIsSending(true);
-
-    try {
-      const response = await askCareAgent({ data: { message: trimmed } });
-      setMessages((current) => [
-        ...current,
-        { role: "assistant", text: response.text, practitioners: response.practitioners },
-      ]);
-    } catch {
-      setMessages((current) => [
-        ...current,
-        {
-          role: "assistant",
-          text: "Je ne parviens pas à répondre pour le moment. Vous pouvez décrire votre situation à votre médecin.\n\n⚠️ Kivoir est un outil d'accompagnement au parcours de soin et ne remplace pas une consultation médicale.",
-        },
-      ]);
-    } finally {
-      setIsSending(false);
-    }
+    setMessages((current) => [
+      ...current,
+      { role: "user", text: trimmed },
+      { role: "assistant", text: responseText, practitioners },
+    ]);
   }
 
   return (

@@ -46,72 +46,38 @@ const hasRecognizedSpecialty = (query: string) => {
   );
 };
 
-const RED_FLAG_KEYWORDS = [
-  "impossibilite totale d'appuyer",
-  "impossible de poser le pied",
-  "membre deforme",
+const EMERGENCY_KEYWORDS = [
+  "deformation",
   "os visible",
-  "fracture ouverte",
   "perte de sensibilite",
-  "pied froid et bleu",
-  "douleur 9",
-  "douleur 10",
-];
-const MODERATE_SYMPTOM_KEYWORDS = [
-  "gonflement",
-  "appui possible",
-  "pas de fievre",
-  "douleur 1",
-  "douleur 2",
-  "douleur 3",
-  "douleur 4",
-  "douleur 5",
-  "douleur 6",
-  "douleur 7",
-  "douleur 8",
-];
-const SYMPTOM_KEYWORDS = [
+  "incoercible",
+] as const;
+const MODERATE_TRAUMA_KEYWORDS = [
   "douleur",
-  "mal",
-  "gonfle",
+  "cheville",
+  "genou",
   "gonflement",
-  "raideur",
-  "entorse",
-  "blesse",
-  "boite",
-  "fourmillement",
-  "symptome",
-];
-const PROFESSIONAL_REQUEST_KEYWORDS = [
-  "trouve",
-  "cherche",
-  "praticien",
-  "professionnel",
-  "rendez-vous",
-  "rendez vous",
-  "consulter",
-  "coordonnees",
-  "adresse",
-];
+  "appui",
+] as const;
+const DIRECT_SPECIALIST_KEYWORDS = [
+  "kine",
+  "chirurgien",
+  "podologue",
+  "generaliste",
+  "sport",
+] as const;
 
-const hasRedFlag = (query: string) => containsAny(clean(query), RED_FLAG_KEYWORDS);
-const hasModerateSymptoms = (query: string) =>
-  containsAny(clean(query), MODERATE_SYMPTOM_KEYWORDS);
-const hasSymptoms = (query: string) => containsAny(clean(query), SYMPTOM_KEYWORDS);
-const explicitlyRequestsProfessional = (query: string) => {
-  const normalizedQuery = clean(query);
-  return (
-    hasRecognizedSpecialty(query) &&
-    (!hasSymptoms(query) || containsAny(normalizedQuery, PROFESSIONAL_REQUEST_KEYWORDS))
-  );
-};
+const hasEmergencyKeyword = (query: string) =>
+  containsAny(clean(query), EMERGENCY_KEYWORDS);
+const hasModerateTraumaKeyword = (query: string) =>
+  containsAny(clean(query), MODERATE_TRAUMA_KEYWORDS);
+const explicitlyRequestsProfessional = (query: string) =>
+  containsAny(clean(query), DIRECT_SPECIALIST_KEYWORDS);
 
 const EMERGENCY_REPLY =
-  "Certains éléments de votre message peuvent évoquer une urgence. Appelez immédiatement le 15 (SAMU) ou rendez-vous aux urgences ; n'attendez pas une réponse en ligne.";
-const QUALIFICATION_REPLY =
-  "Avant de vous orienter, pouvez-vous préciser : où se situe la douleur, depuis quand elle a commencé, son intensité sur 10, si vous pouvez prendre appui et s'il y a eu un traumatisme, un gonflement ou de la fièvre ?";
+  "Votre message contient un signe d'urgence explicite. Appelez immédiatement le 15 (SAMU) ou rendez-vous aux urgences.";
 const MODERATE_SYMPTOM_REPLY =
-  "Les éléments décrits ne déclenchent pas les critères d'alerte vitale du widget. Prenez rendez-vous sous 24 à 48 heures avec un médecin généraliste ou un médecin du sport, qui pourra proposer un avis kinésithérapique ou podologique si nécessaire. En attendant : repos relatif, glace protégée par un linge 15 à 20 minutes, plusieurs fois par jour, et élévation du membre. Si l'état s'aggrave ou si un signe d'alerte apparaît, contactez rapidement les secours.";
+  "Il s'agit probablement d'un traumatisme modéré. Nous vous conseillons de consulter un médecin généraliste ou un médecin du sport sous 24 à 48 heures, et de respecter le protocole RICE (Repos, Glace, Compression, Élévation).";
 const DIRECTORY_NOTICE =
   "Cette liste est donnée à titre indicatif pour vous aider à trouver un praticien près de chez vous.";
 
@@ -273,8 +239,7 @@ export function NavireChatWidget() {
   const [messages, setMessages] = useState<ChatMessage[]>([
     { role: "assistant", text: welcomeMessage },
   ]);
-  const [isSending, setIsSending] = useState(false);
-  const [awaitingQualification, setAwaitingQualification] = useState(false);
+  const isSending = false;
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -284,31 +249,17 @@ export function NavireChatWidget() {
     let responseText: string;
     let practitioners: LocalPractitioner[] = [];
 
-    // Étape 1 : la sécurité prime toujours sur l'orientation et l'annuaire.
-    if (hasRedFlag(trimmed)) {
+    // Moteur déterministe : urgence, annuaire direct, conseil modéré.
+    if (hasEmergencyKeyword(trimmed)) {
       responseText = EMERGENCY_REPLY;
-      setAwaitingQualification(false);
-    // Étape 2 : une demande directe de professionnel affiche immédiatement l'annuaire.
     } else if (explicitlyRequestsProfessional(trimmed)) {
       practitioners = findLocalPractitioners(trimmed);
       responseText = buildLocalReply(trimmed, practitioners);
-      setAwaitingQualification(false);
-    // Étape 3 : les symptômes modérés suivent une trajectoire de consultation non urgente.
-    } else if (hasModerateSymptoms(trimmed)) {
+    } else if (hasModerateTraumaKeyword(trimmed)) {
       responseText = MODERATE_SYMPTOM_REPLY;
-      setAwaitingQualification(false);
-    // Étape 4 : une plainte encore imprécise doit être qualifiée.
-    } else if (hasSymptoms(trimmed) && !awaitingQualification) {
-      responseText = QUALIFICATION_REPLY;
-      setAwaitingQualification(true);
-    } else if (awaitingQualification) {
-      practitioners = findLocalPractitioners("médecin généraliste");
-      responseText =
-        "Merci pour ces précisions. Un médecin généraliste pourra examiner la situation et vous orienter vers la spécialité adaptée si nécessaire.";
-      setAwaitingQualification(false);
     } else {
-      responseText = QUALIFICATION_REPLY;
-      setAwaitingQualification(true);
+      responseText =
+        "Décrivez une douleur de cheville ou de genou, ou indiquez directement le professionnel recherché : kiné, chirurgien, podologue, généraliste ou médecin du sport.";
     }
 
     const safeResponse = `${responseText}\n\n⚠️ Kivoir est un outil d'accompagnement au parcours de soin et ne remplace pas une consultation médicale.`;

@@ -81,6 +81,39 @@ const podoSaintMaur: LocalPractitioner[] = [
   },
 ];
 
+const DATA_SPORT: LocalPractitioner[] = [
+  {
+    nom: "Centre médico-sportif de Saint-Maur",
+    prenom: "",
+    specialite: "Médecin du sport",
+    adresse: "32 Avenue de la République",
+    telephone: "0148839900",
+    codePostal: "94100",
+    ville: "Saint-Maur-des-Fossés",
+    secteur: "À vérifier",
+  },
+  {
+    nom: "Dr Rudy Fischer",
+    prenom: "",
+    specialite: "Médecin du sport",
+    adresse: "32 Avenue de la République",
+    telephone: "0148839901",
+    codePostal: "94100",
+    ville: "Saint-Maur-des-Fossés",
+    secteur: "À vérifier",
+  },
+  {
+    nom: "Dr Raphaël Vincent",
+    prenom: "",
+    specialite: "Médecin du sport",
+    adresse: "32 Avenue de la République",
+    telephone: "0148839902",
+    codePostal: "94100",
+    ville: "Saint-Maur-des-Fossés",
+    secteur: "À vérifier",
+  },
+];
+
 const kinesSaintMaur: LocalPractitioner[] = [
   {
     nom: "Cabinet de Kinésithérapie",
@@ -122,9 +155,7 @@ function findLocalPractitioners(userQuery: string): LocalPractitioner[] {
   }));
 
   if (normalizedQuery.includes("sport")) {
-    return practitionersWithText
-      .filter(({ text }) => text.includes("medecin du sport"))
-      .map(({ practitioner }) => practitioner) as LocalPractitioner[];
+    return DATA_SPORT;
   }
 
   if (

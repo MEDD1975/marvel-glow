@@ -52,7 +52,23 @@ const EMERGENCY_KEYWORDS = [
   "perte de sensibilite",
   "incoercible",
 ] as const;
+const SEVERE_ANSWER_KEYWORDS = [
+  "impossibilite totale d'appui",
+  "impossible de prendre appui",
+  "impossible de poser le pied",
+  "ne peux pas poser le pied",
+  "deformation",
+  "douleur 9",
+  "douleur 10",
+  "9/10",
+  "10/10",
+  "intolerable",
+] as const;
 const MODERATE_TRAUMA_KEYWORDS = [
+  "je suis tombe",
+  "chute",
+  "traumatisme",
+  "entorse",
   "douleur",
   "cheville",
   "genou",
@@ -75,9 +91,11 @@ const explicitlyRequestsProfessional = (query: string) =>
   containsAny(clean(query), DIRECT_SPECIALIST_KEYWORDS);
 
 const EMERGENCY_REPLY =
-  "Votre message contient un signe d'urgence explicite. Appelez immédiatement le 15 (SAMU) ou rendez-vous aux urgences.";
+  "Les éléments décrits nécessitent une évaluation urgente. Contactez le 15 ou rendez-vous aux urgences, en particulier en cas d'impossibilité totale d'appui, de déformation ou de douleur intolérable.";
+const TRAUMA_QUESTIONS =
+  "Pour évaluer la gravité, merci de répondre à ces deux questions :\n\n1. Pouvez-vous poser le pied et prendre appui (même avec de la douleur) ?\n2. Y a-t-il une déformation visible, un hématome très étendu ou une impossibilité totale de bouger l'articulation ?";
 const MODERATE_SYMPTOM_REPLY =
-  "Il s'agit probablement d'un traumatisme modéré. Nous vous conseillons de consulter un médecin généraliste ou un médecin du sport sous 24 à 48 heures, et de respecter le protocole RICE (Repos, Glace, Compression, Élévation).";
+  "L'appui restant possible et en l'absence de signe de gravité majeure, consultez votre médecin traitant ou un médecin du sport sous 24 à 48 heures. Un avis kinésithérapique pourra ensuite être proposé selon l'examen. En attendant, appliquez le protocole RICE : repos relatif, glace protégée par un linge pendant 15 à 20 minutes, compression non serrée et élévation. Si l'état s'aggrave, demandez un avis médical rapidement.";
 const DIRECTORY_NOTICE =
   "Cette liste est donnée à titre indicatif pour vous aider à trouver un praticien près de chez vous.";
 
@@ -240,6 +258,7 @@ export function NavireChatWidget() {
     { role: "assistant", text: welcomeMessage },
   ]);
   const isSending = false;
+  const [awaitingTraumaAnswers, setAwaitingTraumaAnswers] = useState(false);
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -248,15 +267,28 @@ export function NavireChatWidget() {
 
     let responseText: string;
     let practitioners: LocalPractitioner[] = [];
+    const normalizedMessage = clean(trimmed);
 
-    // Moteur déterministe : urgence, annuaire direct, conseil modéré.
-    if (hasEmergencyKeyword(trimmed)) {
-      responseText = EMERGENCY_REPLY;
-    } else if (explicitlyRequestsProfessional(trimmed)) {
+    // Une demande explicite de métier garde un accès direct à l'annuaire.
+    if (explicitlyRequestsProfessional(trimmed)) {
       practitioners = findLocalPractitioners(trimmed);
       responseText = buildLocalReply(trimmed, practitioners);
-    } else if (hasModerateTraumaKeyword(trimmed)) {
+      setAwaitingTraumaAnswers(false);
+    // Les signes graves explicites priment sur le questionnaire.
+    } else if (
+      hasEmergencyKeyword(trimmed) ||
+      (awaitingTraumaAnswers && containsAny(normalizedMessage, SEVERE_ANSWER_KEYWORDS))
+    ) {
+      responseText = EMERGENCY_REPLY;
+      setAwaitingTraumaAnswers(false);
+    // Une réponse au questionnaire sans signe grave suit le parcours modéré.
+    } else if (awaitingTraumaAnswers) {
       responseText = MODERATE_SYMPTOM_REPLY;
+      setAwaitingTraumaAnswers(false);
+    // Tout nouveau traumatisme est d'abord qualifié par deux questions.
+    } else if (hasModerateTraumaKeyword(trimmed)) {
+      responseText = TRAUMA_QUESTIONS;
+      setAwaitingTraumaAnswers(true);
     } else {
       responseText =
         "Décrivez une douleur de cheville ou de genou, ou indiquez directement le professionnel recherché : kiné, chirurgien, podologue, généraliste ou médecin du sport.";

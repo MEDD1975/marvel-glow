@@ -1,5 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
-import { generateText } from "ai";
+import { generateText, isStepCount, tool } from "ai";
 import { z } from "zod";
 import { conditions, type Condition, type TriageLevel } from "@/lib/conditions";
 import { pathways, lineLabels } from "@/lib/pathways";
@@ -14,24 +14,28 @@ const DISCLAIMER =
   "⚠️ Kivoir est un outil d'accompagnement au parcours de soin et ne remplace pas une consultation médicale.";
 
 // System Prompt de « Assistant Kivoir » : rôle, périmètre, règles strictes et style.
-const SYSTEM_PROMPT = `Tu es « Assistant Kivoir », l'assistant d'orientation de Kivoir. Tu es spécialisé dans l'orientation et la pédagogie autour des douleurs du MEMBRE INFÉRIEUR uniquement : hanche, genou, cheville et pied.
+const SYSTEM_PROMPT = `Tu es l'Assistant Kivoir, un agent d'orientation spécialisé dans l'appareil locomoteur du membre inférieur : hanche, genou, cheville et pied. Tu es factuel, rassurant, pédagogue et rigoureux.
 
-Ta mission : aider la personne à comprendre sa situation et à savoir vers quel professionnel se tourner, avec bienveillance. Tu ne remplaces jamais un médecin.
+RÈGLES CLINIQUES ABSOLUES :
+- Il t'est formellement interdit de poser ou de suggérer un diagnostic médical formel.
+- N'interprète jamais une imagerie ou un résultat d'examen et ne prescris jamais de médicament, posologie ou traitement.
+- Une déformation visible, une impossibilité totale de prendre appui ou une douleur explicitement évaluée à 10/10 impose une orientation immédiate vers le 15/112 ou les urgences.
+- En dehors de ces urgences critiques, recommande une consultation médicale sous 24 à 48 heures lorsque la situation nécessite un examen, avec des conseils d'attente sobres et prudents.
+- Reste dans le périmètre du membre inférieur. Pour une autre zone, explique cette limite et invite à consulter.
+- Le « Contexte Kivoir » fourni est ta source de vérité : ne l'invente pas et ne le contredis pas.
 
-RÈGLES ABSOLUES :
-- Ne pose JAMAIS de diagnostic médical et n'affirme jamais de quelle pathologie il s'agit.
-- N'interprète JAMAIS d'imagerie (radio, IRM, échographie, scanner) ni aucun résultat d'examen.
-- Ne donne JAMAIS de prescription, de médicament, de posologie ni de traitement médical.
-- Reste STRICTEMENT sur le membre inférieur. Si la question porte sur une autre partie du corps ou est hors sujet, explique gentiment que tu n'accompagnes que les douleurs de hanche, genou, cheville et pied, et invite à consulter.
-- Appuie-toi sur le « Contexte Kivoir » fourni comme source de vérité pour l'orientation : ne l'invente pas et ne le contredis pas.
+ANNUAIRE :
+- Dès qu'une personne cherche un professionnel à Saint-Maur-des-Fossés, directement ou dans une question naturelle, appelle l'outil rechercherPraticiensSaintMaur.
+- Utilise uniquement l'une des cinq spécialités acceptées par l'outil.
+- Après l'appel, présente brièvement l'orientation sans recopier toutes les coordonnées : les cartes sont affichées séparément dans l'interface.
+- Si l'outil ne trouve personne, dis-le clairement sans inventer de nom, d'adresse ou de téléphone.
 
 STYLE :
-- Ton empathique, rassurant, clair et concret.
-- Très court : 3 à 4 phrases maximum par paragraphe.
-- Vouvoiement systématique. Pas de jargon inutile.
+- Vouvoiement systématique, ton bienveillant, clair et mesuré, sans jargon inutile.
+- Réponse concise, structurée en paragraphes courts.
 
 FIN DE RÉPONSE (obligatoire) :
-Termine TOUJOURS ta réponse, sur une nouvelle ligne, par exactement :
+Termine toujours, sur une nouvelle ligne, par exactement :
 ${DISCLAIMER}`;
 
 const requestSchema = z.object({
@@ -65,53 +69,23 @@ function normalize(text: string) {
  * Retourne le motif d'urgence détecté, ou null.
  */
 function detectRedFlag(message: string): string | null {
-  const t = normalize(message);
-  const has = (...words: string[]) => words.some((w) => t.includes(normalize(w)));
+  const text = normalize(message);
 
-  // Impossibilité totale d'appui.
-  if (
-    /(impossible|incapable|je ne peux plus|je ne peux pas|peux plus|n ?arrive plus|n ?arrive pas)[^.!?]{0,40}(appui|poser le pied|poser mon pied|marcher|tenir debout|me lever|m ?appuyer)/.test(
-      t,
-    ) ||
-    has("aucun appui", "appui impossible", "ne tient pas debout", "ne tiens pas debout")
-  ) {
-    return "impossibilité de prendre appui sur la jambe";
-  }
-
-  // Mollet chaud / rouge / gonflé (signe évoquant une phlébite).
-  if (
-    /mollet[^.!?]{0,30}(chaud|rouge|gonfl|dur|tendu)/.test(t) ||
-    /(chaud|rouge|gonfl|dur|tendu)[^.!?]{0,30}mollet/.test(t)
-  ) {
-    return "mollet chaud, rouge ou gonflé";
-  }
-
-  // Fièvre associée à une articulation rouge ou chaude.
-  if (
-    has("fievre", "39 de", "40 de", "temperature elevee") &&
-    has("rouge", "chaud", "gonfl", "articulation", "genou", "cheville", "hanche")
-  ) {
-    return "fièvre associée à une articulation rouge ou chaude";
-  }
-
-  // Perte de sensibilité / pied tombant.
-  if (
-    has(
-      "perte de sensibilite",
-      "plus de sensibilite",
-      "insensible",
-      "je ne sens plus",
-      "pied tombant",
-      "paralysie",
-      "paralyse",
-    )
-  ) {
-    return "perte de sensibilité ou pied tombant";
-  }
-
-  // Déformation visible du membre.
-  if (has("deformation", "deforme", "os qui sort", "os sort", "angle anormal", "fracture ouverte")) {
+  if (/\b(deformation|deformee?|fracture ouverte|os visible|os qui sort)\b/.test(text)) {
     return "déformation visible du membre";
+  }
+
+  if (
+    /(impossibilite totale|totalement impossible|aucun appui|appui totalement impossible)[^.!?]{0,35}(appui|poser le pied|marcher)/.test(
+      text,
+    ) ||
+    /(impossible de poser le pied|impossible de prendre appui)/.test(text)
+  ) {
+    return "impossibilité totale de prendre appui";
+  }
+
+  if (/\bdouleur\b[^.!?]{0,24}\b10\s*(?:\/\s*10)?\b/.test(text)) {
+    return "douleur évaluée à 10/10";
   }
 
   return null;
@@ -130,30 +104,58 @@ function emergencyResponse(reason: string) {
 
 type LocalPractitioner = (typeof localPractitioners)[number];
 
-const specialtyMatchers: Array<{ specialty: string; terms: string[] }> = [
-  { specialty: "Médecins généralistes", terms: ["medecin generaliste", "generaliste", "medecin traitant"] },
-  { specialty: "Pédicures-podologues", terms: ["podologue", "pedicure", "pédicure", "ongle", "semelle"] },
-  { specialty: "Masseurs-kinésithérapeutes", terms: ["kine", "kiné", "kinesitherapeute", "kinésithérapeute", "reeducation"] },
-  { specialty: "Rhumatologues", terms: ["rhumatologue", "rhumatologie"] },
-  { specialty: "Chirurgiens orthopédiques & Traumatologues", terms: ["orthopediste", "orthopédiste", "chirurgien orthopedique", "traumatologue"] },
-  { specialty: "Médecins du sport", terms: ["medecin du sport", "médecin du sport", "sport"] },
-  { specialty: "Centres d'imagerie / Radiologie", terms: ["radio", "radiologie", "irm", "echographie", "échographie", "scanner", "imagerie"] },
-];
+const practitionerSpecialtySchema = z.enum([
+  "médecin généraliste",
+  "médecin du sport",
+  "kinésithérapeute",
+  "podologue",
+  "chirurgien orthopédiste",
+]);
 
-function detectSpecialty(message: string, plan?: CarePlan): string | null {
-  const normalized = normalize(message);
-  const explicit = specialtyMatchers.find(({ terms }) => terms.some((term) => normalized.includes(normalize(term))));
-  if (explicit) return explicit.specialty;
-  if (plan?.level === "professional") return "Médecins généralistes";
-  return null;
-}
+type PractitionerSpecialty = z.infer<typeof practitionerSpecialtySchema>;
 
-function findLocalPractitioners(specialty: string | null): LocalPractitioner[] {
-  if (!specialty) return [];
-  const target = normalize(specialty);
+const directorySpecialtyLabels: Record<PractitionerSpecialty, string> = {
+  "médecin généraliste": "Médecins généralistes",
+  "médecin du sport": "Médecins du sport",
+  kinésithérapeute: "Masseurs-kinésithérapeutes",
+  podologue: "Pédicures-podologues",
+  "chirurgien orthopédiste": "Chirurgiens orthopédiques & Traumatologues",
+};
+
+function searchLocalPractitioners(specialty: PractitionerSpecialty): LocalPractitioner[] {
+  const target = normalize(directorySpecialtyLabels[specialty]);
   return localPractitioners
     .filter((practitioner) => normalize(practitioner.specialite) === target)
     .slice(0, 5);
+}
+
+const rechercherPraticiensSaintMaur = tool({
+  description:
+    "Recherche dans l'annuaire local de Saint-Maur-des-Fossés. Appeler cet outil dès que l'utilisateur demande, même indirectement ou dans une phrase naturelle, où trouver un médecin généraliste, médecin du sport, kinésithérapeute, podologue ou chirurgien orthopédiste.",
+  inputSchema: z.object({
+    specialite: practitionerSpecialtySchema.describe("La spécialité exacte à rechercher"),
+  }),
+  strict: true,
+  execute: async ({ specialite }) => ({
+    specialite,
+    praticiens: searchLocalPractitioners(specialite),
+  }),
+});
+
+const specialtyMatchers: Array<{ specialty: PractitionerSpecialty; terms: string[] }> = [
+  { specialty: "médecin du sport", terms: ["medecin du sport", "sport"] },
+  { specialty: "chirurgien orthopédiste", terms: ["orthopediste", "chirurgien", "traumatologue"] },
+  { specialty: "kinésithérapeute", terms: ["kine", "kinesitherapeute", "physio"] },
+  { specialty: "podologue", terms: ["podologue", "pedicure", "semelle"] },
+  { specialty: "médecin généraliste", terms: ["medecin generaliste", "generaliste", "medecin traitant"] },
+];
+
+function detectSpecialty(message: string): PractitionerSpecialty | null {
+  const normalized = normalize(message);
+  return (
+    specialtyMatchers.find(({ terms }) => terms.some((term) => normalized.includes(term)))?.specialty ??
+    null
+  );
 }
 
 function detectZone(message: string): Condition["zone"] | null {
@@ -180,15 +182,7 @@ function scoreCondition(message: string, condition: Condition) {
 // Moteur déterministe : sert d'ANCRAGE (source de vérité) pour l'IA et de REPLI si l'IA échoue.
 function buildCarePlan(message: string, selectedZone?: string): CarePlan {
   const normalized = message.toLowerCase();
-  const urgent = [
-    ...generalRedFlags,
-    "ne peux pas poser",
-    "impossible de poser",
-    "déformation",
-    "essoufflement",
-    "douleur thoracique",
-    "faiblesse brutale",
-  ].some((signal) => normalized.includes(signal.toLowerCase()));
+  const urgent = detectRedFlag(message) !== null;
   const detectedZone = (
     ["Hanche", "Genou", "Cheville", "Pied"].includes(selectedZone ?? "") ? selectedZone : detectZone(message)
   ) as Condition["zone"] | null;
@@ -269,29 +263,41 @@ export const askCareAgent = createServerFn({ method: "POST" })
 
     // 2) Ancrage : le parcours curé de Kivoir reste la source de vérité.
     const plan = buildCarePlan(data.message, data.zone);
-    const specialty = detectSpecialty(data.message, plan);
-    const practitioners = findLocalPractitioners(specialty);
-    if (plan.level === "urgent") {
-      return {
-        text: emergencyResponse("un signe d'alerte détecté dans votre description"),
-        emergency: true,
-        specialty,
-        practitioners,
-      };
-    }
 
-    // 3) Génération encadrée par le System Prompt de « Assistant Kivoir ».
+    // 3) Le modèle peut appeler l'annuaire puis formuler une réponse cohérente.
     try {
-      const { text } = await generateText({
+      const result = await generateText({
         model: MODEL,
         system: SYSTEM_PROMPT,
         prompt: `Contexte Kivoir (source de vérité, ne pas contredire) :\n${grounding(plan)}\n\nMessage de la personne :\n"""${data.message}"""`,
-        temperature: 0.4,
+        tools: { rechercherPraticiensSaintMaur },
+        toolChoice: "auto",
+        stopWhen: isStepCount(3),
+        temperature: 0.3,
         maxOutputTokens: 500,
       });
-      return { text: ensureDisclaimer(text), emergency: false, specialty, practitioners };
+
+      const directoryResult = [...result.toolResults]
+        .reverse()
+        .find((toolResult) => toolResult.toolName === "rechercherPraticiensSaintMaur");
+      const output = directoryResult?.output;
+      const specialty = output?.specialite ?? null;
+      const practitioners = output?.praticiens ?? [];
+
+      return {
+        text: ensureDisclaimer(result.text),
+        emergency: false,
+        specialty,
+        practitioners,
+      };
     } catch (error) {
       console.log("[v0] Assistant Kivoir — repli déterministe (échec IA) :", error instanceof Error ? error.message : error);
-      return { text: fallbackText(plan), emergency: false, specialty, practitioners };
+      const specialty = detectSpecialty(data.message);
+      return {
+        text: fallbackText(plan),
+        emergency: false,
+        specialty,
+        practitioners: specialty ? searchLocalPractitioners(specialty) : [],
+      };
     }
   });

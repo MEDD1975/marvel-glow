@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from "react";
-import { Bot, MessageCircle, Send, X } from "lucide-react";
+import { Bot, LoaderCircle, MessageCircle, Send, X } from "lucide-react";
 import practitionersData from "../../data/praticiens_saint_maur.json";
 
 const welcomeMessage =
@@ -22,18 +22,27 @@ type ChatMessage = {
   practitioners?: LocalPractitioner[];
 };
 
-const specialtyKeywords = ["kiné", "kinésithérapeute", "podologue", "médecin"];
+const specialtyKeywords = ["kine", "kinesitherapeute", "podologue", "medecin"] as const;
+
+type SpecialtyKeyword = (typeof specialtyKeywords)[number];
+
+function normalizeText(value: string) {
+  return value
+    .normalize("NFD")
+    .replace(/[\\u0300-\\u036f]/g, "")
+    .toLocaleLowerCase("fr-FR");
+}
 
 function findLocalPractitioners(message: string): LocalPractitioner[] {
-  const normalizedMessage = message.toLocaleLowerCase("fr-FR");
+  const normalizedMessage = normalizeText(message);
   const keyword = specialtyKeywords.find((item) => normalizedMessage.includes(item));
   if (!keyword) return [];
 
   return practitionersData.filter((practitioner) => {
-    const specialty = practitioner.specialite.toLocaleLowerCase("fr-FR");
-    if (keyword === "médecin") return specialty.includes("médecin");
+    const specialty = normalizeText(practitioner.specialite);
+    if (keyword === "medecin") return specialty.includes("medecin");
     if (keyword === "podologue") return specialty.includes("podologue");
-    return specialty.includes("kinésithérapeute") || specialty.includes("kiné");
+    return specialty.includes("kinesitherapeute") || specialty.includes("kine");
   }) as LocalPractitioner[];
 }
 

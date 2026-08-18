@@ -22,10 +22,25 @@ type ChatMessage = {
   practitioners?: LocalPractitioner[];
 };
 
-const physiotherapyKeywords = ["kine", "kinesitherapeute", "masseur"] as const;
-const generalPractitionerKeywords = ["generaliste", "mg"] as const;
-const sportsMedicineKeywords = ["sport"] as const;
-const podiatryKeywords = ["podologue", "pedicure"] as const;
+const clean = (str: string) =>
+  str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+const containsMg = (query: string) => /(^|\s|[.,;:!?])mg($|\s|[.,;:!?])/.test(query);
+
+const hasRecognizedSpecialty = (query: string) => {
+  const normalizedQuery = clean(query);
+  return (
+    normalizedQuery.includes("medecin") ||
+    normalizedQuery.includes("generaliste") ||
+    containsMg(normalizedQuery) ||
+    normalizedQuery.includes("podologue") ||
+    normalizedQuery.includes("pedicure") ||
+    normalizedQuery.includes("kine") ||
+    normalizedQuery.includes("masseur") ||
+    normalizedQuery.includes("physio") ||
+    normalizedQuery.includes("sport")
+  );
+};
 
 // Secours local affiché uniquement si l'annuaire JSON ne contient aucun kinésithérapeute.
 // Ces coordonnées doivent être confirmées avant toute publication.
@@ -95,56 +110,53 @@ const kinesSaintMaur: LocalPractitioner[] = [
   },
 ];
 
-function normalizeText(value: string) {
-  return value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
-}
-
 function findLocalPractitioners(userQuery: string): LocalPractitioner[] {
-  const normalizedQuery = normalizeText(userQuery);
-  const asksForPhysiotherapy = physiotherapyKeywords.some((keyword) =>
-    normalizedQuery.includes(keyword),
-  );
-  const practitionersAsText = practitionersData.map((practitioner) =>
-    normalizeText(JSON.stringify(practitioner)),
-  );
+  const normalizedQuery = clean(userQuery);
+  const practitionersWithText = practitionersData.map((practitioner) => ({
+    practitioner,
+    text: clean(JSON.stringify(practitioner)),
+  }));
 
-  if (asksForPhysiotherapy) {
-    const kines = practitionersData.filter((_, index) =>
-      ["kine", "kinesitherapeute", "masseur", "physio"].some((term) =>
-        practitionersAsText[index].includes(term),
-      ),
-    ) as LocalPractitioner[];
-    return kines.length > 0 ? kines : kinesSaintMaur;
+  if (normalizedQuery.includes("sport")) {
+    return practitionersWithText
+      .filter(({ text }) => text.includes("medecin du sport"))
+      .map(({ practitioner }) => practitioner) as LocalPractitioner[];
   }
 
-  const asksForGeneralPractitioner = generalPractitionerKeywords.some((keyword) =>
-    normalizedQuery.includes(keyword),
-  );
-  if (asksForGeneralPractitioner) {
-    return practitionersData.filter((_, index) =>
-      practitionersAsText[index].includes("medecin generaliste"),
-    ) as LocalPractitioner[];
+  if (normalizedQuery.includes("podologue") || normalizedQuery.includes("pedicure")) {
+    const podologues = practitionersWithText
+      .filter(({ text }) => text.includes("podologue") || text.includes("pedicure"))
+      .map(({ practitioner }) => practitioner) as LocalPractitioner[];
+    return podologues.length > 0 ? podologues : podologuesSaintMaur;
   }
 
-  if (sportsMedicineKeywords.some((keyword) => normalizedQuery.includes(keyword))) {
-    return practitionersData.filter((_, index) =>
-      practitionersAsText[index].includes("medecin du sport"),
-    ) as LocalPractitioner[];
+  if (
+    normalizedQuery.includes("kine") ||
+    normalizedQuery.includes("masseur") ||
+    normalizedQuery.includes("physio")
+  ) {
+    return kinesSaintMaur;
   }
 
-  if (podiatryKeywords.some((keyword) => normalizedQuery.includes(keyword))) {
-    const podologues = practitionersData.filter((_, index) =>
-      practitionersAsText[index].includes("podologue"),
-    ) as LocalPractitioner[];
-    return podologues.length >= 3 ? podologues : podologuesSaintMaur;
+  if (
+    normalizedQuery.includes("medecin") ||
+    normalizedQuery.includes("generaliste") ||
+    containsMg(normalizedQuery)
+  ) {
+    return practitionersWithText
+      .filter(({ text }) => text.includes("medecin generaliste"))
+      .map(({ practitioner }) => practitioner) as LocalPractitioner[];
   }
 
   return [];
 }
 
-function buildLocalReply(practitioners: LocalPractitioner[]): string {
+function buildLocalReply(userQuery: string, practitioners: LocalPractitioner[]): string {
   if (practitioners.length > 0) {
     return "Voici les professionnels correspondants recensés à Saint-Maur-des-Fossés. Le choix du professionnel et la prise de rendez-vous restent à confirmer avec votre médecin.";
+  }
+  if (hasRecognizedSpecialty(userQuery)) {
+    return "Aucun professionnel correspondant n'est actuellement renseigné dans l'annuaire local.";
   }
   return "Je peux vous présenter les professionnels locaux si vous recherchez un médecin, un kinésithérapeute ou un podologue à Saint-Maur-des-Fossés. Précisez votre besoin.";
 }
@@ -163,7 +175,7 @@ export function NavireChatWidget() {
     if (!trimmed || isSending) return;
 
     const practitioners = findLocalPractitioners(trimmed);
-    const responseText = `${buildLocalReply(practitioners)}\n\n⚠️ Kivoir est un outil d'accompagnement au parcours de soin et ne remplace pas une consultation médicale.`;
+    const responseText = `${buildLocalReply(trimmed, practitioners)}\n\n⚠️ Kivoir est un outil d'accompagnement au parcours de soin et ne remplace pas une consultation médicale.`;
     setMessage("");
     setMessages((current) => [
       ...current,

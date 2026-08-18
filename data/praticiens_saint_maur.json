@@ -193,59 +193,57 @@
     "type": "praticien",
     "source": "Coordonnées validées fournies pour l'annuaire Kivoir",
     "verifieLe": "2026-08-18"
+  },
+  {
+    "nom": "Nunes",
+    "prenom": "Julie",
+    "specialite": "Masseurs-kinésithérapeutes",
+    "adresse": "36 rue Saint Hilaire",
+    "telephone": "0186047933",
+    "codePostal": "94210",
+    "ville": "Saint-Maur-des-Fossés",
+    "secteur": "À vérifier",
+    "type": "professionnel",
+    "source": "Saisie manuelle",
+    "verifieLe": "2026-08-18"
+  },
+  {
+    "nom": "Oueslati",
+    "prenom": "Sarah",
+    "specialite": "Pédicures-podologues",
+    "adresse": "12 Avenue des Arts",
+    "telephone": "0660834589",
+    "codePostal": "94100",
+    "ville": "Saint-Maur-des-Fossés",
+    "secteur": "À vérifier",
+    "type": "professionnel",
+    "source": "Saisie manuelle",
+    "verifieLe": "2026-08-18"
+  },
+  {
+    "nom": "Fisher",
+    "prenom": "Rudy",
+    "specialite": "Médecins du sport",
+    "adresse": "Saint-Maur-des-Fossés",
+    "telephone": "0178811080",
+    "codePostal": "94100",
+    "ville": "Saint-Maur-des-Fossés",
+    "secteur": "À vérifier",
+    "type": "professionnel",
+    "source": "Saisie manuelle",
+    "verifieLe": "2026-08-18"
+  },
+  {
+    "nom": "Demay",
+    "prenom": "Olivier",
+    "specialite": "Chirurgiens orthopédiques & Traumatologues",
+    "adresse": "Saint-Maur-des-Fossés",
+    "telephone": "0149767605",
+    "codePostal": "94100",
+    "ville": "Saint-Maur-des-Fossés",
+    "secteur": "À vérifier",
+    "type": "professionnel",
+    "source": "Saisie manuelle",
+    "verifieLe": "2026-08-18"
   }
-]},
-    {
-      "nom": "Nunes",
-      "prenom": "Julie",
-      "specialite": "Masseur-kinésithérapeute",
-      "adresse": "36 rue Saint Hilaire",
-      "telephone": "0186047933",
-      "codePostal": "94210",
-      "ville": "Saint-Maur-des-Fossés",
-      "secteur": "À vérifier",
-      "type": "professionnel",
-      "source": "Saisie manuelle",
-      "verifieile": "2026-08-18"
-    },
-    {
-      "nom": "Oueslati",
-      "prenom": "Sarah",
-      "specialite": "Pédicure-podologue",
-      "adresse": "12 Avenue des Arts",
-      "telephone": "0660834589",
-      "codePostal": "94100",
-      "ville": "Saint-Maur-des-Fossés",
-      "secteur": "À vérifier",
-      "type": "professionnel",
-      "source": "Saisie manuelle",
-      "verifieile": "2026-08-18"
-    },
-    {
-      "nom": "Fisher",
-      "prenom": "Rudy",
-      "specialite": "Médecin du sport",
-      "adresse": "Saint-Maur-des-Fossés",
-      "telephone": "0178811080",
-      "codePostal": "94100",
-      "ville": "Saint-Maur-des-Fossés",
-      "secteur": "À vérifier",
-      "type": "professionnel",
-      "source": "Saisie manuelle",
-      "verifieile": "2026-08-18"
-    },
-    {
-      "nom": "Demay",
-      "prenom": "Olivier",
-      "specialite": "Chirurgien orthopédiste",
-      "adresse": "Saint-Maur-des-Fossés",
-      "telephone": "0149767605",
-      "codePostal": "94100",
-      "ville": "Saint-Maur-des-Fossés",
-      "secteur": "À vérifier",
-      "type": "professionnel",
-      "source": "Saisie manuelle",
-      "verifieile": "2026-08-18"
-      ]  
-      
 ]

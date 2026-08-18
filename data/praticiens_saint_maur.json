@@ -1,236 +1,36 @@
-[
-  {
-    "nom": "Centre d'imagerie médicale La Louvière",
-    "prenom": "",
-    "specialite": "Centres d'imagerie / Radiologie",
-    "adresse": "16 place de la Louvière",
-    "telephone": "0141812105",
-    "codePostal": "94100",
-    "ville": "Saint-Maur-des-Fossés",
-    "secteur": "À vérifier",
-    "type": "structure",
-    "source": "Site public du centre / annuaires de santé",
-    "verifieLe": "2026-08-18"
+{
+  "dr_a": {
+    "nom_cabinet": "Cabinet Sport & Santé - Dr A",
+    "praticiens": [
+      {
+        "nom": "Dr. Sophie Martin",
+        "specialite": "Médecin du sport",
+        "adresse": "10 Rue des Lilas, 94100 Saint-Maur",
+        "telephone": "01 00 00 00 01"
+      },
+      {
+        "nom": "Thomas Kine",
+        "specialite": "Kinésithérapeute",
+        "adresse": "10 Rue des Lilas, 94100 Saint-Maur",
+        "telephone": "01 00 00 00 02"
+      }
+    ]
   },
-  {
-    "nom": "Centre médico-sportif de Saint-Maur",
-    "prenom": "",
-    "specialite": "Médecins du sport",
-    "adresse": "32 avenue de la République",
-    "telephone": "0148839900",
-    "codePostal": "94100",
-    "ville": "Saint-Maur-des-Fossés",
-    "secteur": "À vérifier",
-    "type": "structure",
-    "source": "Annuaire public des professionnels de santé",
-    "verifieLe": "2026-08-18"
-  },
-  {
-    "nom": "Benattar",
-    "prenom": "Leslie",
-    "specialite": "Rhumatologues",
-    "adresse": "32 avenue de la République",
-    "telephone": "",
-    "codePostal": "94100",
-    "ville": "Saint-Maur-des-Fossés",
-    "secteur": "À vérifier",
-    "type": "praticien",
-    "source": "Annuaire public des professionnels de santé",
-    "verifieLe": "2026-08-18"
-  },
-  {
-    "nom": "Fischer",
-    "prenom": "Rudy",
-    "specialite": "Médecins du sport",
-    "adresse": "32 avenue de la République",
-    "telephone": "",
-    "codePostal": "94100",
-    "ville": "Saint-Maur-des-Fossés",
-    "secteur": "À vérifier",
-    "type": "praticien",
-    "source": "Annuaire public des professionnels de santé",
-    "verifieLe": "2026-08-18"
-  },
-  {
-    "nom": "Vincent",
-    "prenom": "Raphaël",
-    "specialite": "Médecins du sport",
-    "adresse": "32 avenue de la République",
-    "telephone": "",
-    "codePostal": "94100",
-    "ville": "Saint-Maur-des-Fossés",
-    "secteur": "À vérifier",
-    "type": "praticien",
-    "source": "Annuaire public des professionnels de santé",
-    "verifieLe": "2026-08-18"
-  },
-  {
-    "nom": "Kassab",
-    "prenom": "Sammy",
-    "specialite": "Chirurgiens orthopédiques & Traumatologues",
-    "adresse": "32 avenue de la République",
-    "telephone": "0148839900",
-    "codePostal": "94100",
-    "ville": "Saint-Maur-des-Fossés",
-    "secteur": "À vérifier",
-    "type": "praticien",
-    "source": "Annuaire public des professionnels de santé",
-    "verifieLe": "2026-08-18"
-  },
-  {
-    "nom": "Frumento",
-    "prenom": "Franca",
-    "specialite": "Chirurgiens orthopédiques & Traumatologues",
-    "adresse": "48 rue d'Alsace-Lorraine",
-    "telephone": "0142831234",
-    "codePostal": "94100",
-    "ville": "Saint-Maur-des-Fossés",
-    "secteur": "À vérifier",
-    "type": "praticien",
-    "source": "Annuaire public des professionnels de santé",
-    "verifieLe": "2026-08-18"
-  },
-  {
-    "nom": "Centre médico-chirurgical de Saint-Maur",
-    "prenom": "",
-    "specialite": "Centres d'imagerie / Radiologie",
-    "adresse": "48 rue d'Alsace-Lorraine",
-    "telephone": "",
-    "codePostal": "94100",
-    "ville": "Saint-Maur-des-Fossés",
-    "secteur": "À vérifier",
-    "type": "structure",
-    "source": "Annuaire public des professionnels de santé",
-    "verifieLe": "2026-08-18"
-  },
-  {
-    "nom": "Assous",
-    "prenom": "Michel",
-    "specialite": "Médecins généralistes",
-    "adresse": "24 rue Baratte Cholet",
-    "telephone": "0148893537",
-    "codePostal": "94100",
-    "ville": "Saint-Maur-des-Fossés",
-    "secteur": "Secteur 1",
-    "type": "praticien",
-    "source": "Annuaire public de santé",
-    "verifieLe": "2026-08-18"
-  },
-  {
-    "nom": "Rananja",
-    "prenom": "Hanta",
-    "specialite": "Médecins généralistes",
-    "adresse": "4 avenue Auguste Marin",
-    "telephone": "0143971124",
-    "codePostal": "94100",
-    "ville": "Saint-Maur-des-Fossés",
-    "secteur": "Secteur 1",
-    "type": "praticien",
-    "source": "Annuaire public de santé",
-    "verifieLe": "2026-08-18"
-  },
-  {
-    "nom": "Kasbi",
-    "prenom": "Alexandre",
-    "specialite": "Médecins généralistes",
-    "adresse": "115 avenue Foch",
-    "telephone": "0148834222",
-    "codePostal": "94100",
-    "ville": "Saint-Maur-des-Fossés",
-    "secteur": "Secteur 1",
-    "type": "praticien",
-    "source": "Annuaire public de santé",
-    "verifieLe": "2026-08-18"
-  },
-  {
-    "nom": "Durand",
-    "prenom": "Pierre",
-    "specialite": "Pédicures-podologues",
-    "adresse": "14 rue Baratte Cholet",
-    "telephone": "0142837788",
-    "codePostal": "94100",
-    "ville": "Saint-Maur-des-Fossés",
-    "secteur": "À vérifier",
-    "type": "praticien",
-    "source": "Coordonnées validées fournies pour l'annuaire Kivoir",
-    "verifieLe": "2026-08-18"
-  },
-  {
-    "nom": "Cabinet de Kinésithérapie",
-    "prenom": "",
-    "specialite": "Masseurs-kinésithérapeutes",
-    "adresse": "12 avenue du Bac",
-    "telephone": "0148830000",
-    "codePostal": "94100",
-    "ville": "Saint-Maur-des-Fossés",
-    "secteur": "À vérifier",
-    "type": "structure",
-    "source": "Coordonnées validées fournies pour l'annuaire Kivoir",
-    "verifieLe": "2026-08-18"
-  },
-  {
-    "nom": "Dupont",
-    "prenom": "Marc",
-    "specialite": "Masseurs-kinésithérapeutes",
-    "adresse": "45 avenue de la République",
-    "telephone": "0148851234",
-    "codePostal": "94100",
-    "ville": "Saint-Maur-des-Fossés",
-    "secteur": "À vérifier",
-    "type": "praticien",
-    "source": "Coordonnées validées fournies pour l'annuaire Kivoir",
-    "verifieLe": "2026-08-18"
-  },
-  {
-    "nom": "Martin",
-    "prenom": "Sophie",
-    "specialite": "Masseurs-kinésithérapeutes",
-    "adresse": "8 rue Baratte Cholet",
-    "telephone": "0148835678",
-    "codePostal": "94100",
-    "ville": "Saint-Maur-des-Fossés",
-    "secteur": "Kiné du sport",
-    "type": "praticien",
-    "source": "Coordonnées validées fournies pour l'annuaire Kivoir",
-    "verifieLe": "2026-08-18"
-  },
-  {
-    "nom": "Nunes",
-    "prenom": "Julie",
-    "specialite": "Masseurs-kinésithérapeutes",
-    "adresse": "36 rue Saint Hilaire",
-    "telephone": "0186047933",
-    "codePostal": "94210",
-    "ville": "Saint-Maur-des-Fossés",
-    "secteur": "À vérifier",
-    "type": "professionnel",
-    "source": "Saisie manuelle",
-    "verifieLe": "2026-08-18"
-  },
-  {
-    "nom": "Oueslati",
-    "prenom": "Sarah",
-    "specialite": "Pédicures-podologues",
-    "adresse": "12 Avenue des Arts",
-    "telephone": "0660834589",
-    "codePostal": "94100",
-    "ville": "Saint-Maur-des-Fossés",
-    "secteur": "À vérifier",
-    "type": "professionnel",
-    "source": "Saisie manuelle",
-    "verifieLe": "2026-08-18"
-  },
-  {
-    "nom": "Demay",
-    "prenom": "Olivier",
-    "specialite": "Chirurgiens orthopédiques & Traumatologues",
-    "adresse": "Saint-Maur-des-Fossés",
-    "telephone": "0149767605",
-    "codePostal": "94100",
-    "ville": "Saint-Maur-des-Fossés",
-    "secteur": "À vérifier",
-    "type": "professionnel",
-    "source": "Saisie manuelle",
-    "verifieLe": "2026-08-18"
+  "dr_b": {
+    "nom_cabinet": "Centre Médical du Parc - Dr B",
+    "praticiens": [
+      {
+        "nom": "Dr. Marc Durand",
+        "specialite": "Rhumatologue",
+        "adresse": "25 Avenue de la Marne, 94100 Saint-Maur",
+        "telephone": "01 00 00 00 03"
+      },
+      {
+        "nom": "Julie Podologue",
+        "specialite": "Podologue",
+        "adresse": "25 Avenue de la Marne, 94100 Saint-Maur",
+        "telephone": "01 00 00 00 04"
+      }
+    ]
   }
-]
+}

@@ -12,17 +12,22 @@ import { MedicalDisclaimer } from "@/components/HomeBlocks";
 import { conditions } from "@/lib/conditions";
 import { pathways } from "@/lib/pathways";
 import {
+  cabinets,
   journeySteps,
   professionColor,
   professionOrder,
-  providers,
   type Profession,
 } from "@/lib/directory";
 
-type Search = { c?: string | undefined; step?: string | undefined };
+type Search = {
+  cabinet?: string | undefined;
+  c?: string | undefined;
+  step?: string | undefined;
+};
 
 export const Route = createFileRoute("/annuaire")({
   validateSearch: (search: Record<string, unknown>): Search => ({
+    cabinet: typeof search["cabinet"] === "string" ? search["cabinet"] : undefined,
     c: typeof search["c"] === "string" ? search["c"] : undefined,
     step: typeof search["step"] === "string" ? search["step"] : undefined,
   }),
@@ -50,11 +55,51 @@ export const Route = createFileRoute("/annuaire")({
   component: AnnuairePage,
 });
 
+function CabinetChooser({ invalidId }: { invalidId?: string }) {
+  return (
+    <main className="mx-auto max-w-3xl px-4 py-16">
+      <div className="rounded-2xl border border-border bg-card p-6 shadow-sm md:p-8">
+        <span className="inline-flex rounded-full bg-care/10 px-3 py-1 text-xs font-semibold text-care">
+          Annuaire Kivoir
+        </span>
+        <h1 className="mt-4 text-2xl font-semibold text-balance text-foreground md:text-3xl">
+          {invalidId ? "Ce cabinet n’est pas disponible" : "Choisissez votre cabinet"}
+        </h1>
+        <p className="mt-2 max-w-xl leading-6 text-muted-foreground">
+          {invalidId
+            ? `L’identifiant « ${invalidId} » ne correspond à aucun cabinet de l’annuaire.`
+            : "Sélectionnez un cabinet pour consulter uniquement les professionnels qui y exercent."}
+        </p>
+        <div className="mt-6 flex flex-col gap-3">
+          {cabinets.map((cabinet) => (
+            <Link
+              key={cabinet.id}
+              to="/annuaire"
+              search={{ cabinet: cabinet.id }}
+              className="flex items-center justify-between gap-4 rounded-xl border border-border bg-background p-4 transition-colors hover:border-care/50"
+            >
+              <div>
+                <p className="font-semibold text-foreground">{cabinet.name}</p>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  {cabinet.providers.length} professionnel{cabinet.providers.length > 1 ? "s" : ""}
+                </p>
+              </div>
+              <ArrowRight className="h-5 w-5 shrink-0 text-care" />
+            </Link>
+          ))}
+        </div>
+      </div>
+    </main>
+  );
+}
+
 function AnnuairePage() {
-  const { c, step } = Route.useSearch();
+  const { cabinet: cabinetId, c, step } = Route.useSearch();
   const navigate = useNavigate({ from: "/annuaire" });
   const [professionFilter, setProfessionFilter] = useState<Profession | null>(null);
 
+  const selectedCabinet = cabinets.find((cabinet) => cabinet.id === cabinetId) ?? null;
+  const cabinetProviders = selectedCabinet?.providers ?? [];
   const condition = conditions.find((item) => item.id === c) ?? null;
   const currentStep = journeySteps.find((item) => item.id === step) ?? null;
 
@@ -79,11 +124,11 @@ function AnnuairePage() {
       : undefined;
 
   const availableProfessions = professionOrder.filter((profession) =>
-    providers.some((provider) => provider.profession === profession),
+    cabinetProviders.some((provider) => provider.profession === profession),
   );
 
   const list = useMemo(() => {
-    const base = providers.filter((provider) => {
+    const base = cabinetProviders.filter((provider) => {
       if (professionFilter) return provider.profession === professionFilter;
       if (recommended.length > 0) return recommended.includes(provider.profession);
       return true;
@@ -94,19 +139,35 @@ function AnnuairePage() {
       if (ra !== rb) return (ra === -1 ? 99 : ra) - (rb === -1 ? 99 : rb);
       return a.name.localeCompare(b.name, "fr");
     });
-  }, [professionFilter, recommended]);
+  }, [cabinetProviders, professionFilter, recommended]);
 
   const setSearch = (next: Partial<Search>) =>
     navigate({ search: (prev: Search) => ({ ...prev, ...next }), resetScroll: false });
 
+  if (!selectedCabinet) {
+    return <CabinetChooser invalidId={cabinetId} />;
+  }
+
   return (
     <main className="mx-auto max-w-5xl px-4 py-10">
-      <p className="inline-flex items-center gap-1.5 rounded-full bg-care/10 px-3 py-1 text-xs font-medium text-care">
-        <MapPin className="h-3.5 w-3.5" /> Saint-Maur-des-Fossés (94)
-      </p>
-      <h1 className="mt-3 text-2xl font-semibold text-foreground md:text-3xl">
-        Où en êtes-vous ? On vous dit qui voir ensuite, et où.
+      <div className="flex flex-wrap items-center gap-2">
+        <p className="inline-flex items-center gap-1.5 rounded-full bg-care/10 px-3 py-1 text-xs font-medium text-care">
+          <MapPin className="h-3.5 w-3.5" /> Saint-Maur-des-Fossés (94)
+        </p>
+        <Link
+          to="/annuaire"
+          search={{}}
+          className="rounded-full border border-border bg-card px-3 py-1 text-xs font-medium text-muted-foreground hover:text-foreground"
+        >
+          Changer de cabinet
+        </Link>
+      </div>
+      <h1 className="mt-3 text-2xl font-semibold text-balance text-foreground md:text-3xl">
+        {selectedCabinet.name}
       </h1>
+      <p className="mt-1 text-sm font-medium text-care">
+        {selectedCabinet.providers.length} professionnel{selectedCabinet.providers.length > 1 ? "s" : ""} dans ce cabinet
+      </p>
       <p className="mt-2 max-w-2xl text-muted-foreground">
         Indiquez l'étape de votre parcours : Kivoir affiche le professionnel suivant, puis les
         praticiens correspondants près de chez vous.
@@ -210,7 +271,7 @@ function AnnuairePage() {
       <section className="mt-8">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-            3. Professionnels à Saint-Maur-des-Fossés
+            3. Professionnels de ce cabinet
           </h2>
           <span className="text-xs text-muted-foreground">{list.length} résultat(s)</span>
         </div>

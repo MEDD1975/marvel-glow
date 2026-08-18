@@ -14,16 +14,14 @@ export type Profession =
 
 type PractitionerRecord = {
   nom: string;
-  prenom: string;
   specialite: string;
   adresse: string;
   telephone: string;
-  codePostal: string;
-  ville: string;
-  secteur: string;
-  type: string;
-  source: string;
-  verifieLe: string;
+};
+
+type CabinetRecord = {
+  nom_cabinet: string;
+  praticiens: PractitionerRecord[];
 };
 
 export type Provider = {
@@ -35,10 +33,12 @@ export type Provider = {
   city: string;
   phone: string | undefined;
   formattedPhone: string | undefined;
-  sector: string | undefined;
-  type: string;
-  source: string;
-  verifiedAt: string;
+};
+
+export type Cabinet = {
+  id: string;
+  name: string;
+  providers: Provider[];
 };
 
 export const professionOrder: Profession[] = [
@@ -66,13 +66,15 @@ export const professionColor: Record<Profession, string> = {
 };
 
 const specialtyToProfession: Record<string, Profession> = {
-  "Médecins généralistes": "Médecin généraliste",
-  "Masseurs-kinésithérapeutes": "Kinésithérapeute",
-  "Pédicures-podologues": "Podologue",
-  Rhumatologues: "Rhumatologue",
-  "Chirurgiens orthopédiques & Traumatologues": "Chirurgien orthopédiste",
-  "Centres d'imagerie / Radiologie": "Imagerie médicale",
-  "Médecins du sport": "Médecin du sport",
+  "Médecin généraliste": "Médecin généraliste",
+  Kinésithérapeute: "Kinésithérapeute",
+  Podologue: "Podologue",
+  Ostéopathe: "Ostéopathe",
+  Rhumatologue: "Rhumatologue",
+  "Chirurgien orthopédiste": "Chirurgien orthopédiste",
+  "Imagerie médicale": "Imagerie médicale",
+  "Médecin du sport": "Médecin du sport",
+  Urgences: "Urgences",
 };
 
 function slugify(value: string) {
@@ -85,33 +87,44 @@ function slugify(value: string) {
 }
 
 function formatPhone(phone: string) {
-  return phone.replace(/(\d{2})(?=\d)/g, "$1 ");
+  const digits = phone.replace(/\D/g, "");
+  return digits.replace(/(\d{2})(?=\d)/g, "$1 ");
 }
 
-export const providers: Provider[] = (practitionersData as PractitionerRecord[]).flatMap(
-  (practitioner, index) => {
+function parseAddress(value: string) {
+  const match = value.match(/^(.*?),\s*(\d{5})\s+(.+)$/);
+  return {
+    address: match?.[1]?.trim() ?? value,
+    postalCode: match?.[2] ?? "",
+    city: match?.[3]?.trim() ?? "",
+  };
+}
+
+const cabinetRecords = practitionersData as Record<string, CabinetRecord>;
+
+export const cabinets: Cabinet[] = Object.entries(cabinetRecords).map(([cabinetId, cabinet]) => ({
+  id: cabinetId,
+  name: cabinet.nom_cabinet,
+  providers: cabinet.praticiens.flatMap((practitioner, index) => {
     const profession = specialtyToProfession[practitioner.specialite];
     if (!profession) return [];
 
-    const name = [practitioner.prenom, practitioner.nom].filter(Boolean).join(" ");
+    const location = parseAddress(practitioner.adresse);
+    const phone = practitioner.telephone.replace(/\D/g, "");
     return [
       {
-        id: `${slugify(name)}-${index}`,
-        name,
+        id: `${cabinetId}-${slugify(practitioner.nom)}-${index}`,
+        name: practitioner.nom,
         profession,
-        address: practitioner.adresse,
-        postalCode: practitioner.codePostal,
-        city: practitioner.ville,
-        phone: practitioner.telephone || undefined,
-        formattedPhone: practitioner.telephone ? formatPhone(practitioner.telephone) : undefined,
-        sector: practitioner.secteur || undefined,
-        type: practitioner.type,
-        source: practitioner.source,
-        verifiedAt: practitioner.verifieLe,
+        ...location,
+        phone: phone || undefined,
+        formattedPhone: phone ? formatPhone(phone) : undefined,
       },
     ];
-  },
-);
+  }),
+}));
+
+export const providers: Provider[] = cabinets.flatMap((cabinet) => cabinet.providers);
 
 /** Étapes déclarées par le patient et professionnel à voir ensuite. */
 export type JourneyStep = {

@@ -22,7 +22,7 @@ type ChatMessage = {
   practitioners?: LocalPractitioner[];
 };
 
-const specialtyKeywords = ["kine", "kinesitherapeute", "podologue", "medecin"] as const;
+const specialtyKeywords = ["kine", "kinesitherapeute", "masseur", "podologue", "medecin"] as const;
 
 type SpecialtyKeyword = (typeof specialtyKeywords)[number];
 
@@ -37,12 +37,17 @@ function findLocalPractitioners(userQuery: string): LocalPractitioner[] {
   if (!keyword) return [];
 
   const matches = practitionersData.filter((practitioner) => {
-    const specialty = normalizeText(practitioner.specialite);
-    if (keyword === "medecin") return specialty.includes("medecin");
-    if (keyword === "podologue") return specialty.includes("podologue");
-    return specialty.includes("kinesitherapeute") || specialty.includes("kine");
+    const professionValue = "profession" in practitioner && typeof practitioner.profession === "string" ? practitioner.profession : "";
+    const profession = normalizeText(`${practitioner.specialite} ${professionValue}`);
+    if (["kine", "kinesitherapeute", "masseur"].includes(keyword)) {
+      return /kine|kinesitherapeute|masseur/.test(profession);
+    }
+    if (keyword === "medecin") return profession.includes("medecin");
+    if (keyword === "podologue") return profession.includes("podologue");
+    return false;
   }) as LocalPractitioner[];
 
+  if (["kine", "kinesitherapeute", "masseur"].includes(keyword)) return matches;
   return matches.length > 0 ? matches : (practitionersData.slice(0, 3) as LocalPractitioner[]);
 }
 

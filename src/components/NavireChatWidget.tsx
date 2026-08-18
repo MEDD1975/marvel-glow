@@ -1,6 +1,5 @@
 import { useState, type FormEvent } from "react";
 import { Bot, LoaderCircle, MessageCircle, Send, X } from "lucide-react";
-import practitionersData from "../../data/praticiens_saint_maur.json";
 import { askCareAgent } from "@/lib/care-agent";
 
 const welcomeMessage =
@@ -23,174 +22,8 @@ type ChatMessage = {
   practitioners?: LocalPractitioner[];
 };
 
-const clean = (str: string) =>
-  str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-
-const containsMg = (query: string) => /(^|\s|[.,;:!?])mg($|\s|[.,;:!?])/.test(query);
-const containsAny = (query: string, keywords: readonly string[]) =>
-  keywords.some((keyword) => query.includes(keyword));
-
-const SURGEON_KEYWORDS = ["chirurg", "chirurh", "chirug", "orthop", "ortho", "chiru"];
-const PHYSIO_KEYWORDS = ["kine", "masse", "physio"];
-const PODIATRIST_KEYWORDS = ["podo", "pedi"];
-const GENERALIST_KEYWORDS = ["medecin", "medec", "medcin", "mede", "gener"];
-
-const hasRecognizedSpecialty = (query: string) => {
-  const normalizedQuery = clean(query);
-  return (
-    containsAny(normalizedQuery, SURGEON_KEYWORDS) ||
-    containsAny(normalizedQuery, PHYSIO_KEYWORDS) ||
-    containsAny(normalizedQuery, PODIATRIST_KEYWORDS) ||
-    containsAny(normalizedQuery, GENERALIST_KEYWORDS) ||
-    containsMg(normalizedQuery) ||
-    normalizedQuery.includes("sport")
-  );
-};
-
 const DIRECTORY_NOTICE =
   "Cette liste est donnée à titre indicatif pour vous aider à trouver un praticien près de chez vous.";
-
-// Secours local affiché uniquement si l'annuaire JSON ne contient aucun kinésithérapeute.
-// Ces coordonnées doivent être confirmées avant toute publication.
-const mgSaintMaur: LocalPractitioner[] = [
-  {
-    nom: "Dr Jean Dupont",
-    prenom: "",
-    specialite: "Médecin généraliste",
-    adresse: "10 Avenue de la République",
-    telephone: "0148831122",
-    codePostal: "94100",
-    ville: "Saint-Maur-des-Fossés",
-    secteur: "À vérifier",
-  },
-  {
-    nom: "Dr Claire Martin",
-    prenom: "",
-    specialite: "Médecin généraliste",
-    adresse: "25 Boulevard de Créteil",
-    telephone: "0148853344",
-    codePostal: "94100",
-    ville: "Saint-Maur-des-Fossés",
-    secteur: "À vérifier",
-  },
-];
-
-const podoSaintMaur: LocalPractitioner[] = [
-  {
-    nom: "Pierre Durand",
-    prenom: "",
-    specialite: "Pédicure-podologue",
-    adresse: "14 Rue Baratte Cholet",
-    telephone: "0142837788",
-    codePostal: "94100",
-    ville: "Saint-Maur-des-Fossés",
-    secteur: "À vérifier",
-  },
-];
-
-const DATA_CHIRURGIEN = practitionersData.filter((practitioner) => {
-  const practitionerText = clean(JSON.stringify(practitioner));
-  return practitionerText.includes("chirurgien orthopedique") || practitionerText.includes("traumatologue");
-}) as LocalPractitioner[];
-
-const DATA_SPORT: LocalPractitioner[] = [
-  {
-    nom: "Centre médico-sportif de Saint-Maur",
-    prenom: "",
-    specialite: "Médecin du sport",
-    adresse: "32 Avenue de la République",
-    telephone: "0148839900",
-    codePostal: "94100",
-    ville: "Saint-Maur-des-Fossés",
-    secteur: "À vérifier",
-  },
-  {
-    nom: "Dr Rudy Fischer",
-    prenom: "",
-    specialite: "Médecin du sport",
-    adresse: "32 Avenue de la République",
-    telephone: "0148839901",
-    codePostal: "94100",
-    ville: "Saint-Maur-des-Fossés",
-    secteur: "À vérifier",
-  },
-  {
-    nom: "Dr Raphaël Vincent",
-    prenom: "",
-    specialite: "Médecin du sport",
-    adresse: "32 Avenue de la République",
-    telephone: "0148839902",
-    codePostal: "94100",
-    ville: "Saint-Maur-des-Fossés",
-    secteur: "À vérifier",
-  },
-];
-
-const kinesSaintMaur: LocalPractitioner[] = [
-  {
-    nom: "Cabinet de Kinésithérapie",
-    prenom: "",
-    specialite: "Masseur-kinésithérapeute",
-    adresse: "12 Avenue du Bac",
-    telephone: "0148830000",
-    codePostal: "94100",
-    ville: "Saint-Maur-des-Fossés",
-    secteur: "À vérifier",
-  },
-  {
-    nom: "Dupont",
-    prenom: "Marc",
-    specialite: "Masseur-kinésithérapeute",
-    adresse: "45 Avenue de la République",
-    telephone: "0148851234",
-    codePostal: "94100",
-    ville: "Saint-Maur-des-Fossés",
-    secteur: "À vérifier",
-  },
-  {
-    nom: "Martin",
-    prenom: "Sophie",
-    specialite: "Masseur-kinésithérapeute du sport",
-    adresse: "8 Rue Baratte Cholet",
-    telephone: "0142835678",
-    codePostal: "94100",
-    ville: "Saint-Maur-des-Fossés",
-    secteur: "À vérifier",
-  },
-];
-
-function findLocalPractitioners(userQuery: string): LocalPractitioner[] {
-  const normalizedQuery = clean(userQuery);
-  const practitionersWithText = practitionersData.map((practitioner) => ({
-    practitioner,
-    text: clean(JSON.stringify(practitioner)),
-  }));
-
-  if (containsAny(normalizedQuery, SURGEON_KEYWORDS)) {
-    return DATA_CHIRURGIEN;
-  }
-
-  if (normalizedQuery.includes("sport")) {
-    return DATA_SPORT;
-  }
-
-  if (containsAny(normalizedQuery, PODIATRIST_KEYWORDS)) {
-    return podoSaintMaur;
-  }
-
-  if (containsAny(normalizedQuery, PHYSIO_KEYWORDS)) {
-    return kinesSaintMaur;
-  }
-
-  if (containsAny(normalizedQuery, GENERALIST_KEYWORDS) || containsMg(normalizedQuery)) {
-    const generalPractitioners = practitionersWithText
-      .filter(({ text }) => text.includes("medecin generaliste"))
-      .map(({ practitioner }) => practitioner) as LocalPractitioner[];
-    return generalPractitioners.length > 0 ? generalPractitioners : mgSaintMaur;
-  }
-
-  return [];
-}
 
 export function NavireChatWidget() {
   const [open, setOpen] = useState(false);
@@ -205,10 +38,6 @@ export function NavireChatWidget() {
     const trimmed = message.trim();
     if (!trimmed || isSending) return;
 
-    const practitioners = hasRecognizedSpecialty(trimmed)
-      ? findLocalPractitioners(trimmed)
-      : [];
-
     setMessage("");
     setMessages((current) => [...current, { role: "user", text: trimmed }]);
     setIsSending(true);
@@ -217,7 +46,7 @@ export function NavireChatWidget() {
       const response = await askCareAgent({ data: { message: trimmed } });
       setMessages((current) => [
         ...current,
-        { role: "assistant", text: response.text, practitioners },
+        { role: "assistant", text: response.text, practitioners: response.practitioners },
       ]);
     } catch {
       setMessages((current) => [
@@ -225,7 +54,6 @@ export function NavireChatWidget() {
         {
           role: "assistant",
           text: "Je ne parviens pas à répondre pour le moment. Vous pouvez reformuler votre question ou demander conseil à un professionnel de santé.\n\n⚠️ Kivoir est un outil d'accompagnement au parcours de soin et ne remplace pas une consultation médicale.",
-          practitioners,
         },
       ]);
     } finally {

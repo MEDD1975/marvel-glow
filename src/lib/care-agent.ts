@@ -4,6 +4,7 @@ import { z } from "zod";
 import { conditions, type Condition, type TriageLevel } from "@/lib/conditions";
 import { pathways, lineLabels } from "@/lib/pathways";
 import { conditionAdvice, generalRedFlags } from "@/lib/condition-advice";
+import localPractitioners from "../../data/praticiens_saint_maur.json";
 
 // Modèle servi via l'AI Gateway de Vercel (string "provider/model").
 const MODEL = "openai/gpt-4.1-mini";
@@ -127,6 +128,31 @@ function emergencyResponse(reason: string) {
   ].join("\n");
 }
 
+type LocalPractitioner = (typeof localPractitioners)[number];
+
+const specialtyMatchers: Array<{ specialty: string; terms: string[] }> = [
+  { specialty: "Médecins généralistes", terms: ["medecin generaliste", "generaliste", "medecin traitant"] },
+  { specialty: "Pédicures-podologues", terms: ["podologue", "pedicure", "pédicure", "ongle", "semelle"] },
+  { specialty: "Masseurs-kinésithérapeutes", terms: ["kine", "kiné", "kinesitherapeute", "kinésithérapeute", "reeducation"] },
+  { specialty: "Rhumatologues", terms: ["rhumatologue", "rhumatologie"] },
+  { specialty: "Chirurgiens orthopédiques & Traumatologues", terms: ["orthopediste", "orthopédiste", "chirurgien orthopedique", "traumatologue"] },
+  { specialty: "Médecins du sport", terms: ["medecin du sport", "médecin du sport", "sport"] },
+  { specialty: "Centres d'imagerie / Radiologie", terms: ["radio", "radiologie", "irm", "echographie", "échographie", "scanner", "imagerie"] },
+];
+
+function detectSpecialty(message: string, plan?: CarePlan): string | null {
+  const normalized = normalize(message);
+  const explicit = specialtyMatchers.find(({ terms }) => terms.some((term) => normalized.includes(normalize(term))));
+  if (explicit) return explicit.specialty;
+  if (plan?.level === "professional") return "Médecins généralistes";
+  return null;
+}
+
+function findLocalPractitioners(specialty: string | null): LocalPractitioner[] {
+  if (!specialty) return [];
+  return localPractitioners.filter((practitioner) => practitioner.specialite === specialty).slice(0, 5);
+}
+
 function detectZone(message: string): Condition["zone"] | null {
   const normalized = message.toLowerCase();
   if (/\b(hanche|aine|fesse)\b/.test(normalized)) return "Hanche";
@@ -235,13 +261,20 @@ export const askCareAgent = createServerFn({ method: "POST" })
     // 1) Filtre de sécurité déterministe AVANT tout appel au modèle.
     const redFlag = detectRedFlag(data.message);
     if (redFlag) {
-      return { text: emergencyResponse(redFlag), emergency: true };
+      return { text: emergencyResponse(redFlag), emergency: true, specialty: null, practitioners: [] };
     }
 
     // 2) Ancrage : le parcours curé de Kivoir reste la source de vérité.
     const plan = buildCarePlan(data.message, data.zone);
+    const specialty = detectSpecialty(data.message, plan);
+    const practitioners = findLocalPractitioners(specialty);
     if (plan.level === "urgent") {
-      return { text: emergencyResponse("un signe d'alerte détecté dans votre description"), emergency: true };
+      return {
+        text: emergencyResponse("un signe d'alerte détecté dans votre description"),
+        emergency: true,
+        specialty,
+        practitioners,
+      };
     }
 
     // 3) Génération encadrée par le System Prompt de « Assistant Kivoir ».
@@ -253,9 +286,9 @@ export const askCareAgent = createServerFn({ method: "POST" })
         temperature: 0.4,
         maxOutputTokens: 500,
       });
-      return { text: ensureDisclaimer(text), emergency: false };
+      return { text: ensureDisclaimer(text), emergency: false, specialty, practitioners };
     } catch (error) {
       console.log("[v0] Assistant Kivoir — repli déterministe (échec IA) :", error instanceof Error ? error.message : error);
-      return { text: fallbackText(plan), emergency: false };
+      return { text: fallbackText(plan), emergency: false, specialty, practitioners };
     }
   });

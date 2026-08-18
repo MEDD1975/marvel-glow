@@ -27,23 +27,23 @@ const specialtyKeywords = ["kine", "kinesitherapeute", "podologue", "medecin"] a
 type SpecialtyKeyword = (typeof specialtyKeywords)[number];
 
 function normalizeText(value: string) {
-  return value
-    .normalize("NFD")
-    .replace(/[\\u0300-\\u036f]/g, "")
-    .toLocaleLowerCase("fr-FR");
+  return value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 }
 
-function findLocalPractitioners(message: string): LocalPractitioner[] {
-  const normalizedMessage = normalizeText(message);
-  const keyword = specialtyKeywords.find((item) => normalizedMessage.includes(item));
+function findLocalPractitioners(userQuery: string): LocalPractitioner[] {
+  console.log("[v0] Assistant Kivoir practitioner lookup", userQuery, practitionersData);
+  const normalizedQuery = normalizeText(userQuery);
+  const keyword = specialtyKeywords.find((item) => normalizedQuery.includes(item));
   if (!keyword) return [];
 
-  return practitionersData.filter((practitioner) => {
+  const matches = practitionersData.filter((practitioner) => {
     const specialty = normalizeText(practitioner.specialite);
     if (keyword === "medecin") return specialty.includes("medecin");
     if (keyword === "podologue") return specialty.includes("podologue");
     return specialty.includes("kinesitherapeute") || specialty.includes("kine");
   }) as LocalPractitioner[];
+
+  return matches.length > 0 ? matches : (practitionersData.slice(0, 3) as LocalPractitioner[]);
 }
 
 function buildLocalReply(practitioners: LocalPractitioner[]): string {
@@ -121,21 +121,23 @@ export function NavireChatWidget() {
                     {item.text}
                   </p>
                   {item.practitioners?.length ? (
-                    <div className="mt-2 w-full max-w-[92%] space-y-2">
-                    <p className="text-xs font-semibold text-muted-foreground">Professionnels à Saint-Maur-des-Fossés</p>
-                    {item.practitioners.map((practitioner) => (
-                      <article key={`${practitioner.nom}-${practitioner.prenom}-${practitioner.adresse}`} className="rounded-xl border border-border bg-card p-3 text-xs text-card-foreground">
-                        <p className="font-semibold">{practitioner.prenom} {practitioner.nom}</p>
-                        <p className="mt-1 text-muted-foreground">{practitioner.specialite}</p>
-                        <p className="mt-1">{practitioner.adresse}, {practitioner.codePostal} {practitioner.ville}</p>
-                        {practitioner.telephone ? (
-                          <a className="mt-1 inline-block font-medium text-primary underline-offset-2 hover:underline" href={`tel:${practitioner.telephone}`}>
-                            {practitioner.telephone.replace(/(\d{2})(?=\d)/g, "$1 ")}
-                          </a>
-                        ) : null}
-                        <p className="mt-1 text-muted-foreground">{practitioner.secteur}</p>
-                      </article>
-                    ))}
+                    <div className="mt-2 w-full max-w-[92%] rounded border border-border bg-slate-100 p-2 text-slate-900">
+                      <p className="mb-2 text-xs font-semibold">Professionnels à Saint-Maur-des-Fossés</p>
+                      <div className="space-y-2">
+                        {item.practitioners.map((practitioner) => (
+                          <article key={`${practitioner.nom}-${practitioner.prenom}-${practitioner.adresse}`} className="rounded-xl border border-border bg-card p-3 text-xs text-card-foreground">
+                            <p className="font-semibold">{practitioner.prenom} {practitioner.nom}</p>
+                            <p className="mt-1 text-muted-foreground">{practitioner.specialite}</p>
+                            <p className="mt-1">{practitioner.adresse}, {practitioner.codePostal} {practitioner.ville}</p>
+                            {practitioner.telephone ? (
+                              <a className="mt-1 inline-block font-medium text-primary underline-offset-2 hover:underline" href={`tel:${practitioner.telephone}`}>
+                                {practitioner.telephone.replace(/(\d{2})(?=\d)/g, "$1 ")}
+                              </a>
+                            ) : null}
+                            <p className="mt-1 text-muted-foreground">{practitioner.secteur}</p>
+                          </article>
+                        ))}
+                      </div>
                     </div>
                   ) : null}
                 </div>

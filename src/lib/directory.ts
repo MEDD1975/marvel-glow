@@ -1,9 +1,6 @@
-/**
- * Annuaire local — Saint-Maur-des-Fossés (94).
- * Données de démonstration : structures et coordonnées à valider avant mise en production.
- * Aucune donnée patient n'est stockée ici.
- */
+import practitionersData from "../../data/praticiens_saint_maur.json";
 
+/** Annuaire local — le JSON est l'unique source des fiches affichées. */
 export type Profession =
   | "Médecin généraliste"
   | "Kinésithérapeute"
@@ -15,18 +12,33 @@ export type Profession =
   | "Médecin du sport"
   | "Urgences";
 
+type PractitionerRecord = {
+  nom: string;
+  prenom: string;
+  specialite: string;
+  adresse: string;
+  telephone: string;
+  codePostal: string;
+  ville: string;
+  secteur: string;
+  type: string;
+  source: string;
+  verifieLe: string;
+};
+
 export type Provider = {
   id: string;
   name: string;
   profession: Profession;
   address: string;
-  district: string;
-  lat: number;
-  lng: number;
-  phone?: string;
-  note?: string;
-  /** Accès direct sans passer par une prescription. */
-  directAccess: boolean;
+  postalCode: string;
+  city: string;
+  phone: string | undefined;
+  formattedPhone: string | undefined;
+  sector: string | undefined;
+  type: string;
+  source: string;
+  verifiedAt: string;
 };
 
 export const professionOrder: Profession[] = [
@@ -53,173 +65,53 @@ export const professionColor: Record<Profession, string> = {
   Urgences: "#dc2626",
 };
 
-export const cityCenter = { lat: 48.7994, lng: 2.4934 };
+const specialtyToProfession: Record<string, Profession> = {
+  "Médecins généralistes": "Médecin généraliste",
+  "Masseurs-kinésithérapeutes": "Kinésithérapeute",
+  "Pédicures-podologues": "Podologue",
+  Rhumatologues: "Rhumatologue",
+  "Chirurgiens orthopédiques & Traumatologues": "Chirurgien orthopédiste",
+  "Centres d'imagerie / Radiologie": "Imagerie médicale",
+  "Médecins du sport": "Médecin du sport",
+};
 
-export const providers: Provider[] = [
-  {
-    id: "mg-parc",
-    name: "Cabinet médical du Parc",
-    profession: "Médecin généraliste",
-    address: "Avenue du Bac, quartier du Parc",
-    district: "Le Parc",
-    lat: 48.8065,
-    lng: 2.4885,
-    directAccess: true,
-    note: "Premier recours : examen clinique, arrêt de travail, prescription d'imagerie ou de kiné.",
+function slugify(value: string) {
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
+function formatPhone(phone: string) {
+  return phone.replace(/(\d{2})(?=\d)/g, "$1 ");
+}
+
+export const providers: Provider[] = (practitionersData as PractitionerRecord[]).flatMap(
+  (practitioner, index) => {
+    const profession = specialtyToProfession[practitioner.specialite];
+    if (!profession) return [];
+
+    const name = [practitioner.prenom, practitioner.nom].filter(Boolean).join(" ");
+    return [
+      {
+        id: `${slugify(name)}-${index}`,
+        name,
+        profession,
+        address: practitioner.adresse,
+        postalCode: practitioner.codePostal,
+        city: practitioner.ville,
+        phone: practitioner.telephone || undefined,
+        formattedPhone: practitioner.telephone ? formatPhone(practitioner.telephone) : undefined,
+        sector: practitioner.secteur || undefined,
+        type: practitioner.type,
+        source: practitioner.source,
+        verifiedAt: practitioner.verifieLe,
+      },
+    ];
   },
-  {
-    id: "mg-varenne",
-    name: "Maison de santé de La Varenne",
-    profession: "Médecin généraliste",
-    address: "Avenue du Bac, La Varenne-Saint-Hilaire",
-    district: "La Varenne",
-    lat: 48.7935,
-    lng: 2.5145,
-    directAccess: true,
-    note: "Consultations non programmées possibles en journée.",
-  },
-  {
-    id: "mg-adamville",
-    name: "Cabinet de groupe Adamville",
-    profession: "Médecin généraliste",
-    address: "Rue Garibaldi, Adamville",
-    district: "Adamville",
-    lat: 48.7912,
-    lng: 2.4835,
-    directAccess: true,
-  },
-  {
-    id: "kine-centre",
-    name: "Cabinet de kinésithérapie du Centre",
-    profession: "Kinésithérapeute",
-    address: "Avenue de la République, centre-ville",
-    district: "Centre-ville",
-    lat: 48.7996,
-    lng: 2.4941,
-    directAccess: false,
-    note: "Rééducation cheville, genou et pied. Ordonnance médicale recommandée.",
-  },
-  {
-    id: "kine-varenne",
-    name: "Kinésithérapie du sport — La Varenne",
-    profession: "Kinésithérapeute",
-    address: "Avenue Joffre, La Varenne-Saint-Hilaire",
-    district: "La Varenne",
-    lat: 48.7908,
-    lng: 2.5182,
-    directAccess: false,
-    note: "Renforcement, proprioception et reprise du sport.",
-  },
-  {
-    id: "kine-champignol",
-    name: "Cabinet kiné Champignol",
-    profession: "Kinésithérapeute",
-    address: "Boulevard de Champigny, Champignol",
-    district: "Champignol",
-    lat: 48.7871,
-    lng: 2.4975,
-    directAccess: false,
-  },
-  {
-    id: "podo-centre",
-    name: "Pédicure-podologue du centre",
-    profession: "Podologue",
-    address: "Rue du Pont de Créteil",
-    district: "Centre-ville",
-    lat: 48.7952,
-    lng: 2.4862,
-    directAccess: true,
-    note: "Bilan postural, semelles orthopédiques sur mesure.",
-  },
-  {
-    id: "podo-varenne",
-    name: "Podologie La Varenne",
-    profession: "Podologue",
-    address: "Avenue du Bac, La Varenne",
-    district: "La Varenne",
-    lat: 48.7926,
-    lng: 2.5121,
-    directAccess: true,
-  },
-  {
-    id: "osteo-centre",
-    name: "Ostéopathie Saint-Maur Centre",
-    profession: "Ostéopathe",
-    address: "Avenue Foch",
-    district: "Centre-ville",
-    lat: 48.8017,
-    lng: 2.4903,
-    directAccess: true,
-    note: "En complément, jamais en remplacement d'un avis médical en cas de traumatisme.",
-  },
-  {
-    id: "imagerie-centre",
-    name: "Centre d'imagerie médicale Saint-Maur",
-    profession: "Imagerie médicale",
-    address: "Avenue de la République",
-    district: "Centre-ville",
-    lat: 48.7988,
-    lng: 2.4922,
-    directAccess: false,
-    note: "Radiographie, échographie. IRM sur rendez-vous, ordonnance obligatoire.",
-  },
-  {
-    id: "imagerie-creteil",
-    name: "Plateau d'imagerie (IRM/scanner) — secteur Créteil",
-    profession: "Imagerie médicale",
-    address: "Proche Saint-Maur–Créteil (RER A)",
-    district: "Limite Créteil",
-    lat: 48.7902,
-    lng: 2.4762,
-    directAccess: false,
-    note: "Créneaux IRM plus rapides qu'en centre-ville en général.",
-  },
-  {
-    id: "rhumato-centre",
-    name: "Consultation de rhumatologie",
-    profession: "Rhumatologue",
-    address: "Avenue de la République",
-    district: "Centre-ville",
-    lat: 48.8003,
-    lng: 2.4958,
-    directAccess: false,
-    note: "Arthrose, tendinopathies rebelles, infiltrations.",
-  },
-  {
-    id: "ortho-varenne",
-    name: "Chirurgie orthopédique — consultation avancée",
-    profession: "Chirurgien orthopédiste",
-    address: "Avenue Joffre, La Varenne",
-    district: "La Varenne",
-    lat: 48.7918,
-    lng: 2.5163,
-    directAccess: false,
-    note: "Lésion méniscale, instabilité, hallux valgus, prothèse.",
-  },
-  {
-    id: "sport-parc",
-    name: "Médecine du sport — Le Parc",
-    profession: "Médecin du sport",
-    address: "Quartier du Parc",
-    district: "Le Parc",
-    lat: 48.8051,
-    lng: 2.4922,
-    directAccess: true,
-    note: "Validation de la reprise sportive, réathlétisation.",
-  },
-  {
-    id: "urgences-creteil",
-    name: "Service d'urgences le plus proche",
-    profession: "Urgences",
-    address: "CHI Créteil / CHIC secteur 94",
-    district: "Créteil",
-    lat: 48.7826,
-    lng: 2.4581,
-    phone: "15",
-    directAccess: true,
-    note: "Déformation, impossibilité d'appui, fièvre, signes neurologiques : appeler le 15.",
-  },
-];
+);
 
 /** Étapes déclarées par le patient et professionnel à voir ensuite. */
 export type JourneyStep = {
@@ -286,14 +178,3 @@ export const journeySteps: JourneyStep[] = [
     advice: "Validez la reprise avec des tests fonctionnels avant de retrouver votre niveau d'avant.",
   },
 ];
-
-export function distanceKm(a: { lat: number; lng: number }, b: { lat: number; lng: number }) {
-  const R = 6371;
-  const dLat = ((b.lat - a.lat) * Math.PI) / 180;
-  const dLng = ((b.lng - a.lng) * Math.PI) / 180;
-  const lat1 = (a.lat * Math.PI) / 180;
-  const lat2 = (b.lat * Math.PI) / 180;
-  const h =
-    Math.sin(dLat / 2) ** 2 + Math.sin(dLng / 2) ** 2 * Math.cos(lat1) * Math.cos(lat2);
-  return 2 * R * Math.asin(Math.sqrt(h));
-}

@@ -1,19 +1,18 @@
 import { Link } from "@tanstack/react-router";
-import { Home, ClipboardList, Route as RouteIcon, MapPin, PlayCircle } from "lucide-react";
+import { Home, ClipboardList, Route as RouteIcon, MapPin } from "lucide-react";
 
 const items = [
   { to: "/", label: "Accueil", icon: Home, exact: true },
   { to: "/orientation", label: "Questionnaire", icon: ClipboardList, exact: false },
   { to: "/parcours", label: "Parcours", icon: RouteIcon, exact: false },
   { to: "/annuaire", label: "Annuaire", icon: MapPin, exact: false },
-  { to: "/conseils", label: "Conseils", icon: PlayCircle, exact: false },
 ];
 
-/** Barre de navigation basse : accès en un geste aux 5 écrans clés sur mobile. */
+/** Barre de navigation basse : accès en un geste aux 4 écrans clés sur mobile. */
 export function MobileTabBar() {
   return (
     <nav className="fixed inset-x-3 bottom-3 z-50 overflow-hidden rounded-2xl border border-border/80 bg-background/90 shadow-[0_12px_40px_-22px_var(--foreground)] backdrop-blur-xl sm:hidden print:hidden">
-      <ul className="grid grid-cols-5">
+      <ul className="grid grid-cols-4">
         {items.map((item) => (
           <li key={item.to}>
             <Link

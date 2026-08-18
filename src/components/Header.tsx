@@ -8,8 +8,6 @@ const navItems = [
   { to: "/orientation", label: "Questionnaire" },
   { to: "/parcours", label: "Parcours" },
   { to: "/annuaire", label: "Annuaire" },
-  { to: "/conseils", label: "Conseils" },
-  { to: "/cabinet", label: "Cabinet" },
 ];
 
 export function Header() {

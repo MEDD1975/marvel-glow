@@ -1,11 +1,23 @@
-import { AlertTriangle, ArrowRight, ClipboardCheck, MapPin, PlayCircle, Stethoscope } from "lucide-react";
 import { Link } from "@tanstack/react-router";
+import {
+  AlertTriangle,
+  ArrowRight,
+  Bot,
+  CheckCircle2,
+  ClipboardCheck,
+  MapPin,
+  MessageCircleQuestion,
+  TrendingUp,
+} from "lucide-react";
 
-export const medicalDisclaimer = "Cette application informe et ne remplace pas un avis médical. En cas de doute, consultez un professionnel de santé.";
+export const medicalDisclaimer =
+  "Cette application informe et ne remplace pas un avis médical. En cas de doute, consultez un professionnel de santé.";
 
 export function MedicalDisclaimer({ className = "" }: { className?: string }) {
   return (
-    <div className={`rounded-2xl border border-urgent/20 bg-urgent/5 p-4 text-sm text-foreground ${className}`}>
+    <div
+      className={`rounded-2xl border border-urgent/20 bg-urgent/5 p-4 text-sm text-foreground ${className}`}
+    >
       <div className="flex items-start gap-3">
         <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-urgent" aria-hidden="true" />
         <p>{medicalDisclaimer}</p>
@@ -14,101 +26,146 @@ export function MedicalDisclaimer({ className = "" }: { className?: string }) {
   );
 }
 
-export function EntryCard({
-  to,
-  icon: Icon,
-  title,
-  description,
-  tone,
-}: {
-  to: string;
-  icon: React.ElementType;
-  title: string;
-  description: string;
-  tone: "care" | "urgent" | "soothe";
-}) {
-  const toneClasses = {
-    care: "bg-care/10 text-care group-hover:bg-care/15",
-    urgent: "bg-urgent/10 text-urgent group-hover:bg-urgent/15",
-    soothe: "bg-soothe/30 text-soothe-foreground group-hover:bg-soothe/40",
-  };
+const capabilities = [
+  {
+    icon: TrendingUp,
+    title: "Évaluer votre récupération",
+    description: "Faites le point sur votre évolution et identifiez ce qui mérite votre attention.",
+  },
+  {
+    icon: MessageCircleQuestion,
+    title: "Comprendre douleurs et consignes",
+    description: "Posez vos questions avec vos mots, depuis chez vous, quand vous en avez besoin.",
+  },
+  {
+    icon: MapPin,
+    title: "Être orienté au bon moment",
+    description: "Retrouvez le professionnel adapté dans le réseau de soins de votre médecin.",
+  },
+];
 
-  return (
-    <Link
-      to={to}
-      className="group flex min-h-36 flex-col gap-3 rounded-2xl border border-border bg-card p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:border-care/40 hover:shadow-md"
-    >
-      <div className={`flex size-11 items-center justify-center rounded-xl ${toneClasses[tone]}`}>
-        <Icon aria-hidden="true" />
-      </div>
-      <div>
-        <h3 className="text-base font-semibold text-card-foreground">{title}</h3>
-        <p className="mt-1 text-sm leading-6 text-muted-foreground">{description}</p>
-      </div>
-      <span className="mt-auto inline-flex items-center gap-1 text-sm font-semibold text-care">
-        Ouvrir <ArrowRight aria-hidden="true" className="transition-transform group-hover:translate-x-1" />
-      </span>
-    </Link>
-  );
+function openAssistant() {
+  window.dispatchEvent(new CustomEvent("kivoir:open-assistant"));
 }
 
-export function HomeHero() {
+export function AssistantHome() {
   return (
-    <section className="px-4 pb-10 pt-10 md:pb-16 md:pt-16">
-      <div className="mx-auto max-w-5xl">
-        <div className="mx-auto max-w-3xl text-center">
-          <span className="inline-flex items-center gap-2 rounded-full border border-care/20 bg-care/5 px-3 py-1 text-xs font-semibold text-care">
-            <Stethoscope aria-hidden="true" />
-            Kivoir · Qui voir, quand
-          </span>
-          <h1 className="mt-6 text-balance text-4xl font-semibold tracking-[-0.04em] text-foreground md:text-6xl">On vous aide dans l’orientation de votre parcours de soins.</h1>
-          <p className="mx-auto mt-5 max-w-2xl text-pretty text-base leading-7 text-muted-foreground md:text-xl">Pour une douleur du membre inférieur — hanche, genou, cheville ou pied : comprenez où vous en êtes, préparez votre prochain échange et retrouvez ce que votre professionnel vous a recommandé.</p>
-          <div className="mt-6 flex flex-wrap justify-center gap-x-5 gap-y-2 text-xs font-medium text-muted-foreground" aria-label="Repères Kivoir">
-            <span>Comprendre</span><span>Savoir qui voir</span><span>Préparer la consultation</span>
+    <>
+      <section className="px-4 pb-10 pt-10 md:pb-16 md:pt-16">
+        <div className="mx-auto max-w-5xl">
+          <div className="overflow-hidden rounded-3xl border border-care/20 bg-card shadow-sm">
+            <div className="flex flex-col gap-10 p-6 md:p-10 lg:flex-row lg:items-center lg:p-12">
+              <div className="flex-1">
+                <span className="inline-flex items-center gap-2 rounded-full border border-care/20 bg-care/10 px-3 py-1.5 text-xs font-semibold text-care">
+                  <Bot className="h-4 w-4" aria-hidden="true" />
+                  Votre suivi continue à la maison
+                </span>
+                <h1 className="mt-6 max-w-3xl text-balance text-4xl font-semibold tracking-[-0.04em] text-card-foreground md:text-6xl">
+                  Après la consultation, vous n&apos;êtes pas seul.
+                </h1>
+                <p className="mt-5 max-w-2xl text-pretty text-base leading-7 text-muted-foreground md:text-xl">
+                  L&apos;Assistant Kivoir vous accompagne dans votre récupération, répond à vos
+                  questions sur vos douleurs ou vos consignes et vous aide à savoir quand revoir un
+                  professionnel de santé.
+                </p>
+                <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+                  <button
+                    type="button"
+                    onClick={openAssistant}
+                    className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground shadow-md shadow-primary/15 transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card"
+                  >
+                    Parler à l&apos;Assistant Kivoir
+                    <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                  </button>
+                  <Link
+                    to="/annuaire"
+                    className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-care/30 bg-background px-5 py-3 text-sm font-semibold text-care transition-colors hover:bg-care/10"
+                  >
+                    <MapPin className="h-4 w-4" aria-hidden="true" />
+                    Accéder à mon réseau de soins
+                  </Link>
+                </div>
+                <p className="mt-4 text-xs leading-5 text-muted-foreground">
+                  Sans compte · Disponible à tout moment · Vos réponses restent confidentielles
+                </p>
+              </div>
+
+              <aside className="shrink-0 rounded-2xl border border-border bg-background p-5 lg:w-80">
+                <div className="flex items-center gap-3 border-b border-border pb-4">
+                  <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-care/10 text-care">
+                    <Bot className="h-6 w-6" aria-hidden="true" />
+                  </span>
+                  <div>
+                    <p className="font-semibold text-foreground">Assistant Kivoir</p>
+                    <p className="text-xs text-muted-foreground">Compagnon post-consultation</p>
+                  </div>
+                </div>
+                <p className="mt-5 rounded-2xl rounded-bl-md border border-border bg-card p-4 text-sm leading-6 text-card-foreground">
+                  Bonjour. Comment évolue votre douleur depuis votre consultation ?
+                </p>
+                <div className="mt-4 flex flex-col gap-2 text-sm text-muted-foreground">
+                  <p className="flex items-start gap-2">
+                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-care" aria-hidden="true" />
+                    Une réponse claire et adaptée à votre situation
+                  </p>
+                  <p className="flex items-start gap-2">
+                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-care" aria-hidden="true" />
+                    Une orientation si votre évolution le nécessite
+                  </p>
+                </div>
+              </aside>
+            </div>
           </div>
         </div>
+      </section>
 
-        <div className="mt-14">
-          <p className="mb-5 text-center text-base font-semibold text-muted-foreground">Comment ça marche</p>
-          <ol className="mx-auto grid max-w-3xl gap-5 md:grid-cols-3">
-            <li className="flex flex-col gap-4 rounded-[2rem] border border-border bg-card p-6 text-left">
-              <span className="flex size-12 items-center justify-center rounded-2xl bg-care/10 text-care"><ClipboardCheck aria-hidden="true" className="size-6" /></span>
-              <div><p className="text-xs font-semibold uppercase tracking-wide text-care">En salle d’attente</p><h3 className="mt-1 text-lg font-semibold text-card-foreground">Vous scannez le QR code</h3><p className="mt-2 text-sm leading-6 text-muted-foreground">Vous décrivez votre douleur en quelques minutes, depuis votre téléphone.</p></div>
-            </li>
-            <li className="flex flex-col gap-4 rounded-[2rem] border border-border bg-card p-6 text-left">
-              <span className="flex size-12 items-center justify-center rounded-2xl bg-care/10 text-care"><Stethoscope aria-hidden="true" className="size-6" /></span>
-              <div><p className="text-xs font-semibold uppercase tracking-wide text-care">Pendant la consultation</p><h3 className="mt-1 text-lg font-semibold text-card-foreground">Le médecin gagne du temps</h3><p className="mt-2 text-sm leading-6 text-muted-foreground">Il retrouve une synthèse claire, confirme le diagnostic et décide de la suite.</p></div>
-            </li>
-            <li className="flex flex-col gap-4 rounded-[2rem] border border-care/25 bg-card p-6 text-left">
-              <span className="flex size-12 items-center justify-center rounded-2xl bg-care/10 text-care"><ArrowRight aria-hidden="true" className="size-6" /></span>
-              <div><p className="text-xs font-semibold uppercase tracking-wide text-care">Après la consultation</p><h3 className="mt-1 text-lg font-semibold text-card-foreground">Vous suivez votre parcours</h3><p className="mt-2 text-sm leading-6 text-muted-foreground">Avec la carte remise, vous retrouvez les étapes, les professionnels et les consignes.</p></div>
-            </li>
-          </ol>
+      <section className="px-4 pb-12 md:pb-16" aria-labelledby="assistant-capabilities">
+        <div className="mx-auto max-w-5xl">
+          <div className="max-w-2xl">
+            <p className="text-sm font-semibold text-care">À vos côtés entre deux rendez-vous</p>
+            <h2
+              id="assistant-capabilities"
+              className="mt-2 text-balance text-2xl font-semibold text-foreground md:text-3xl"
+            >
+              Le bon repère, au moment où une question se pose
+            </h2>
+          </div>
+          <div className="mt-7 grid gap-4 md:grid-cols-3">
+            {capabilities.map((capability) => (
+              <article key={capability.title} className="rounded-2xl border border-border bg-card p-5">
+                <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-care/10 text-care">
+                  <capability.icon className="h-5 w-5" aria-hidden="true" />
+                </span>
+                <h3 className="mt-4 font-semibold text-card-foreground">{capability.title}</h3>
+                <p className="mt-2 text-sm leading-6 text-muted-foreground">{capability.description}</p>
+              </article>
+            ))}
+          </div>
+
+          <div className="mt-8 flex flex-col gap-5 rounded-2xl border border-care/20 bg-care/5 p-6 md:flex-row md:items-center md:justify-between md:p-8">
+            <div className="max-w-2xl">
+              <p className="flex items-center gap-2 text-sm font-semibold text-care">
+                <ClipboardCheck className="h-4 w-4" aria-hidden="true" />
+                Besoin de consulter ?
+              </p>
+              <h2 className="mt-2 text-balance text-xl font-semibold text-foreground md:text-2xl">
+                Retrouvez les spécialistes recommandés par votre médecin
+              </h2>
+              <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                Accédez directement à l&apos;annuaire de son réseau de soins et trouvez le bon
+                professionnel sans repartir de zéro.
+              </p>
+            </div>
+            <Link
+              to="/annuaire"
+              className="inline-flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
+            >
+              Ouvrir l&apos;Annuaire
+              <ArrowRight className="h-4 w-4" aria-hidden="true" />
+            </Link>
+          </div>
         </div>
-
-        <Link to="/cabinet" className="group mt-10 flex min-h-24 flex-col justify-center rounded-2xl border border-border bg-secondary/40 p-6 text-left transition-all hover:border-care/40 hover:bg-care-muted/20 sm:flex-row sm:items-center sm:justify-between sm:p-7">
-          <div><p className="text-base font-semibold text-care">Je suis professionnel de santé</p><p className="mt-1 text-sm leading-6 text-muted-foreground">Préparer la consultation. Prolonger les conseils.</p></div>
-          <span className="mt-3 inline-flex items-center gap-2 text-base font-semibold text-care sm:mt-0">Espace cabinet <ArrowRight aria-hidden="true" className="transition-transform group-hover:translate-x-1" /></span>
-        </Link>
-
-        <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-muted-foreground">
-          <span>3 minutes</span><span>Sans compte</span><span>Aucune donnée enregistrée</span>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-export function EntryGrid() {
-  return (
-    <section className="px-4 pb-12 md:pb-16">
-      <div className="mx-auto max-w-4xl">
-        <h2 className="mb-4 text-sm font-semibold text-muted-foreground">Besoin d&apos;une autre aide ?</h2>
-        <div className="grid gap-4 sm:grid-cols-2">
-          <EntryCard to="/conseils" icon={PlayCircle} title="Repères et conseils" description="Des informations générales pour préparer vos échanges." tone="soothe" />
-          <EntryCard to="/annuaire" icon={MapPin} title="Trouver un professionnel" description="Les ressources utiles près de chez vous." tone="care" />
-        </div>
-      </div>
-    </section>
+      </section>
+    </>
   );
 }

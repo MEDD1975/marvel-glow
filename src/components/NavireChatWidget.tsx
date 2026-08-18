@@ -1,9 +1,9 @@
-import { useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { Bot, LoaderCircle, MessageCircle, Send, X } from "lucide-react";
 import { askCareAgent } from "@/lib/care-agent";
 
 const welcomeMessage =
-  "Bonjour, je suis Assistant Kivoir. Je peux vous aider à mieux comprendre votre orientation pour une douleur de hanche, genou, cheville ou pied.";
+  "Bonjour, je suis l’Assistant Kivoir. Comment se passe votre récupération depuis votre consultation ? Vous pouvez me parler de votre douleur, de vos consignes ou d’une évolution qui vous préoccupe.";
 
 type LocalPractitioner = {
   nom: string;
@@ -35,10 +35,26 @@ function visibleMessageText(item: ChatMessage) {
 export function NavireChatWidget() {
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState("");
+  const messageInputRef = useRef<HTMLTextAreaElement>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([
     { role: "assistant", text: welcomeMessage },
   ]);
   const [isSending, setIsSending] = useState(false);
+
+  useEffect(() => {
+    function openAssistant() {
+      setOpen(true);
+    }
+
+    window.addEventListener("kivoir:open-assistant", openAssistant);
+    return () => window.removeEventListener("kivoir:open-assistant", openAssistant);
+  }, []);
+
+  useEffect(() => {
+    if (!open) return;
+    const focusTimer = window.setTimeout(() => messageInputRef.current?.focus(), 0);
+    return () => window.clearTimeout(focusTimer);
+  }, [open]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -83,7 +99,7 @@ export function NavireChatWidget() {
               </span>
               <div>
                 <h2 className="font-semibold">Assistant Kivoir</h2>
-                <p className="text-xs text-primary-foreground/75">Orientation membre inférieur</p>
+                <p className="text-xs text-primary-foreground/75">Suivi post-consultation</p>
               </div>
             </div>
             <button
@@ -171,6 +187,7 @@ export function NavireChatWidget() {
             </label>
             <div className="flex items-end gap-2 rounded-xl border border-input bg-background p-1.5 focus-within:ring-2 focus-within:ring-ring">
               <textarea
+                ref={messageInputRef}
                 id="navire-message"
                 value={message}
                 onChange={(event) => setMessage(event.target.value)}

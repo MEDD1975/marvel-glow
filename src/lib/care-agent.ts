@@ -102,7 +102,42 @@ function emergencyResponse(reason: string) {
   ].join("\n");
 }
 
-type LocalPractitioner = (typeof localPractitioners)[number];
+type LocalPractitioner = {
+  nom: string;
+  prenom: string;
+  specialite: string;
+  adresse: string;
+  telephone: string;
+  codePostal: string;
+  ville: string;
+  secteur: string;
+};
+
+type CabinetDirectory = Record<
+  string,
+  {
+    nom_cabinet: string;
+    praticiens: Array<{ nom: string; specialite: string; adresse: string; telephone: string }>;
+  }
+>;
+
+const directoryPractitioners: LocalPractitioner[] = Object.values(
+  localPractitioners as CabinetDirectory,
+).flatMap((cabinet) =>
+  cabinet.praticiens.map((practitioner) => {
+    const addressMatch = practitioner.adresse.match(/^(.*?),\s*(\d{5})\s+(.+)$/);
+    return {
+      nom: practitioner.nom,
+      prenom: "",
+      specialite: practitioner.specialite,
+      adresse: addressMatch?.[1]?.trim() ?? practitioner.adresse,
+      telephone: practitioner.telephone.replace(/\D/g, ""),
+      codePostal: addressMatch?.[2] ?? "",
+      ville: addressMatch?.[3]?.trim() ?? "Saint-Maur-des-Fossés",
+      secteur: "",
+    };
+  }),
+);
 
 const practitionerSpecialtySchema = z.enum([
   "médecin généraliste",
@@ -115,16 +150,16 @@ const practitionerSpecialtySchema = z.enum([
 type PractitionerSpecialty = z.infer<typeof practitionerSpecialtySchema>;
 
 const directorySpecialtyLabels: Record<PractitionerSpecialty, string> = {
-  "médecin généraliste": "Médecins généralistes",
-  "médecin du sport": "Médecins du sport",
-  kinésithérapeute: "Masseurs-kinésithérapeutes",
-  podologue: "Pédicures-podologues",
-  "chirurgien orthopédiste": "Chirurgiens orthopédiques & Traumatologues",
+  "médecin généraliste": "Médecin généraliste",
+  "médecin du sport": "Médecin du sport",
+  kinésithérapeute: "Kinésithérapeute",
+  podologue: "Podologue",
+  "chirurgien orthopédiste": "Chirurgien orthopédiste",
 };
 
 function searchLocalPractitioners(specialty: PractitionerSpecialty): LocalPractitioner[] {
   const target = normalize(directorySpecialtyLabels[specialty]);
-  return localPractitioners.filter(
+  return directoryPractitioners.filter(
     (practitioner) => normalize(practitioner.specialite) === target,
   );
 }
@@ -287,7 +322,9 @@ export const askCareAgent = createServerFn({ method: "POST" })
       const directoryResult = [...result.toolResults]
         .reverse()
         .find((toolResult) => toolResult.toolName === "rechercherPraticiensSaintMaur");
-      const output = directoryResult?.output;
+      const output = directoryResult?.output as
+        | { specialite: PractitionerSpecialty; praticiens: LocalPractitioner[] }
+        | undefined;
       const specialty = output?.specialite ?? null;
       const practitioners = output?.praticiens ?? [];
 

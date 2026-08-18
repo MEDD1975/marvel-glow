@@ -128,6 +128,10 @@
   margin-bottom: 0.25rem;
 }
 
+.directory-print-sheet {
+  display: none;
+}
+
 @media print {
   header,
   footer,
@@ -184,6 +188,95 @@
     box-shadow: none !important;
     border: 1px dashed #bbb !important;
     page-break-inside: avoid;
+  }
+
+  body.printing-directory * {
+    visibility: hidden !important;
+  }
+
+  body.printing-directory .directory-print-sheet,
+  body.printing-directory .directory-print-sheet * {
+    visibility: visible !important;
+  }
+
+  body.printing-directory .directory-print-sheet {
+    display: block !important;
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    padding: 12mm;
+    color: #17212b;
+    background: #fff;
+    font-family: Arial, sans-serif;
+  }
+
+  body.printing-directory .directory-print-header {
+    display: flex !important;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12mm;
+    padding-bottom: 7mm;
+    border-bottom: 2px solid #0f766e;
+  }
+
+  body.printing-directory .directory-print-header h1 {
+    margin: 2mm 0 1mm;
+    font-size: 22pt;
+    line-height: 1.2;
+  }
+
+  body.printing-directory .directory-print-header p,
+  body.printing-directory .directory-print-list p {
+    margin: 0;
+  }
+
+  body.printing-directory .directory-print-brand,
+  body.printing-directory .directory-print-specialty {
+    color: #0f766e;
+    font-weight: 700;
+  }
+
+  body.printing-directory .directory-print-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 5mm;
+    padding-top: 7mm;
+  }
+
+  body.printing-directory .directory-print-list article {
+    break-inside: avoid;
+    padding: 5mm;
+    border: 1px solid #d9e2e7;
+    border-radius: 3mm;
+  }
+
+  body.printing-directory .directory-print-list h2 {
+    margin: 0 0 1mm;
+    font-size: 13pt;
+  }
+
+  body.printing-directory .directory-print-list p {
+    font-size: 9.5pt;
+    line-height: 1.5;
+  }
+
+  body.printing-directory .directory-print-phone {
+    margin-top: 2mm !important;
+    font-weight: 700;
+  }
+
+  body.printing-directory .directory-print-sheet footer {
+    display: block !important;
+    margin-top: 8mm;
+    padding-top: 4mm;
+    border-top: 1px solid #d9e2e7;
+    color: #52616b;
+    font-size: 9pt;
+  }
+
+  @page {
+    size: A4;
+    margin: 0;
   }
 }
 

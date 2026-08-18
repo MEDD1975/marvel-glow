@@ -1,6 +1,5 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
-import { lazy, Suspense, useMemo, useState } from "react";
-import { ClientOnly } from "@tanstack/react-router";
+import { useMemo, useState } from "react";
 import {
   ArrowRight,
   CheckCircle2,
@@ -9,25 +8,27 @@ import {
   Phone,
   Stethoscope,
 } from "lucide-react";
+import { DirectoryShareTools } from "@/components/DirectoryShareTools";
 import { MedicalDisclaimer } from "@/components/HomeBlocks";
 import { conditions } from "@/lib/conditions";
 import { pathways } from "@/lib/pathways";
 import {
-  cityCenter,
-  distanceKm,
+  cabinets,
   journeySteps,
   professionColor,
   professionOrder,
-  providers,
   type Profession,
 } from "@/lib/directory";
 
-const ProviderMap = lazy(() => import("@/components/ProviderMap"));
-
-type Search = { c?: string | undefined; step?: string | undefined };
+type Search = {
+  cabinet?: string | undefined;
+  c?: string | undefined;
+  step?: string | undefined;
+};
 
 export const Route = createFileRoute("/annuaire")({
   validateSearch: (search: Record<string, unknown>): Search => ({
+    cabinet: typeof search["cabinet"] === "string" ? search["cabinet"] : undefined,
     c: typeof search["c"] === "string" ? search["c"] : undefined,
     step: typeof search["step"] === "string" ? search["step"] : undefined,
   }),
@@ -37,7 +38,7 @@ export const Route = createFileRoute("/annuaire")({
       {
         name: "description",
         content:
-          "Dites où vous en êtes de votre parcours : Kivoir indique le professionnel à voir ensuite et les praticiens disponibles à Saint-Maur-des-Fossés, sur une carte.",
+          "Dites où vous en êtes de votre parcours : Kivoir indique le professionnel à voir ensuite et affiche les praticiens disponibles à Saint-Maur-des-Fossés.",
       },
       {
         property: "og:title",
@@ -55,12 +56,51 @@ export const Route = createFileRoute("/annuaire")({
   component: AnnuairePage,
 });
 
+function CabinetChooser({ invalidId }: { invalidId?: string }) {
+  return (
+    <main className="mx-auto max-w-3xl px-4 py-16">
+      <div className="rounded-2xl border border-border bg-card p-6 shadow-sm md:p-8">
+        <span className="inline-flex rounded-full bg-care/10 px-3 py-1 text-xs font-semibold text-care">
+          Annuaire Kivoir
+        </span>
+        <h1 className="mt-4 text-2xl font-semibold text-balance text-foreground md:text-3xl">
+          {invalidId ? "Ce cabinet n’est pas disponible" : "Choisissez votre cabinet"}
+        </h1>
+        <p className="mt-2 max-w-xl leading-6 text-muted-foreground">
+          {invalidId
+            ? `L’identifiant « ${invalidId} » ne correspond à aucun cabinet de l’annuaire.`
+            : "Sélectionnez un cabinet pour consulter uniquement les professionnels qui y exercent."}
+        </p>
+        <div className="mt-6 flex flex-col gap-3">
+          {cabinets.map((cabinet) => (
+            <Link
+              key={cabinet.id}
+              to="/annuaire"
+              search={{ cabinet: cabinet.id }}
+              className="flex items-center justify-between gap-4 rounded-xl border border-border bg-background p-4 transition-colors hover:border-care/50"
+            >
+              <div>
+                <p className="font-semibold text-foreground">{cabinet.name}</p>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  {cabinet.providers.length} professionnel{cabinet.providers.length > 1 ? "s" : ""}
+                </p>
+              </div>
+              <ArrowRight className="h-5 w-5 shrink-0 text-care" />
+            </Link>
+          ))}
+        </div>
+      </div>
+    </main>
+  );
+}
+
 function AnnuairePage() {
-  const { c, step } = Route.useSearch();
+  const { cabinet: cabinetId, c, step } = Route.useSearch();
   const navigate = useNavigate({ from: "/annuaire" });
-  const [activeId, setActiveId] = useState<string | null>(null);
   const [professionFilter, setProfessionFilter] = useState<Profession | null>(null);
 
+  const selectedCabinet = cabinets.find((cabinet) => cabinet.id === cabinetId) ?? null;
+  const cabinetProviders = selectedCabinet?.providers ?? [];
   const condition = conditions.find((item) => item.id === c) ?? null;
   const currentStep = journeySteps.find((item) => item.id === step) ?? null;
 
@@ -84,8 +124,12 @@ function AnnuairePage() {
       ? `${condition.name} : ${condition.firstStep} Professionnel à consulter : ${condition.whoToSee}`
       : undefined;
 
+  const availableProfessions = professionOrder.filter((profession) =>
+    cabinetProviders.some((provider) => provider.profession === profession),
+  );
+
   const list = useMemo(() => {
-    const base = providers.filter((provider) => {
+    const base = cabinetProviders.filter((provider) => {
       if (professionFilter) return provider.profession === professionFilter;
       if (recommended.length > 0) return recommended.includes(provider.profession);
       return true;
@@ -94,25 +138,43 @@ function AnnuairePage() {
       const ra = recommended.indexOf(a.profession);
       const rb = recommended.indexOf(b.profession);
       if (ra !== rb) return (ra === -1 ? 99 : ra) - (rb === -1 ? 99 : rb);
-      return distanceKm(cityCenter, a) - distanceKm(cityCenter, b);
+      return a.name.localeCompare(b.name, "fr");
     });
-  }, [professionFilter, recommended]);
+  }, [cabinetProviders, professionFilter, recommended]);
 
   const setSearch = (next: Partial<Search>) =>
     navigate({ search: (prev: Search) => ({ ...prev, ...next }), resetScroll: false });
 
+  if (!selectedCabinet) {
+    return <CabinetChooser {...(cabinetId ? { invalidId: cabinetId } : {})} />;
+  }
+
   return (
     <main className="mx-auto max-w-5xl px-4 py-10">
-      <p className="inline-flex items-center gap-1.5 rounded-full bg-care/10 px-3 py-1 text-xs font-medium text-care">
-        <MapPin className="h-3.5 w-3.5" /> Saint-Maur-des-Fossés (94)
-      </p>
-      <h1 className="mt-3 text-2xl font-semibold text-foreground md:text-3xl">
-        Où en êtes-vous ? On vous dit qui voir ensuite, et où.
+      <div className="flex flex-wrap items-center gap-2">
+        <p className="inline-flex items-center gap-1.5 rounded-full bg-care/10 px-3 py-1 text-xs font-medium text-care">
+          <MapPin className="h-3.5 w-3.5" /> Saint-Maur-des-Fossés (94)
+        </p>
+        <Link
+          to="/annuaire"
+          search={{}}
+          className="rounded-full border border-border bg-card px-3 py-1 text-xs font-medium text-muted-foreground hover:text-foreground"
+        >
+          Changer de cabinet
+        </Link>
+      </div>
+      <h1 className="mt-3 text-2xl font-semibold text-balance text-foreground md:text-3xl">
+        {selectedCabinet.name}
       </h1>
+      <p className="mt-1 text-sm font-medium text-care">
+        {selectedCabinet.providers.length} professionnel{selectedCabinet.providers.length > 1 ? "s" : ""} dans ce cabinet
+      </p>
       <p className="mt-2 max-w-2xl text-muted-foreground">
         Indiquez l'étape de votre parcours : Kivoir affiche le professionnel suivant, puis les
         praticiens correspondants près de chez vous.
       </p>
+
+      <DirectoryShareTools cabinet={selectedCabinet} />
 
       {/* Étape 1 — trouble */}
       <section className="mt-8">
@@ -198,7 +260,7 @@ function AnnuairePage() {
               Pour {condition.name.toLowerCase()} : {condition.whoToSee}{" "}
               <Link
                 to="/parcours"
-                search={{ c: condition.id }}
+                search={{ pathway: condition.id }}
                 className="inline-flex items-center gap-1 font-medium text-care underline-offset-2 hover:underline"
               >
                 Voir le parcours complet <ArrowRight className="h-3.5 w-3.5" />
@@ -208,11 +270,11 @@ function AnnuairePage() {
         </section>
       )}
 
-      {/* Carte + liste */}
+      {/* Liste dynamique issue du fichier JSON */}
       <section className="mt-8">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-            3. Professionnels à Saint-Maur-des-Fossés
+            3. Professionnels de ce cabinet
           </h2>
           <span className="text-xs text-muted-foreground">{list.length} résultat(s)</span>
         </div>
@@ -228,7 +290,7 @@ function AnnuairePage() {
           >
             {condition ? `Professionnels pour ${condition.name}` : currentStep ? "Suggérés pour mon étape" : "Tous"}
           </button>
-          {professionOrder.map((profession) => {
+          {availableProfessions.map((profession) => {
             const active = professionFilter === profession;
             return (
               <button
@@ -247,90 +309,75 @@ function AnnuairePage() {
           })}
         </div>
 
-        <div className="mt-4 grid gap-4 lg:grid-cols-[1.1fr_1fr]">
-          <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
-            <ClientOnly
-              fallback={<div className="h-[320px] w-full animate-pulse bg-muted md:h-[460px]" />}
-            >
-              <Suspense
-                fallback={<div className="h-[320px] w-full animate-pulse bg-muted md:h-[460px]" />}
+        {list.length > 0 ? (
+          <ul className="mt-4 grid gap-4 md:grid-cols-2">
+            {list.map((provider) => (
+              <li
+                key={provider.id}
+                className="flex min-w-0 flex-col rounded-2xl border border-border bg-card p-5 shadow-sm"
               >
-                <ProviderMap providers={list} activeId={activeId} onSelect={setActiveId} />
-              </Suspense>
-            </ClientOnly>
-          </div>
+                <div className="flex items-start gap-3">
+                  <span
+                    className="mt-1.5 h-3 w-3 shrink-0 rounded-full"
+                    style={{ backgroundColor: professionColor[provider.profession] }}
+                  />
+                  <div className="min-w-0">
+                    <h3 className="font-semibold text-balance text-foreground">{provider.name}</h3>
+                    <p
+                      className="mt-1 text-xs font-semibold"
+                      style={{ color: professionColor[provider.profession] }}
+                    >
+                      {provider.profession}
+                    </p>
+                  </div>
+                </div>
 
-          <ul className="space-y-3 lg:max-h-[460px] lg:overflow-y-auto lg:pr-1">
-            {list.map((provider) => {
-              const active = provider.id === activeId;
-              const km = distanceKm(cityCenter, provider);
-              return (
-                <li key={provider.id}>
-                  <button
-                    onClick={() => setActiveId(provider.id)}
-                    className={`w-full rounded-2xl border p-4 text-left transition-all ${
-                      active ? "border-care bg-care/5 shadow-sm" : "border-border bg-card hover:shadow-sm"
-                    }`}
+                <address className="mt-4 not-italic text-sm leading-6 text-muted-foreground">
+                  {provider.address}
+                  <br />
+                  {provider.postalCode} {provider.city}
+                </address>
+
+                <div className="mt-auto flex flex-wrap items-center gap-2 pt-4">
+                  {provider.phone && (
+                    <a
+                      href={`tel:${provider.phone}`}
+                      className="inline-flex items-center gap-1.5 rounded-full bg-urgent/10 px-2.5 py-1 text-xs font-semibold text-urgent"
+                    >
+                      <Phone className="h-3.5 w-3.5" /> {provider.formattedPhone}
+                    </a>
+                  )}
+                  <a
+                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                      `${provider.name} ${provider.address} ${provider.postalCode} ${provider.city}`,
+                    )}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-1.5 rounded-full bg-care/10 px-2.5 py-1 text-xs font-semibold text-care"
                   >
-                    <div className="flex items-start gap-3">
-                      <span
-                        className="mt-1.5 h-3 w-3 shrink-0 rounded-full"
-                        style={{ backgroundColor: professionColor[provider.profession] }}
-                      />
-                      <div className="min-w-0">
-                        <p className="truncate font-medium text-foreground">{provider.name}</p>
-                        <p
-                          className="text-xs font-medium"
-                          style={{ color: professionColor[provider.profession] }}
-                        >
-                          {provider.profession}
-                        </p>
-                        <p className="mt-1 text-sm text-muted-foreground">
-                          {provider.address} · {provider.district} · {km.toFixed(1)} km du centre
-                        </p>
-                        {provider.note && (
-                          <p className="mt-1 text-sm text-muted-foreground">{provider.note}</p>
-                        )}
-                        <div className="mt-2 flex flex-wrap items-center gap-2">
-                          <span className="rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground">
-                            {provider.directAccess ? "Accès direct possible" : "Ordonnance conseillée"}
-                          </span>
-                          {provider.phone && (
-                            <a
-                              href={`tel:${provider.phone}`}
-                              className="inline-flex items-center gap-1 rounded-full bg-urgent/10 px-2 py-0.5 text-xs font-medium text-urgent"
-                            >
-                              <Phone className="h-3 w-3" /> {provider.phone}
-                            </a>
-                          )}
-                          <a
-                            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-                              `${provider.name} ${provider.address} Saint-Maur-des-Fossés`,
-                            )}`}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="inline-flex items-center gap-1 rounded-full bg-care/10 px-2 py-0.5 text-xs font-medium text-care"
-                          >
-                            <Navigation className="h-3 w-3" /> Itinéraire
-                          </a>
-                        </div>
-                      </div>
-                    </div>
-                  </button>
-                </li>
-              );
-            })}
+                    <Navigation className="h-3.5 w-3.5" /> Itinéraire
+                  </a>
+                </div>
+              </li>
+            ))}
           </ul>
-        </div>
+        ) : (
+          <div className="mt-4 rounded-2xl border border-dashed border-border bg-muted/30 p-8 text-center">
+            <Stethoscope className="mx-auto h-6 w-6 text-care" />
+            <h3 className="mt-3 font-semibold text-foreground">Aucun professionnel pour ce filtre</h3>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Choisissez une autre spécialité ou affichez tous les professionnels.
+            </p>
+          </div>
+        )}
       </section>
 
       <section className="mt-8 rounded-2xl border border-border bg-muted/40 p-4 text-sm text-muted-foreground">
         <p className="flex items-start gap-2">
           <Stethoscope className="mt-0.5 h-4 w-4 shrink-0 text-care" />
           <span>
-            Annuaire local en cours de constitution sur Saint-Maur-des-Fossés. Les structures
-            affichées sont des repères de démonstration : vérifiez toujours les coordonnées et
-            disponibilités avant de vous déplacer.
+            Cet annuaire local est alimenté par le fichier de praticiens Kivoir. Vérifiez toujours
+            les coordonnées et les disponibilités auprès du professionnel avant de vous déplacer.
           </span>
         </p>
       </section>

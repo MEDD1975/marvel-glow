@@ -47,15 +47,28 @@ const hasRecognizedSpecialty = (query: string) => {
 };
 
 const RED_FLAG_KEYWORDS = [
-  "douleur insupportable",
-  "douleur unbearable",
-  "impossible d'appuyer",
   "impossibilite totale d'appuyer",
-  "ne peux pas poser le pied",
-  "deformation",
-  "fievre",
-  "traumatisme violent",
-  "accident violent",
+  "impossible de poser le pied",
+  "membre deforme",
+  "os visible",
+  "fracture ouverte",
+  "perte de sensibilite",
+  "pied froid et bleu",
+  "douleur 9",
+  "douleur 10",
+];
+const MODERATE_SYMPTOM_KEYWORDS = [
+  "gonflement",
+  "appui possible",
+  "pas de fievre",
+  "douleur 1",
+  "douleur 2",
+  "douleur 3",
+  "douleur 4",
+  "douleur 5",
+  "douleur 6",
+  "douleur 7",
+  "douleur 8",
 ];
 const SYMPTOM_KEYWORDS = [
   "douleur",
@@ -82,6 +95,8 @@ const PROFESSIONAL_REQUEST_KEYWORDS = [
 ];
 
 const hasRedFlag = (query: string) => containsAny(clean(query), RED_FLAG_KEYWORDS);
+const hasModerateSymptoms = (query: string) =>
+  containsAny(clean(query), MODERATE_SYMPTOM_KEYWORDS);
 const hasSymptoms = (query: string) => containsAny(clean(query), SYMPTOM_KEYWORDS);
 const explicitlyRequestsProfessional = (query: string) => {
   const normalizedQuery = clean(query);
@@ -95,6 +110,8 @@ const EMERGENCY_REPLY =
   "Certains éléments de votre message peuvent évoquer une urgence. Appelez immédiatement le 15 (SAMU) ou rendez-vous aux urgences ; n'attendez pas une réponse en ligne.";
 const QUALIFICATION_REPLY =
   "Avant de vous orienter, pouvez-vous préciser : où se situe la douleur, depuis quand elle a commencé, son intensité sur 10, si vous pouvez prendre appui et s'il y a eu un traumatisme, un gonflement ou de la fièvre ?";
+const MODERATE_SYMPTOM_REPLY =
+  "Les éléments décrits ne déclenchent pas les critères d'alerte vitale du widget. Prenez rendez-vous sous 24 à 48 heures avec un médecin généraliste ou un médecin du sport, qui pourra proposer un avis kinésithérapique ou podologique si nécessaire. En attendant : repos relatif, glace protégée par un linge 15 à 20 minutes, plusieurs fois par jour, et élévation du membre. Si l'état s'aggrave ou si un signe d'alerte apparaît, contactez rapidement les secours.";
 const DIRECTORY_NOTICE =
   "Cette liste est donnée à titre indicatif pour vous aider à trouver un praticien près de chez vous.";
 
@@ -271,15 +288,19 @@ export function NavireChatWidget() {
     if (hasRedFlag(trimmed)) {
       responseText = EMERGENCY_REPLY;
       setAwaitingQualification(false);
-    // Étape 2 : une plainte symptomatique doit être qualifiée avant toute recommandation.
-    } else if (hasSymptoms(trimmed) && !explicitlyRequestsProfessional(trimmed) && !awaitingQualification) {
-      responseText = QUALIFICATION_REPLY;
-      setAwaitingQualification(true);
-    // Étape 3 : demande explicite ou réponse au questionnaire terminée.
+    // Étape 2 : une demande directe de professionnel affiche immédiatement l'annuaire.
     } else if (explicitlyRequestsProfessional(trimmed)) {
       practitioners = findLocalPractitioners(trimmed);
       responseText = buildLocalReply(trimmed, practitioners);
       setAwaitingQualification(false);
+    // Étape 3 : les symptômes modérés suivent une trajectoire de consultation non urgente.
+    } else if (hasModerateSymptoms(trimmed)) {
+      responseText = MODERATE_SYMPTOM_REPLY;
+      setAwaitingQualification(false);
+    // Étape 4 : une plainte encore imprécise doit être qualifiée.
+    } else if (hasSymptoms(trimmed) && !awaitingQualification) {
+      responseText = QUALIFICATION_REPLY;
+      setAwaitingQualification(true);
     } else if (awaitingQualification) {
       practitioners = findLocalPractitioners("médecin généraliste");
       responseText =

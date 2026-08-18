@@ -5,10 +5,27 @@ import { askCareAgent } from "@/lib/care-agent";
 const welcomeMessage =
   "Bonjour, je suis Assistant Kivoir. Je peux vous aider à mieux comprendre votre orientation pour une douleur de hanche, genou, cheville ou pied.";
 
+type LocalPractitioner = {
+  nom: string;
+  prenom: string;
+  specialite: string;
+  adresse: string;
+  telephone: string;
+  codePostal: string;
+  ville: string;
+  secteur: string;
+};
+
+type ChatMessage = {
+  role: "assistant" | "user";
+  text: string;
+  practitioners?: LocalPractitioner[];
+};
+
 export function NavireChatWidget() {
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState("");
-  const [messages, setMessages] = useState<{ role: "assistant" | "user"; text: string }[]>([
+  const [messages, setMessages] = useState<ChatMessage[]>([
     { role: "assistant", text: welcomeMessage },
   ]);
   const [isSending, setIsSending] = useState(false);
@@ -24,7 +41,10 @@ export function NavireChatWidget() {
 
     try {
       const response = await askCareAgent({ data: { message: trimmed } });
-      setMessages((current) => [...current, { role: "assistant", text: response.text }]);
+      setMessages((current) => [
+        ...current,
+        { role: "assistant", text: response.text, practitioners: response.practitioners },
+      ]);
     } catch {
       setMessages((current) => [
         ...current,
@@ -81,6 +101,24 @@ export function NavireChatWidget() {
                 >
                   {item.text}
                 </p>
+                {item.practitioners?.length ? (
+                  <div className="mt-2 w-full max-w-[92%] space-y-2">
+                    <p className="text-xs font-semibold text-muted-foreground">Professionnels à Saint-Maur-des-Fossés</p>
+                    {item.practitioners.map((practitioner) => (
+                      <article key={`${practitioner.nom}-${practitioner.prenom}-${practitioner.adresse}`} className="rounded-xl border border-border bg-card p-3 text-xs text-card-foreground">
+                        <p className="font-semibold">{practitioner.prenom} {practitioner.nom}</p>
+                        <p className="mt-1 text-muted-foreground">{practitioner.specialite}</p>
+                        <p className="mt-1">{practitioner.adresse}, {practitioner.codePostal} {practitioner.ville}</p>
+                        {practitioner.telephone ? (
+                          <a className="mt-1 inline-block font-medium text-primary underline-offset-2 hover:underline" href={`tel:${practitioner.telephone}`}>
+                            {practitioner.telephone.replace(/(\\d{2})(?=\\d)/g, "$1 ")}
+                          </a>
+                        ) : null}
+                        <p className="mt-1 text-muted-foreground">{practitioner.secteur}</p>
+                      </article>
+                    ))}
+                  </div>
+                ) : null}
               </div>
             ))}
             {isSending ? (

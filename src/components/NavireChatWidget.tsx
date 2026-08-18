@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from "react";
 import { Bot, LoaderCircle, MessageCircle, Send, X } from "lucide-react";
 import practitionersData from "../../data/praticiens_saint_maur.json";
+import { askCareAgent } from "@/lib/care-agent";
 
 const welcomeMessage =
   "Bonjour, je suis Assistant Kivoir. Je peux vous aider à mieux comprendre votre orientation pour une douleur de hanche, genou, cheville ou pied.";
@@ -46,56 +47,6 @@ const hasRecognizedSpecialty = (query: string) => {
   );
 };
 
-const EMERGENCY_KEYWORDS = [
-  "deformation",
-  "os visible",
-  "perte de sensibilite",
-  "incoercible",
-] as const;
-const SEVERE_ANSWER_KEYWORDS = [
-  "impossibilite totale d'appui",
-  "impossible de prendre appui",
-  "impossible de poser le pied",
-  "ne peux pas poser le pied",
-  "deformation",
-  "douleur 9",
-  "douleur 10",
-  "9/10",
-  "10/10",
-  "intolerable",
-] as const;
-const MODERATE_TRAUMA_KEYWORDS = [
-  "je suis tombe",
-  "chute",
-  "traumatisme",
-  "entorse",
-  "douleur",
-  "cheville",
-  "genou",
-  "gonflement",
-  "appui",
-] as const;
-const DIRECT_SPECIALIST_KEYWORDS = [
-  "kine",
-  "chirurgien",
-  "podologue",
-  "generaliste",
-  "sport",
-] as const;
-
-const hasEmergencyKeyword = (query: string) =>
-  containsAny(clean(query), EMERGENCY_KEYWORDS);
-const hasModerateTraumaKeyword = (query: string) =>
-  containsAny(clean(query), MODERATE_TRAUMA_KEYWORDS);
-const explicitlyRequestsProfessional = (query: string) =>
-  containsAny(clean(query), DIRECT_SPECIALIST_KEYWORDS);
-
-const EMERGENCY_REPLY =
-  "Les éléments décrits nécessitent une évaluation urgente. Contactez le 15 ou rendez-vous aux urgences, en particulier en cas d'impossibilité totale d'appui, de déformation ou de douleur intolérable.";
-const TRAUMA_QUESTIONS =
-  "Pour évaluer la gravité, merci de répondre à ces deux questions :\n\n1. Pouvez-vous poser le pied et prendre appui (même avec de la douleur) ?\n2. Y a-t-il une déformation visible, un hématome très étendu ou une impossibilité totale de bouger l'articulation ?";
-const MODERATE_SYMPTOM_REPLY =
-  "L'appui restant possible et en l'absence de signe de gravité majeure, consultez votre médecin traitant ou un médecin du sport sous 24 à 48 heures. Un avis kinésithérapique pourra ensuite être proposé selon l'examen. En attendant, appliquez le protocole RICE : repos relatif, glace protégée par un linge pendant 15 à 20 minutes, compression non serrée et élévation. Si l'état s'aggrave, demandez un avis médical rapidement.";
 const DIRECTORY_NOTICE =
   "Cette liste est donnée à titre indicatif pour vous aider à trouver un praticien près de chez vous.";
 
@@ -241,66 +192,45 @@ function findLocalPractitioners(userQuery: string): LocalPractitioner[] {
   return [];
 }
 
-function buildLocalReply(userQuery: string, practitioners: LocalPractitioner[]): string {
-  if (practitioners.length > 0) {
-    return "Voici les professionnels correspondants recensés à Saint-Maur-des-Fossés. Le choix du professionnel et la prise de rendez-vous restent à confirmer avec votre médecin.";
-  }
-  if (hasRecognizedSpecialty(userQuery)) {
-    return "Voici l'orientation locale correspondant à votre recherche. Les coordonnées doivent être confirmées avant toute prise de rendez-vous.";
-  }
-  return "Je peux vous présenter les professionnels locaux si vous recherchez un médecin, un kinésithérapeute ou un podologue à Saint-Maur-des-Fossés. Précisez votre besoin.";
-}
-
 export function NavireChatWidget() {
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState<ChatMessage[]>([
     { role: "assistant", text: welcomeMessage },
   ]);
-  const isSending = false;
-  const [awaitingTraumaAnswers, setAwaitingTraumaAnswers] = useState(false);
+  const [isSending, setIsSending] = useState(false);
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const trimmed = message.trim();
     if (!trimmed || isSending) return;
 
-    let responseText: string;
-    let practitioners: LocalPractitioner[] = [];
-    const normalizedMessage = clean(trimmed);
+    const practitioners = hasRecognizedSpecialty(trimmed)
+      ? findLocalPractitioners(trimmed)
+      : [];
 
-    // Une demande explicite de métier garde un accès direct à l'annuaire.
-    if (explicitlyRequestsProfessional(trimmed)) {
-      practitioners = findLocalPractitioners(trimmed);
-      responseText = buildLocalReply(trimmed, practitioners);
-      setAwaitingTraumaAnswers(false);
-    // Les signes graves explicites priment sur le questionnaire.
-    } else if (
-      hasEmergencyKeyword(trimmed) ||
-      (awaitingTraumaAnswers && containsAny(normalizedMessage, SEVERE_ANSWER_KEYWORDS))
-    ) {
-      responseText = EMERGENCY_REPLY;
-      setAwaitingTraumaAnswers(false);
-    // Une réponse au questionnaire sans signe grave suit le parcours modéré.
-    } else if (awaitingTraumaAnswers) {
-      responseText = MODERATE_SYMPTOM_REPLY;
-      setAwaitingTraumaAnswers(false);
-    // Tout nouveau traumatisme est d'abord qualifié par deux questions.
-    } else if (hasModerateTraumaKeyword(trimmed)) {
-      responseText = TRAUMA_QUESTIONS;
-      setAwaitingTraumaAnswers(true);
-    } else {
-      responseText =
-        "Décrivez une douleur de cheville ou de genou, ou indiquez directement le professionnel recherché : kiné, chirurgien, podologue, généraliste ou médecin du sport.";
-    }
-
-    const safeResponse = `${responseText}\n\n⚠️ Kivoir est un outil d'accompagnement au parcours de soin et ne remplace pas une consultation médicale.`;
     setMessage("");
-    setMessages((current) => [
-      ...current,
-      { role: "user", text: trimmed },
-      { role: "assistant", text: safeResponse, practitioners },
-    ]);
+    setMessages((current) => [...current, { role: "user", text: trimmed }]);
+    setIsSending(true);
+
+    try {
+      const response = await askCareAgent({ data: { message: trimmed } });
+      setMessages((current) => [
+        ...current,
+        { role: "assistant", text: response.text, practitioners },
+      ]);
+    } catch {
+      setMessages((current) => [
+        ...current,
+        {
+          role: "assistant",
+          text: "Je ne parviens pas à répondre pour le moment. Vous pouvez reformuler votre question ou demander conseil à un professionnel de santé.\n\n⚠️ Kivoir est un outil d'accompagnement au parcours de soin et ne remplace pas une consultation médicale.",
+          practitioners,
+        },
+      ]);
+    } finally {
+      setIsSending(false);
+    }
   }
 
   return (
@@ -410,7 +340,7 @@ export function NavireChatWidget() {
               </button>
             </div>
             <p className="mt-2 px-1 text-[11px] leading-4 text-muted-foreground">
-              Assistant Kivoir ne pose pas de diagnostic et ne remplace pas un professionnel de santé.
+              Kivoir est un outil d'accompagnement au parcours de soin et ne remplace pas une consultation médicale.
             </p>
           </form>
         </section>

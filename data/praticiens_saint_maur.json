@@ -221,19 +221,6 @@
     "verifieLe": "2026-08-18"
   },
   {
-    "nom": "Fisher",
-    "prenom": "Rudy",
-    "specialite": "Médecins du sport",
-    "adresse": "Saint-Maur-des-Fossés",
-    "telephone": "0178811080",
-    "codePostal": "94100",
-    "ville": "Saint-Maur-des-Fossés",
-    "secteur": "À vérifier",
-    "type": "professionnel",
-    "source": "Saisie manuelle",
-    "verifieLe": "2026-08-18"
-  },
-  {
     "nom": "Demay",
     "prenom": "Olivier",
     "specialite": "Chirurgiens orthopédiques & Traumatologues",

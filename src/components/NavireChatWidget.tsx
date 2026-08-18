@@ -46,6 +46,58 @@ const hasRecognizedSpecialty = (query: string) => {
   );
 };
 
+const RED_FLAG_KEYWORDS = [
+  "douleur insupportable",
+  "douleur unbearable",
+  "impossible d'appuyer",
+  "impossibilite totale d'appuyer",
+  "ne peux pas poser le pied",
+  "deformation",
+  "fievre",
+  "traumatisme violent",
+  "accident violent",
+];
+const SYMPTOM_KEYWORDS = [
+  "douleur",
+  "mal",
+  "gonfle",
+  "gonflement",
+  "raideur",
+  "entorse",
+  "blesse",
+  "boite",
+  "fourmillement",
+  "symptome",
+];
+const PROFESSIONAL_REQUEST_KEYWORDS = [
+  "trouve",
+  "cherche",
+  "praticien",
+  "professionnel",
+  "rendez-vous",
+  "rendez vous",
+  "consulter",
+  "coordonnees",
+  "adresse",
+];
+
+const hasRedFlag = (query: string) => containsAny(clean(query), RED_FLAG_KEYWORDS);
+const hasSymptoms = (query: string) => containsAny(clean(query), SYMPTOM_KEYWORDS);
+const explicitlyRequestsProfessional = (query: string) => {
+  const normalizedQuery = clean(query);
+  return (
+    hasRecognizedSpecialty(query) &&
+    (!hasSymptoms(query) || containsAny(normalizedQuery, PROFESSIONAL_REQUEST_KEYWORDS))
+  );
+};
+
+const EMERGENCY_REPLY =
+  "Certains éléments de votre message peuvent évoquer une urgence. Appelez immédiatement le 15 (SAMU) ou rendez-vous aux urgences ; n'attendez pas une réponse en ligne.";
+const QUALIFICATION_REPLY =
+  "Avant de vous orienter, pouvez-vous préciser : où se situe la douleur, depuis quand elle a commencé, son intensité sur 10, si vous pouvez prendre appui et s'il y a eu un traumatisme, un gonflement ou de la fièvre ?";
+const DIRECTORY_NOTICE =
+  "Cette liste est donnée à titre indicatif pour vous aider à trouver un praticien près de chez vous.";
+
 // Secours local affiché uniquement si l'annuaire JSON ne contient aucun kinésithérapeute.
 // Ces coordonnées doivent être confirmées avant toute publication.
 const mgSaintMaur: LocalPractitioner[] = [
@@ -205,19 +257,45 @@ export function NavireChatWidget() {
     { role: "assistant", text: welcomeMessage },
   ]);
   const [isSending, setIsSending] = useState(false);
+  const [awaitingQualification, setAwaitingQualification] = useState(false);
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const trimmed = message.trim();
     if (!trimmed || isSending) return;
 
-    const practitioners = findLocalPractitioners(trimmed);
-    const responseText = `${buildLocalReply(trimmed, practitioners)}\n\n⚠️ Kivoir est un outil d'accompagnement au parcours de soin et ne remplace pas une consultation médicale.`;
+    let responseText: string;
+    let practitioners: LocalPractitioner[] = [];
+
+    // Étape 1 : la sécurité prime toujours sur l'orientation et l'annuaire.
+    if (hasRedFlag(trimmed)) {
+      responseText = EMERGENCY_REPLY;
+      setAwaitingQualification(false);
+    // Étape 2 : une plainte symptomatique doit être qualifiée avant toute recommandation.
+    } else if (hasSymptoms(trimmed) && !explicitlyRequestsProfessional(trimmed) && !awaitingQualification) {
+      responseText = QUALIFICATION_REPLY;
+      setAwaitingQualification(true);
+    // Étape 3 : demande explicite ou réponse au questionnaire terminée.
+    } else if (explicitlyRequestsProfessional(trimmed)) {
+      practitioners = findLocalPractitioners(trimmed);
+      responseText = buildLocalReply(trimmed, practitioners);
+      setAwaitingQualification(false);
+    } else if (awaitingQualification) {
+      practitioners = findLocalPractitioners("médecin généraliste");
+      responseText =
+        "Merci pour ces précisions. Un médecin généraliste pourra examiner la situation et vous orienter vers la spécialité adaptée si nécessaire.";
+      setAwaitingQualification(false);
+    } else {
+      responseText = QUALIFICATION_REPLY;
+      setAwaitingQualification(true);
+    }
+
+    const safeResponse = `${responseText}\n\n⚠️ Kivoir est un outil d'accompagnement au parcours de soin et ne remplace pas une consultation médicale.`;
     setMessage("");
     setMessages((current) => [
       ...current,
       { role: "user", text: trimmed },
-      { role: "assistant", text: responseText, practitioners },
+      { role: "assistant", text: safeResponse, practitioners },
     ]);
   }
 
@@ -283,6 +361,7 @@ export function NavireChatWidget() {
                           </article>
                         ))}
                       </div>
+                      <p className="mt-2 text-xs leading-5 text-slate-700">{DIRECTORY_NOTICE}</p>
                     </div>
                   ) : null}
                 </div>

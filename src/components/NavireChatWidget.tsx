@@ -92,17 +92,18 @@ export function NavireChatWidget() {
                 key={`${item.role}-${index}`}
                 className={`flex ${item.role === "user" ? "justify-end" : "justify-start"}`}
               >
-                <p
-                  className={`max-w-[88%] whitespace-pre-wrap rounded-2xl px-3.5 py-2.5 text-sm leading-6 ${
-                    item.role === "user"
-                      ? "rounded-br-md bg-primary text-primary-foreground"
-                      : "rounded-bl-md border border-border bg-card text-card-foreground"
-                  }`}
-                >
-                  {item.text}
-                </p>
-                {item.practitioners?.length ? (
-                  <div className="mt-2 w-full max-w-[92%] space-y-2">
+                <div className="flex w-full flex-col items-start gap-0">
+                  <p
+                    className={`max-w-[88%] whitespace-pre-wrap rounded-2xl px-3.5 py-2.5 text-sm leading-6 ${
+                      item.role === "user"
+                        ? "self-end rounded-br-md bg-primary text-primary-foreground"
+                        : "rounded-bl-md border border-border bg-card text-card-foreground"
+                    }`}
+                  >
+                    {item.text}
+                  </p>
+                  {item.practitioners?.length ? (
+                    <div className="mt-2 w-full max-w-[92%] space-y-2">
                     <p className="text-xs font-semibold text-muted-foreground">Professionnels à Saint-Maur-des-Fossés</p>
                     {item.practitioners.map((practitioner) => (
                       <article key={`${practitioner.nom}-${practitioner.prenom}-${practitioner.adresse}`} className="rounded-xl border border-border bg-card p-3 text-xs text-card-foreground">
@@ -111,14 +112,15 @@ export function NavireChatWidget() {
                         <p className="mt-1">{practitioner.adresse}, {practitioner.codePostal} {practitioner.ville}</p>
                         {practitioner.telephone ? (
                           <a className="mt-1 inline-block font-medium text-primary underline-offset-2 hover:underline" href={`tel:${practitioner.telephone}`}>
-                            {practitioner.telephone.replace(/(\\d{2})(?=\\d)/g, "$1 ")}
+                            {practitioner.telephone.replace(/(\d{2})(?=\d)/g, "$1 ")}
                           </a>
                         ) : null}
                         <p className="mt-1 text-muted-foreground">{practitioner.secteur}</p>
                       </article>
                     ))}
-                  </div>
-                ) : null}
+                    </div>
+                  ) : null}
+                </div>
               </div>
             ))}
             {isSending ? (

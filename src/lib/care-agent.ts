@@ -150,7 +150,10 @@ function detectSpecialty(message: string, plan?: CarePlan): string | null {
 
 function findLocalPractitioners(specialty: string | null): LocalPractitioner[] {
   if (!specialty) return [];
-  return localPractitioners.filter((practitioner) => practitioner.specialite === specialty).slice(0, 5);
+  const target = normalize(specialty);
+  return localPractitioners
+    .filter((practitioner) => normalize(practitioner.specialite) === target)
+    .slice(0, 5);
 }
 
 function detectZone(message: string): Condition["zone"] | null {

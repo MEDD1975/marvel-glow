@@ -16,9 +16,10 @@ import { Label } from "@/components/ui/label";
 
 type ShareMode = "sms" | "email";
 
+const PUBLIC_APP_ORIGIN = "https://kivoir.vercel.app";
+
 function cabinetUrl(cabinetId: string) {
-  if (typeof window === "undefined") return `/annuaire?cabinet=${encodeURIComponent(cabinetId)}`;
-  return `${window.location.origin}/annuaire?cabinet=${encodeURIComponent(cabinetId)}`;
+  return `${PUBLIC_APP_ORIGIN}/annuaire?cabinet=${encodeURIComponent(cabinetId)}`;
 }
 
 export function DirectoryShareTools({ cabinet }: { cabinet: Cabinet }) {

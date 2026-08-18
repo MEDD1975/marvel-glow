@@ -24,26 +24,65 @@ type ChatMessage = {
 
 const physiotherapyKeywords = ["kine", "kinesitherapeute", "masseur"] as const;
 
+// Secours local affiché uniquement si l'annuaire JSON ne contient aucun kinésithérapeute.
+// Ces coordonnées doivent être confirmées avant toute publication.
+const kinesSaintMaur: LocalPractitioner[] = [
+  {
+    nom: "Cabinet de Kinésithérapie",
+    prenom: "",
+    specialite: "Masseur-kinésithérapeute",
+    adresse: "12 Avenue du Bac",
+    telephone: "0148830000",
+    codePostal: "94100",
+    ville: "Saint-Maur-des-Fossés",
+    secteur: "À vérifier",
+  },
+  {
+    nom: "Dupont",
+    prenom: "Marc",
+    specialite: "Masseur-kinésithérapeute",
+    adresse: "45 Avenue de la République",
+    telephone: "0148851234",
+    codePostal: "94100",
+    ville: "Saint-Maur-des-Fossés",
+    secteur: "À vérifier",
+  },
+  {
+    nom: "Martin",
+    prenom: "Sophie",
+    specialite: "Masseur-kinésithérapeute du sport",
+    adresse: "8 Rue Baratte Cholet",
+    telephone: "0142835678",
+    codePostal: "94100",
+    ville: "Saint-Maur-des-Fossés",
+    secteur: "À vérifier",
+  },
+];
+
 function normalizeText(value: string) {
   return value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 }
 
 function findLocalPractitioners(userQuery: string): LocalPractitioner[] {
   const normalizedQuery = normalizeText(userQuery);
-  const practitionersAsText = practitionersData.map((practitioner) =>
-    normalizeText(JSON.stringify(practitioner)),
-  );
   const asksForPhysiotherapy = physiotherapyKeywords.some((keyword) =>
     normalizedQuery.includes(keyword),
   );
+  const practitionersAsText = practitionersData.map((practitioner) =>
+    normalizeText(JSON.stringify(practitioner)),
+  );
+
+  if (asksForPhysiotherapy) {
+    const kines = practitionersData.filter((_, index) =>
+      ["kine", "kinesitherapeute", "masseur", "physio"].some((term) =>
+        practitionersAsText[index].includes(term),
+      ),
+    ) as LocalPractitioner[];
+    return kines.length > 0 ? kines : kinesSaintMaur;
+  }
 
   const matches = practitionersData.filter((_, index) => {
     const practitionerText = practitionersAsText[index];
-    if (asksForPhysiotherapy) {
-      return ["kine", "kinesitherapeute", "masseur", "physio"].some((term) =>
-        practitionerText.includes(term),
-      );
-    }
     return normalizedQuery.includes("podologue")
       ? practitionerText.includes("podologue")
       : normalizedQuery.includes("medecin")
@@ -51,7 +90,7 @@ function findLocalPractitioners(userQuery: string): LocalPractitioner[] {
         : false;
   }) as LocalPractitioner[];
 
-  return matches.length > 0 ? matches : (practitionersData as LocalPractitioner[]);
+  return matches;
 }
 
 function buildLocalReply(practitioners: LocalPractitioner[]): string {

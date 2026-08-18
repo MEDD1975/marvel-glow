@@ -102,5 +102,44 @@
     "type": "structure",
     "source": "Annuaire public des professionnels de santé",
     "verifieLe": "2026-08-18"
+  },
+  {
+    "nom": "Assous",
+    "prenom": "Michel",
+    "specialite": "Médecins généralistes",
+    "adresse": "24 rue Baratte Cholet",
+    "telephone": "0148893537",
+    "codePostal": "94100",
+    "ville": "Saint-Maur-des-Fossés",
+    "secteur": "Secteur 1",
+    "type": "praticien",
+    "source": "Annuaire public de santé",
+    "verifieLe": "2026-08-18"
+  },
+  {
+    "nom": "Rananja",
+    "prenom": "Hanta",
+    "specialite": "Médecins généralistes",
+    "adresse": "4 avenue Auguste Marin",
+    "telephone": "0143971124",
+    "codePostal": "94100",
+    "ville": "Saint-Maur-des-Fossés",
+    "secteur": "Secteur 1",
+    "type": "praticien",
+    "source": "Annuaire public de santé",
+    "verifieLe": "2026-08-18"
+  },
+  {
+    "nom": "Kasbi",
+    "prenom": "Alexandre",
+    "specialite": "Médecins généralistes",
+    "adresse": "115 avenue Foch",
+    "telephone": "0148834222",
+    "codePostal": "94100",
+    "ville": "Saint-Maur-des-Fossés",
+    "secteur": "Secteur 1",
+    "type": "praticien",
+    "source": "Annuaire public de santé",
+    "verifieLe": "2026-08-18"
   }
 ]

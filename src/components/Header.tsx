@@ -5,9 +5,9 @@ import { Logo } from "@/components/Logo";
 
 const navItems = [
   { to: "/", label: "Accueil", exact: true },
-  { to: "/orientation", label: "Orientation" },
+  { to: "/orientation", label: "Questionnaire" },
   { to: "/parcours", label: "Parcours" },
-  { to: "/annuaire", label: "Près de chez moi" },
+  { to: "/annuaire", label: "Annuaire" },
   { to: "/conseils", label: "Conseils" },
   { to: "/cabinet", label: "Cabinet" },
 ];

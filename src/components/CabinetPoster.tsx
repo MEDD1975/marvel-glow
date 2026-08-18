@@ -38,14 +38,14 @@ export function CabinetPoster({ data, size, className }: CabinetPosterProps) {
       <p className="text-xs font-semibold uppercase tracking-widest text-care">Votre médecin vous propose cet outil</p>
 
       <h2 className="mt-4 text-2xl font-semibold text-foreground">
-        Douleur au genou, à la cheville, à la hanche ou au pied ?
+        Retrouvez votre parcours de soin après votre consultation
       </h2>
 
       <p className="mt-3 max-w-xs text-sm text-muted-foreground">{message}</p>
 
       <div className="mt-6">
         {qr ? (
-          <img src={qr} alt="QR code vers le questionnaire Kivoir" className="h-48 w-48" />
+          <img src={qr} alt="QR code vers la feuille de route Kivoir" className="h-48 w-48" />
         ) : (
           <div className="h-48 w-48 animate-pulse rounded-xl bg-muted" />
         )}
@@ -61,8 +61,7 @@ export function CabinetPoster({ data, size, className }: CabinetPosterProps) {
       <p className="mt-6 break-all text-[10px] text-muted-foreground">{url}</p>
 
       <p className="mt-6 max-w-xs text-[10px] text-muted-foreground">
-        Outil d'information et d'aide au recueil déclaratif. Aucune donnée de santé n'est enregistrée, transmise ni
-        hébergée.
+        La prochaine étape et les consignes sont définies avec votre professionnel de santé.
       </p>
     </div>
   );

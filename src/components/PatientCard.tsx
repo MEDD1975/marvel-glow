@@ -5,6 +5,8 @@ export interface PatientCardData {
   doctorName: string;
   url: string;
   qr: string | null;
+  pathwayLabel?: string;
+  note?: string;
 }
 
 export interface PatientCardProps {
@@ -13,12 +15,11 @@ export interface PatientCardProps {
 }
 
 /**
- * Carte de poche remise au patient en fin de consultation :
- * il retrouve chez lui les informations sur son trouble, son parcours de soins
- * et les vidéos d'exercices. Aucune donnée n'est enregistrée.
+ * Carte de poche remise au patient : elle ouvre directement la feuille de route
+ * pour retrouver la prochaine étape et les consignes du professionnel.
  */
 export function PatientCard({ data, className }: PatientCardProps) {
-  const { cabinetName, doctorName, url, qr } = data;
+  const { cabinetName, doctorName, url, qr, pathwayLabel, note } = data;
 
   return (
     <div
@@ -36,15 +37,18 @@ export function PatientCard({ data, className }: PatientCardProps) {
       </div>
 
       <div className="min-w-0">
-        <p className="text-[9px] font-semibold uppercase tracking-widest text-care">Kivoir — qui voir, quand</p>
+        <p className="text-[9px] font-semibold uppercase tracking-widest text-care">Kivoir — votre parcours de soin</p>
         <p className="mt-1 text-[11px] font-semibold leading-snug text-foreground">
-          Retrouvez chez vous les informations sur votre douleur
+          {pathwayLabel ? pathwayLabel : "Retrouvez votre parcours après la consultation"}
         </p>
         <ul className="mt-1.5 space-y-0.5 text-[9px] leading-snug text-muted-foreground">
-          <li>• Comprendre votre trouble</li>
-          <li>• Savoir qui consulter et quand</li>
-          <li>• Vidéos et exercices adaptés</li>
+          <li>• Conseils et vidéos adaptés</li>
+          <li>• La suite de votre parcours</li>
+          <li>• Les professionnels à consulter</li>
         </ul>
+        {note ? (
+          <p className="mt-1.5 rounded bg-care/10 px-1.5 py-1 text-[9px] font-medium leading-snug text-care">{note}</p>
+        ) : null}
         <p className="mt-1.5 truncate text-[8px] text-muted-foreground">{url}</p>
         <p className="mt-1 truncate text-[9px] font-medium text-foreground">
           {cabinetName || "Cabinet médical"}

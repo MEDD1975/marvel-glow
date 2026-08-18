@@ -1,4 +1,4 @@
-import { AlertTriangle, ArrowRight, FileText, MapPin, PlayCircle, Stethoscope } from "lucide-react";
+import { AlertTriangle, ArrowRight, ClipboardCheck, MapPin, PlayCircle, Stethoscope } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 
 export const medicalDisclaimer = "Cette application informe et ne remplace pas un avis médical. En cas de doute, consultez un professionnel de santé.";
@@ -52,18 +52,7 @@ export function EntryCard({
   );
 }
 
-export type HomeSource = "affiche" | "carte" | "direct";
-
-const sourceIntro: Record<HomeSource, { badge: string; title: string; lead: string }> = {
-  affiche: { badge: "Proposé par votre médecin", title: "Trouvez la bonne prochaine étape", lead: "Répondez à 3 questions simples. Sans compte, sans jugement." },
-  carte: { badge: "Votre parcours de soins", title: "Comprenez quoi faire maintenant", lead: "Des repères simples pour avancer sereinement." },
-  direct: { badge: "Votre guide santé", title: "Comment souhaitez-vous être aidé ?", lead: "Choisissez votre situation pour accéder au bon parcours, sans jargon médical." },
-};
-
-export function HomeHero({ source = "direct" }: { source?: HomeSource }) {
-  const intro = sourceIntro[source];
-  const carteFirst = source === "carte";
-
+export function HomeHero() {
   return (
     <section className="px-4 pb-10 pt-10 md:pb-16 md:pt-16">
       <div className="mx-auto max-w-5xl">
@@ -72,32 +61,29 @@ export function HomeHero({ source = "direct" }: { source?: HomeSource }) {
             <Stethoscope aria-hidden="true" />
             Kivoir · Qui voir, quand
           </span>
-          <h1 className="mt-6 text-balance text-4xl font-semibold tracking-[-0.04em] text-foreground md:text-6xl">Votre parcours de soin, enfin lisible.</h1>
-          <p className="mx-auto mt-5 max-w-2xl text-pretty text-base leading-7 text-muted-foreground md:text-xl">Comprenez où vous en êtes, préparez votre prochain échange et retrouvez ce que votre professionnel vous a recommandé.</p>
+          <h1 className="mt-6 text-balance text-4xl font-semibold tracking-[-0.04em] text-foreground md:text-6xl">On vous aide dans l’orientation de votre parcours de soins.</h1>
+          <p className="mx-auto mt-5 max-w-2xl text-pretty text-base leading-7 text-muted-foreground md:text-xl">Pour une douleur du membre inférieur — hanche, genou, cheville ou pied : comprenez où vous en êtes, préparez votre prochain échange et retrouvez ce que votre professionnel vous a recommandé.</p>
           <div className="mt-6 flex flex-wrap justify-center gap-x-5 gap-y-2 text-xs font-medium text-muted-foreground" aria-label="Repères Kivoir">
             <span>Comprendre</span><span>Savoir qui voir</span><span>Préparer la consultation</span>
           </div>
         </div>
 
         <div className="mt-14">
-          <p className="mb-5 text-center text-base font-semibold text-muted-foreground">Pour vous</p>
-          <div className="grid gap-5 md:grid-cols-3">
-          <Link to="/parcours" className="group flex min-h-64 flex-col gap-5 rounded-[2rem] border border-care/25 bg-card p-7 text-left shadow-sm transition-all hover:-translate-y-1 hover:border-care/50 hover:shadow-md">
-            <span className="flex size-12 items-center justify-center rounded-2xl bg-care/10 text-care"><ArrowRight aria-hidden="true" className="size-6" /></span>
-            <div><h2 className="text-xl font-semibold tracking-tight text-card-foreground">Je commence</h2><p className="mt-2 text-sm leading-6 text-muted-foreground">Je veux comprendre la première étape de mon parcours.</p></div>
-            <span className="mt-auto inline-flex items-center gap-2 text-sm font-semibold text-care">Voir les étapes <ArrowRight aria-hidden="true" /></span>
-          </Link>
-          <Link to="/parcours" className="group flex min-h-64 flex-col gap-5 rounded-[2rem] border border-care/25 bg-card p-7 text-left shadow-sm transition-all hover:-translate-y-1 hover:border-care/50 hover:shadow-md">
-            <span className="flex size-12 items-center justify-center rounded-2xl bg-care/10 text-care"><Stethoscope aria-hidden="true" className="size-6" /></span>
-            <div><h2 className="text-xl font-semibold tracking-tight text-card-foreground">Je suis accompagné</h2><p className="mt-2 text-sm leading-6 text-muted-foreground">Je veux retrouver la suite après une consultation.</p></div>
-            <span className="mt-auto inline-flex items-center gap-2 text-sm font-semibold text-care">Reprendre <ArrowRight aria-hidden="true" /></span>
-          </Link>
-          <Link to="/parcours" className="group flex min-h-64 flex-col gap-5 rounded-[2rem] border border-care/25 bg-card p-7 text-left shadow-sm transition-all hover:-translate-y-1 hover:border-care/50 hover:shadow-md">
-            <span className="flex size-12 items-center justify-center rounded-2xl bg-care/10 text-care"><FileText aria-hidden="true" className="size-6" /></span>
-            <div><h2 className="text-xl font-semibold tracking-tight text-card-foreground">Je prépare mon rendez-vous</h2><p className="mt-2 text-sm leading-6 text-muted-foreground">Je rassemble mes questions et mes documents utiles.</p></div>
-            <span className="mt-auto inline-flex items-center gap-2 text-sm font-semibold text-care">Préparer <ArrowRight aria-hidden="true" /></span>
-          </Link>
-          </div>
+          <p className="mb-5 text-center text-base font-semibold text-muted-foreground">Comment ça marche</p>
+          <ol className="mx-auto grid max-w-3xl gap-5 md:grid-cols-3">
+            <li className="flex flex-col gap-4 rounded-[2rem] border border-border bg-card p-6 text-left">
+              <span className="flex size-12 items-center justify-center rounded-2xl bg-care/10 text-care"><ClipboardCheck aria-hidden="true" className="size-6" /></span>
+              <div><p className="text-xs font-semibold uppercase tracking-wide text-care">En salle d’attente</p><h3 className="mt-1 text-lg font-semibold text-card-foreground">Vous scannez le QR code</h3><p className="mt-2 text-sm leading-6 text-muted-foreground">Vous décrivez votre douleur en quelques minutes, depuis votre téléphone.</p></div>
+            </li>
+            <li className="flex flex-col gap-4 rounded-[2rem] border border-border bg-card p-6 text-left">
+              <span className="flex size-12 items-center justify-center rounded-2xl bg-care/10 text-care"><Stethoscope aria-hidden="true" className="size-6" /></span>
+              <div><p className="text-xs font-semibold uppercase tracking-wide text-care">Pendant la consultation</p><h3 className="mt-1 text-lg font-semibold text-card-foreground">Le médecin gagne du temps</h3><p className="mt-2 text-sm leading-6 text-muted-foreground">Il retrouve une synthèse claire, confirme le diagnostic et décide de la suite.</p></div>
+            </li>
+            <li className="flex flex-col gap-4 rounded-[2rem] border border-care/25 bg-card p-6 text-left">
+              <span className="flex size-12 items-center justify-center rounded-2xl bg-care/10 text-care"><ArrowRight aria-hidden="true" className="size-6" /></span>
+              <div><p className="text-xs font-semibold uppercase tracking-wide text-care">Après la consultation</p><h3 className="mt-1 text-lg font-semibold text-card-foreground">Vous suivez votre parcours</h3><p className="mt-2 text-sm leading-6 text-muted-foreground">Avec la carte remise, vous retrouvez les étapes, les professionnels et les consignes.</p></div>
+            </li>
+          </ol>
         </div>
 
         <Link to="/cabinet" className="group mt-10 flex min-h-24 flex-col justify-center rounded-2xl border border-border bg-secondary/40 p-6 text-left transition-all hover:border-care/40 hover:bg-care-muted/20 sm:flex-row sm:items-center sm:justify-between sm:p-7">
@@ -119,7 +105,7 @@ export function EntryGrid() {
       <div className="mx-auto max-w-4xl">
         <h2 className="mb-4 text-sm font-semibold text-muted-foreground">Besoin d&apos;une autre aide ?</h2>
         <div className="grid gap-4 sm:grid-cols-2">
-          <EntryCard to="/conseils" icon={PlayCircle} title="Exercices adaptés" description="Vidéos et conseils selon votre trouble." tone="soothe" />
+          <EntryCard to="/conseils" icon={PlayCircle} title="Repères et conseils" description="Des informations générales pour préparer vos échanges." tone="soothe" />
           <EntryCard to="/annuaire" icon={MapPin} title="Trouver un professionnel" description="Les ressources utiles près de chez vous." tone="care" />
         </div>
       </div>

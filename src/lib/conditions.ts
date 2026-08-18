@@ -1,7 +1,25 @@
+export type Zone = "Cheville" | "Genou" | "Hanche" | "Pied";
+
+/** Repère (x, y) représentatif de chaque zone sur le schéma du membre inférieur (viewBox 120x300). */
+export const zoneSpots: Record<Zone, { x: number; y: number }> = {
+  Hanche: { x: 82, y: 38 },
+  Genou: { x: 60, y: 152 },
+  Cheville: { x: 60, y: 238 },
+  Pied: { x: 92, y: 266 },
+};
+
+/** Description concrète de chaque zone, en langage patient. */
+export const zoneDescriptions: Record<Zone, string> = {
+  Hanche: "Aine, fesse ou haut de la cuisse",
+  Genou: "Rotule, interligne, face interne ou externe du genou",
+  Cheville: "Malléoles, tendon d'Achille ou talon",
+  Pied: "Plante, avant-pied, orteils ou bord interne du pied",
+};
+
 export type Condition = {
   id: string;
   name: string;
-  zone: "Cheville" | "Genou" | "Hanche" | "Pied";
+  zone: Zone;
   summary: string;
   /** Où exactement se situe la douleur, en langage concret. */
   location: string;
@@ -178,29 +196,30 @@ export type TriageQuestion = {
   options: TriageOption[];
 };
 
-export const triageQuestions: TriageQuestion[] = [
+/** Questions posées à tout le monde, en tête de questionnaire. */
+export const commonLeadQuestions: TriageQuestion[] = [
   {
-    id: "appui",
-    question: "Pouvez-vous vous appuyer sur la jambe et faire au moins 4 pas ?",
+    id: "intensite",
+    question: "À combien estimez-vous votre douleur en ce moment ?",
     context:
-      "La capacité à prendre appui est le premier critère utilisé par les soignants pour distinguer une atteinte bénigne d'une lésion qui nécessite une imagerie rapide.",
+      "L'intensité ressentie aide le médecin à mesurer le retentissement de la douleur et à suivre son évolution dans le temps.",
     example:
-      "Exemple de réponse : « Je peux marcher jusqu'à la cuisine en boitant, mais poser tout mon poids me fait très mal. » → deuxième option.",
+      "Exemple de réponse : « En marchant c'est facilement 6 ou 7 sur 10, au repos ça redescend à 3. » → deuxième option.",
     options: [
       {
-        label: "Non, je ne peux pas poser le pied",
-        detail: "Vous devez sauter à cloche-pied, vous tenir aux murs ou être aidé pour vous déplacer.",
-        level: "urgent",
+        label: "Légère (1 à 3 sur 10)",
+        detail: "Gênante mais supportable, elle ne vous empêche pas vos activités.",
+        level: "self-care",
       },
       {
-        label: "Oui, mais en boitant et avec une douleur forte",
-        detail: "Vous marchez quelques pas, mais l'appui complet est très douloureux.",
+        label: "Modérée (4 à 6 sur 10)",
+        detail: "Elle vous gêne dans certaines activités et vous y pensez souvent.",
         level: "professional",
       },
       {
-        label: "Oui, la marche est possible avec une gêne modérée",
-        detail: "Vous marchez presque normalement, la douleur apparaît surtout à l'effort.",
-        level: "self-care",
+        label: "Forte (7 à 10 sur 10)",
+        detail: "Elle limite fortement vos mouvements ou vous réveille la nuit.",
+        level: "professional",
       },
     ],
   },
@@ -210,7 +229,7 @@ export const triageQuestions: TriageQuestion[] = [
     context:
       "La durée oriente la prise en charge : une douleur récente relève des premiers soins, une douleur installée depuis plusieurs semaines demande un bilan et une rééducation encadrée.",
     example:
-      "Exemple de réponse : « J'ai commencé à avoir mal au talon il y a environ deux mois, un peu plus chaque semaine. » → troisième option.",
+      "Exemple de réponse : « J'ai commencé à avoir mal il y a environ deux mois, un peu plus chaque semaine. » → troisième option.",
     options: [
       {
         label: "Moins de 48 heures",
@@ -229,32 +248,158 @@ export const triageQuestions: TriageQuestion[] = [
       },
     ],
   },
-  {
-    id: "alerte",
-    question: "Présentez-vous un ou plusieurs signes d'alerte ?",
-    context:
-      "Certains signes évoquent une fracture, une infection ou un problème vasculaire. Ils changent immédiatement le niveau d'urgence, quelle que soit la pathologie suspectée.",
-    example:
-      "Exemple de réponse : « Ma cheville est très gonflée mais je n'ai ni fièvre, ni fourmillements, ni déformation. » → dernière option.",
-    options: [
-      {
-        label: "Oui, déformation visible ou membre froid/insensible",
-        detail: "Angle anormal du membre, pâleur, fourmillements persistants ou perte de sensibilité.",
-        level: "urgent",
-      },
-      {
-        label: "Oui, fièvre, rougeur chaude ou douleur nocturne intense",
-        detail: "Articulation chaude et rouge, fièvre associée, ou douleur qui réveille la nuit.",
-        level: "urgent",
-      },
-      {
-        label: "Non, aucun de ces signes",
-        detail: "La douleur est mécanique : elle augmente à l'effort et diminue au repos.",
-        level: "self-care",
-      },
-    ],
-  },
 ];
+
+/** Signes d'alerte, posés à tout le monde en fin de questionnaire. */
+export const alertQuestion: TriageQuestion = {
+  id: "alerte",
+  question: "Présentez-vous un ou plusieurs signes d'alerte ?",
+  context:
+    "Certains signes évoquent une fracture, une infection ou un problème vasculaire. Ils sont importants à signaler au médecin, quelle que soit la zone concernée.",
+  example:
+    "Exemple de réponse : « C'est gonflé mais je n'ai ni fièvre, ni fourmillements, ni déformation. » → dernière option.",
+  options: [
+    {
+      label: "Oui, déformation visible ou membre froid/insensible",
+      detail: "Angle anormal du membre, pâleur, fourmillements persistants ou perte de sensibilité.",
+      level: "urgent",
+    },
+    {
+      label: "Oui, fièvre, rougeur chaude ou douleur nocturne intense",
+      detail: "Articulation chaude et rouge, fièvre associée, ou douleur qui réveille la nuit.",
+      level: "urgent",
+    },
+    {
+      label: "Non, aucun de ces signes",
+      detail: "La douleur est mécanique : elle augmente à l'effort et diminue au repos.",
+      level: "self-care",
+    },
+  ],
+};
+
+/** Questions spécifiques à chaque zone, posées entre le tronc commun et les signes d'alerte. */
+export const zoneQuestions: Record<Zone, TriageQuestion[]> = {
+  Cheville: [
+    {
+      id: "cheville-gonflement",
+      question: "Votre cheville a-t-elle gonflé ou présenté un bleu ?",
+      context:
+        "Un gonflement rapide et une ecchymose orientent vers une atteinte des ligaments ou de l'os lors d'un traumatisme.",
+      example:
+        "Exemple de réponse : « Elle a doublé de volume dans l'heure et un bleu est apparu sous la cheville. » → première option.",
+      options: [
+        { label: "Oui, gonflement rapide et/ou bleu", detail: "L'œdème est apparu vite, parfois avec un hématome visible.", level: "professional" },
+        { label: "Un léger gonflement seulement", detail: "La cheville est un peu enflée, sans bleu marqué.", level: "self-care" },
+        { label: "Non, ni gonflement ni bleu", detail: "L'aspect de la cheville n'a pas vraiment changé.", level: "self-care" },
+      ],
+    },
+    {
+      id: "cheville-appui",
+      question: "Pouvez-vous prendre appui, et la cheville vous semble-t-elle instable ?",
+      context:
+        "La capacité d'appui et un sentiment d'instabilité aident à distinguer une simple entorse d'une atteinte plus sérieuse.",
+      example:
+        "Exemple de réponse : « Je marche en boitant mais j'ai l'impression que la cheville part sur le côté. » → deuxième option.",
+      options: [
+        { label: "Non, l'appui est impossible", detail: "Vous ne pouvez pas poser le pied ni faire quelques pas.", level: "urgent" },
+        { label: "Appui possible mais cheville instable", detail: "Vous marchez en boitant, avec une sensation d'instabilité.", level: "professional" },
+        { label: "Appui stable et sans dérobement", detail: "Vous prenez appui normalement, la cheville tient bien.", level: "self-care" },
+      ],
+    },
+  ],
+  Genou: [
+    {
+      id: "genou-blocage",
+      question: "Votre genou se bloque-t-il ou se dérobe-t-il ?",
+      context:
+        "Un blocage vrai ou des dérobements orientent vers une atteinte du ménisque ou de l'appareil ligamentaire.",
+      example:
+        "Exemple de réponse : « Il m'est arrivé deux fois de sentir le genou lâcher en descendant l'escalier. » → deuxième option.",
+      options: [
+        { label: "Oui, il reste bloqué par moments", detail: "Le genou se coince en flexion et se débloque difficilement.", level: "professional" },
+        { label: "Il se dérobe ou lâche parfois", detail: "Vous ressentez une instabilité, surtout en appui.", level: "professional" },
+        { label: "Non, ni blocage ni dérobement", detail: "Le genou reste stable, sans accrochage.", level: "self-care" },
+      ],
+    },
+    {
+      id: "genou-escaliers",
+      question: "Le genou gonfle-t-il, et la douleur augmente-t-elle dans les escaliers ?",
+      context:
+        "Le gonflement et une douleur majorée dans les escaliers sont des repères classiques des douleurs de genou.",
+      example:
+        "Exemple de réponse : « Il enfle après le sport et descendre les marches est le plus douloureux. » → première option.",
+      options: [
+        { label: "Oui, il gonfle et les escaliers font mal", detail: "Épanchement visible et douleur nette en descente.", level: "professional" },
+        { label: "Douleur aux escaliers, sans gonflement", detail: "Gêne mécanique surtout en descente, sans épanchement.", level: "self-care" },
+        { label: "Ni gonflement ni gêne aux escaliers", detail: "La douleur apparaît dans d'autres circonstances.", level: "self-care" },
+      ],
+    },
+  ],
+  Hanche: [
+    {
+      id: "hanche-gestes",
+      question: "Certains gestes du quotidien sont-ils devenus difficiles ?",
+      context:
+        "La difficulté à enfiler ses chaussettes ou à monter en voiture traduit une perte de mobilité de la hanche.",
+      example:
+        "Exemple de réponse : « Mettre mes chaussettes le matin est devenu compliqué du côté douloureux. » → première option.",
+      options: [
+        { label: "Oui, chaussettes/voiture difficiles", detail: "Les mouvements de rotation et de flexion sont limités.", level: "professional" },
+        { label: "Un peu gêné, mais je m'adapte", detail: "Certains gestes demandent des précautions.", level: "self-care" },
+        { label: "Non, mes gestes sont normaux", detail: "Aucune limitation dans les mouvements courants.", level: "self-care" },
+      ],
+    },
+    {
+      id: "hanche-irradiation",
+      question: "La douleur descend-elle dans la cuisse, et boitez-vous ?",
+      context:
+        "Une douleur qui irradie vers la cuisse et une boiterie aident à situer l'origine et le retentissement de la gêne.",
+      example:
+        "Exemple de réponse : « Ça part de l'aine et descend devant la cuisse, et je boite en fin de journée. » → première option.",
+      options: [
+        { label: "Oui, irradiation et boiterie", detail: "La douleur descend dans la cuisse et modifie votre marche.", level: "professional" },
+        { label: "Irradiation ou boiterie", detail: "Un seul des deux signes est présent.", level: "professional" },
+        { label: "Ni irradiation ni boiterie", detail: "La douleur reste localisée et la marche est normale.", level: "self-care" },
+      ],
+    },
+  ],
+  Pied: [
+    {
+      id: "pied-moment",
+      question: "À quel moment la douleur du pied est-elle la plus forte ?",
+      context:
+        "Le moment de la douleur oriente : premiers pas du matin, appui prolongé ou conflit avec la chaussure.",
+      example:
+        "Exemple de réponse : « Les premiers pas au réveil sont terribles, puis ça se calme. » → première option.",
+      options: [
+        { label: "Aux premiers pas du matin", detail: "Douleur maximale au lever ou après être resté assis.", level: "self-care" },
+        { label: "En fin de journée / après la marche", detail: "La douleur s'installe avec l'appui prolongé.", level: "self-care" },
+        { label: "Au chaussage / au frottement", detail: "La douleur apparaît au contact de la chaussure.", level: "self-care" },
+      ],
+    },
+    {
+      id: "pied-chaussage",
+      question: "Le chaussage aggrave-t-il votre douleur ?",
+      context:
+        "Le rôle de la chaussure aide à distinguer un conflit mécanique d'une surcharge d'appui de l'avant-pied.",
+      example:
+        "Exemple de réponse : « Dans des chaussures étroites c'est bien pire, pieds nus ça va mieux. » → première option.",
+      options: [
+        { label: "Oui, nettement", detail: "Certaines chaussures rendent la douleur beaucoup plus vive.", level: "self-care" },
+        { label: "Un peu", detail: "Le chaussage joue, mais modérément.", level: "self-care" },
+        { label: "Non, aucun lien", detail: "La douleur est indépendante des chaussures.", level: "self-care" },
+      ],
+    },
+  ],
+};
+
+/** Compose le questionnaire d'une zone : tronc commun + questions de zone + signes d'alerte. */
+export function getQuestionsForZone(zone: Zone): TriageQuestion[] {
+  return [...commonLeadQuestions, ...zoneQuestions[zone], alertQuestion];
+}
+
+/** Nombre de questions par flux (identique pour toutes les zones). */
+export const questionsPerFlow = commonLeadQuestions.length + zoneQuestions.Cheville.length + 1;
 
 export type TriageLevel = "urgent" | "professional" | "self-care";
 

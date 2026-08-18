@@ -2,39 +2,28 @@ import { useEffect, useState } from "react";
 import { ClipboardCheck, Copy, Maximize2, QrCode, ShieldCheck, X } from "lucide-react";
 import QRCodeLib from "qrcode";
 import { buildDoctorSummary } from "@/lib/summary";
-import { triageQuestions, type Condition, type TriageLevel, type TriageOption } from "@/lib/conditions";
-
-const levelWording: Record<TriageLevel, string> = {
-  urgent: "À évaluer sans délai",
-  professional: "Consultation médicale recommandée",
-  "self-care": "Auto-soin surveillé",
-};
-
-const levelStyle: Record<TriageLevel, string> = {
-  urgent: "bg-destructive/10 text-destructive border-destructive/30",
-  professional: "bg-care/10 text-care border-care/30",
-  "self-care": "bg-muted text-foreground border-border",
-};
+import { zoneDescriptions, type TriageOption, type TriageQuestion, type Zone } from "@/lib/conditions";
 
 /**
  * Synthèse de pré-consultation à montrer ou coller au médecin.
  * Générée localement : rien n'est enregistré ni transmis.
+ * Strictement déclaratif : aucun nom de diagnostic ni orientation n'est affiché.
  */
 export function DoctorSummary({
-  condition,
+  zone,
   answers,
-  level,
+  questions,
 }: {
-  condition: Condition;
+  zone: Zone;
   answers: TriageOption[];
-  level: TriageLevel;
+  questions: TriageQuestion[];
 }) {
   const [copied, setCopied] = useState(false);
   const [handoff, setHandoff] = useState(false);
   const [showQr, setShowQr] = useState(false);
   const [qrUrl, setQrUrl] = useState<string | null>(null);
   const [qrError, setQrError] = useState(false);
-  const text = buildDoctorSummary(condition, answers, level);
+  const text = buildDoctorSummary(zone, answers, questions);
 
   useEffect(() => {
     if (!showQr) return;
@@ -63,7 +52,7 @@ export function DoctorSummary({
   };
 
   const rows = answers.map((answer, i) => ({
-    question: triageQuestions[i]?.question ?? `Question ${i + 1}`,
+    question: questions[i]?.question ?? `Question ${i + 1}`,
     answer: answer.label,
   }));
 
@@ -71,19 +60,13 @@ export function DoctorSummary({
     <div className={big ? "space-y-5" : "space-y-4"}>
       <div>
         <p className={big ? "text-sm uppercase tracking-wide text-muted-foreground" : "text-xs uppercase tracking-wide text-muted-foreground"}>
-          Trouble évoqué (déclaratif patient)
+          Zone décrite (déclaratif patient)
         </p>
         <p className={big ? "text-3xl font-bold text-foreground" : "text-lg font-semibold text-foreground"}>
-          {condition.name}
+          {zone}
         </p>
-        <p className={big ? "text-lg text-muted-foreground" : "text-sm text-muted-foreground"}>{condition.location}</p>
+        <p className={big ? "text-lg text-muted-foreground" : "text-sm text-muted-foreground"}>{zoneDescriptions[zone]}</p>
       </div>
-
-      <span
-        className={`inline-block rounded-full border px-3 py-1 font-semibold ${levelStyle[level]} ${big ? "text-lg" : "text-sm"}`}
-      >
-        {levelWording[level]}
-      </span>
 
       <dl className={big ? "space-y-4" : "space-y-3"}>
         {rows.map((row) => (
@@ -96,10 +79,9 @@ export function DoctorSummary({
         ))}
       </dl>
 
-      <div className={big ? "text-lg text-muted-foreground" : "text-sm text-muted-foreground"}>
-        <p>Repère parcours : {condition.whoToSee}</p>
-        <p>Délai habituel : {condition.delay}</p>
-      </div>
+      <p className={big ? "text-base text-muted-foreground" : "text-xs text-muted-foreground"}>
+        Recueil déclaratif du patient. Ne constitue ni un diagnostic ni une orientation.
+      </p>
     </div>
   );
 

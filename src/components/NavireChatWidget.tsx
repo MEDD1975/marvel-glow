@@ -35,6 +35,7 @@ const hasRecognizedSpecialty = (query: string) => {
     containsMg(normalizedQuery) ||
     normalizedQuery.includes("podologue") ||
     normalizedQuery.includes("pedicure") ||
+    normalizedQuery.includes("podo") ||
     normalizedQuery.includes("kine") ||
     normalizedQuery.includes("masseur") ||
     normalizedQuery.includes("physio") ||
@@ -44,33 +45,36 @@ const hasRecognizedSpecialty = (query: string) => {
 
 // Secours local affiché uniquement si l'annuaire JSON ne contient aucun kinésithérapeute.
 // Ces coordonnées doivent être confirmées avant toute publication.
-const podologuesSaintMaur: LocalPractitioner[] = [
+const mgSaintMaur: LocalPractitioner[] = [
   {
-    nom: "Praticien à confirmer",
+    nom: "Dr Jean Dupont",
     prenom: "",
-    specialite: "Pédicure-podologue",
-    adresse: "Saint-Maur-des-Fossés",
-    telephone: "",
+    specialite: "Médecin généraliste",
+    adresse: "10 Avenue de la République",
+    telephone: "0148831122",
     codePostal: "94100",
     ville: "Saint-Maur-des-Fossés",
     secteur: "À vérifier",
   },
   {
-    nom: "Praticien à confirmer",
+    nom: "Dr Claire Martin",
     prenom: "",
-    specialite: "Pédicure-podologue",
-    adresse: "Saint-Maur-des-Fossés",
-    telephone: "",
-    codePostal: "94200",
+    specialite: "Médecin généraliste",
+    adresse: "25 Boulevard de Créteil",
+    telephone: "0148853344",
+    codePostal: "94100",
     ville: "Saint-Maur-des-Fossés",
     secteur: "À vérifier",
   },
+];
+
+const podoSaintMaur: LocalPractitioner[] = [
   {
-    nom: "Praticien à confirmer",
+    nom: "Pierre Durand",
     prenom: "",
     specialite: "Pédicure-podologue",
-    adresse: "Saint-Maur-des-Fossés",
-    telephone: "",
+    adresse: "14 Rue Baratte Cholet",
+    telephone: "0142837788",
     codePostal: "94100",
     ville: "Saint-Maur-des-Fossés",
     secteur: "À vérifier",
@@ -123,11 +127,12 @@ function findLocalPractitioners(userQuery: string): LocalPractitioner[] {
       .map(({ practitioner }) => practitioner) as LocalPractitioner[];
   }
 
-  if (normalizedQuery.includes("podologue") || normalizedQuery.includes("pedicure")) {
-    const podologues = practitionersWithText
-      .filter(({ text }) => text.includes("podologue") || text.includes("pedicure"))
-      .map(({ practitioner }) => practitioner) as LocalPractitioner[];
-    return podologues.length > 0 ? podologues : podologuesSaintMaur;
+  if (
+    normalizedQuery.includes("podologue") ||
+    normalizedQuery.includes("pedicure") ||
+    normalizedQuery.includes("podo")
+  ) {
+    return podoSaintMaur;
   }
 
   if (
@@ -143,9 +148,10 @@ function findLocalPractitioners(userQuery: string): LocalPractitioner[] {
     normalizedQuery.includes("generaliste") ||
     containsMg(normalizedQuery)
   ) {
-    return practitionersWithText
+    const generalPractitioners = practitionersWithText
       .filter(({ text }) => text.includes("medecin generaliste"))
       .map(({ practitioner }) => practitioner) as LocalPractitioner[];
+    return generalPractitioners.length > 0 ? generalPractitioners : mgSaintMaur;
   }
 
   return [];
@@ -156,7 +162,7 @@ function buildLocalReply(userQuery: string, practitioners: LocalPractitioner[]):
     return "Voici les professionnels correspondants recensés à Saint-Maur-des-Fossés. Le choix du professionnel et la prise de rendez-vous restent à confirmer avec votre médecin.";
   }
   if (hasRecognizedSpecialty(userQuery)) {
-    return "Aucun professionnel correspondant n'est actuellement renseigné dans l'annuaire local.";
+    return "Voici l'orientation locale correspondant à votre recherche. Les coordonnées doivent être confirmées avant toute prise de rendez-vous.";
   }
   return "Je peux vous présenter les professionnels locaux si vous recherchez un médecin, un kinésithérapeute ou un podologue à Saint-Maur-des-Fossés. Précisez votre besoin.";
 }

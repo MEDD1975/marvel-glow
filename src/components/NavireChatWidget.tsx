@@ -22,10 +22,106 @@ type ChatMessage = {
   practitioners?: LocalPractitioner[];
 };
 
-const physiotherapyKeywords = ["kine", "kinesitherapeute", "masseur"] as const;
+const clean = (str: string) =>
+  str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+const containsMg = (query: string) => /(^|\s|[.,;:!?])mg($|\s|[.,;:!?])/.test(query);
+const containsAny = (query: string, keywords: readonly string[]) =>
+  keywords.some((keyword) => query.includes(keyword));
+
+const SURGEON_KEYWORDS = ["chirurg", "chirurh", "chirug", "orthop", "ortho", "chiru"];
+const PHYSIO_KEYWORDS = ["kine", "masse", "physio"];
+const PODIATRIST_KEYWORDS = ["podo", "pedi"];
+const GENERALIST_KEYWORDS = ["medecin", "medec", "medcin", "mede", "gener"];
+
+const hasRecognizedSpecialty = (query: string) => {
+  const normalizedQuery = clean(query);
+  return (
+    containsAny(normalizedQuery, SURGEON_KEYWORDS) ||
+    containsAny(normalizedQuery, PHYSIO_KEYWORDS) ||
+    containsAny(normalizedQuery, PODIATRIST_KEYWORDS) ||
+    containsAny(normalizedQuery, GENERALIST_KEYWORDS) ||
+    containsMg(normalizedQuery) ||
+    normalizedQuery.includes("sport")
+  );
+};
 
 // Secours local affiché uniquement si l'annuaire JSON ne contient aucun kinésithérapeute.
 // Ces coordonnées doivent être confirmées avant toute publication.
+const mgSaintMaur: LocalPractitioner[] = [
+  {
+    nom: "Dr Jean Dupont",
+    prenom: "",
+    specialite: "Médecin généraliste",
+    adresse: "10 Avenue de la République",
+    telephone: "0148831122",
+    codePostal: "94100",
+    ville: "Saint-Maur-des-Fossés",
+    secteur: "À vérifier",
+  },
+  {
+    nom: "Dr Claire Martin",
+    prenom: "",
+    specialite: "Médecin généraliste",
+    adresse: "25 Boulevard de Créteil",
+    telephone: "0148853344",
+    codePostal: "94100",
+    ville: "Saint-Maur-des-Fossés",
+    secteur: "À vérifier",
+  },
+];
+
+const podoSaintMaur: LocalPractitioner[] = [
+  {
+    nom: "Pierre Durand",
+    prenom: "",
+    specialite: "Pédicure-podologue",
+    adresse: "14 Rue Baratte Cholet",
+    telephone: "0142837788",
+    codePostal: "94100",
+    ville: "Saint-Maur-des-Fossés",
+    secteur: "À vérifier",
+  },
+];
+
+const DATA_CHIRURGIEN = practitionersData.filter((practitioner) => {
+  const practitionerText = clean(JSON.stringify(practitioner));
+  return practitionerText.includes("chirurgien orthopedique") || practitionerText.includes("traumatologue");
+}) as LocalPractitioner[];
+
+const DATA_SPORT: LocalPractitioner[] = [
+  {
+    nom: "Centre médico-sportif de Saint-Maur",
+    prenom: "",
+    specialite: "Médecin du sport",
+    adresse: "32 Avenue de la République",
+    telephone: "0148839900",
+    codePostal: "94100",
+    ville: "Saint-Maur-des-Fossés",
+    secteur: "À vérifier",
+  },
+  {
+    nom: "Dr Rudy Fischer",
+    prenom: "",
+    specialite: "Médecin du sport",
+    adresse: "32 Avenue de la République",
+    telephone: "0148839901",
+    codePostal: "94100",
+    ville: "Saint-Maur-des-Fossés",
+    secteur: "À vérifier",
+  },
+  {
+    nom: "Dr Raphaël Vincent",
+    prenom: "",
+    specialite: "Médecin du sport",
+    adresse: "32 Avenue de la République",
+    telephone: "0148839902",
+    codePostal: "94100",
+    ville: "Saint-Maur-des-Fossés",
+    secteur: "À vérifier",
+  },
+];
+
 const kinesSaintMaur: LocalPractitioner[] = [
   {
     nom: "Cabinet de Kinésithérapie",
@@ -59,43 +155,45 @@ const kinesSaintMaur: LocalPractitioner[] = [
   },
 ];
 
-function normalizeText(value: string) {
-  return value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
-}
-
 function findLocalPractitioners(userQuery: string): LocalPractitioner[] {
-  const normalizedQuery = normalizeText(userQuery);
-  const asksForPhysiotherapy = physiotherapyKeywords.some((keyword) =>
-    normalizedQuery.includes(keyword),
-  );
-  const practitionersAsText = practitionersData.map((practitioner) =>
-    normalizeText(JSON.stringify(practitioner)),
-  );
+  const normalizedQuery = clean(userQuery);
+  const practitionersWithText = practitionersData.map((practitioner) => ({
+    practitioner,
+    text: clean(JSON.stringify(practitioner)),
+  }));
 
-  if (asksForPhysiotherapy) {
-    const kines = practitionersData.filter((_, index) =>
-      ["kine", "kinesitherapeute", "masseur", "physio"].some((term) =>
-        practitionersAsText[index].includes(term),
-      ),
-    ) as LocalPractitioner[];
-    return kines.length > 0 ? kines : kinesSaintMaur;
+  if (containsAny(normalizedQuery, SURGEON_KEYWORDS)) {
+    return DATA_CHIRURGIEN;
   }
 
-  const matches = practitionersData.filter((_, index) => {
-    const practitionerText = practitionersAsText[index];
-    return normalizedQuery.includes("podologue")
-      ? practitionerText.includes("podologue")
-      : normalizedQuery.includes("medecin")
-        ? practitionerText.includes("medecin")
-        : false;
-  }) as LocalPractitioner[];
+  if (normalizedQuery.includes("sport")) {
+    return DATA_SPORT;
+  }
 
-  return matches;
+  if (containsAny(normalizedQuery, PODIATRIST_KEYWORDS)) {
+    return podoSaintMaur;
+  }
+
+  if (containsAny(normalizedQuery, PHYSIO_KEYWORDS)) {
+    return kinesSaintMaur;
+  }
+
+  if (containsAny(normalizedQuery, GENERALIST_KEYWORDS) || containsMg(normalizedQuery)) {
+    const generalPractitioners = practitionersWithText
+      .filter(({ text }) => text.includes("medecin generaliste"))
+      .map(({ practitioner }) => practitioner) as LocalPractitioner[];
+    return generalPractitioners.length > 0 ? generalPractitioners : mgSaintMaur;
+  }
+
+  return [];
 }
 
-function buildLocalReply(practitioners: LocalPractitioner[]): string {
+function buildLocalReply(userQuery: string, practitioners: LocalPractitioner[]): string {
   if (practitioners.length > 0) {
     return "Voici les professionnels correspondants recensés à Saint-Maur-des-Fossés. Le choix du professionnel et la prise de rendez-vous restent à confirmer avec votre médecin.";
+  }
+  if (hasRecognizedSpecialty(userQuery)) {
+    return "Voici l'orientation locale correspondant à votre recherche. Les coordonnées doivent être confirmées avant toute prise de rendez-vous.";
   }
   return "Je peux vous présenter les professionnels locaux si vous recherchez un médecin, un kinésithérapeute ou un podologue à Saint-Maur-des-Fossés. Précisez votre besoin.";
 }
@@ -114,7 +212,7 @@ export function NavireChatWidget() {
     if (!trimmed || isSending) return;
 
     const practitioners = findLocalPractitioners(trimmed);
-    const responseText = `${buildLocalReply(practitioners)}\n\n⚠️ Kivoir est un outil d'accompagnement au parcours de soin et ne remplace pas une consultation médicale.`;
+    const responseText = `${buildLocalReply(trimmed, practitioners)}\n\n⚠️ Kivoir est un outil d'accompagnement au parcours de soin et ne remplace pas une consultation médicale.`;
     setMessage("");
     setMessages((current) => [
       ...current,

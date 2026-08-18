@@ -124,14 +124,14 @@ const directorySpecialtyLabels: Record<PractitionerSpecialty, string> = {
 
 function searchLocalPractitioners(specialty: PractitionerSpecialty): LocalPractitioner[] {
   const target = normalize(directorySpecialtyLabels[specialty]);
-  return localPractitioners
-    .filter((practitioner) => normalize(practitioner.specialite) === target)
-    .slice(0, 5);
+  return localPractitioners.filter(
+    (practitioner) => normalize(practitioner.specialite) === target,
+  );
 }
 
 const rechercherPraticiensSaintMaur = tool({
   description:
-    "Recherche dans l'annuaire local de Saint-Maur-des-Fossés. Appeler cet outil dès que l'utilisateur demande, même indirectement ou dans une phrase naturelle, où trouver un médecin généraliste, médecin du sport, kinésithérapeute, podologue ou chirurgien orthopédiste.",
+    "Recherche exhaustive dans l'annuaire local de Saint-Maur-des-Fossés et retourne tous les praticiens enregistrés pour la spécialité choisie. Appeler cet outil dès que l'utilisateur demande, même indirectement ou dans une phrase naturelle, où trouver un médecin généraliste, médecin du sport, kinésithérapeute, podologue ou chirurgien orthopédiste.",
   inputSchema: z.object({
     specialite: practitionerSpecialtySchema.describe("La spécialité exacte à rechercher"),
   }),

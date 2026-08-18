@@ -13,6 +13,7 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { Header } from "@/components/Header";
 import { MobileTabBar } from "@/components/MobileTabBar";
+import { NavireChatWidget } from "@/components/NavireChatWidget";
 
 function NotFoundComponent() {
   return (
@@ -131,6 +132,7 @@ function RootComponent() {
         <Outlet />
       </div>
       <MobileTabBar />
+      <NavireChatWidget />
     </QueryClientProvider>
   );
 }

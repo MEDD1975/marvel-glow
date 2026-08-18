@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from "react";
 import { Bot, LoaderCircle, MessageCircle, Send, X } from "lucide-react";
 import practitionersData from "../../data/praticiens_saint_maur.json";
+import { askCareAgent } from "@/lib/care-agent";
 
 const welcomeMessage =
   "Bonjour, je suis Assistant Kivoir. Je peux vous aider à mieux comprendre votre orientation pour une douleur de hanche, genou, cheville ou pied.";
@@ -45,6 +46,9 @@ const hasRecognizedSpecialty = (query: string) => {
     normalizedQuery.includes("sport")
   );
 };
+
+const DIRECTORY_NOTICE =
+  "Cette liste est donnée à titre indicatif pour vous aider à trouver un praticien près de chez vous.";
 
 // Secours local affiché uniquement si l'annuaire JSON ne contient aucun kinésithérapeute.
 // Ces coordonnées doivent être confirmées avant toute publication.
@@ -188,16 +192,6 @@ function findLocalPractitioners(userQuery: string): LocalPractitioner[] {
   return [];
 }
 
-function buildLocalReply(userQuery: string, practitioners: LocalPractitioner[]): string {
-  if (practitioners.length > 0) {
-    return "Voici les professionnels correspondants recensés à Saint-Maur-des-Fossés. Le choix du professionnel et la prise de rendez-vous restent à confirmer avec votre médecin.";
-  }
-  if (hasRecognizedSpecialty(userQuery)) {
-    return "Voici l'orientation locale correspondant à votre recherche. Les coordonnées doivent être confirmées avant toute prise de rendez-vous.";
-  }
-  return "Je peux vous présenter les professionnels locaux si vous recherchez un médecin, un kinésithérapeute ou un podologue à Saint-Maur-des-Fossés. Précisez votre besoin.";
-}
-
 export function NavireChatWidget() {
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState("");
@@ -206,19 +200,37 @@ export function NavireChatWidget() {
   ]);
   const [isSending, setIsSending] = useState(false);
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const trimmed = message.trim();
     if (!trimmed || isSending) return;
 
-    const practitioners = findLocalPractitioners(trimmed);
-    const responseText = `${buildLocalReply(trimmed, practitioners)}\n\n⚠️ Kivoir est un outil d'accompagnement au parcours de soin et ne remplace pas une consultation médicale.`;
+    const practitioners = hasRecognizedSpecialty(trimmed)
+      ? findLocalPractitioners(trimmed)
+      : [];
+
     setMessage("");
-    setMessages((current) => [
-      ...current,
-      { role: "user", text: trimmed },
-      { role: "assistant", text: responseText, practitioners },
-    ]);
+    setMessages((current) => [...current, { role: "user", text: trimmed }]);
+    setIsSending(true);
+
+    try {
+      const response = await askCareAgent({ data: { message: trimmed } });
+      setMessages((current) => [
+        ...current,
+        { role: "assistant", text: response.text, practitioners },
+      ]);
+    } catch {
+      setMessages((current) => [
+        ...current,
+        {
+          role: "assistant",
+          text: "Je ne parviens pas à répondre pour le moment. Vous pouvez reformuler votre question ou demander conseil à un professionnel de santé.\n\n⚠️ Kivoir est un outil d'accompagnement au parcours de soin et ne remplace pas une consultation médicale.",
+          practitioners,
+        },
+      ]);
+    } finally {
+      setIsSending(false);
+    }
   }
 
   return (
@@ -283,6 +295,7 @@ export function NavireChatWidget() {
                           </article>
                         ))}
                       </div>
+                      <p className="mt-2 text-xs leading-5 text-slate-700">{DIRECTORY_NOTICE}</p>
                     </div>
                   ) : null}
                 </div>
@@ -327,7 +340,7 @@ export function NavireChatWidget() {
               </button>
             </div>
             <p className="mt-2 px-1 text-[11px] leading-4 text-muted-foreground">
-              Assistant Kivoir ne pose pas de diagnostic et ne remplace pas un professionnel de santé.
+              Kivoir est un outil d'accompagnement au parcours de soin et ne remplace pas une consultation médicale.
             </p>
           </form>
         </section>

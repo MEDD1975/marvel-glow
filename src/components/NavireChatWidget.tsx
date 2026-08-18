@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from "react";
 import { Bot, LoaderCircle, MessageCircle, Send, X } from "lucide-react";
-import { askCareAgent } from "@/lib/care-agent";
+import practitionersData from "../../data/praticiens_saint_maur.json";
 
 const welcomeMessage =
   "Bonjour, je suis Assistant Kivoir. Je peux vous aider à mieux comprendre votre orientation pour une douleur de hanche, genou, cheville ou pied.";
@@ -22,6 +22,45 @@ type ChatMessage = {
   practitioners?: LocalPractitioner[];
 };
 
+const physiotherapyKeywords = ["kine", "kinesitherapeute", "masseur"] as const;
+
+function normalizeText(value: string) {
+  return value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+}
+
+function findLocalPractitioners(userQuery: string): LocalPractitioner[] {
+  const normalizedQuery = normalizeText(userQuery);
+  const practitionersAsText = practitionersData.map((practitioner) =>
+    normalizeText(JSON.stringify(practitioner)),
+  );
+  const asksForPhysiotherapy = physiotherapyKeywords.some((keyword) =>
+    normalizedQuery.includes(keyword),
+  );
+
+  const matches = practitionersData.filter((_, index) => {
+    const practitionerText = practitionersAsText[index];
+    if (asksForPhysiotherapy) {
+      return ["kine", "kinesitherapeute", "masseur", "physio"].some((term) =>
+        practitionerText.includes(term),
+      );
+    }
+    return normalizedQuery.includes("podologue")
+      ? practitionerText.includes("podologue")
+      : normalizedQuery.includes("medecin")
+        ? practitionerText.includes("medecin")
+        : false;
+  }) as LocalPractitioner[];
+
+  return matches.length > 0 ? matches : (practitionersData as LocalPractitioner[]);
+}
+
+function buildLocalReply(practitioners: LocalPractitioner[]): string {
+  if (practitioners.length > 0) {
+    return "Voici les professionnels correspondants recensés à Saint-Maur-des-Fossés. Le choix du professionnel et la prise de rendez-vous restent à confirmer avec votre médecin.";
+  }
+  return "Je peux vous présenter les professionnels locaux si vous recherchez un médecin, un kinésithérapeute ou un podologue à Saint-Maur-des-Fossés. Précisez votre besoin.";
+}
+
 export function NavireChatWidget() {
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState("");
@@ -30,32 +69,19 @@ export function NavireChatWidget() {
   ]);
   const [isSending, setIsSending] = useState(false);
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const trimmed = message.trim();
     if (!trimmed || isSending) return;
 
+    const practitioners = findLocalPractitioners(trimmed);
+    const responseText = `${buildLocalReply(practitioners)}\n\n⚠️ Kivoir est un outil d'accompagnement au parcours de soin et ne remplace pas une consultation médicale.`;
     setMessage("");
-    setMessages((current) => [...current, { role: "user", text: trimmed }]);
-    setIsSending(true);
-
-    try {
-      const response = await askCareAgent({ data: { message: trimmed } });
-      setMessages((current) => [
-        ...current,
-        { role: "assistant", text: response.text, practitioners: response.practitioners },
-      ]);
-    } catch {
-      setMessages((current) => [
-        ...current,
-        {
-          role: "assistant",
-          text: "Je ne parviens pas à répondre pour le moment. Vous pouvez décrire votre situation à votre médecin.\n\n⚠️ Kivoir est un outil d'accompagnement au parcours de soin et ne remplace pas une consultation médicale.",
-        },
-      ]);
-    } finally {
-      setIsSending(false);
-    }
+    setMessages((current) => [
+      ...current,
+      { role: "user", text: trimmed },
+      { role: "assistant", text: responseText, practitioners },
+    ]);
   }
 
   return (
@@ -103,21 +129,23 @@ export function NavireChatWidget() {
                     {item.text}
                   </p>
                   {item.practitioners?.length ? (
-                    <div className="mt-2 w-full max-w-[92%] space-y-2">
-                    <p className="text-xs font-semibold text-muted-foreground">Professionnels à Saint-Maur-des-Fossés</p>
-                    {item.practitioners.map((practitioner) => (
-                      <article key={`${practitioner.nom}-${practitioner.prenom}-${practitioner.adresse}`} className="rounded-xl border border-border bg-card p-3 text-xs text-card-foreground">
-                        <p className="font-semibold">{practitioner.prenom} {practitioner.nom}</p>
-                        <p className="mt-1 text-muted-foreground">{practitioner.specialite}</p>
-                        <p className="mt-1">{practitioner.adresse}, {practitioner.codePostal} {practitioner.ville}</p>
-                        {practitioner.telephone ? (
-                          <a className="mt-1 inline-block font-medium text-primary underline-offset-2 hover:underline" href={`tel:${practitioner.telephone}`}>
-                            {practitioner.telephone.replace(/(\d{2})(?=\d)/g, "$1 ")}
-                          </a>
-                        ) : null}
-                        <p className="mt-1 text-muted-foreground">{practitioner.secteur}</p>
-                      </article>
-                    ))}
+                    <div className="mt-2 w-full max-w-[92%] rounded border border-border bg-slate-100 p-2 text-slate-900">
+                      <p className="mb-2 text-xs font-semibold">Professionnels à Saint-Maur-des-Fossés</p>
+                      <div className="space-y-2">
+                        {item.practitioners.map((practitioner) => (
+                          <article key={`${practitioner.nom}-${practitioner.prenom}-${practitioner.adresse}`} className="rounded-xl border border-border bg-card p-3 text-xs text-card-foreground">
+                            <p className="font-semibold">{practitioner.prenom} {practitioner.nom}</p>
+                            <p className="mt-1 text-muted-foreground">{practitioner.specialite}</p>
+                            <p className="mt-1">{practitioner.adresse}, {practitioner.codePostal} {practitioner.ville}</p>
+                            {practitioner.telephone ? (
+                              <a className="mt-1 inline-block font-medium text-primary underline-offset-2 hover:underline" href={`tel:${practitioner.telephone}`}>
+                                {practitioner.telephone.replace(/(\d{2})(?=\d)/g, "$1 ")}
+                              </a>
+                            ) : null}
+                            <p className="mt-1 text-muted-foreground">{practitioner.secteur}</p>
+                          </article>
+                        ))}
+                      </div>
                     </div>
                   ) : null}
                 </div>

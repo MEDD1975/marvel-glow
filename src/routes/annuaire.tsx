@@ -8,6 +8,7 @@ import {
   Phone,
   Stethoscope,
 } from "lucide-react";
+import { DirectoryShareTools } from "@/components/DirectoryShareTools";
 import { MedicalDisclaimer } from "@/components/HomeBlocks";
 import { conditions } from "@/lib/conditions";
 import { pathways } from "@/lib/pathways";
@@ -145,7 +146,7 @@ function AnnuairePage() {
     navigate({ search: (prev: Search) => ({ ...prev, ...next }), resetScroll: false });
 
   if (!selectedCabinet) {
-    return <CabinetChooser invalidId={cabinetId} />;
+    return <CabinetChooser {...(cabinetId ? { invalidId: cabinetId } : {})} />;
   }
 
   return (
@@ -172,6 +173,8 @@ function AnnuairePage() {
         Indiquez l'étape de votre parcours : Kivoir affiche le professionnel suivant, puis les
         praticiens correspondants près de chez vous.
       </p>
+
+      <DirectoryShareTools cabinet={selectedCabinet} />
 
       {/* Étape 1 — trouble */}
       <section className="mt-8">
@@ -336,11 +339,6 @@ function AnnuairePage() {
                 </address>
 
                 <div className="mt-auto flex flex-wrap items-center gap-2 pt-4">
-                  {provider.sector && (
-                    <span className="rounded-full bg-muted px-2.5 py-1 text-xs text-muted-foreground">
-                      {provider.sector}
-                    </span>
-                  )}
                   {provider.phone && (
                     <a
                       href={`tel:${provider.phone}`}

@@ -12,8 +12,8 @@ const MODEL = "openai/gpt-4.1-mini";
 const DISCLAIMER =
   "⚠️ Kivoir est un outil d'accompagnement au parcours de soin et ne remplace pas une consultation médicale.";
 
-// System Prompt de « Navire » : rôle, périmètre, règles strictes et style.
-const SYSTEM_PROMPT = `Tu es « Navire », l'assistant d'orientation de Kivoir. Tu es spécialisé dans l'orientation et la pédagogie autour des douleurs du MEMBRE INFÉRIEUR uniquement : hanche, genou, cheville et pied.
+// System Prompt de « Assistant Kivoir » : rôle, périmètre, règles strictes et style.
+const SYSTEM_PROMPT = `Tu es « Assistant Kivoir », l'assistant d'orientation de Kivoir. Tu es spécialisé dans l'orientation et la pédagogie autour des douleurs du MEMBRE INFÉRIEUR uniquement : hanche, genou, cheville et pied.
 
 Ta mission : aider la personne à comprendre sa situation et à savoir vers quel professionnel se tourner, avec bienveillance. Tu ne remplaces jamais un médecin.
 
@@ -244,7 +244,7 @@ export const askCareAgent = createServerFn({ method: "POST" })
       return { text: emergencyResponse("un signe d'alerte détecté dans votre description"), emergency: true };
     }
 
-    // 3) Génération encadrée par le System Prompt de « Navire ».
+    // 3) Génération encadrée par le System Prompt de « Assistant Kivoir ».
     try {
       const { text } = await generateText({
         model: MODEL,
@@ -255,7 +255,7 @@ export const askCareAgent = createServerFn({ method: "POST" })
       });
       return { text: ensureDisclaimer(text), emergency: false };
     } catch (error) {
-      console.log("[v0] Navire — repli déterministe (échec IA) :", error instanceof Error ? error.message : error);
+      console.log("[v0] Assistant Kivoir — repli déterministe (échec IA) :", error instanceof Error ? error.message : error);
       return { text: fallbackText(plan), emergency: false };
     }
   });

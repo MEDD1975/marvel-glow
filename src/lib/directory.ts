@@ -126,6 +126,17 @@ export const cabinets: Cabinet[] = Object.entries(cabinetRecords).map(([cabinetI
 
 export const providers: Provider[] = cabinets.flatMap((cabinet) => cabinet.providers);
 
+export function isProfession(value: string): value is Profession {
+  return professionOrder.includes(value as Profession);
+}
+
+export function findProvidersByProfession(profession: Profession, cabinetId?: string) {
+  const source = cabinetId
+    ? cabinets.find((cabinet) => cabinet.id === cabinetId)?.providers ?? []
+    : providers;
+  return source.filter((provider) => provider.profession === profession);
+}
+
 /** Étapes déclarées par le patient et professionnel à voir ensuite. */
 export type JourneyStep = {
   id: string;

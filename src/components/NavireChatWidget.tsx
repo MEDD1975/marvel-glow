@@ -1,26 +1,15 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { Link } from "@tanstack/react-router";
 import { ArrowRight, Bot, LoaderCircle, MessageCircle, Send, X } from "lucide-react";
-import { askCareAgent } from "@/lib/care-agent";
+import { askCareAgent, type CareAgentHistoryMessage } from "@/lib/care-agent";
+import type { Profession, Provider } from "@/lib/directory";
 
 const welcomeMessage =
   "Bonjour, je suis l’Assistant Kivoir, votre compagnon après la consultation. Vous pouvez vous exprimer librement : racontez-moi comment s’est passée votre visite, ce que vous ressentez aujourd’hui, ou ce que votre médecin vous a conseillé ou prescrit. Comment puis-je vous aider ?";
 
-type LocalPractitioner = {
-  nom: string;
-  prenom: string;
-  specialite: string;
-  adresse: string;
-  telephone: string;
-  codePostal: string;
-  ville: string;
-  secteur: string;
-};
-
-type ChatMessage = {
-  role: "assistant" | "user";
-  text: string;
-  practitioners?: LocalPractitioner[];
+type ChatMessage = CareAgentHistoryMessage & {
+  practitioners?: Provider[];
+  specialty?: Profession | null;
 };
 
 const DIRECTORY_NOTICE =
@@ -33,14 +22,37 @@ function visibleMessageText(item: ChatMessage) {
   return item.text.replace(`⚠️ ${SAFETY_NOTICE}`, "").trim();
 }
 
+function containsIdentifyingData(value: string) {
+  return (
+    /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/i.test(value) ||
+    /(?:\+33|0)[1-9](?:[ .-]?\d{2}){4}\b/.test(value) ||
+    /\b[12]\s?\d{2}(?:\s?\d{2}){4}\s?\d{3}\s?\d{2}\b/.test(value) ||
+    /\b(?:je m['’]appelle|mon nom est|je suis monsieur|je suis madame)\s+[a-zà-ÿ'-]{2,}/i.test(value) ||
+    /\b\d{1,4}\s+(?:rue|avenue|boulevard|chemin|impasse|allée)\b/i.test(value)
+  );
+}
+
+const initialMessages = (): ChatMessage[] => [{ role: "assistant", text: welcomeMessage }];
+
 export function NavireChatWidget() {
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState("");
   const messageInputRef = useRef<HTMLTextAreaElement>(null);
-  const [messages, setMessages] = useState<ChatMessage[]>([
-    { role: "assistant", text: welcomeMessage },
-  ]);
+  const [messages, setMessages] = useState<ChatMessage[]>(initialMessages);
   const [isSending, setIsSending] = useState(false);
+  const [privacyError, setPrivacyError] = useState<string | null>(null);
+  const currentCabinetId =
+    typeof window === "undefined"
+      ? undefined
+      : new URLSearchParams(window.location.search).get("cabinet") ?? undefined;
+
+  function closeAndForget() {
+    setOpen(false);
+    setMessage("");
+    setMessages(initialMessages());
+    setPrivacyError(null);
+    setIsSending(false);
+  }
 
   useEffect(() => {
     function openAssistant() {
@@ -61,16 +73,34 @@ export function NavireChatWidget() {
     event.preventDefault();
     const trimmed = message.trim();
     if (!trimmed || isSending) return;
+    if (containsIdentifyingData(trimmed)) {
+      setPrivacyError(
+        "Ce message semble contenir une information permettant de vous identifier. Retirez votre nom, vos coordonnées, votre adresse précise ou tout numéro d’identification avant de l’envoyer.",
+      );
+      return;
+    }
 
+    const history = messages
+      .slice(1)
+      .slice(-8)
+      .map(({ role, text }) => ({ role, text }));
+    const cabinetId = new URLSearchParams(window.location.search).get("cabinet") ?? undefined;
+
+    setPrivacyError(null);
     setMessage("");
     setMessages((current) => [...current, { role: "user", text: trimmed }]);
     setIsSending(true);
 
     try {
-      const response = await askCareAgent({ data: { message: trimmed } });
+      const response = await askCareAgent({ data: { message: trimmed, history, cabinetId } });
       setMessages((current) => [
         ...current,
-        { role: "assistant", text: response.text, practitioners: response.practitioners },
+        {
+          role: "assistant",
+          text: response.text,
+          practitioners: response.practitioners,
+          specialty: response.specialty,
+        },
       ]);
     } catch {
       setMessages((current) => [
@@ -105,7 +135,7 @@ export function NavireChatWidget() {
             </div>
             <button
               type="button"
-              onClick={() => setOpen(false)}
+              onClick={closeAndForget}
               aria-label="Fermer la discussion"
               className="rounded-full p-2 transition-colors hover:bg-primary-foreground/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-foreground"
             >
@@ -145,24 +175,24 @@ export function NavireChatWidget() {
                       <div className="flex flex-col gap-2 pt-3">
                         {item.practitioners.map((practitioner) => (
                           <article
-                            key={`${practitioner.nom}-${practitioner.prenom}-${practitioner.adresse}`}
+                            key={practitioner.id}
                             className="rounded-xl border border-border bg-muted/40 p-3 text-sm text-card-foreground"
                           >
                             <p className="font-semibold text-balance">
-                              {[practitioner.prenom, practitioner.nom].filter(Boolean).join(" ")}
+                              {practitioner.name}
                             </p>
-                            <p className="mt-1 text-xs font-medium text-primary">{practitioner.specialite}</p>
+                            <p className="mt-1 text-xs font-medium text-primary">{practitioner.profession}</p>
                             <address className="mt-2 not-italic leading-5 text-muted-foreground">
-                              {practitioner.adresse}
+                              {practitioner.address}
                               <br />
-                              {practitioner.codePostal} {practitioner.ville}
+                              {practitioner.postalCode} {practitioner.city}
                             </address>
-                            {practitioner.telephone ? (
+                            {practitioner.phone ? (
                               <a
                                 className="mt-2 inline-flex font-semibold text-primary underline-offset-2 hover:underline"
-                                href={`tel:${practitioner.telephone}`}
+                                href={`tel:${practitioner.phone}`}
                               >
-                                {practitioner.telephone.replace(/(\d{2})(?=\d)/g, "$1 ")}
+                                {practitioner.formattedPhone}
                               </a>
                             ) : null}
                           </article>
@@ -174,6 +204,7 @@ export function NavireChatWidget() {
                   {item.role === "assistant" && index > 0 ? (
                     <Link
                       to="/annuaire"
+                      search={{ cabinet: currentCabinetId, profession: item.specialty ?? undefined }}
                       className="inline-flex max-w-[88%] items-center gap-2 rounded-xl bg-primary px-3.5 py-2.5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                     >
                       Accéder à l'annuaire du réseau de soins
@@ -200,7 +231,11 @@ export function NavireChatWidget() {
                 ref={messageInputRef}
                 id="navire-message"
                 value={message}
-                onChange={(event) => setMessage(event.target.value)}
+                onChange={(event) => {
+                  setMessage(event.target.value);
+                  if (privacyError) setPrivacyError(null);
+                }}
+                aria-describedby="kivoir-privacy-note kivoir-privacy-error"
                 onKeyDown={(event) => {
                   if (event.key === "Enter" && !event.shiftKey && !event.nativeEvent.isComposing && event.keyCode !== 229) {
                     event.preventDefault();
@@ -222,8 +257,13 @@ export function NavireChatWidget() {
                 <Send className="h-4 w-4" aria-hidden="true" />
               </button>
             </div>
-            <p className="mt-2 px-1 text-[11px] leading-4 text-muted-foreground">
-              {SAFETY_NOTICE}
+            {privacyError ? (
+              <p id="kivoir-privacy-error" role="alert" className="mt-2 px-1 text-xs leading-5 text-destructive">
+                {privacyError}
+              </p>
+            ) : null}
+            <p id="kivoir-privacy-note" className="mt-2 px-1 text-[11px] leading-4 text-muted-foreground">
+              Conversation temporaire, effacée à la fermeture. Ne partagez ni nom, ni coordonnées, ni identifiant. {SAFETY_NOTICE}
             </p>
           </form>
         </section>
@@ -231,7 +271,7 @@ export function NavireChatWidget() {
 
       <button
         type="button"
-        onClick={() => setOpen((current) => !current)}
+        onClick={() => (open ? closeAndForget() : setOpen(true))}
         aria-expanded={open}
         aria-controls="navire-chat-widget"
         aria-label={open ? "Fermer Assistant Kivoir" : "Ouvrir Assistant Kivoir"}

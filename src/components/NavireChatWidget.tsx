@@ -4,7 +4,7 @@ import { ArrowRight, Bot, LoaderCircle, MessageCircle, Send, X } from "lucide-re
 import { askCareAgent } from "@/lib/care-agent";
 
 const welcomeMessage =
-  "Bonjour, je suis l’Assistant Kivoir. Comment se passe votre récupération depuis votre consultation ? Vous pouvez me parler de votre douleur, de vos consignes ou d’une évolution qui vous préoccupe.";
+  "Bonjour, je suis l’Assistant Kivoir, votre compagnon après la consultation. Vous pouvez vous exprimer librement : racontez-moi comment s’est passée votre visite, ce que vous ressentez aujourd’hui, ou ce que votre médecin vous a conseillé ou prescrit. Comment puis-je vous aider ?";
 
 type LocalPractitioner = {
   nom: string;

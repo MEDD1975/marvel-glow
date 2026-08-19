@@ -14,7 +14,13 @@ const DISCLAIMER =
   "⚠️ Kivoir est un outil d'accompagnement au parcours de soin et ne remplace pas une consultation médicale.";
 
 // System Prompt de « Assistant Kivoir » : rôle, périmètre, règles strictes et style.
-const SYSTEM_PROMPT = `Tu es l'Assistant Kivoir, un agent d'orientation spécialisé dans l'appareil locomoteur du membre inférieur : hanche, genou, cheville et pied. Tu es factuel, rassurant, pédagogue et rigoureux.
+const SYSTEM_PROMPT = `Tu es l'Assistant Kivoir, le compagnon intelligent post-consultation d'un patient anonyme. Tu l'aides à faire le point après sa visite chez le médecin et à identifier le bon professionnel au sein du réseau de soins de son cabinet. Tu es factuel, rassurant, pédagogue et rigoureux.
+
+ACCUEIL ET ÉCOUTE :
+- Invite la personne à s'exprimer librement sur sa consultation, ce qu'elle ressent maintenant et les conseils, consignes ou prescriptions donnés par son médecin.
+- Adapte ta réponse uniquement aux faits qu'elle partage : zone concernée, douleur décrite, évolution ressentie et consignes reçues.
+- Si le contexte manque pour orienter utilement, pose une question ouverte et simple, sans transformer l'échange en interrogatoire.
+- Ne demande jamais son identité ni une donnée personnelle qui n'est pas nécessaire à l'orientation.
 
 RÈGLES CLINIQUES ABSOLUES :
 - Il t'est formellement interdit de poser ou de suggérer un diagnostic médical formel.
@@ -44,7 +50,7 @@ Reformulez avec bienveillance et donnez uniquement des conseils post-consultatio
 Indiquez clairement s'il est raisonnable de poursuivre la surveillance, de recontacter le médecin, de consulter un professionnel du réseau ou d'appeler immédiatement le 15/112. En cas d'urgence, l'appel au 15/112 doit aussi apparaître dès la première phrase de la réponse.
 
 **Orienter**
-Terminez cette rubrique en proposant de consulter le réseau de soins du cabinet via l'Annuaire Kivoir. Ne fabriquez jamais d'URL : le bouton est ajouté par l'interface.
+Nommez clairement le profil professionnel le plus adapté aux seuls éléments fournis (par exemple : médecin généraliste, kinésithérapeute, médecin du sport, podologue ou chirurgien orthopédiste), ou indiquez qu'il faut d'abord revoir le médecin lorsque le contexte ne permet pas une orientation plus précise. Expliquez ce choix en une phrase prudente, sans poser de diagnostic. Terminez systématiquement en invitant la personne à consulter l'Annuaire Kivoir pour trouver un praticien recommandé proche de chez elle dans le réseau de soins de son cabinet. Ne fabriquez jamais d'URL : le bouton est ajouté par l'interface.
 
 FIN DE RÉPONSE (obligatoire) :
 Termine toujours, sur une nouvelle ligne, par exactement :
@@ -313,7 +319,7 @@ function fallbackText(plan: CarePlan) {
   return structuredResponse(
     `${plan.summary} Continuez à suivre les consignes données lors de votre consultation et notez simplement l'évolution de ce que vous ressentez.`,
     `${plan.nextStep} Repère temporel indicatif : ${plan.timeline.toLocaleLowerCase("fr-FR")}.`,
-    "Consultez le réseau de soins de votre cabinet dans l'Annuaire Kivoir si vous avez besoin du professionnel adapté.",
+    `${plan.nextStep} Consultez l'Annuaire Kivoir pour trouver ce profil professionnel recommandé près de chez vous dans le réseau de soins de votre cabinet.`,
   );
 }
 
@@ -329,7 +335,7 @@ function ensureStructuredResponse(text: string, plan: CarePlan) {
   return structuredResponse(
     clean || plan.summary,
     `${plan.nextStep} Repère temporel indicatif : ${plan.timeline.toLocaleLowerCase("fr-FR")}.`,
-    "Consultez le réseau de soins de votre cabinet dans l'Annuaire Kivoir si vous avez besoin du professionnel adapté.",
+    `${plan.nextStep} Consultez l'Annuaire Kivoir pour trouver ce profil professionnel recommandé près de chez vous dans le réseau de soins de votre cabinet.`,
   );
 }
 
@@ -338,7 +344,7 @@ function directoryResponse(specialty: PractitionerSpecialty, count: number) {
   return structuredResponse(
     "Votre demande d'orientation est légitime ; prendre le temps d'identifier le bon interlocuteur aide à organiser la suite de votre suivi.",
     `${count} ${count > 1 ? "professionnels correspondent" : "professionnel correspond"} à votre recherche de ${label} à Saint-Maur-des-Fossés. Leurs coordonnées sont affichées ci-dessous.`,
-    "Consultez le réseau de soins de votre cabinet dans l'Annuaire Kivoir pour choisir le professionnel adapté.",
+    `Le profil adapté ici est celui d'un ${label}. Consultez l'Annuaire Kivoir pour trouver un praticien recommandé proche de chez vous dans le réseau de soins de votre cabinet.`,
   );
 }
 

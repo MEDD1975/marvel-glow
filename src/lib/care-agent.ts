@@ -38,19 +38,17 @@ ANNUAIRE :
 
 STYLE :
 - Vouvoiement systématique, ton bienveillant, clair et mesuré, sans jargon inutile.
+- Rédigez de manière fluide et conversationnelle, comme le ferait un professionnel de santé bienveillant.
+- N'utilisez jamais de titre, de sous-titre, de liste à puces ni d'en-tête dans la réponse.
 - Ne supposez aucune pathologie, aucun symptôme ni aucune circonstance que la personne n'a pas explicitement mentionnés.
+- Lorsque la personne partage un symptôme, un diagnostic posé par son médecin ou une prescription, adaptez les conseils de récupération de premier niveau à ces seuls éléments.
 - Ne promettez jamais une évolution ou un délai de récupération.
-- Réponse concise, structurée en paragraphes courts.
+- Réponse concise en deux ou trois paragraphes naturels.
 
-STRUCTURE OBLIGATOIRE — utilise exactement ces trois titres, dans cet ordre :
-**Rassurer & Conseiller**
-Reformulez avec bienveillance et donnez uniquement des conseils post-consultation simples, prudents et fondés sur les éléments exprimés.
-
-**Détecter le besoin**
-Indiquez clairement s'il est raisonnable de poursuivre la surveillance, de recontacter le médecin, de consulter un professionnel du réseau ou d'appeler immédiatement le 15/112. En cas d'urgence, l'appel au 15/112 doit aussi apparaître dès la première phrase de la réponse.
-
-**Orienter**
-Nommez clairement le profil professionnel le plus adapté aux seuls éléments fournis (par exemple : médecin généraliste, kinésithérapeute, médecin du sport, podologue ou chirurgien orthopédiste), ou indiquez qu'il faut d'abord revoir le médecin lorsque le contexte ne permet pas une orientation plus précise. Expliquez ce choix en une phrase prudente, sans poser de diagnostic. Terminez systématiquement en invitant la personne à consulter l'Annuaire Kivoir pour trouver un praticien recommandé proche de chez elle dans le réseau de soins de son cabinet. Ne fabriquez jamais d'URL : le bouton est ajouté par l'interface.
+ORIENTATION OBLIGATOIRE :
+- Évaluez naturellement s'il est raisonnable de poursuivre la surveillance, de recontacter le médecin ou de consulter un professionnel du réseau. En cas d'urgence, l'appel au 15/112 doit apparaître dès la première phrase.
+- Terminez toujours en nommant le profil professionnel le plus adapté aux seuls éléments fournis (par exemple : médecin généraliste, kinésithérapeute, médecin du sport, podologue ou chirurgien orthopédiste), ou indiquez qu'il faut d'abord revoir le médecin lorsque le contexte ne permet pas une orientation plus précise.
+- Concluez par une invitation naturelle à consulter l'annuaire du réseau de soins pour trouver ce praticien. Ne fabriquez jamais d'URL : le bouton est ajouté par l'interface.
 
 FIN DE RÉPONSE (obligatoire) :
 Termine toujours, sur une nouvelle ligne, par exactement :
@@ -114,14 +112,9 @@ function emergencyResponse(reason: string) {
   return [
     "Appelez immédiatement le 15 (SAMU) ou le 112 : n'attendez pas et ne vous rendez pas seul aux urgences.",
     "",
-    "**Rassurer & Conseiller**",
-    `Vous avez bien fait de signaler ${reason}. Restez au repos et suivez sans attendre les instructions du service d'urgence.`,
+    `Vous avez bien fait de signaler ${reason}. Restez au repos et suivez sans attendre les instructions du service d'urgence. La situation décrite nécessite un avis médical immédiat : l'annuaire ne doit pas retarder votre appel au 15/112.`,
     "",
-    "**Détecter le besoin**",
-    "La situation décrite nécessite un avis médical immédiat. L'Annuaire ne doit pas retarder votre appel au 15/112.",
-    "",
-    "**Orienter**",
-    "Après la prise en charge urgente, vous pourrez consulter le réseau de soins de votre cabinet pour organiser la suite avec les professionnels adaptés.",
+    "Après la prise en charge urgente, votre médecin généraliste pourra vous aider à organiser la suite avec le professionnel adapté. Vous pourrez alors consulter l'annuaire du réseau de soins pour trouver un praticien.",
     "",
     DISCLAIMER,
   ].join("\n");
@@ -299,52 +292,39 @@ function grounding(plan: CarePlan) {
   ].join("\n");
 }
 
-function structuredResponse(reassure: string, detect: string, orient: string) {
-  return [
-    "**Rassurer & Conseiller**",
-    reassure,
-    "",
-    "**Détecter le besoin**",
-    detect,
-    "",
-    "**Orienter**",
-    orient,
-    "",
-    DISCLAIMER,
-  ].join("\n");
+function conversationalResponse(...paragraphs: string[]) {
+  return [...paragraphs, DISCLAIMER].filter(Boolean).join("\n\n");
 }
 
-// Réponse de repli (sans IA), toujours structurée et terminée par le disclaimer.
+// Réponse de repli naturelle lorsque la génération IA n'est pas disponible.
 function fallbackText(plan: CarePlan) {
-  return structuredResponse(
+  return conversationalResponse(
     `${plan.summary} Continuez à suivre les consignes données lors de votre consultation et notez simplement l'évolution de ce que vous ressentez.`,
-    `${plan.nextStep} Repère temporel indicatif : ${plan.timeline.toLocaleLowerCase("fr-FR")}.`,
-    `${plan.nextStep} Consultez l'Annuaire Kivoir pour trouver ce profil professionnel recommandé près de chez vous dans le réseau de soins de votre cabinet.`,
+    `${plan.nextStep} Ce repère reste indicatif : ${plan.timeline.toLocaleLowerCase("fr-FR")}.`,
+    `Le professionnel à privilégier est celui indiqué dans votre prochaine étape. Je vous invite à consulter l'annuaire du réseau de soins pour trouver ce praticien près de chez vous.`,
   );
 }
 
-// Garantit la structure et le disclaimer même si le modèle les oublie.
-function ensureStructuredResponse(text: string, plan: CarePlan) {
-  const clean = text.replace(DISCLAIMER, "").trim();
-  const hasAllSections = ["**Rassurer & Conseiller**", "**Détecter le besoin**", "**Orienter**"].every(
-    (heading) => clean.includes(heading),
-  );
+// Nettoie les éventuels en-têtes produits par le modèle et garantit la clôture de sécurité.
+function ensureConversationalResponse(text: string, plan: CarePlan) {
+  const clean = text
+    .replace(DISCLAIMER, "")
+    .replace(/^\s*(?:#{1,6}\s*)?(?:\*\*)?(?:Rassurer\s*&\s*Conseiller|Détecter le besoin|Orienter)(?:\*\*)?\s*:?[ \t]*$/gim, "")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
 
-  if (hasAllSections) return `${clean}\n\n${DISCLAIMER}`;
-
-  return structuredResponse(
+  return conversationalResponse(
     clean || plan.summary,
-    `${plan.nextStep} Repère temporel indicatif : ${plan.timeline.toLocaleLowerCase("fr-FR")}.`,
-    `${plan.nextStep} Consultez l'Annuaire Kivoir pour trouver ce profil professionnel recommandé près de chez vous dans le réseau de soins de votre cabinet.`,
+    "Je vous invite à consulter l'annuaire du réseau de soins pour trouver le professionnel adapté près de chez vous.",
   );
 }
 
 function directoryResponse(specialty: PractitionerSpecialty, count: number) {
   const label = directorySpecialtyLabels[specialty].toLocaleLowerCase("fr-FR");
-  return structuredResponse(
-    "Votre demande d'orientation est légitime ; prendre le temps d'identifier le bon interlocuteur aide à organiser la suite de votre suivi.",
+  return conversationalResponse(
+    "Votre demande d'orientation est légitime : prendre le temps d'identifier le bon interlocuteur aide à organiser la suite de votre suivi.",
     `${count} ${count > 1 ? "professionnels correspondent" : "professionnel correspond"} à votre recherche de ${label} à Saint-Maur-des-Fossés. Leurs coordonnées sont affichées ci-dessous.`,
-    `Le profil adapté ici est celui d'un ${label}. Consultez l'Annuaire Kivoir pour trouver un praticien recommandé proche de chez vous dans le réseau de soins de votre cabinet.`,
+    `Le profil adapté ici est celui d'un ${label}. Je vous invite à consulter l'annuaire du réseau de soins pour trouver ce praticien près de chez vous.`,
   );
 }
 
@@ -365,7 +345,7 @@ export const askCareAgent = createServerFn({ method: "POST" })
       const result = await generateText({
         model: MODEL,
         system: SYSTEM_PROMPT,
-        prompt: `Contexte Kivoir (source de vérité, ne pas contredire) :\n${grounding(plan)}\n\nMessage de la personne :\n"""${data.message}"""\n\nRépondez maintenant avec exactement les trois rubriques demandées, dans l'ordre, sans supposer de pathologie ni de symptôme absent du message.`,
+        prompt: `Contexte Kivoir (source de vérité, ne pas contredire) :\n${grounding(plan)}\n\nMessage de la personne :\n"""${data.message}"""\n\nRépondez maintenant de façon fluide et conversationnelle, sans titre, sous-titre, liste ni en-tête. Personnalisez les conseils uniquement à partir des éléments fournis, puis terminez par une orientation naturelle vers le profil professionnel adapté et l'annuaire du réseau de soins.`,
         tools: { rechercherPraticiensSaintMaur },
         toolChoice: "auto",
         stopWhen: isStepCount(3),
@@ -386,7 +366,7 @@ export const askCareAgent = createServerFn({ method: "POST" })
         text:
           specialty && practitioners.length > 0
             ? directoryResponse(specialty, practitioners.length)
-            : ensureStructuredResponse(result.text, plan),
+            : ensureConversationalResponse(result.text, plan),
         emergency: false,
         specialty,
         practitioners,

@@ -32,7 +32,19 @@ ANNUAIRE :
 
 STYLE :
 - Vouvoiement systématique, ton bienveillant, clair et mesuré, sans jargon inutile.
+- Ne supposez aucune pathologie, aucun symptôme ni aucune circonstance que la personne n'a pas explicitement mentionnés.
+- Ne promettez jamais une évolution ou un délai de récupération.
 - Réponse concise, structurée en paragraphes courts.
+
+STRUCTURE OBLIGATOIRE — utilise exactement ces trois titres, dans cet ordre :
+**Rassurer & Conseiller**
+Reformulez avec bienveillance et donnez uniquement des conseils post-consultation simples, prudents et fondés sur les éléments exprimés.
+
+**Détecter le besoin**
+Indiquez clairement s'il est raisonnable de poursuivre la surveillance, de recontacter le médecin, de consulter un professionnel du réseau ou d'appeler immédiatement le 15/112. En cas d'urgence, l'appel au 15/112 doit aussi apparaître dès la première phrase de la réponse.
+
+**Orienter**
+Terminez cette rubrique en proposant de consulter le réseau de soins du cabinet via l'Annuaire Kivoir. Ne fabriquez jamais d'URL : le bouton est ajouté par l'interface.
 
 FIN DE RÉPONSE (obligatoire) :
 Termine toujours, sur une nouvelle ligne, par exactement :
@@ -94,9 +106,16 @@ function detectRedFlag(message: string): string | null {
 // Message d'urgence renvoyé lorsqu'un red flag est détecté.
 function emergencyResponse(reason: string) {
   return [
-    `🚨 Ce que vous décrivez (${reason}) peut être un signe qui nécessite un avis médical immédiat.`,
-    `N'attendez pas : appelez le 15 (SAMU) ou le 112, ou rendez-vous au service d'urgences le plus proche.`,
-    `Si votre état s'aggrave (douleur intense, malaise, essoufflement), rappelez le 15 sans tarder.`,
+    "Appelez immédiatement le 15 (SAMU) ou le 112 : n'attendez pas et ne vous rendez pas seul aux urgences.",
+    "",
+    "**Rassurer & Conseiller**",
+    `Vous avez bien fait de signaler ${reason}. Restez au repos et suivez sans attendre les instructions du service d'urgence.`,
+    "",
+    "**Détecter le besoin**",
+    "La situation décrite nécessite un avis médical immédiat. L'Annuaire ne doit pas retarder votre appel au 15/112.",
+    "",
+    "**Orienter**",
+    "Après la prise en charge urgente, vous pourrez consulter le réseau de soins de votre cabinet pour organiser la suite avec les professionnels adaptés.",
     "",
     DISCLAIMER,
   ].join("\n");
@@ -274,23 +293,52 @@ function grounding(plan: CarePlan) {
   ].join("\n");
 }
 
-// Réponse de repli (sans IA), toujours terminée par le disclaimer.
-function fallbackText(plan: CarePlan) {
-  return [plan.summary, "", `Prochaine étape : ${plan.nextStep}`, `Délai indicatif : ${plan.timeline}.`, "", DISCLAIMER]
-    .filter(Boolean)
-    .join("\n");
+function structuredResponse(reassure: string, detect: string, orient: string) {
+  return [
+    "**Rassurer & Conseiller**",
+    reassure,
+    "",
+    "**Détecter le besoin**",
+    detect,
+    "",
+    "**Orienter**",
+    orient,
+    "",
+    DISCLAIMER,
+  ].join("\n");
 }
 
-// Garantit la présence du disclaimer même si le modèle l'oublie.
-function ensureDisclaimer(text: string) {
-  const clean = text.trim();
-  return clean.includes("ne remplace pas une consultation") ? clean : `${clean}\n\n${DISCLAIMER}`;
+// Réponse de repli (sans IA), toujours structurée et terminée par le disclaimer.
+function fallbackText(plan: CarePlan) {
+  return structuredResponse(
+    `${plan.summary} Continuez à suivre les consignes données lors de votre consultation et notez simplement l'évolution de ce que vous ressentez.`,
+    `${plan.nextStep} Repère temporel indicatif : ${plan.timeline.toLocaleLowerCase("fr-FR")}.`,
+    "Consultez le réseau de soins de votre cabinet dans l'Annuaire Kivoir si vous avez besoin du professionnel adapté.",
+  );
+}
+
+// Garantit la structure et le disclaimer même si le modèle les oublie.
+function ensureStructuredResponse(text: string, plan: CarePlan) {
+  const clean = text.replace(DISCLAIMER, "").trim();
+  const hasAllSections = ["**Rassurer & Conseiller**", "**Détecter le besoin**", "**Orienter**"].every(
+    (heading) => clean.includes(heading),
+  );
+
+  if (hasAllSections) return `${clean}\n\n${DISCLAIMER}`;
+
+  return structuredResponse(
+    clean || plan.summary,
+    `${plan.nextStep} Repère temporel indicatif : ${plan.timeline.toLocaleLowerCase("fr-FR")}.`,
+    "Consultez le réseau de soins de votre cabinet dans l'Annuaire Kivoir si vous avez besoin du professionnel adapté.",
+  );
 }
 
 function directoryResponse(specialty: PractitionerSpecialty, count: number) {
   const label = directorySpecialtyLabels[specialty].toLocaleLowerCase("fr-FR");
-  return ensureDisclaimer(
+  return structuredResponse(
+    "Votre demande d'orientation est légitime ; prendre le temps d'identifier le bon interlocuteur aide à organiser la suite de votre suivi.",
     `${count} ${count > 1 ? "professionnels correspondent" : "professionnel correspond"} à votre recherche de ${label} à Saint-Maur-des-Fossés. Leurs coordonnées sont affichées ci-dessous.`,
+    "Consultez le réseau de soins de votre cabinet dans l'Annuaire Kivoir pour choisir le professionnel adapté.",
   );
 }
 
@@ -311,7 +359,7 @@ export const askCareAgent = createServerFn({ method: "POST" })
       const result = await generateText({
         model: MODEL,
         system: SYSTEM_PROMPT,
-        prompt: `Contexte Kivoir (source de vérité, ne pas contredire) :\n${grounding(plan)}\n\nMessage de la personne :\n"""${data.message}"""`,
+        prompt: `Contexte Kivoir (source de vérité, ne pas contredire) :\n${grounding(plan)}\n\nMessage de la personne :\n"""${data.message}"""\n\nRépondez maintenant avec exactement les trois rubriques demandées, dans l'ordre, sans supposer de pathologie ni de symptôme absent du message.`,
         tools: { rechercherPraticiensSaintMaur },
         toolChoice: "auto",
         stopWhen: isStepCount(3),
@@ -332,7 +380,7 @@ export const askCareAgent = createServerFn({ method: "POST" })
         text:
           specialty && practitioners.length > 0
             ? directoryResponse(specialty, practitioners.length)
-            : ensureDisclaimer(result.text),
+            : ensureStructuredResponse(result.text, plan),
         emergency: false,
         specialty,
         practitioners,

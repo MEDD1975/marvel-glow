@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
-import { Bot, LoaderCircle, MessageCircle, Send, X } from "lucide-react";
+import { Link } from "@tanstack/react-router";
+import { ArrowRight, Bot, LoaderCircle, MessageCircle, Send, X } from "lucide-react";
 import { askCareAgent } from "@/lib/care-agent";
 
 const welcomeMessage =
-  "Bonjour, je suis l’Assistant Kivoir. Comment se passe votre récupération depuis votre consultation ? Vous pouvez me parler de votre douleur, de vos consignes ou d’une évolution qui vous préoccupe.";
+  "Bonjour, je suis l’Assistant Kivoir, votre compagnon après la consultation. Vous pouvez vous exprimer librement : racontez-moi comment s’est passée votre visite, ce que vous ressentez aujourd’hui, ou ce que votre médecin vous a conseillé ou prescrit. Comment puis-je vous aider ?";
 
 type LocalPractitioner = {
   nom: string;
@@ -32,14 +33,44 @@ function visibleMessageText(item: ChatMessage) {
   return item.text.replace(`⚠️ ${SAFETY_NOTICE}`, "").trim();
 }
 
+const responseHeadings = new Set([
+  "**Rassurer & Conseiller**",
+  "**Détecter le besoin**",
+  "**Orienter**",
+]);
+
+function StructuredMessage({ text }: { text: string }) {
+  return (
+    <div className="flex flex-col gap-2">
+      {text.split("\n").filter(Boolean).map((line, index) =>
+        responseHeadings.has(line.trim()) ? (
+          <strong key={`${line}-${index}`} className="mt-1 block text-sm font-semibold text-primary first:mt-0">
+            {line.replaceAll("**", "")}
+          </strong>
+        ) : (
+          <span key={`${line}-${index}`} className="block">
+            {line}
+          </span>
+        ),
+      )}
+    </div>
+  );
+}
+
 export function NavireChatWidget() {
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState("");
   const messageInputRef = useRef<HTMLTextAreaElement>(null);
+  const [directoryHref, setDirectoryHref] = useState("/annuaire");
   const [messages, setMessages] = useState<ChatMessage[]>([
     { role: "assistant", text: welcomeMessage },
   ]);
   const [isSending, setIsSending] = useState(false);
+
+  useEffect(() => {
+    const cabinetId = new URLSearchParams(window.location.search).get("cabinet");
+    setDirectoryHref(cabinetId ? `/annuaire?cabinet=${encodeURIComponent(cabinetId)}` : "/annuaire");
+  }, []);
 
   useEffect(() => {
     function openAssistant() {
@@ -76,7 +107,7 @@ export function NavireChatWidget() {
         ...current,
         {
           role: "assistant",
-          text: "Je ne parviens pas à répondre pour le moment. Vous pouvez reformuler votre question ou demander conseil à un professionnel de santé.\n\n⚠️ Kivoir est un outil d'accompagnement au parcours de soin et ne remplace pas une consultation médicale.",
+          text: "**Rassurer & Conseiller**\nJe ne parviens pas à répondre pour le moment. Continuez à suivre les consignes données lors de votre consultation.\n\n**Détecter le besoin**\nSi votre situation vous préoccupe, évolue défavorablement ou si vous avez un doute, recontactez votre médecin. En cas d’urgence, appelez le 15 ou le 112.\n\n**Orienter**\nVous pouvez consulter le réseau de soins de votre cabinet dans l’Annuaire Kivoir.\n\n⚠️ Kivoir est un outil d'accompagnement au parcours de soin et ne remplace pas une consultation médicale.",
         },
       ]);
     } finally {
@@ -119,15 +150,19 @@ export function NavireChatWidget() {
                 className={`flex ${item.role === "user" ? "justify-end" : "justify-start"}`}
               >
                 <div className="flex w-full flex-col items-start gap-2">
-                  <p
+                  <div
                     className={`max-w-[88%] whitespace-pre-wrap rounded-2xl px-3.5 py-2.5 text-sm leading-6 ${
                       item.role === "user"
                         ? "self-end rounded-br-md bg-primary text-primary-foreground"
                         : "rounded-bl-md border border-border bg-card text-card-foreground"
                     }`}
                   >
-                    {visibleMessageText(item)}
-                  </p>
+                    {item.role === "assistant" ? (
+                      <StructuredMessage text={visibleMessageText(item)} />
+                    ) : (
+                      visibleMessageText(item)
+                    )}
+                  </div>
                   {item.practitioners?.length ? (
                     <section
                       aria-label="Résultats de l'annuaire à Saint-Maur-des-Fossés"
@@ -169,6 +204,15 @@ export function NavireChatWidget() {
                       </div>
                       <p className="pt-3 text-xs leading-5 text-muted-foreground">{DIRECTORY_NOTICE}</p>
                     </section>
+                  ) : null}
+                  {item.role === "assistant" && index > 0 ? (
+                    <Link
+                      to={directoryHref}
+                      className="inline-flex max-w-[88%] items-center gap-2 rounded-xl bg-primary px-3.5 py-2.5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                    >
+                      Consulter le réseau de soins de mon cabinet
+                      <ArrowRight className="h-4 w-4 shrink-0" aria-hidden="true" />
+                    </Link>
                   ) : null}
                 </div>
               </div>

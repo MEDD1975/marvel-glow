@@ -17,6 +17,7 @@ import {
   journeySteps,
   professionColor,
   professionOrder,
+  isProfession,
   type Profession,
 } from "@/lib/directory";
 
@@ -24,6 +25,7 @@ type Search = {
   cabinet?: string | undefined;
   c?: string | undefined;
   step?: string | undefined;
+  profession?: Profession | undefined;
 };
 
 export const Route = createFileRoute("/annuaire")({
@@ -31,6 +33,10 @@ export const Route = createFileRoute("/annuaire")({
     cabinet: typeof search["cabinet"] === "string" ? search["cabinet"] : undefined,
     c: typeof search["c"] === "string" ? search["c"] : undefined,
     step: typeof search["step"] === "string" ? search["step"] : undefined,
+    profession:
+      typeof search["profession"] === "string" && isProfession(search["profession"])
+        ? search["profession"]
+        : undefined,
   }),
   head: () => ({
     meta: [
@@ -56,7 +62,7 @@ export const Route = createFileRoute("/annuaire")({
   component: AnnuairePage,
 });
 
-function CabinetChooser({ invalidId }: { invalidId?: string }) {
+function CabinetChooser({ invalidId, profession }: { invalidId?: string; profession?: Profession }) {
   return (
     <main className="mx-auto max-w-3xl px-4 py-16">
       <div className="rounded-2xl border border-border bg-card p-6 shadow-sm md:p-8">
@@ -76,7 +82,7 @@ function CabinetChooser({ invalidId }: { invalidId?: string }) {
             <Link
               key={cabinet.id}
               to="/annuaire"
-              search={{ cabinet: cabinet.id }}
+              search={{ cabinet: cabinet.id, profession }}
               className="flex items-center justify-between gap-4 rounded-xl border border-border bg-background p-4 transition-colors hover:border-care/50"
             >
               <div>
@@ -95,9 +101,9 @@ function CabinetChooser({ invalidId }: { invalidId?: string }) {
 }
 
 function AnnuairePage() {
-  const { cabinet: cabinetId, c, step } = Route.useSearch();
+  const { cabinet: cabinetId, c, step, profession } = Route.useSearch();
   const navigate = useNavigate({ from: "/annuaire" });
-  const [professionFilter, setProfessionFilter] = useState<Profession | null>(null);
+  const [professionFilter, setProfessionFilter] = useState<Profession | null>(profession ?? null);
 
   const selectedCabinet = cabinets.find((cabinet) => cabinet.id === cabinetId) ?? null;
   const cabinetProviders = selectedCabinet?.providers ?? [];
@@ -146,7 +152,7 @@ function AnnuairePage() {
     navigate({ search: (prev: Search) => ({ ...prev, ...next }), resetScroll: false });
 
   if (!selectedCabinet) {
-    return <CabinetChooser {...(cabinetId ? { invalidId: cabinetId } : {})} />;
+    return <CabinetChooser {...(cabinetId ? { invalidId: cabinetId } : {})} {...(profession ? { profession } : {})} />;
   }
 
   return (

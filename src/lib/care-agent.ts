@@ -4,7 +4,7 @@ import { z } from "zod";
 import { conditions, type Condition, type TriageLevel } from "@/lib/conditions";
 import { pathways, lineLabels } from "@/lib/pathways";
 import { conditionAdvice, generalRedFlags } from "@/lib/condition-advice";
-import localPractitioners from "../../data/praticiens_saint_maur.json";
+import { findProvidersByProfession, professionOrder, type Profession, type Provider } from "@/lib/directory";
 
 // Modèle servi via l'AI Gateway de Vercel (string "provider/model").
 const MODEL = "openai/gpt-4.1-mini";
@@ -32,7 +32,7 @@ RÈGLES CLINIQUES ABSOLUES :
 
 ANNUAIRE :
 - Dès qu'une personne cherche un professionnel à Saint-Maur-des-Fossés, directement ou dans une question naturelle, appelle l'outil rechercherPraticiensSaintMaur.
-- Utilise uniquement l'une des cinq spécialités acceptées par l'outil.
+- Utilise uniquement une profession disponible dans le référentiel de l'outil.
 - Après l'appel, présente brièvement l'orientation sans recopier toutes les coordonnées : les cartes sont affichées séparément dans l'interface.
 - Si l'outil ne trouve personne, dis-le clairement sans inventer de nom, d'adresse ou de téléphone.
 
@@ -54,10 +54,19 @@ FIN DE RÉPONSE (obligatoire) :
 Termine toujours, sur une nouvelle ligne, par exactement :
 ${DISCLAIMER}`;
 
+const conversationMessageSchema = z.object({
+  role: z.enum(["user", "assistant"]),
+  text: z.string().trim().min(1).max(800),
+});
+
 const requestSchema = z.object({
   message: z.string().trim().min(3).max(800),
   zone: z.string().optional(),
+  cabinetId: z.string().trim().max(80).optional(),
+  history: z.array(conversationMessageSchema).max(8).default([]),
 });
+
+export type CareAgentHistoryMessage = z.infer<typeof conversationMessageSchema>;
 
 type CarePlan = {
   level: TriageLevel;
@@ -77,6 +86,21 @@ function normalize(text: string) {
     .toLowerCase()
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "");
+}
+
+function detectIdentifyingData(message: string): string | null {
+  if (/\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/i.test(message)) return "une adresse e-mail";
+  if (/(?:\+33|0)[1-9](?:[ .-]?\d{2}){4}\b/.test(message)) return "un numéro de téléphone";
+  if (/\b[12]\s?\d{2}(?:\s?\d{2}){4}\s?\d{3}\s?\d{2}\b/.test(message)) return "un numéro de sécurité sociale";
+  if (/\b(?:je m['’]appelle|mon nom est|je suis monsieur|je suis madame)\s+[a-zà-ÿ'-]{2,}/i.test(message)) {
+    return "un nom ou un prénom";
+  }
+  if (/\b\d{1,4}\s+(?:rue|avenue|boulevard|chemin|impasse|allée)\b/i.test(message)) return "une adresse précise";
+  return null;
+}
+
+function privacyResponse(reason: string) {
+  return `Pour protéger votre anonymat, je n’ai pas transmis ce message car il semble contenir ${reason}. Reformulez votre situation sans nom, prénom, coordonnées, adresse précise ni numéro d’identification. Vous pouvez décrire librement vos symptômes, le diagnostic annoncé par votre médecin et les consignes ou prescriptions reçues.\n\n${DISCLAIMER}`;
 }
 
 /**
@@ -120,66 +144,12 @@ function emergencyResponse(reason: string) {
   ].join("\n");
 }
 
-type LocalPractitioner = {
-  nom: string;
-  prenom: string;
-  specialite: string;
-  adresse: string;
-  telephone: string;
-  codePostal: string;
-  ville: string;
-  secteur: string;
-};
-
-type CabinetDirectory = Record<
-  string,
-  {
-    nom_cabinet: string;
-    praticiens: Array<{ nom: string; specialite: string; adresse: string; telephone: string }>;
-  }
->;
-
-const directoryPractitioners: LocalPractitioner[] = Object.values(
-  localPractitioners as CabinetDirectory,
-).flatMap((cabinet) =>
-  cabinet.praticiens.map((practitioner) => {
-    const addressMatch = practitioner.adresse.match(/^(.*?),\s*(\d{5})\s+(.+)$/);
-    return {
-      nom: practitioner.nom,
-      prenom: "",
-      specialite: practitioner.specialite,
-      adresse: addressMatch?.[1]?.trim() ?? practitioner.adresse,
-      telephone: practitioner.telephone.replace(/\D/g, ""),
-      codePostal: addressMatch?.[2] ?? "",
-      ville: addressMatch?.[3]?.trim() ?? "Saint-Maur-des-Fossés",
-      secteur: "",
-    };
-  }),
-);
-
-const practitionerSpecialtySchema = z.enum([
-  "médecin généraliste",
-  "médecin du sport",
-  "kinésithérapeute",
-  "podologue",
-  "chirurgien orthopédiste",
-]);
+const practitionerSpecialtySchema = z.enum(professionOrder as [Profession, ...Profession[]]);
 
 type PractitionerSpecialty = z.infer<typeof practitionerSpecialtySchema>;
 
-const directorySpecialtyLabels: Record<PractitionerSpecialty, string> = {
-  "médecin généraliste": "Médecin généraliste",
-  "médecin du sport": "Médecin du sport",
-  kinésithérapeute: "Kinésithérapeute",
-  podologue: "Podologue",
-  "chirurgien orthopédiste": "Chirurgien orthopédiste",
-};
-
-function searchLocalPractitioners(specialty: PractitionerSpecialty): LocalPractitioner[] {
-  const target = normalize(directorySpecialtyLabels[specialty]);
-  return directoryPractitioners.filter(
-    (practitioner) => normalize(practitioner.specialite) === target,
-  );
+function searchLocalPractitioners(specialty: PractitionerSpecialty, cabinetId?: string): Provider[] {
+  return findProvidersByProfession(specialty, cabinetId);
 }
 
 const rechercherPraticiensSaintMaur = tool({
@@ -196,11 +166,14 @@ const rechercherPraticiensSaintMaur = tool({
 });
 
 const specialtyMatchers: Array<{ specialty: PractitionerSpecialty; terms: string[] }> = [
-  { specialty: "médecin du sport", terms: ["medecin du sport", "sport"] },
-  { specialty: "chirurgien orthopédiste", terms: ["orthopediste", "chirurgien", "traumatologue"] },
-  { specialty: "kinésithérapeute", terms: ["kine", "kinesitherapeute", "physio"] },
-  { specialty: "podologue", terms: ["podologue", "pedicure", "semelle"] },
-  { specialty: "médecin généraliste", terms: ["medecin generaliste", "generaliste", "medecin traitant"] },
+  { specialty: "Médecin du sport", terms: ["medecin du sport", "sport"] },
+  { specialty: "Chirurgien orthopédiste", terms: ["orthopediste", "chirurgien", "traumatologue"] },
+  { specialty: "Kinésithérapeute", terms: ["kine", "kinesitherapeute", "physio", "reeducation"] },
+  { specialty: "Podologue", terms: ["podologue", "pedicure", "semelle"] },
+  { specialty: "Rhumatologue", terms: ["rhumatologue", "rhumatologie"] },
+  { specialty: "Ostéopathe", terms: ["osteopathe", "osteopathie"] },
+  { specialty: "Imagerie médicale", terms: ["imagerie", "irm", "radio", "echographie", "scanner"] },
+  { specialty: "Médecin généraliste", terms: ["medecin generaliste", "generaliste", "medecin traitant"] },
 ];
 
 function detectSpecialty(message: string): PractitionerSpecialty | null {
@@ -320,7 +293,7 @@ function ensureConversationalResponse(text: string, plan: CarePlan) {
 }
 
 function directoryResponse(specialty: PractitionerSpecialty, count: number) {
-  const label = directorySpecialtyLabels[specialty].toLocaleLowerCase("fr-FR");
+  const label = specialty.toLocaleLowerCase("fr-FR");
   return conversationalResponse(
     "Votre demande d'orientation est légitime : prendre le temps d'identifier le bon interlocuteur aide à organiser la suite de votre suivi.",
     `${count} ${count > 1 ? "professionnels correspondent" : "professionnel correspond"} à votre recherche de ${label} à Saint-Maur-des-Fossés. Leurs coordonnées sont affichées ci-dessous.`,
@@ -331,21 +304,37 @@ function directoryResponse(specialty: PractitionerSpecialty, count: number) {
 export const askCareAgent = createServerFn({ method: "POST" })
   .validator((data: unknown) => requestSchema.parse(data))
   .handler(async ({ data }) => {
-    // 1) Filtre de sécurité déterministe AVANT tout appel au modèle.
+    // 1) Protection de l'anonymat AVANT tout appel au modèle.
+    const identifyingData = detectIdentifyingData(data.message);
+    if (identifyingData) {
+      return { text: privacyResponse(identifyingData), blocked: true, emergency: false, specialty: null, practitioners: [] };
+    }
+
+    // 2) Filtre de sécurité déterministe AVANT tout appel au modèle.
     const redFlag = detectRedFlag(data.message);
     if (redFlag) {
       return { text: emergencyResponse(redFlag), emergency: true, specialty: null, practitioners: [] };
     }
 
-    // 2) Ancrage : le parcours curé de Kivoir reste la source de vérité.
-    const plan = buildCarePlan(data.message, data.zone);
+    // 3) L'historique récent reste borné, éphémère et n'est jamais persisté.
+    const safeHistory = data.history.slice(-8);
+    const userContext = safeHistory
+      .filter((item) => item.role === "user")
+      .map((item) => item.text)
+      .concat(data.message)
+      .join("\n");
+    const plan = buildCarePlan(userContext, data.zone);
+    const conversation = safeHistory
+      .map((item) => `${item.role === "user" ? "Patient" : "Assistant"} : ${item.text}`)
+      .concat(`Patient : ${data.message}`)
+      .join("\n\n");
 
-    // 3) Le modèle peut appeler l'annuaire puis formuler une réponse cohérente.
+    // 4) Le modèle peut clarifier le besoin ou appeler l'annuaire puis orienter.
     try {
       const result = await generateText({
         model: MODEL,
         system: SYSTEM_PROMPT,
-        prompt: `Contexte Kivoir (source de vérité, ne pas contredire) :\n${grounding(plan)}\n\nMessage de la personne :\n"""${data.message}"""\n\nRépondez maintenant de façon fluide et conversationnelle, sans titre, sous-titre, liste ni en-tête. Personnalisez les conseils uniquement à partir des éléments fournis, puis terminez par une orientation naturelle vers le profil professionnel adapté et l'annuaire du réseau de soins.`,
+        prompt: `Contexte Kivoir (source de vérité, ne pas contredire) :\n${grounding(plan)}\n\nConversation récente, fournie uniquement pour ce tour :\n"""${conversation}"""\n\nRépondez au dernier message sans redemander une information déjà donnée. Si une information essentielle manque pour orienter sans supposer, posez une seule question ouverte et utile. Sinon, donnez des conseils prudents puis terminez par une orientation naturelle vers le profil professionnel adapté et l'annuaire du réseau de soins. N'utilisez ni titre, ni liste, ni diagnostic inféré.`,
         tools: { rechercherPraticiensSaintMaur },
         toolChoice: "auto",
         stopWhen: isStepCount(3),
@@ -357,10 +346,12 @@ export const askCareAgent = createServerFn({ method: "POST" })
         .reverse()
         .find((toolResult) => toolResult.toolName === "rechercherPraticiensSaintMaur");
       const output = directoryResult?.output as
-        | { specialite: PractitionerSpecialty; praticiens: LocalPractitioner[] }
+        | { specialite: PractitionerSpecialty; praticiens: Provider[] }
         | undefined;
-      const specialty = output?.specialite ?? null;
-      const practitioners = output?.praticiens ?? [];
+      const specialty = output?.specialite ?? detectSpecialty(userContext);
+      const practitioners = specialty
+        ? searchLocalPractitioners(specialty, data.cabinetId)
+        : [];
 
       return {
         text:
@@ -371,10 +362,9 @@ export const askCareAgent = createServerFn({ method: "POST" })
         specialty,
         practitioners,
       };
-    } catch (error) {
-      console.log("[v0] Assistant Kivoir — repli déterministe (échec IA) :", error instanceof Error ? error.message : error);
-      const specialty = detectSpecialty(data.message);
-      const practitioners = specialty ? searchLocalPractitioners(specialty) : [];
+    } catch {
+      const specialty = detectSpecialty(userContext);
+      const practitioners = specialty ? searchLocalPractitioners(specialty, data.cabinetId) : [];
       return {
         text:
           specialty && practitioners.length > 0

@@ -33,44 +33,14 @@ function visibleMessageText(item: ChatMessage) {
   return item.text.replace(`⚠️ ${SAFETY_NOTICE}`, "").trim();
 }
 
-const responseHeadings = new Set([
-  "**Rassurer & Conseiller**",
-  "**Détecter le besoin**",
-  "**Orienter**",
-]);
-
-function StructuredMessage({ text }: { text: string }) {
-  return (
-    <div className="flex flex-col gap-2">
-      {text.split("\n").filter(Boolean).map((line, index) =>
-        responseHeadings.has(line.trim()) ? (
-          <strong key={`${line}-${index}`} className="mt-1 block text-sm font-semibold text-primary first:mt-0">
-            {line.replaceAll("**", "")}
-          </strong>
-        ) : (
-          <span key={`${line}-${index}`} className="block">
-            {line}
-          </span>
-        ),
-      )}
-    </div>
-  );
-}
-
 export function NavireChatWidget() {
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState("");
   const messageInputRef = useRef<HTMLTextAreaElement>(null);
-  const [directoryHref, setDirectoryHref] = useState("/annuaire");
   const [messages, setMessages] = useState<ChatMessage[]>([
     { role: "assistant", text: welcomeMessage },
   ]);
   const [isSending, setIsSending] = useState(false);
-
-  useEffect(() => {
-    const cabinetId = new URLSearchParams(window.location.search).get("cabinet");
-    setDirectoryHref(cabinetId ? `/annuaire?cabinet=${encodeURIComponent(cabinetId)}` : "/annuaire");
-  }, []);
 
   useEffect(() => {
     function openAssistant() {
@@ -107,7 +77,7 @@ export function NavireChatWidget() {
         ...current,
         {
           role: "assistant",
-          text: "**Rassurer & Conseiller**\nJe ne parviens pas à répondre pour le moment. Continuez à suivre les consignes données lors de votre consultation.\n\n**Détecter le besoin**\nSi votre situation vous préoccupe, évolue défavorablement ou si vous avez un doute, recontactez votre médecin. En cas d’urgence, appelez le 15 ou le 112.\n\n**Orienter**\nVous pouvez consulter le réseau de soins de votre cabinet dans l’Annuaire Kivoir.\n\n⚠️ Kivoir est un outil d'accompagnement au parcours de soin et ne remplace pas une consultation médicale.",
+          text: "Je ne parviens pas à répondre pour le moment. Continuez à suivre les consignes données lors de votre consultation. Si votre situation vous préoccupe, évolue défavorablement ou si vous avez un doute, recontactez votre médecin. En cas d’urgence, appelez le 15 ou le 112.\n\nJe vous invite à consulter l’annuaire du réseau de soins pour trouver le professionnel adapté près de chez vous.\n\n⚠️ Kivoir est un outil d'accompagnement au parcours de soin et ne remplace pas une consultation médicale.",
         },
       ]);
     } finally {
@@ -157,11 +127,7 @@ export function NavireChatWidget() {
                         : "rounded-bl-md border border-border bg-card text-card-foreground"
                     }`}
                   >
-                    {item.role === "assistant" ? (
-                      <StructuredMessage text={visibleMessageText(item)} />
-                    ) : (
-                      visibleMessageText(item)
-                    )}
+                    {visibleMessageText(item)}
                   </div>
                   {item.practitioners?.length ? (
                     <section
@@ -207,10 +173,10 @@ export function NavireChatWidget() {
                   ) : null}
                   {item.role === "assistant" && index > 0 ? (
                     <Link
-                      to={directoryHref}
+                      to="/annuaire"
                       className="inline-flex max-w-[88%] items-center gap-2 rounded-xl bg-primary px-3.5 py-2.5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                     >
-                      Consulter le réseau de soins de mon cabinet
+                      Accéder à l'annuaire du réseau de soins
                       <ArrowRight className="h-4 w-4 shrink-0" aria-hidden="true" />
                     </Link>
                   ) : null}

@@ -7,6 +7,8 @@ import {
   ClipboardCheck,
   MapPin,
   MessageCircleQuestion,
+  QrCode,
+  Stethoscope,
   TrendingUp,
 } from "lucide-react";
 
@@ -115,6 +117,45 @@ export function AssistantHome() {
                 </div>
               </aside>
             </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="px-4 pb-12 md:pb-16" aria-labelledby="care-pathway">
+        <div className="mx-auto max-w-5xl rounded-3xl border border-border bg-background p-6 md:p-8">
+          <div className="max-w-2xl">
+            <p className="text-sm font-semibold text-care">Le parcours Kivoir</p>
+            <h2 id="care-pathway" className="mt-2 text-balance text-2xl font-semibold text-foreground md:text-3xl">
+              De la consultation à l&apos;accompagnement, en trois étapes
+            </h2>
+            <p className="mt-3 text-pretty text-sm leading-6 text-muted-foreground md:text-base">
+              Kivoir prolonge le lien avec votre médecin et vous aide à avancer avec les bons repères.
+            </p>
+          </div>
+          <div className="mt-8 grid gap-4 md:grid-cols-3">
+            <article className="relative rounded-2xl border border-border bg-card p-5 md:after:absolute md:after:right-[-1.1rem] md:after:top-1/2 md:after:h-px md:after:w-4 md:after:bg-care/40">
+              <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-care/10 text-care"><Stethoscope className="h-5 w-5" aria-hidden="true" /></span>
+              <p className="mt-4 text-xs font-semibold uppercase tracking-wide text-care">Étape 1</p>
+              <h3 className="mt-1 font-semibold text-card-foreground">Je consulte mon médecin</h3>
+              <p className="mt-2 text-sm leading-6 text-muted-foreground">Votre médecin pose son diagnostic et vous explique la suite de votre prise en charge.</p>
+            </article>
+            <article className="relative rounded-2xl border border-border bg-card p-5 md:after:absolute md:after:right-[-1.1rem] md:after:top-1/2 md:after:h-px md:after:w-4 md:after:bg-care/40">
+              <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-care/10 text-care"><QrCode className="h-5 w-5" aria-hidden="true" /></span>
+              <p className="mt-4 text-xs font-semibold uppercase tracking-wide text-care">Étape 2</p>
+              <h3 className="mt-1 font-semibold text-card-foreground">Je scanne son QR code</h3>
+              <p className="mt-2 text-sm leading-6 text-muted-foreground">À la fin de la consultation, vous accédez simplement à votre espace de suivi.</p>
+            </article>
+            <article className="rounded-2xl border border-border bg-card p-5">
+              <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-care/10 text-care"><Bot className="h-5 w-5" aria-hidden="true" /></span>
+              <p className="mt-4 text-xs font-semibold uppercase tracking-wide text-care">Étape 3</p>
+              <h3 className="mt-1 font-semibold text-card-foreground">Je suis guidé après la consultation</h3>
+              <p className="mt-2 text-sm leading-6 text-muted-foreground">Je retrouve le réseau de mon médecin et échange avec l&apos;Assistant Kivoir.</p>
+            </article>
+          </div>
+          <div className="mt-6 flex flex-wrap gap-3 text-xs font-medium text-muted-foreground">
+            <span className="rounded-full border border-border bg-card px-3 py-2">Parcours clair</span>
+            <span className="rounded-full border border-border bg-card px-3 py-2">Réseau recommandé par votre médecin</span>
+            <span className="rounded-full border border-border bg-card px-3 py-2">Disponible après la consultation</span>
           </div>
         </div>
       </section>

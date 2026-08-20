@@ -66,8 +66,12 @@ export const Route = createFileRoute("/annuaire")({
 
 function CabinetChooser({ invalidId, profession }: { invalidId?: string; profession?: Profession }) {
   const [query, setQuery] = useState("");
+  const [submittedQuery, setSubmittedQuery] = useState("");
   const trimmed = query.trim();
-  const matches = useMemo(() => (trimmed.length >= 2 ? findCabinetsByPractitionerName(trimmed) : []), [trimmed]);
+  const matches = useMemo(
+    () => (submittedQuery.length >= 2 ? findCabinetsByPractitionerName(submittedQuery) : []),
+    [submittedQuery],
+  );
   const doctorSuggestions = useMemo(
     () =>
       cabinets
@@ -77,7 +81,12 @@ function CabinetChooser({ invalidId, profession }: { invalidId?: string; profess
         .filter((name, index, names) => names.indexOf(name) === index),
     [],
   );
-  const hasSearched = trimmed.length >= 2;
+  const hasSearched = submittedQuery.length >= 2;
+
+  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setSubmittedQuery(trimmed);
+  }
 
   return (
     <main className="mx-auto max-w-3xl px-4 py-16">
@@ -94,7 +103,7 @@ function CabinetChooser({ invalidId, profession }: { invalidId?: string; profess
             : "Entrez le nom de votre médecin pour afficher le réseau de soins de son cabinet et les professionnels recommandés."}
         </p>
 
-        <div className="mt-6">
+        <form className="mt-6" onSubmit={handleSubmit}>
           <label htmlFor="doctor-search" className="text-sm font-medium text-foreground">
             Nom de votre médecin
           </label>
@@ -117,9 +126,16 @@ function CabinetChooser({ invalidId, profession }: { invalidId?: string; profess
             </datalist>
           </div>
           <p className="mt-2 text-xs leading-5 text-muted-foreground">
-            Commencez à taper « Dr A » ou « Dr B » pour voir les médecins disponibles.
+            Exemple : saisissez « Dr A » ou « Dr B », puis cliquez sur Valider.
           </p>
-        </div>
+          <button
+            type="submit"
+            disabled={trimmed.length < 2}
+            className="mt-3 inline-flex items-center justify-center rounded-xl bg-care px-4 py-2.5 text-sm font-semibold text-care-foreground transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            Valider
+          </button>
+        </form>
 
         <div className="mt-6 flex flex-col gap-3">
           {hasSearched && matches.length === 0 ? (

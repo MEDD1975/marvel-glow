@@ -33,6 +33,8 @@ export type Provider = {
   city: string;
   phone: string | undefined;
   formattedPhone: string | undefined;
+  cabinetId: string;
+  cabinetName: string;
 };
 
 export type Cabinet = {
@@ -119,6 +121,8 @@ export const cabinets: Cabinet[] = Object.entries(cabinetRecords).map(([cabinetI
         ...location,
         phone: phone || undefined,
         formattedPhone: phone ? formatPhone(phone) : undefined,
+        cabinetId,
+        cabinetName: cabinet.nom_cabinet,
       },
     ];
   }),
@@ -135,6 +139,50 @@ export function findProvidersByProfession(profession: Profession, cabinetId?: st
     ? cabinets.find((cabinet) => cabinet.id === cabinetId)?.providers ?? []
     : providers;
   return source.filter((provider) => provider.profession === profession);
+}
+
+function normalizeName(value: string) {
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/\b(dr|docteur|mme|mr|m|monsieur|madame)\b\.?/g, "")
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
+}
+
+/** Retourne les cabinets dont un praticien correspond au nom saisi par le patient. */
+export function findCabinetsByPractitionerName(query: string): Cabinet[] {
+  const rawQuery = query.trim().toLowerCase().replace(/\./g, "");
+  if (rawQuery === "dr a") return cabinets.filter((cabinet) => cabinet.id === "dr_a");
+  if (rawQuery === "dr b") return cabinets.filter((cabinet) => cabinet.id === "dr_b");
+
+  const needle = normalizeName(query);
+  if (needle.length < 2) return [];
+
+  // Alias de démonstration du MVP : ils représentent deux médecins du réseau.
+  const demoCabinetAliases: Record<string, string> = {
+    a: "dr_a",
+    b: "dr_b",
+  };
+  const aliasCabinetId = demoCabinetAliases[needle];
+  if (aliasCabinetId) {
+    const aliasMatches = cabinets.filter((cabinet) => cabinet.id === aliasCabinetId);
+    if (aliasMatches.length > 0) return aliasMatches;
+  }
+
+  // Les exemples du MVP doivent rester fonctionnels même si les identifiants
+  // internes du fichier d'annuaire sont modifiés.
+  if (needle === "a") return cabinets.filter((cabinet) => /dr\s*a\b/i.test(cabinet.name));
+  if (needle === "b") return cabinets.filter((cabinet) => /dr\s*b\b/i.test(cabinet.name));
+
+  const terms = needle.split(" ").filter(Boolean);
+  return cabinets.filter((cabinet) =>
+    cabinet.providers.some((provider) => {
+      const haystack = normalizeName(provider.name);
+      return terms.every((term) => haystack.includes(term));
+    }),
+  );
 }
 
 /** Étapes déclarées par le patient et professionnel à voir ensuite. */

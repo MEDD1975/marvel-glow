@@ -6,6 +6,7 @@ import {
   MapPin,
   Navigation,
   Phone,
+  Search,
   Stethoscope,
 } from "lucide-react";
 import { DirectoryShareTools } from "@/components/DirectoryShareTools";
@@ -14,6 +15,7 @@ import { conditions } from "@/lib/conditions";
 import { pathways } from "@/lib/pathways";
 import {
   cabinets,
+  findCabinetsByPractitionerName,
   journeySteps,
   professionColor,
   professionOrder,
@@ -26,6 +28,7 @@ type Search = {
   c?: string | undefined;
   step?: string | undefined;
   profession?: Profession | undefined;
+  doctor?: string | undefined;
 };
 
 export const Route = createFileRoute("/annuaire")({
@@ -37,6 +40,7 @@ export const Route = createFileRoute("/annuaire")({
       typeof search["profession"] === "string" && isProfession(search["profession"])
         ? search["profession"]
         : undefined,
+    doctor: typeof search["doctor"] === "string" ? search["doctor"] : undefined,
   }),
   head: () => ({
     meta: [
@@ -62,7 +66,32 @@ export const Route = createFileRoute("/annuaire")({
   component: AnnuairePage,
 });
 
-function CabinetChooser({ invalidId, profession }: { invalidId?: string; profession?: Profession }) {
+function CabinetChooser({ invalidId, profession, doctor }: { invalidId?: string; profession?: Profession; doctor?: string }) {
+  const navigate = useNavigate({ from: "/annuaire" });
+  const [query, setQuery] = useState(doctor ?? "");
+  const [submittedQuery, setSubmittedQuery] = useState(doctor ?? "");
+  const trimmed = query.trim();
+  const matches = useMemo(
+    () => (submittedQuery.length >= 2 ? findCabinetsByPractitionerName(submittedQuery) : []),
+    [submittedQuery],
+  );
+  const doctorSuggestions = useMemo(
+    () =>
+      cabinets
+        .flatMap((cabinet) => cabinet.providers)
+        .filter((provider) => provider.profession === "Médecin généraliste" || provider.profession === "Médecin du sport")
+        .map((provider) => provider.name)
+        .filter((name, index, names) => names.indexOf(name) === index),
+    [],
+  );
+  const hasSearched = submittedQuery.length >= 2;
+
+  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setSubmittedQuery(trimmed);
+    navigate({ search: { doctor: trimmed, profession } as Search, resetScroll: false });
+  }
+
   return (
     <main className="mx-auto max-w-3xl px-4 py-16">
       <div className="rounded-2xl border border-border bg-card p-6 shadow-sm md:p-8">
@@ -70,30 +99,80 @@ function CabinetChooser({ invalidId, profession }: { invalidId?: string; profess
           Annuaire Kivoir
         </span>
         <h1 className="mt-4 text-2xl font-semibold text-balance text-foreground md:text-3xl">
-          {invalidId ? "Ce cabinet n’est pas disponible" : "Choisissez votre cabinet"}
+          {invalidId ? "Ce cabinet n’est pas disponible" : "Retrouvez le réseau de votre médecin"}
         </h1>
         <p className="mt-2 max-w-xl leading-6 text-muted-foreground">
           {invalidId
-            ? `L’identifiant « ${invalidId} » ne correspond à aucun cabinet de l’annuaire.`
-            : "Sélectionnez un cabinet pour consulter uniquement les professionnels qui y exercent."}
+            ? `L’identifiant « ${invalidId} » ne correspond à aucun cabinet. Saisissez le nom de votre médecin pour retrouver son réseau de soins.`
+            : "Entrez le nom de votre médecin pour afficher le réseau de soins de son cabinet et les professionnels recommandés."}
         </p>
+
+        <form className="mt-6" onSubmit={handleSubmit}>
+          <label htmlFor="doctor-search" className="text-sm font-medium text-foreground">
+            Nom de votre médecin
+          </label>
+          <div className="mt-2 flex items-center gap-2 rounded-xl border border-border bg-background px-3 py-2 focus-within:border-care/60">
+            <Search className="h-4 w-4 shrink-0 text-muted-foreground" />
+            <input
+              id="doctor-search"
+              type="text"
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder="Ex. Dr A ou Dr B"
+              list="doctor-name-suggestions"
+              autoComplete="off"
+              className="w-full bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground"
+            />
+            <datalist id="doctor-name-suggestions">
+              {doctorSuggestions.map((name) => (
+                <option key={name} value={name} />
+              ))}
+            </datalist>
+          </div>
+          <p className="mt-2 text-xs leading-5 text-muted-foreground">
+            Exemple : saisissez « Dr A » ou « Dr B », puis cliquez sur Valider.
+          </p>
+          <button
+            type="button"
+            onClick={() => {
+              setSubmittedQuery(trimmed);
+              navigate({ search: { doctor: trimmed, profession } as Search, resetScroll: false });
+            }}
+            disabled={trimmed.length < 2}
+            className="mt-3 inline-flex items-center justify-center rounded-xl bg-care px-4 py-2.5 text-sm font-semibold text-care-foreground transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            Valider
+          </button>
+        </form>
+
         <div className="mt-6 flex flex-col gap-3">
-          {cabinets.map((cabinet) => (
-            <Link
-              key={cabinet.id}
-              to="/annuaire"
-              search={{ cabinet: cabinet.id, profession }}
-              className="flex items-center justify-between gap-4 rounded-xl border border-border bg-background p-4 transition-colors hover:border-care/50"
-            >
-              <div>
-                <p className="font-semibold text-foreground">{cabinet.name}</p>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  {cabinet.providers.length} professionnel{cabinet.providers.length > 1 ? "s" : ""}
-                </p>
-              </div>
-              <ArrowRight className="h-5 w-5 shrink-0 text-care" />
-            </Link>
-          ))}
+          {hasSearched && matches.length === 0 ? (
+            <p className="rounded-xl border border-dashed border-border bg-background p-4 text-sm text-muted-foreground">
+              Aucun médecin ne correspond à « {trimmed} » dans nos réseaux. Vérifiez l’orthographe ou essayez seulement le nom de famille.
+            </p>
+          ) : null}
+          {matches.map((cabinet) => {
+            const match = cabinet.providers.find((provider) =>
+              provider.profession === "Médecin généraliste" || provider.profession === "Médecin du sport",
+            ) ?? cabinet.providers[0];
+            return (
+              <Link
+                key={cabinet.id}
+                to="/annuaire"
+                search={{ cabinet: cabinet.id, profession }}
+                className="flex items-center justify-between gap-4 rounded-xl border border-border bg-background p-4 transition-colors hover:border-care/50"
+              >
+                <div>
+                  <p className="font-semibold text-foreground">{cabinet.name}</p>
+                  {match ? <p className="mt-1 text-sm text-care">{match.name}</p> : null}
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    {cabinet.providers.length} professionnel{cabinet.providers.length > 1 ? "s" : ""} dans ce réseau
+                  </p>
+                </div>
+                <ArrowRight className="h-5 w-5 shrink-0 text-care" />
+              </Link>
+            );
+          })}
         </div>
       </div>
     </main>
@@ -101,7 +180,7 @@ function CabinetChooser({ invalidId, profession }: { invalidId?: string; profess
 }
 
 function AnnuairePage() {
-  const { cabinet: cabinetId, c, step, profession } = Route.useSearch();
+  const { cabinet: cabinetId, c, step, profession, doctor } = Route.useSearch();
   const navigate = useNavigate({ from: "/annuaire" });
   const [professionFilter, setProfessionFilter] = useState<Profession | null>(profession ?? null);
 
@@ -152,7 +231,7 @@ function AnnuairePage() {
     navigate({ search: (prev: Search) => ({ ...prev, ...next }), resetScroll: false });
 
   if (!selectedCabinet) {
-    return <CabinetChooser {...(cabinetId ? { invalidId: cabinetId } : {})} {...(profession ? { profession } : {})} />;
+    return <CabinetChooser {...(cabinetId ? { invalidId: cabinetId } : {})} {...(profession ? { profession } : {})} {...(doctor ? { doctor } : {})} />;
   }
 
   return (

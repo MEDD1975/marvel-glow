@@ -4,6 +4,8 @@ import { z } from "zod";
 import { conditions, type Condition, type TriageLevel } from "@/lib/conditions";
 import { pathways, lineLabels } from "@/lib/pathways";
 import { conditionAdvice, generalRedFlags } from "@/lib/condition-advice";
+import { conditionResources, generalLinks, type ResourceLink } from "@/lib/condition-resources";
+import { getDoctorVideos } from "@/lib/doctor-content";
 import { findProvidersByProfession, professionOrder, type Profession, type Provider } from "@/lib/directory";
 
 // Modèle servi via l'AI Gateway de Vercel (string "provider/model").
@@ -269,6 +271,34 @@ function conversationalResponse(...paragraphs: string[]) {
   return [...paragraphs, DISCLAIMER].filter(Boolean).join("\n\n");
 }
 
+function findVideoRecommendations(message: string, cabinetId?: string): ResourceLink[] {
+  const normalized = normalize(message);
+  const asksForInformation = ["video", "information", "comprendre", "conseil", "expliquer", "exercice", "trouble"].some((term) => normalized.includes(term));
+  if (!asksForInformation) return [];
+
+  const conditionTerms: Record<string, string[]> = {
+    "entorse-cheville": ["entorse", "cheville"],
+    "arthrose-genou": ["arthrose", "genou"],
+    "aponevrosite-plantaire": ["aponevrosite", "fasciite", "talon"],
+    "syndrome-rotulien": ["rotulien", "rotule"],
+    "tendinopathie-achille": ["achille", "tendon"],
+    "lesion-meniscale": ["menisque"],
+    "arthrose-hanche": ["arthrose", "hanche"],
+    metatarsalgie: ["metatarsalgie"],
+    "syndrome-essuie-glace": ["essuie glace", "bandelette"],
+    "hallux-valgus": ["hallux", "oignon"],
+  };
+  const matchedCondition = Object.entries(conditionTerms).find(([, terms]) => terms.some((term) => normalized.includes(term)))?.[0];
+  const configured = cabinetId ? getDoctorVideos(cabinetId, matchedCondition) : [];
+  if (configured.length > 0) return configured.slice(0, 2);
+
+  const candidates = Object.entries(conditionResources)
+    .filter(([key]) => (conditionTerms[key] ?? []).some((term) => normalized.includes(term)))
+    .flatMap(([, resources]) => resources.links);
+  const videos = candidates.length > 0 ? candidates : generalLinks;
+  return videos.filter((resource) => resource.kind === "video").slice(0, 2);
+}
+
 // Réponse de repli naturelle lorsque la génération IA n'est pas disponible.
 function fallbackText(plan: CarePlan) {
   return conversationalResponse(
@@ -292,12 +322,12 @@ function ensureConversationalResponse(text: string, plan: CarePlan) {
   );
 }
 
-function directoryResponse(specialty: PractitionerSpecialty, count: number) {
+function directoryResponse(specialty: PractitionerSpecialty) {
   const label = specialty.toLocaleLowerCase("fr-FR");
   return conversationalResponse(
     "Votre demande d'orientation est légitime : prendre le temps d'identifier le bon interlocuteur aide à organiser la suite de votre suivi.",
-    `${count} ${count > 1 ? "professionnels correspondent" : "professionnel correspond"} à votre recherche de ${label} à Saint-Maur-des-Fossés. Leurs coordonnées sont affichées ci-dessous.`,
-    `Le profil adapté ici est celui d'un ${label}. Je vous invite à consulter l'annuaire du réseau de soins pour trouver ce praticien près de chez vous.`,
+    `Le profil adapté ici est celui d'un ${label}.`,
+    "Pour afficher le réseau de soins concerné, ouvrez l'annuaire et saisissez le nom de votre médecin : les professionnels de son cabinet, dont ce spécialiste, apparaîtront alors.",
   );
 }
 
@@ -307,13 +337,13 @@ export const askCareAgent = createServerFn({ method: "POST" })
     // 1) Protection de l'anonymat AVANT tout appel au modèle.
     const identifyingData = detectIdentifyingData(data.message);
     if (identifyingData) {
-      return { text: privacyResponse(identifyingData), blocked: true, emergency: false, specialty: null, practitioners: [] };
+      return { text: privacyResponse(identifyingData), blocked: true, emergency: false, specialty: null, videos: [] };
     }
 
     // 2) Filtre de sécurité déterministe AVANT tout appel au modèle.
     const redFlag = detectRedFlag(data.message);
     if (redFlag) {
-      return { text: emergencyResponse(redFlag), emergency: true, specialty: null, practitioners: [] };
+      return { text: emergencyResponse(redFlag), emergency: true, specialty: null, videos: [] };
     }
 
     // 3) L'historique récent reste borné, éphémère et n'est jamais persisté.
@@ -345,34 +375,21 @@ export const askCareAgent = createServerFn({ method: "POST" })
       const directoryResult = [...result.toolResults]
         .reverse()
         .find((toolResult) => toolResult.toolName === "rechercherPraticiensSaintMaur");
-      const output = directoryResult?.output as
-        | { specialite: PractitionerSpecialty; praticiens: Provider[] }
-        | undefined;
+      const output = directoryResult?.output as { specialite: PractitionerSpecialty } | undefined;
       const specialty = output?.specialite ?? detectSpecialty(userContext);
-      const practitioners = specialty
-        ? searchLocalPractitioners(specialty, data.cabinetId)
-        : [];
 
       return {
-        text:
-          specialty && practitioners.length > 0
-            ? directoryResponse(specialty, practitioners.length)
-            : ensureConversationalResponse(result.text, plan),
+        text: specialty ? directoryResponse(specialty) : ensureConversationalResponse(result.text, plan),
         emergency: false,
         specialty,
-        practitioners,
+        videos: findVideoRecommendations(userContext, data.cabinetId),
       };
     } catch {
       const specialty = detectSpecialty(userContext);
-      const practitioners = specialty ? searchLocalPractitioners(specialty, data.cabinetId) : [];
       return {
-        text:
-          specialty && practitioners.length > 0
-            ? directoryResponse(specialty, practitioners.length)
-            : fallbackText(plan),
+        text: specialty ? directoryResponse(specialty) : fallbackText(plan),
         emergency: false,
         specialty,
-        practitioners,
       };
     }
   });

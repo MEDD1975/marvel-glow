@@ -6,6 +6,7 @@ import {
   MapPin,
   Navigation,
   Phone,
+  Search,
   Stethoscope,
 } from "lucide-react";
 import { DirectoryShareTools } from "@/components/DirectoryShareTools";
@@ -14,6 +15,7 @@ import { conditions } from "@/lib/conditions";
 import { pathways } from "@/lib/pathways";
 import {
   cabinets,
+  findCabinetsByPractitionerName,
   journeySteps,
   professionColor,
   professionOrder,
@@ -63,6 +65,11 @@ export const Route = createFileRoute("/annuaire")({
 });
 
 function CabinetChooser({ invalidId, profession }: { invalidId?: string; profession?: Profession }) {
+  const [query, setQuery] = useState("");
+  const trimmed = query.trim();
+  const matches = useMemo(() => (trimmed.length >= 2 ? findCabinetsByPractitionerName(trimmed) : []), [trimmed]);
+  const hasSearched = trimmed.length >= 2;
+
   return (
     <main className="mx-auto max-w-3xl px-4 py-16">
       <div className="rounded-2xl border border-border bg-card p-6 shadow-sm md:p-8">
@@ -70,30 +77,60 @@ function CabinetChooser({ invalidId, profession }: { invalidId?: string; profess
           Annuaire Kivoir
         </span>
         <h1 className="mt-4 text-2xl font-semibold text-balance text-foreground md:text-3xl">
-          {invalidId ? "Ce cabinet n’est pas disponible" : "Choisissez votre cabinet"}
+          {invalidId ? "Ce cabinet n’est pas disponible" : "Retrouvez le réseau de votre médecin"}
         </h1>
         <p className="mt-2 max-w-xl leading-6 text-muted-foreground">
           {invalidId
-            ? `L’identifiant « ${invalidId} » ne correspond à aucun cabinet de l’annuaire.`
-            : "Sélectionnez un cabinet pour consulter uniquement les professionnels qui y exercent."}
+            ? `L’identifiant « ${invalidId} » ne correspond à aucun cabinet. Saisissez le nom de votre médecin pour retrouver son réseau de soins.`
+            : "Entrez le nom de votre médecin pour afficher le réseau de soins de son cabinet et les professionnels recommandés."}
         </p>
+
+        <div className="mt-6">
+          <label htmlFor="doctor-search" className="text-sm font-medium text-foreground">
+            Nom de votre médecin
+          </label>
+          <div className="mt-2 flex items-center gap-2 rounded-xl border border-border bg-background px-3 py-2 focus-within:border-care/60">
+            <Search className="h-4 w-4 shrink-0 text-muted-foreground" />
+            <input
+              id="doctor-search"
+              type="text"
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder="Ex. Dr Martin"
+              autoComplete="off"
+              className="w-full bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground"
+            />
+          </div>
+        </div>
+
         <div className="mt-6 flex flex-col gap-3">
-          {cabinets.map((cabinet) => (
-            <Link
-              key={cabinet.id}
-              to="/annuaire"
-              search={{ cabinet: cabinet.id, profession }}
-              className="flex items-center justify-between gap-4 rounded-xl border border-border bg-background p-4 transition-colors hover:border-care/50"
-            >
-              <div>
-                <p className="font-semibold text-foreground">{cabinet.name}</p>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  {cabinet.providers.length} professionnel{cabinet.providers.length > 1 ? "s" : ""}
-                </p>
-              </div>
-              <ArrowRight className="h-5 w-5 shrink-0 text-care" />
-            </Link>
-          ))}
+          {hasSearched && matches.length === 0 ? (
+            <p className="rounded-xl border border-dashed border-border bg-background p-4 text-sm text-muted-foreground">
+              Aucun médecin ne correspond à « {trimmed} » dans nos réseaux. Vérifiez l’orthographe ou essayez seulement le nom de famille.
+            </p>
+          ) : null}
+          {matches.map((cabinet) => {
+            const match = cabinet.providers.find((provider) =>
+              provider.profession === "Médecin généraliste" || provider.profession === "Médecin du sport",
+            ) ?? cabinet.providers[0];
+            return (
+              <Link
+                key={cabinet.id}
+                to="/annuaire"
+                search={{ cabinet: cabinet.id, profession }}
+                className="flex items-center justify-between gap-4 rounded-xl border border-border bg-background p-4 transition-colors hover:border-care/50"
+              >
+                <div>
+                  <p className="font-semibold text-foreground">{cabinet.name}</p>
+                  {match ? <p className="mt-1 text-sm text-care">{match.name}</p> : null}
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    {cabinet.providers.length} professionnel{cabinet.providers.length > 1 ? "s" : ""} dans ce réseau
+                  </p>
+                </div>
+                <ArrowRight className="h-5 w-5 shrink-0 text-care" />
+              </Link>
+            );
+          })}
         </div>
       </div>
     </main>

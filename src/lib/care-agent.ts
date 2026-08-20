@@ -292,21 +292,13 @@ function ensureConversationalResponse(text: string, plan: CarePlan) {
   );
 }
 
-function directoryResponse(specialty: PractitionerSpecialty, count: number, cabinetNames: string[]) {
+function directoryResponse(specialty: PractitionerSpecialty) {
   const label = specialty.toLocaleLowerCase("fr-FR");
-  const network =
-    cabinetNames.length === 1
-      ? `Ils font partie du réseau de soins de ${cabinetNames[0]}.`
-      : `Ils font partie des réseaux de soins de ${cabinetNames.join(", ")}.`;
   return conversationalResponse(
     "Votre demande d'orientation est légitime : prendre le temps d'identifier le bon interlocuteur aide à organiser la suite de votre suivi.",
-    `${count} ${count > 1 ? "professionnels correspondent" : "professionnel correspond"} à votre recherche de ${label} à Saint-Maur-des-Fossés. ${network} Leurs coordonnées sont affichées ci-dessous.`,
-    `Le profil adapté ici est celui d'un ${label}. Je vous invite à consulter l'annuaire du réseau de soins pour trouver ce praticien près de chez vous.`,
+    `Le profil adapté ici est celui d'un ${label}.`,
+    "Pour afficher le réseau de soins concerné, ouvrez l'annuaire et saisissez le nom de votre médecin : les professionnels de son cabinet, dont ce spécialiste, apparaîtront alors.",
   );
-}
-
-function cabinetNamesOf(practitioners: Provider[]) {
-  return [...new Set(practitioners.map((practitioner) => practitioner.cabinetName))];
 }
 
 export const askCareAgent = createServerFn({ method: "POST" })
@@ -315,13 +307,13 @@ export const askCareAgent = createServerFn({ method: "POST" })
     // 1) Protection de l'anonymat AVANT tout appel au modèle.
     const identifyingData = detectIdentifyingData(data.message);
     if (identifyingData) {
-      return { text: privacyResponse(identifyingData), blocked: true, emergency: false, specialty: null, practitioners: [] };
+      return { text: privacyResponse(identifyingData), blocked: true, emergency: false, specialty: null };
     }
 
     // 2) Filtre de sécurité déterministe AVANT tout appel au modèle.
     const redFlag = detectRedFlag(data.message);
     if (redFlag) {
-      return { text: emergencyResponse(redFlag), emergency: true, specialty: null, practitioners: [] };
+      return { text: emergencyResponse(redFlag), emergency: true, specialty: null };
     }
 
     // 3) L'historique récent reste borné, éphémère et n'est jamais persisté.
@@ -353,34 +345,20 @@ export const askCareAgent = createServerFn({ method: "POST" })
       const directoryResult = [...result.toolResults]
         .reverse()
         .find((toolResult) => toolResult.toolName === "rechercherPraticiensSaintMaur");
-      const output = directoryResult?.output as
-        | { specialite: PractitionerSpecialty; praticiens: Provider[] }
-        | undefined;
+      const output = directoryResult?.output as { specialite: PractitionerSpecialty } | undefined;
       const specialty = output?.specialite ?? detectSpecialty(userContext);
-      const practitioners = specialty
-        ? searchLocalPractitioners(specialty, data.cabinetId)
-        : [];
 
       return {
-        text:
-          specialty && practitioners.length > 0
-            ? directoryResponse(specialty, practitioners.length, cabinetNamesOf(practitioners))
-            : ensureConversationalResponse(result.text, plan),
+        text: specialty ? directoryResponse(specialty) : ensureConversationalResponse(result.text, plan),
         emergency: false,
         specialty,
-        practitioners,
       };
     } catch {
       const specialty = detectSpecialty(userContext);
-      const practitioners = specialty ? searchLocalPractitioners(specialty, data.cabinetId) : [];
       return {
-        text:
-          specialty && practitioners.length > 0
-            ? directoryResponse(specialty, practitioners.length, cabinetNamesOf(practitioners))
-            : fallbackText(plan),
+        text: specialty ? directoryResponse(specialty) : fallbackText(plan),
         emergency: false,
         specialty,
-        practitioners,
       };
     }
   });

@@ -2,25 +2,11 @@ import { useEffect, useRef, useState, type FormEvent } from "react";
 import { Link } from "@tanstack/react-router";
 import { ArrowRight, Bot, LoaderCircle, MessageCircle, Send, X } from "lucide-react";
 import { askCareAgent, type CareAgentHistoryMessage } from "@/lib/care-agent";
-import type { Profession, Provider } from "@/lib/directory";
 
 const welcomeMessage =
   "Bonjour, je suis l’Assistant Kivoir, votre compagnon après la consultation. Vous pouvez vous exprimer librement : racontez-moi comment s’est passée votre visite, ce que vous ressentez aujourd’hui, ou ce que votre médecin vous a conseillé ou prescrit. Comment puis-je vous aider ?";
 
-type ChatMessage = CareAgentHistoryMessage & {
-  practitioners?: Provider[];
-  specialty?: Profession | null;
-};
-
-const DIRECTORY_NOTICE =
-  "Cette liste est donnée à titre indicatif pour vous aider à trouver un praticien près de chez vous.";
-const SAFETY_NOTICE =
-  "Kivoir est un outil d'accompagnement au parcours de soin et ne remplace pas une consultation médicale.";
-
-function visibleMessageText(item: ChatMessage) {
-  if (!item.practitioners?.length) return item.text;
-  return item.text.replace(`⚠️ ${SAFETY_NOTICE}`, "").trim();
-}
+type ChatMessage = CareAgentHistoryMessage;
 
 function containsIdentifyingData(value: string) {
   return (
@@ -41,10 +27,6 @@ export function NavireChatWidget() {
   const [messages, setMessages] = useState<ChatMessage[]>(initialMessages);
   const [isSending, setIsSending] = useState(false);
   const [privacyError, setPrivacyError] = useState<string | null>(null);
-  const currentCabinetId =
-    typeof window === "undefined"
-      ? undefined
-      : new URLSearchParams(window.location.search).get("cabinet") ?? undefined;
 
   function closeAndForget() {
     setOpen(false);
@@ -93,15 +75,7 @@ export function NavireChatWidget() {
 
     try {
       const response = await askCareAgent({ data: { message: trimmed, history, cabinetId } });
-      setMessages((current) => [
-        ...current,
-        {
-          role: "assistant",
-          text: response.text,
-          practitioners: response.practitioners,
-          specialty: response.specialty,
-        },
-      ]);
+      setMessages((current) => [...current, { role: "assistant", text: response.text }]);
     } catch {
       setMessages((current) => [
         ...current,
@@ -157,57 +131,12 @@ export function NavireChatWidget() {
                         : "rounded-bl-md border border-border bg-card text-card-foreground"
                     }`}
                   >
-                    {visibleMessageText(item)}
+                    {item.text}
                   </div>
-                  {item.practitioners?.length ? (
-                    <section
-                      aria-label="Résultats de l'annuaire à Saint-Maur-des-Fossés"
-                      className="w-full rounded-xl border border-border bg-card p-3 shadow-sm"
-                    >
-                      <div className="flex items-center justify-between gap-3 border-b border-border pb-2">
-                        <h3 className="text-sm font-semibold text-card-foreground">
-                          Professionnels à Saint-Maur-des-Fossés
-                        </h3>
-                        <span className="shrink-0 rounded-full bg-primary/10 px-2 py-1 text-xs font-medium text-primary">
-                          {item.practitioners.length} résultat{item.practitioners.length > 1 ? "s" : ""}
-                        </span>
-                      </div>
-                      <div className="flex flex-col gap-2 pt-3">
-                        {item.practitioners.map((practitioner) => (
-                          <article
-                            key={practitioner.id}
-                            className="rounded-xl border border-border bg-muted/40 p-3 text-sm text-card-foreground"
-                          >
-                            <p className="font-semibold text-balance">
-                              {practitioner.name}
-                            </p>
-                            <p className="mt-1 text-xs font-medium text-primary">{practitioner.profession}</p>
-                            <p className="mt-1 text-xs text-muted-foreground">
-                              Réseau de soins · {practitioner.cabinetName}
-                            </p>
-                            <address className="mt-2 not-italic leading-5 text-muted-foreground">
-                              {practitioner.address}
-                              <br />
-                              {practitioner.postalCode} {practitioner.city}
-                            </address>
-                            {practitioner.phone ? (
-                              <a
-                                className="mt-2 inline-flex font-semibold text-primary underline-offset-2 hover:underline"
-                                href={`tel:${practitioner.phone}`}
-                              >
-                                {practitioner.formattedPhone}
-                              </a>
-                            ) : null}
-                          </article>
-                        ))}
-                      </div>
-                      <p className="pt-3 text-xs leading-5 text-muted-foreground">{DIRECTORY_NOTICE}</p>
-                    </section>
-                  ) : null}
                   {item.role === "assistant" && index > 0 ? (
                     <Link
                       to="/annuaire"
-                      search={{ cabinet: currentCabinetId, profession: item.specialty ?? undefined }}
+                      search={{}}
                       className="inline-flex max-w-[88%] items-center gap-2 rounded-xl bg-primary px-3.5 py-2.5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                     >
                       Accéder à l'annuaire du réseau de soins
@@ -266,7 +195,7 @@ export function NavireChatWidget() {
               </p>
             ) : null}
             <p id="kivoir-privacy-note" className="mt-2 px-1 text-[11px] leading-4 text-muted-foreground">
-              Conversation temporaire, effacée à la fermeture. Ne partagez ni nom, ni coordonnées, ni identifiant. {SAFETY_NOTICE}
+              Conversation temporaire, effacée à la fermeture. Ne partagez ni nom, ni coordonnées, ni identifiant. Kivoir est un outil d&apos;accompagnement au parcours de soin et ne remplace pas une consultation médicale.
             </p>
           </form>
         </section>

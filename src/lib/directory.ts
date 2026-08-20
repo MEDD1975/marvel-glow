@@ -141,6 +141,29 @@ export function findProvidersByProfession(profession: Profession, cabinetId?: st
   return source.filter((provider) => provider.profession === profession);
 }
 
+function normalizeName(value: string) {
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/\b(dr|docteur|mme|mr|m|monsieur|madame)\b\.?/g, "")
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
+}
+
+/** Retourne les cabinets dont un praticien correspond au nom saisi par le patient. */
+export function findCabinetsByPractitionerName(query: string): Cabinet[] {
+  const needle = normalizeName(query);
+  if (needle.length < 2) return [];
+  const terms = needle.split(" ").filter(Boolean);
+  return cabinets.filter((cabinet) =>
+    cabinet.providers.some((provider) => {
+      const haystack = normalizeName(provider.name);
+      return terms.every((term) => haystack.includes(term));
+    }),
+  );
+}
+
 /** Étapes déclarées par le patient et professionnel à voir ensuite. */
 export type JourneyStep = {
   id: string;

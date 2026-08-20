@@ -292,13 +292,21 @@ function ensureConversationalResponse(text: string, plan: CarePlan) {
   );
 }
 
-function directoryResponse(specialty: PractitionerSpecialty, count: number) {
+function directoryResponse(specialty: PractitionerSpecialty, count: number, cabinetNames: string[]) {
   const label = specialty.toLocaleLowerCase("fr-FR");
+  const network =
+    cabinetNames.length === 1
+      ? `Ils font partie du réseau de soins de ${cabinetNames[0]}.`
+      : `Ils font partie des réseaux de soins de ${cabinetNames.join(", ")}.`;
   return conversationalResponse(
     "Votre demande d'orientation est légitime : prendre le temps d'identifier le bon interlocuteur aide à organiser la suite de votre suivi.",
-    `${count} ${count > 1 ? "professionnels correspondent" : "professionnel correspond"} à votre recherche de ${label} à Saint-Maur-des-Fossés. Leurs coordonnées sont affichées ci-dessous.`,
+    `${count} ${count > 1 ? "professionnels correspondent" : "professionnel correspond"} à votre recherche de ${label} à Saint-Maur-des-Fossés. ${network} Leurs coordonnées sont affichées ci-dessous.`,
     `Le profil adapté ici est celui d'un ${label}. Je vous invite à consulter l'annuaire du réseau de soins pour trouver ce praticien près de chez vous.`,
   );
+}
+
+function cabinetNamesOf(practitioners: Provider[]) {
+  return [...new Set(practitioners.map((practitioner) => practitioner.cabinetName))];
 }
 
 export const askCareAgent = createServerFn({ method: "POST" })
@@ -356,7 +364,7 @@ export const askCareAgent = createServerFn({ method: "POST" })
       return {
         text:
           specialty && practitioners.length > 0
-            ? directoryResponse(specialty, practitioners.length)
+            ? directoryResponse(specialty, practitioners.length, cabinetNamesOf(practitioners))
             : ensureConversationalResponse(result.text, plan),
         emergency: false,
         specialty,
@@ -368,7 +376,7 @@ export const askCareAgent = createServerFn({ method: "POST" })
       return {
         text:
           specialty && practitioners.length > 0
-            ? directoryResponse(specialty, practitioners.length)
+            ? directoryResponse(specialty, practitioners.length, cabinetNamesOf(practitioners))
             : fallbackText(plan),
         emergency: false,
         specialty,

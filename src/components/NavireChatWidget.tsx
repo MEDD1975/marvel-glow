@@ -182,6 +182,9 @@ export function NavireChatWidget() {
                               {practitioner.name}
                             </p>
                             <p className="mt-1 text-xs font-medium text-primary">{practitioner.profession}</p>
+                            <p className="mt-1 text-xs text-muted-foreground">
+                              Réseau de soins · {practitioner.cabinetName}
+                            </p>
                             <address className="mt-2 not-italic leading-5 text-muted-foreground">
                               {practitioner.address}
                               <br />

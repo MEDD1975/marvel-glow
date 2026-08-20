@@ -33,6 +33,8 @@ export type Provider = {
   city: string;
   phone: string | undefined;
   formattedPhone: string | undefined;
+  cabinetId: string;
+  cabinetName: string;
 };
 
 export type Cabinet = {
@@ -119,6 +121,8 @@ export const cabinets: Cabinet[] = Object.entries(cabinetRecords).map(([cabinetI
         ...location,
         phone: phone || undefined,
         formattedPhone: phone ? formatPhone(phone) : undefined,
+        cabinetId,
+        cabinetName: cabinet.nom_cabinet,
       },
     ];
   }),

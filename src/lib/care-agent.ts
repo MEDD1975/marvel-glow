@@ -5,6 +5,7 @@ import { conditions, type Condition, type TriageLevel } from "@/lib/conditions";
 import { pathways, lineLabels } from "@/lib/pathways";
 import { conditionAdvice, generalRedFlags } from "@/lib/condition-advice";
 import { conditionResources, generalLinks, type ResourceLink } from "@/lib/condition-resources";
+import { getDoctorVideos } from "@/lib/doctor-content";
 import { findProvidersByProfession, professionOrder, type Profession, type Provider } from "@/lib/directory";
 
 // Modèle servi via l'AI Gateway de Vercel (string "provider/model").
@@ -270,7 +271,7 @@ function conversationalResponse(...paragraphs: string[]) {
   return [...paragraphs, DISCLAIMER].filter(Boolean).join("\n\n");
 }
 
-function findVideoRecommendations(message: string): ResourceLink[] {
+function findVideoRecommendations(message: string, cabinetId?: string): ResourceLink[] {
   const normalized = normalize(message);
   const asksForInformation = ["video", "information", "comprendre", "conseil", "expliquer", "exercice", "trouble"].some((term) => normalized.includes(term));
   if (!asksForInformation) return [];
@@ -287,6 +288,10 @@ function findVideoRecommendations(message: string): ResourceLink[] {
     "syndrome-essuie-glace": ["essuie glace", "bandelette"],
     "hallux-valgus": ["hallux", "oignon"],
   };
+  const matchedCondition = Object.entries(conditionTerms).find(([, terms]) => terms.some((term) => normalized.includes(term)))?.[0];
+  const configured = cabinetId ? getDoctorVideos(cabinetId, matchedCondition) : [];
+  if (configured.length > 0) return configured.slice(0, 2);
+
   const candidates = Object.entries(conditionResources)
     .filter(([key]) => (conditionTerms[key] ?? []).some((term) => normalized.includes(term)))
     .flatMap(([, resources]) => resources.links);
@@ -377,7 +382,7 @@ export const askCareAgent = createServerFn({ method: "POST" })
         text: specialty ? directoryResponse(specialty) : ensureConversationalResponse(result.text, plan),
         emergency: false,
         specialty,
-        videos: findVideoRecommendations(userContext),
+        videos: findVideoRecommendations(userContext, data.cabinetId),
       };
     } catch {
       const specialty = detectSpecialty(userContext);

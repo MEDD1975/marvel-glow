@@ -12,8 +12,13 @@ import {
   ShieldCheck,
   Stethoscope,
   Users,
+  Video,
+  Plus,
+  Trash2,
 } from "lucide-react";
 import { MedicalDisclaimer } from "@/components/HomeBlocks";
+import { conditions } from "@/lib/conditions";
+import { getAllDoctorVideos, removeDoctorVideo, saveDoctorVideo, type DoctorVideo } from "@/lib/doctor-content";
 import { CabinetPoster, type PosterData } from "@/components/CabinetPoster";
 import { PatientCard } from "@/components/PatientCard";
 
@@ -52,6 +57,13 @@ function CabinetPage() {
   const [cardQr, setCardQr] = useState<{ url: string; qr: string | null }>({ url: "", qr: null });
 
   const [showDemo, setShowDemo] = useState(false);
+  const [videoCabinet, setVideoCabinet] = useState("dr_a");
+  const [doctorVideos, setDoctorVideos] = useState<DoctorVideo[]>(() => getAllDoctorVideos("dr_a"));
+  const [videoCondition, setVideoCondition] = useState("entorse-cheville");
+  const [videoTitle, setVideoTitle] = useState("");
+  const [videoUrl, setVideoUrl] = useState("");
+  const [videoSource, setVideoSource] = useState("");
+  const [videoNotice, setVideoNotice] = useState("");
   const [pathway, setPathway] = useState("entorse-cheville");
   const [cardNote, setCardNote] = useState("");
   const pathwayLabels: Record<string, string> = {
@@ -91,6 +103,40 @@ function CabinetPage() {
   }, [pathway]);
 
   const updatePoster = (patch: Partial<PosterData>) => setPoster((prev) => ({ ...prev, ...patch }));
+
+  const switchVideoCabinet = (cabinetId: string) => {
+    setVideoCabinet(cabinetId);
+    setDoctorVideos(getAllDoctorVideos(cabinetId));
+  };
+
+  const addDoctorVideo = () => {
+    const title = videoTitle.trim();
+    const url = videoUrl.trim();
+    if (!title || !url || !/^https:\/\//i.test(url)) {
+      setVideoNotice("Ajoutez un titre et une URL HTTPS valide.");
+      return;
+    }
+    const video: DoctorVideo = {
+      id: `${videoCabinet}-${Date.now()}`,
+      conditionId: videoCondition,
+      label: title,
+      url,
+      kind: "video",
+      source: videoSource.trim() || "Lien choisi par le médecin",
+      active: true,
+    };
+    saveDoctorVideo(videoCabinet, video);
+    setDoctorVideos(getAllDoctorVideos(videoCabinet));
+    setVideoTitle("");
+    setVideoUrl("");
+    setVideoSource("");
+    setVideoNotice("Vidéo ajoutée : elle sera proposée au patient pour ce trouble.");
+  };
+
+  const deleteDoctorVideo = (videoId: string) => {
+    removeDoctorVideo(videoCabinet, videoId);
+    setDoctorVideos(getAllDoctorVideos(videoCabinet));
+  };
 
   const printWith = (mode: "poster" | "cards") => {
     document.body.classList.toggle("printing-cards", mode === "cards");
@@ -364,6 +410,44 @@ Placez l'affiche près des sièges de la salle d'attente. Le patient scanne et r
       </section>
 
 
+
+      <section className="mt-16 rounded-3xl border border-care/25 bg-care/5 p-6 md:p-8 print:hidden" aria-labelledby="doctor-content-title">
+        <div className="flex items-start gap-3">
+          <Video className="mt-1 text-care" aria-hidden="true" />
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-wide text-care">Espace médecin</p>
+            <h2 id="doctor-content-title" className="mt-2 text-2xl font-semibold text-foreground">Choisissez ce que le patient peut voir</h2>
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">Ajoutez vos propres vidéos d’information par trouble. Elles seront proposées par l’Assistant Kivoir uniquement lorsque le patient demande un conseil ou une explication.</p>
+          </div>
+        </div>
+        <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_1.2fr]">
+          <div className="space-y-4 rounded-2xl border border-border bg-card p-5">
+            <label className="block text-sm font-medium text-foreground" htmlFor="video-cabinet">Réseau concerné</label>
+            <select id="video-cabinet" value={videoCabinet} onChange={(event) => switchVideoCabinet(event.target.value)} className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground">
+              <option value="dr_a">Réseau du Dr A</option>
+              <option value="dr_b">Réseau du Dr B</option>
+            </select>
+            <label className="block text-sm font-medium text-foreground" htmlFor="video-condition">Trouble ou parcours</label>
+            <select id="video-condition" value={videoCondition} onChange={(event) => setVideoCondition(event.target.value)} className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground">
+              {conditions.map((condition) => <option key={condition.id} value={condition.id}>{condition.name}</option>)}
+            </select>
+            <label className="block text-sm font-medium text-foreground" htmlFor="video-title">Titre de la vidéo</label>
+            <input id="video-title" value={videoTitle} onChange={(event) => setVideoTitle(event.target.value)} placeholder="Ex. Les bons gestes après une entorse" className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground" />
+            <label className="block text-sm font-medium text-foreground" htmlFor="video-url">Lien HTTPS</label>
+            <input id="video-url" type="url" value={videoUrl} onChange={(event) => setVideoUrl(event.target.value)} placeholder="https://..." className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground" />
+            <label className="block text-sm font-medium text-foreground" htmlFor="video-source">Source (optionnel)</label>
+            <input id="video-source" value={videoSource} onChange={(event) => setVideoSource(event.target.value)} placeholder="Ex. Cabinet du Dr A" className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground" />
+            <button type="button" onClick={addDoctorVideo} className="inline-flex items-center gap-2 rounded-lg bg-care px-4 py-2 text-sm font-semibold text-care-foreground hover:opacity-90"><Plus className="h-4 w-4" />Ajouter cette vidéo</button>
+            {videoNotice ? <p className="text-xs leading-5 text-muted-foreground" role="status">{videoNotice}</p> : null}
+          </div>
+          <div className="rounded-2xl border border-border bg-card p-5">
+            <div className="flex items-center justify-between gap-3"><div><p className="text-xs font-semibold uppercase tracking-wide text-care">Visible par le patient</p><h3 className="mt-1 text-lg font-semibold text-foreground">Vidéos personnalisées</h3></div><span className="rounded-full bg-care/10 px-2 py-1 text-xs font-medium text-care">{doctorVideos.length}</span></div>
+            <div className="mt-4 flex flex-col gap-3">
+              {doctorVideos.length === 0 ? <p className="rounded-xl border border-dashed border-border p-4 text-sm leading-6 text-muted-foreground">Aucune vidéo personnalisée. Les ressources générales de Kivoir restent utilisées.</p> : doctorVideos.map((video) => <article key={video.id} className="flex items-start justify-between gap-3 rounded-xl border border-border bg-background p-3"><div><p className="font-semibold text-foreground">{video.label}</p><p className="mt-1 text-xs text-care">{conditions.find((condition) => condition.id === video.conditionId)?.name ?? video.conditionId}</p><p className="mt-1 text-xs text-muted-foreground">{video.source}</p></div><button type="button" onClick={() => deleteDoctorVideo(video.id)} aria-label={`Supprimer ${video.label}`} className="rounded-lg p-2 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"><Trash2 className="h-4 w-4" /></button></article>)}
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* Demo summary */}
       <section className="mt-16 print:hidden">

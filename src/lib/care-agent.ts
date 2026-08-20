@@ -4,6 +4,7 @@ import { z } from "zod";
 import { conditions, type Condition, type TriageLevel } from "@/lib/conditions";
 import { pathways, lineLabels } from "@/lib/pathways";
 import { conditionAdvice, generalRedFlags } from "@/lib/condition-advice";
+import { conditionResources, generalLinks, type ResourceLink } from "@/lib/condition-resources";
 import { findProvidersByProfession, professionOrder, type Profession, type Provider } from "@/lib/directory";
 
 // Modèle servi via l'AI Gateway de Vercel (string "provider/model").
@@ -269,6 +270,30 @@ function conversationalResponse(...paragraphs: string[]) {
   return [...paragraphs, DISCLAIMER].filter(Boolean).join("\n\n");
 }
 
+function findVideoRecommendations(message: string): ResourceLink[] {
+  const normalized = normalize(message);
+  const asksForInformation = ["video", "information", "comprendre", "conseil", "expliquer", "exercice", "trouble"].some((term) => normalized.includes(term));
+  if (!asksForInformation) return [];
+
+  const conditionTerms: Record<string, string[]> = {
+    "entorse-cheville": ["entorse", "cheville"],
+    "arthrose-genou": ["arthrose", "genou"],
+    "aponevrosite-plantaire": ["aponevrosite", "fasciite", "talon"],
+    "syndrome-rotulien": ["rotulien", "rotule"],
+    "tendinopathie-achille": ["achille", "tendon"],
+    "lesion-meniscale": ["menisque"],
+    "arthrose-hanche": ["arthrose", "hanche"],
+    metatarsalgie: ["metatarsalgie"],
+    "syndrome-essuie-glace": ["essuie glace", "bandelette"],
+    "hallux-valgus": ["hallux", "oignon"],
+  };
+  const candidates = Object.entries(conditionResources)
+    .filter(([key]) => (conditionTerms[key] ?? []).some((term) => normalized.includes(term)))
+    .flatMap(([, resources]) => resources.links);
+  const videos = candidates.length > 0 ? candidates : generalLinks;
+  return videos.filter((resource) => resource.kind === "video").slice(0, 2);
+}
+
 // Réponse de repli naturelle lorsque la génération IA n'est pas disponible.
 function fallbackText(plan: CarePlan) {
   return conversationalResponse(
@@ -307,13 +332,13 @@ export const askCareAgent = createServerFn({ method: "POST" })
     // 1) Protection de l'anonymat AVANT tout appel au modèle.
     const identifyingData = detectIdentifyingData(data.message);
     if (identifyingData) {
-      return { text: privacyResponse(identifyingData), blocked: true, emergency: false, specialty: null };
+      return { text: privacyResponse(identifyingData), blocked: true, emergency: false, specialty: null, videos: [] };
     }
 
     // 2) Filtre de sécurité déterministe AVANT tout appel au modèle.
     const redFlag = detectRedFlag(data.message);
     if (redFlag) {
-      return { text: emergencyResponse(redFlag), emergency: true, specialty: null };
+      return { text: emergencyResponse(redFlag), emergency: true, specialty: null, videos: [] };
     }
 
     // 3) L'historique récent reste borné, éphémère et n'est jamais persisté.
@@ -352,6 +377,7 @@ export const askCareAgent = createServerFn({ method: "POST" })
         text: specialty ? directoryResponse(specialty) : ensureConversationalResponse(result.text, plan),
         emergency: false,
         specialty,
+        videos: findVideoRecommendations(userContext),
       };
     } catch {
       const specialty = detectSpecialty(userContext);

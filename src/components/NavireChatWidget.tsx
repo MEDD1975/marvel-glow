@@ -2,11 +2,12 @@ import { useEffect, useRef, useState, type FormEvent } from "react";
 import { Link } from "@tanstack/react-router";
 import { ArrowRight, Bot, LoaderCircle, MessageCircle, Send, X } from "lucide-react";
 import { askCareAgent, type CareAgentHistoryMessage } from "@/lib/care-agent";
+import type { ResourceLink } from "@/lib/condition-resources";
 
 const welcomeMessage =
   "Bonjour, je suis l’Assistant Kivoir, votre compagnon après la consultation. Vous pouvez vous exprimer librement : racontez-moi comment s’est passée votre visite, ce que vous ressentez aujourd’hui, ou ce que votre médecin vous a conseillé ou prescrit. Comment puis-je vous aider ?";
 
-type ChatMessage = CareAgentHistoryMessage;
+type ChatMessage = CareAgentHistoryMessage & { videos?: ResourceLink[] };
 
 function containsIdentifyingData(value: string) {
   return (
@@ -75,7 +76,7 @@ export function NavireChatWidget() {
 
     try {
       const response = await askCareAgent({ data: { message: trimmed, history, cabinetId } });
-      setMessages((current) => [...current, { role: "assistant", text: response.text }]);
+      setMessages((current) => [...current, { role: "assistant", text: response.text, videos: response.videos }]);
     } catch {
       setMessages((current) => [
         ...current,
@@ -133,6 +134,26 @@ export function NavireChatWidget() {
                   >
                     {item.text}
                   </div>
+                  {item.videos?.length ? (
+                    <section className="w-full max-w-[88%] rounded-xl border border-border bg-card p-3" aria-label="Vidéos d'information recommandées">
+                      <p className="text-xs font-semibold text-card-foreground">Pour mieux comprendre</p>
+                      <div className="mt-2 flex flex-col gap-2">
+                        {item.videos.map((video) => (
+                          <a
+                            key={video.url}
+                            href={video.url}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="rounded-lg border border-border bg-background p-2.5 text-xs transition-colors hover:border-primary/50"
+                          >
+                            <span className="block font-semibold text-primary">{video.label}</span>
+                            <span className="mt-1 block text-muted-foreground">Source : {video.source}</span>
+                          </a>
+                        ))}
+                      </div>
+                      <p className="mt-2 text-[11px] leading-4 text-muted-foreground">Information générale, à regarder en complément des consignes de votre professionnel.</p>
+                    </section>
+                  ) : null}
                   {item.role === "assistant" && index > 0 ? (
                     <Link
                       to="/annuaire"

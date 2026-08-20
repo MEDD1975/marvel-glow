@@ -68,6 +68,15 @@ function CabinetChooser({ invalidId, profession }: { invalidId?: string; profess
   const [query, setQuery] = useState("");
   const trimmed = query.trim();
   const matches = useMemo(() => (trimmed.length >= 2 ? findCabinetsByPractitionerName(trimmed) : []), [trimmed]);
+  const doctorSuggestions = useMemo(
+    () =>
+      cabinets
+        .flatMap((cabinet) => cabinet.providers)
+        .filter((provider) => provider.profession === "Médecin généraliste" || provider.profession === "Médecin du sport")
+        .map((provider) => provider.name)
+        .filter((name, index, names) => names.indexOf(name) === index),
+    [],
+  );
   const hasSearched = trimmed.length >= 2;
 
   return (
@@ -96,11 +105,20 @@ function CabinetChooser({ invalidId, profession }: { invalidId?: string; profess
               type="text"
               value={query}
               onChange={(event) => setQuery(event.target.value)}
-              placeholder="Ex. Dr Martin"
+              placeholder="Ex. Dr A ou Dr B"
+              list="doctor-name-suggestions"
               autoComplete="off"
               className="w-full bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground"
             />
+            <datalist id="doctor-name-suggestions">
+              {doctorSuggestions.map((name) => (
+                <option key={name} value={name} />
+              ))}
+            </datalist>
           </div>
+          <p className="mt-2 text-xs leading-5 text-muted-foreground">
+            Commencez à taper « Dr A » ou « Dr B » pour voir les médecins disponibles.
+          </p>
         </div>
 
         <div className="mt-6 flex flex-col gap-3">

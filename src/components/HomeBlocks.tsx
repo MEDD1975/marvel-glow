@@ -3,7 +3,6 @@ import {
   AlertTriangle,
   ArrowRight,
   Bot,
-  CheckCircle2,
   ClipboardCheck,
   MapPin,
   MessageCircleQuestion,
@@ -56,7 +55,7 @@ export function AssistantHome() {
       <section className="px-4 pb-10 pt-10 md:pb-16 md:pt-16">
         <div className="mx-auto max-w-5xl">
           <div className="overflow-hidden rounded-3xl border border-care/20 bg-card shadow-sm">
-            <div className="flex flex-col gap-10 p-6 md:p-10 lg:flex-row lg:items-center lg:p-12">
+            <div className="flex flex-col gap-8 p-6 md:flex-row md:items-center md:gap-10 md:p-10 lg:p-12">
               <div className="flex-1">
                 <span className="inline-flex items-center gap-2 rounded-full border border-care/20 bg-care/10 px-3 py-1.5 text-xs font-semibold text-care">
                   <Bot className="h-4 w-4" aria-hidden="true" />
@@ -92,29 +91,37 @@ export function AssistantHome() {
                 </p>
               </div>
 
-              <aside className="shrink-0 rounded-2xl border border-border bg-background p-5 lg:w-80">
-                <div className="flex items-center gap-3 border-b border-border pb-4">
-                  <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-care/10 text-care">
-                    <Bot className="h-6 w-6" aria-hidden="true" />
-                  </span>
-                  <div>
-                    <p className="font-semibold text-foreground">Assistant Kivoir</p>
-                    <p className="text-xs text-muted-foreground">Compagnon post-consultation</p>
-                  </div>
-                </div>
-                <p className="mt-5 rounded-2xl rounded-bl-md border border-border bg-card p-4 text-sm leading-6 text-card-foreground">
-                  Bonjour. Comment évolue votre douleur depuis votre consultation ?
-                </p>
-                <div className="mt-4 flex flex-col gap-2 text-sm text-muted-foreground">
-                  <p className="flex items-start gap-2">
-                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-care" aria-hidden="true" />
-                    Une réponse claire et adaptée à votre situation
-                  </p>
-                  <p className="flex items-start gap-2">
-                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-care" aria-hidden="true" />
-                    Une orientation si votre évolution le nécessite
-                  </p>
-                </div>
+              <aside className="shrink-0 rounded-2xl border border-border bg-background p-5 md:w-80 lg:w-96" aria-label="Le parcours Kivoir en trois étapes">
+                <p className="text-xs font-semibold uppercase tracking-wide text-care">Le parcours en 3 étapes</p>
+                <ol className="mt-4 flex flex-col gap-3">
+                  <li className="flex items-start gap-3 rounded-xl border border-border bg-card p-3">
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-care/10 text-care">
+                      <Stethoscope className="h-5 w-5" aria-hidden="true" />
+                    </span>
+                    <div>
+                      <p className="text-sm font-semibold text-card-foreground">1. Je consulte mon médecin</p>
+                      <p className="mt-0.5 text-xs leading-5 text-muted-foreground">Diagnostic et explication de la suite.</p>
+                    </div>
+                  </li>
+                  <li className="flex items-start gap-3 rounded-xl border border-border bg-card p-3">
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-care/10 text-care">
+                      <QrCode className="h-5 w-5" aria-hidden="true" />
+                    </span>
+                    <div>
+                      <p className="text-sm font-semibold text-card-foreground">2. Je scanne son QR code</p>
+                      <p className="mt-0.5 text-xs leading-5 text-muted-foreground">Accès direct à mon suivi en fin de consultation.</p>
+                    </div>
+                  </li>
+                  <li className="flex items-start gap-3 rounded-xl border border-care/30 bg-care/5 p-3">
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-care/15 text-care">
+                      <Bot className="h-5 w-5" aria-hidden="true" />
+                    </span>
+                    <div>
+                      <p className="text-sm font-semibold text-card-foreground">3. Je suis guidé et accompagné</p>
+                      <p className="mt-0.5 text-xs leading-5 text-muted-foreground">Réseau de mon médecin + Assistant Kivoir.</p>
+                    </div>
+                  </li>
+                </ol>
               </aside>
             </div>
           </div>

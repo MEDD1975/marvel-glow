@@ -28,6 +28,7 @@ type Search = {
   c?: string | undefined;
   step?: string | undefined;
   profession?: Profession | undefined;
+  doctor?: string | undefined;
 };
 
 export const Route = createFileRoute("/annuaire")({
@@ -39,6 +40,7 @@ export const Route = createFileRoute("/annuaire")({
       typeof search["profession"] === "string" && isProfession(search["profession"])
         ? search["profession"]
         : undefined,
+    doctor: typeof search["doctor"] === "string" ? search["doctor"] : undefined,
   }),
   head: () => ({
     meta: [
@@ -64,9 +66,10 @@ export const Route = createFileRoute("/annuaire")({
   component: AnnuairePage,
 });
 
-function CabinetChooser({ invalidId, profession }: { invalidId?: string; profession?: Profession }) {
-  const [query, setQuery] = useState("");
-  const [submittedQuery, setSubmittedQuery] = useState("");
+function CabinetChooser({ invalidId, profession, doctor }: { invalidId?: string; profession?: Profession; doctor?: string }) {
+  const navigate = useNavigate({ from: "/annuaire" });
+  const [query, setQuery] = useState(doctor ?? "");
+  const [submittedQuery, setSubmittedQuery] = useState(doctor ?? "");
   const trimmed = query.trim();
   const matches = useMemo(
     () => (submittedQuery.length >= 2 ? findCabinetsByPractitionerName(submittedQuery) : []),
@@ -86,6 +89,7 @@ function CabinetChooser({ invalidId, profession }: { invalidId?: string; profess
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setSubmittedQuery(trimmed);
+    navigate({ search: { doctor: trimmed, profession } as Search, resetScroll: false });
   }
 
   return (
@@ -129,7 +133,11 @@ function CabinetChooser({ invalidId, profession }: { invalidId?: string; profess
             Exemple : saisissez « Dr A » ou « Dr B », puis cliquez sur Valider.
           </p>
           <button
-            type="submit"
+            type="button"
+            onClick={() => {
+              setSubmittedQuery(trimmed);
+              navigate({ search: { doctor: trimmed, profession } as Search, resetScroll: false });
+            }}
             disabled={trimmed.length < 2}
             className="mt-3 inline-flex items-center justify-center rounded-xl bg-care px-4 py-2.5 text-sm font-semibold text-care-foreground transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
           >
@@ -172,7 +180,7 @@ function CabinetChooser({ invalidId, profession }: { invalidId?: string; profess
 }
 
 function AnnuairePage() {
-  const { cabinet: cabinetId, c, step, profession } = Route.useSearch();
+  const { cabinet: cabinetId, c, step, profession, doctor } = Route.useSearch();
   const navigate = useNavigate({ from: "/annuaire" });
   const [professionFilter, setProfessionFilter] = useState<Profession | null>(profession ?? null);
 
@@ -223,7 +231,7 @@ function AnnuairePage() {
     navigate({ search: (prev: Search) => ({ ...prev, ...next }), resetScroll: false });
 
   if (!selectedCabinet) {
-    return <CabinetChooser {...(cabinetId ? { invalidId: cabinetId } : {})} {...(profession ? { profession } : {})} />;
+    return <CabinetChooser {...(cabinetId ? { invalidId: cabinetId } : {})} {...(profession ? { profession } : {})} {...(doctor ? { doctor } : {})} />;
   }
 
   return (

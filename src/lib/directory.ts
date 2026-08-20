@@ -155,6 +155,17 @@ function normalizeName(value: string) {
 export function findCabinetsByPractitionerName(query: string): Cabinet[] {
   const needle = normalizeName(query);
   if (needle.length < 2) return [];
+
+  // Alias de démonstration du MVP : ils représentent deux médecins du réseau.
+  const demoCabinetAliases: Record<string, string> = {
+    a: "dr_a",
+    b: "dr_b",
+  };
+  const aliasCabinetId = demoCabinetAliases[needle];
+  if (aliasCabinetId) {
+    return cabinets.filter((cabinet) => cabinet.id === aliasCabinetId);
+  }
+
   const terms = needle.split(" ").filter(Boolean);
   return cabinets.filter((cabinet) =>
     cabinet.providers.some((provider) => {

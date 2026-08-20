@@ -82,7 +82,7 @@ export function AssistantHome() {
                     className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-care/30 bg-background px-5 py-3 text-sm font-semibold text-care transition-colors hover:bg-care/10"
                   >
                     <MapPin className="h-4 w-4" aria-hidden="true" />
-                    Accéder à mon réseau de soins
+                    Accéder au réseau de mon médecin
                   </Link>
                 </div>
                 <p className="mt-4 text-xs leading-5 text-muted-foreground">

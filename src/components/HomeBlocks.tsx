@@ -54,7 +54,7 @@ export function AssistantHome() {
     <>
       <section className="px-4 pb-10 pt-10 md:pb-16 md:pt-16">
         <div className="mx-auto max-w-5xl">
-          <div className="overflow-hidden rounded-3xl border border-care/20 bg-card shadow-sm">
+          <div className="overflow-hidden rounded-3xl border border-care/25 bg-card shadow-lg shadow-care/10">
             <div className="flex flex-col gap-8 p-6 md:flex-row md:items-center md:gap-10 md:p-10 lg:p-12">
               <div className="flex-1">
                 <span className="inline-flex items-center gap-2 rounded-full border border-care/20 bg-care/10 px-3 py-1.5 text-xs font-semibold text-care">
@@ -92,7 +92,7 @@ export function AssistantHome() {
               </div>
 
               <aside className="shrink-0 rounded-2xl border border-border bg-background p-5 md:w-80 lg:w-96" aria-label="Le parcours Kivoir en trois étapes">
-                <p className="text-xs font-semibold uppercase tracking-wide text-care">Le parcours en 3 étapes</p>
+                <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.12em] text-care"><span className="h-2 w-2 rounded-full bg-care" aria-hidden="true" />Le parcours en 3 étapes</p>
                 <ol className="mt-4 flex flex-col gap-3">
                   <li className="flex items-start gap-3 rounded-xl border border-border bg-card p-3">
                     <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-care/10 text-care">
@@ -112,7 +112,7 @@ export function AssistantHome() {
                       <p className="mt-0.5 text-xs leading-5 text-muted-foreground">Accès direct au réseau de mon médecin et à l&apos;application Kivoir</p>
                     </div>
                   </li>
-                  <li className="flex items-start gap-3 rounded-xl border border-care/30 bg-care/5 p-3">
+                  <li className="flex items-start gap-3 rounded-xl border border-border bg-card p-3 shadow-sm">
                     <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-care/15 text-care">
                       <Bot className="h-5 w-5" aria-hidden="true" />
                     </span>
@@ -152,7 +152,7 @@ export function AssistantHome() {
               <h3 className="mt-1 font-semibold text-card-foreground">Je scanne son QR code</h3>
               <p className="mt-2 text-sm leading-6 text-muted-foreground">À la fin de la consultation, vous accédez simplement à votre espace de suivi.</p>
             </article>
-            <article className="rounded-2xl border border-border bg-card p-5">
+            <article className="rounded-2xl border border-border bg-card p-5 shadow-sm transition-shadow hover:shadow-md">
               <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-care/10 text-care"><Bot className="h-5 w-5" aria-hidden="true" /></span>
               <p className="mt-4 text-xs font-semibold uppercase tracking-wide text-care">Étape 3</p>
               <h3 className="mt-1 font-semibold text-card-foreground">Je suis guidé après la consultation</h3>
@@ -180,7 +180,7 @@ export function AssistantHome() {
           </div>
           <div className="mt-7 grid gap-4 md:grid-cols-3">
             {capabilities.map((capability) => (
-              <article key={capability.title} className="rounded-2xl border border-border bg-card p-5">
+              <article key={capability.title} className="rounded-2xl border border-border bg-card p-5 shadow-sm transition-shadow hover:shadow-md">
                 <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-care/10 text-care">
                   <capability.icon className="h-5 w-5" aria-hidden="true" />
                 </span>

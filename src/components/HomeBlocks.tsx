@@ -99,8 +99,8 @@ export function AssistantHome() {
                       <Stethoscope className="h-5 w-5" aria-hidden="true" />
                     </span>
                     <div>
-                      <p className="text-sm font-semibold text-card-foreground">1. Je consulte mon médecin</p>
-                      <p className="mt-0.5 text-xs leading-5 text-muted-foreground">Diagnostic et explication de la suite.</p>
+                      <p className="text-sm font-semibold text-card-foreground">1. Je consulte / j&apos;ai consulté mon médecin</p>
+                      <p className="mt-0.5 text-xs leading-5 text-muted-foreground">Évaluation clinique et diagnostic</p>
                     </div>
                   </li>
                   <li className="flex items-start gap-3 rounded-xl border border-border bg-card p-3">
@@ -109,7 +109,7 @@ export function AssistantHome() {
                     </span>
                     <div>
                       <p className="text-sm font-semibold text-card-foreground">2. Je scanne son QR code</p>
-                      <p className="mt-0.5 text-xs leading-5 text-muted-foreground">Accès direct à mon suivi en fin de consultation.</p>
+                      <p className="mt-0.5 text-xs leading-5 text-muted-foreground">Accès direct au réseau de mon médecin et à l&apos;application Kivoir</p>
                     </div>
                   </li>
                   <li className="flex items-start gap-3 rounded-xl border border-care/30 bg-care/5 p-3">
@@ -117,8 +117,8 @@ export function AssistantHome() {
                       <Bot className="h-5 w-5" aria-hidden="true" />
                     </span>
                     <div>
-                      <p className="text-sm font-semibold text-card-foreground">3. Je suis guidé et accompagné</p>
-                      <p className="mt-0.5 text-xs leading-5 text-muted-foreground">Réseau de mon médecin + Assistant Kivoir.</p>
+                      <p className="text-sm font-semibold text-card-foreground">3. Je suis guidé et accompagné dans mon parcours</p>
+                      <p className="mt-0.5 text-xs leading-5 text-muted-foreground">Assistant Kivoir + conseils et éducation de mon médecin</p>
                     </div>
                   </li>
                 </ol>

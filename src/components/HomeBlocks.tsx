@@ -7,6 +7,7 @@ import {
   Compass,
   Lightbulb,
   MapPin,
+  MessageCircle,
   MessageCircleQuestion,
   PlayCircle,
 } from "lucide-react";
@@ -56,49 +57,69 @@ export function AssistantHome() {
             <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-care/15 text-care">
               <MessageCircleQuestion className="h-6 w-6" aria-hidden="true" />
             </span>
-            <span className="min-w-0 flex-1">
-              <span className="block font-semibold text-foreground">Poser une question sur ma pathologie</span>
-              <span className="mt-0.5 block text-sm leading-5 text-muted-foreground">
-                L&apos;Assistant Kivoir vous informe et peut vous partager des vidéos adaptées.
-              </span>
+            <span className="min-w-0 flex-1 text-sm leading-6 text-foreground">
+              Votre médecin a identifié votre trouble et vous avez encore des questions&nbsp;?
             </span>
             <ArrowRight className="h-5 w-5 shrink-0 text-care transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
           </button>
 
-          <Link
-            to="/conseils"
-            className="group flex items-center gap-4 rounded-2xl border border-border bg-card p-4 transition-colors hover:bg-muted"
+          <button
+            type="button"
+            onClick={openAssistant}
+            className="group flex items-center gap-4 rounded-2xl border border-care/25 bg-care/5 p-4 text-left transition-colors hover:bg-care/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
           >
-            <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-care/10 text-care">
+            <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-care/15 text-care">
               <Lightbulb className="h-6 w-6" aria-hidden="true" />
             </span>
-            <span className="min-w-0 flex-1">
-              <span className="block font-semibold text-foreground">Des conseils en attendant mon rendez-vous</span>
-              <span className="mt-0.5 block text-sm leading-5 text-muted-foreground">
-                Les bons gestes et repères pour agir en attendant votre prochain interlocuteur.
-              </span>
+            <span className="min-w-0 flex-1 text-sm leading-6 text-foreground">
+              Dans l&apos;attente de vos prochains rendez-vous, vous souhaitez voir des vidéos
+              d&apos;information ou avoir des conseils&nbsp;?
             </span>
             <ArrowRight className="h-5 w-5 shrink-0 text-care transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
-          </Link>
+          </button>
 
-          <Link
-            to="/parcours"
-            className="group flex items-center gap-4 rounded-2xl border border-border bg-card p-4 transition-colors hover:bg-muted"
+          <button
+            type="button"
+            onClick={openAssistant}
+            className="group flex items-center gap-4 rounded-2xl border border-care/25 bg-care/5 p-4 text-left transition-colors hover:bg-care/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
           >
-            <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-care/10 text-care">
+            <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-care/15 text-care">
               <Compass className="h-6 w-6" aria-hidden="true" />
             </span>
-            <span className="min-w-0 flex-1">
-              <span className="block font-semibold text-foreground">Où j&apos;en suis dans mon parcours</span>
-              <span className="mt-0.5 block text-sm leading-5 text-muted-foreground">
-                Retrouvez la prochaine étape et le professionnel de santé à consulter ensuite.
-              </span>
+            <span className="min-w-0 flex-1 text-sm leading-6 text-foreground">
+              Vous souhaitez savoir avec quel professionnel de santé se passe la suite de votre prise
+              en charge&nbsp;?
             </span>
             <ArrowRight className="h-5 w-5 shrink-0 text-care transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
-          </Link>
+          </button>
         </div>
 
-        <div className="mt-4 grid grid-cols-2 gap-3">
+        <button
+          type="button"
+          onClick={openAssistant}
+          className="group mt-5 flex w-full items-center gap-3 rounded-2xl bg-primary p-4 text-left text-primary-foreground shadow-md shadow-primary/15 transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+        >
+          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary-foreground/15">
+            <Bot className="h-6 w-6" aria-hidden="true" />
+          </span>
+          <span className="min-w-0 flex-1">
+            <span className="block font-semibold">Tout cela est possible avec l&apos;Assistant Kivoir</span>
+            <span className="mt-0.5 block text-sm text-primary-foreground/85">
+              Appuyez ici pour poser votre question dès maintenant
+            </span>
+          </span>
+          <ArrowRight className="h-5 w-5 shrink-0 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
+        </button>
+
+        <div className="mt-4 flex justify-end">
+          <span className="relative inline-flex items-center gap-2 rounded-full border border-care/30 bg-care/10 px-4 py-2 text-sm font-medium text-care">
+            <MessageCircle className="h-4 w-4" aria-hidden="true" />
+            Retrouvez l&apos;Assistant ici à tout moment
+            <span className="absolute -bottom-1.5 right-6 h-3 w-3 rotate-45 border-b border-r border-care/30 bg-care/10" aria-hidden="true" />
+          </span>
+        </div>
+
+        <div className="mt-6 grid grid-cols-2 gap-3">
           <Link
             to="/annuaire"
             className="flex items-center gap-3 rounded-xl border border-border bg-card p-3 text-sm font-medium text-foreground transition-colors hover:bg-muted"
@@ -113,28 +134,6 @@ export function AssistantHome() {
             <ClipboardList className="h-5 w-5 shrink-0 text-care" aria-hidden="true" />
             Faire le point (questionnaire)
           </Link>
-        </div>
-
-        <div className="mt-6 rounded-2xl border border-border bg-muted/40 p-5">
-          <h2 className="flex items-center gap-2 text-sm font-semibold text-foreground">
-            <MessageCircleQuestion className="h-4 w-4 text-care" aria-hidden="true" />
-            Pourquoi utiliser l&apos;Assistant Kivoir&nbsp;?
-          </h2>
-          <ul className="mt-3 flex flex-col gap-3">
-            <li className="flex items-start gap-2.5 text-sm leading-6 text-muted-foreground">
-              <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-care" aria-hidden="true" />
-              Votre médecin a identifié votre trouble et vous avez encore des questions&nbsp;?
-            </li>
-            <li className="flex items-start gap-2.5 text-sm leading-6 text-muted-foreground">
-              <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-care" aria-hidden="true" />
-              Dans l&apos;attente de votre prochain rendez-vous, vous souhaitez voir des vidéos
-              d&apos;information ou avoir des conseils&nbsp;?
-            </li>
-            <li className="flex items-start gap-2.5 text-sm leading-6 text-muted-foreground">
-              <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-care" aria-hidden="true" />
-              Ou savoir avec quel professionnel de santé se poursuit votre prise en charge&nbsp;?
-            </li>
-          </ul>
         </div>
 
         <p className="mt-5 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground">

@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 
 export const medicalDisclaimer =
-  "Cet outil numérique vous accompagne dans votre parcours de soins.";
+  "Cet outil numérique ne remplace pas un avis médical. En cas de doute, consultez un professionnel de santé.";
 
 export function MedicalDisclaimer({ className = "" }: { className?: string }) {
   return (

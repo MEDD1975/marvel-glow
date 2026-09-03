@@ -45,24 +45,16 @@ export function AssistantHome() {
         </p>
 
         <div className="mt-6 flex flex-col gap-3">
-          <button
-            type="button"
-            onClick={openAssistant}
-            className="group flex items-center gap-4 rounded-2xl border border-care/15 bg-care/5 p-4 text-left shadow-sm transition-all hover:-translate-y-0.5 hover:border-care/40 hover:bg-care/10 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-          >
+          <div className="flex items-center gap-4 rounded-2xl border border-care/15 bg-care/5 p-4 text-left shadow-sm">
             <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-card text-care ring-1 ring-care/20 shadow-sm">
               <MessageCircleQuestion className="h-6 w-6" aria-hidden="true" />
             </span>
             <span className="min-w-0 flex-1 text-sm leading-6 text-foreground">
               Votre médecin a identifié votre trouble et vous avez encore des questions&nbsp;?
             </span>
-          </button>
+          </div>
 
-          <button
-            type="button"
-            onClick={openAssistant}
-            className="group flex items-center gap-4 rounded-2xl border border-care/15 bg-care/5 p-4 text-left shadow-sm transition-all hover:-translate-y-0.5 hover:border-care/40 hover:bg-care/10 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-          >
+          <div className="flex items-center gap-4 rounded-2xl border border-care/15 bg-care/5 p-4 text-left shadow-sm">
             <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-card text-care ring-1 ring-care/20 shadow-sm">
               <Lightbulb className="h-6 w-6" aria-hidden="true" />
             </span>
@@ -70,13 +62,9 @@ export function AssistantHome() {
               Dans l&apos;attente de vos prochains rendez-vous, vous souhaitez voir des vidéos
               d&apos;information ou avoir des conseils&nbsp;?
             </span>
-          </button>
+          </div>
 
-          <button
-            type="button"
-            onClick={openAssistant}
-            className="group flex items-center gap-4 rounded-2xl border border-care/15 bg-care/5 p-4 text-left shadow-sm transition-all hover:-translate-y-0.5 hover:border-care/40 hover:bg-care/10 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-          >
+          <div className="flex items-center gap-4 rounded-2xl border border-care/15 bg-care/5 p-4 text-left shadow-sm">
             <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-card text-care ring-1 ring-care/20 shadow-sm">
               <Compass className="h-6 w-6" aria-hidden="true" />
             </span>
@@ -84,7 +72,7 @@ export function AssistantHome() {
               Vous souhaitez savoir avec quel professionnel de santé se passe la suite de votre prise
               en charge&nbsp;?
             </span>
-          </button>
+          </div>
         </div>
 
         <button

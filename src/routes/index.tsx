@@ -7,7 +7,7 @@ export const Route = createFileRoute("/")({
       { title: "Assistant Kivoir — Votre suivi après la consultation" },
       { name: "description", content: "À la maison après votre consultation, l’Assistant Kivoir vous aide à évaluer votre récupération, comprendre vos consignes et trouver le bon professionnel." },
       { property: "og:title", content: "Assistant Kivoir — Votre suivi après la consultation" },
-      { property: "og:description", content: "Évaluez votre récupération, posez vos questions et accédez au réseau de soins de votre médecin avec l’Assistant Kivoir." },
+      { property: "og:description", content: "Évaluez votre récupération, posez vos questions et consultez les recommandations de votre médecin avec l’Assistant Kivoir." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],

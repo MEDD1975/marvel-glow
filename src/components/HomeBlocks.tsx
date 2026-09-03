@@ -41,7 +41,7 @@ const capabilities = [
   {
     icon: MapPin,
     title: "Être orienté au bon moment",
-    description: "Retrouvez le professionnel adapté dans le réseau de soins de votre médecin.",
+    description: "Retrouvez le professionnel adapté parmi les recommandations de votre médecin.",
   },
 ];
 
@@ -99,7 +99,7 @@ export function AssistantHome() {
                       <Stethoscope className="h-5 w-5" aria-hidden="true" />
                     </span>
                     <div>
-                      <p className="text-sm font-semibold text-card-foreground">1. Je consulte / j&apos;ai consulté mon médecin</p>
+                      <p className="text-sm font-semibold text-card-foreground">1. Je consulte mon médecin</p>
                       <p className="mt-0.5 text-xs leading-5 text-muted-foreground">Évaluation clinique et diagnostic</p>
                     </div>
                   </li>
@@ -117,7 +117,7 @@ export function AssistantHome() {
                       <Bot className="h-5 w-5" aria-hidden="true" />
                     </span>
                     <div>
-                      <p className="text-sm font-semibold text-card-foreground">3. Je suis guidé et accompagné dans mon parcours</p>
+                      <p className="text-sm font-semibold text-card-foreground">3. Je suis guidé après la consultation</p>
                       <p className="mt-0.5 text-xs leading-5 text-muted-foreground">Assistant Kivoir + conseils et éducation de mon médecin</p>
                     </div>
                   </li>
@@ -156,7 +156,7 @@ export function AssistantHome() {
               <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-care/10 text-care"><Bot className="h-5 w-5" aria-hidden="true" /></span>
               <p className="mt-4 text-xs font-semibold uppercase tracking-wide text-care">Étape 3</p>
               <h3 className="mt-1 font-semibold text-card-foreground">Je suis guidé après la consultation</h3>
-              <p className="mt-2 text-sm leading-6 text-muted-foreground">Je retrouve le réseau de mon médecin et échange avec l&apos;Assistant Kivoir.</p>
+              <p className="mt-2 text-sm leading-6 text-muted-foreground">Assistant Kivoir + conseils et éducation de mon médecin.</p>
             </article>
           </div>
           <div className="mt-6 flex flex-wrap gap-3 text-xs font-medium text-muted-foreground">
@@ -200,7 +200,7 @@ export function AssistantHome() {
                 Retrouvez les spécialistes recommandés par votre médecin
               </h2>
               <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                Accédez directement à l&apos;annuaire de son réseau de soins et trouvez le bon
+                Consultez le carnet de recommandations de votre médecin et trouvez le bon
                 professionnel sans repartir de zéro.
               </p>
             </div>
@@ -208,7 +208,7 @@ export function AssistantHome() {
               to="/annuaire"
               className="inline-flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
             >
-              Ouvrir l&apos;Annuaire
+              Ouvrir le carnet de recommandations
               <ArrowRight className="h-4 w-4" aria-hidden="true" />
             </Link>
           </div>

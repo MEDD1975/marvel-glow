@@ -2,11 +2,8 @@ import { Link } from "@tanstack/react-router";
 import {
   AlertTriangle,
   Bot,
-  ClipboardList,
   Compass,
   Lightbulb,
-  MapPin,
-  MessageCircle,
   MessageCircleQuestion,
   PlayCircle,
 } from "lucide-react";
@@ -105,31 +102,6 @@ export function AssistantHome() {
             </span>
           </span>
         </button>
-
-        <div className="mt-4 flex justify-end">
-          <span className="relative inline-flex items-center gap-2 rounded-full border border-care/30 bg-care/10 px-4 py-2 text-sm font-medium text-care">
-            <MessageCircle className="h-4 w-4" aria-hidden="true" />
-            Retrouvez l&apos;Assistant ici à tout moment
-            <span className="absolute -bottom-1.5 right-6 h-3 w-3 rotate-45 border-b border-r border-care/30 bg-care/10" aria-hidden="true" />
-          </span>
-        </div>
-
-        <div className="mt-6 grid grid-cols-2 gap-3">
-          <Link
-            to="/annuaire"
-            className="flex items-center gap-3 rounded-xl border border-border bg-card p-3 text-sm font-medium text-foreground transition-colors hover:bg-muted"
-          >
-            <MapPin className="h-5 w-5 shrink-0 text-care" aria-hidden="true" />
-            Le réseau de mon médecin
-          </Link>
-          <Link
-            to="/orientation"
-            className="flex items-center gap-3 rounded-xl border border-border bg-card p-3 text-sm font-medium text-foreground transition-colors hover:bg-muted"
-          >
-            <ClipboardList className="h-5 w-5 shrink-0 text-care" aria-hidden="true" />
-            Faire le point (questionnaire)
-          </Link>
-        </div>
 
         <p className="mt-5 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground">
           <PlayCircle className="h-4 w-4 text-care" aria-hidden="true" />

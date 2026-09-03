@@ -173,7 +173,7 @@ export function NavireChatWidget() {
         <section
           id="navire-chat-widget"
           aria-label="Discussion avec Assistant Kivoir"
-          className="flex h-[min(620px,calc(100vh-120px))] w-[min(390px,calc(100vw-32px))] flex-col overflow-hidden rounded-2xl border border-border bg-card text-card-foreground shadow-2xl shadow-primary/10"
+          className="fixed inset-0 z-[60] flex h-[100dvh] w-full flex-col overflow-hidden rounded-none border-0 bg-card text-card-foreground shadow-2xl shadow-primary/10 sm:static sm:h-[min(620px,calc(100vh-120px))] sm:w-[min(390px,calc(100vw-32px))] sm:rounded-2xl sm:border"
         >
           <header className="flex items-center justify-between border-b border-border bg-primary px-4 py-3 text-primary-foreground">
             <div className="flex items-center gap-3">
@@ -315,7 +315,7 @@ export function NavireChatWidget() {
         aria-expanded={open}
         aria-controls="navire-chat-widget"
         aria-label={open ? "Fermer Assistant Kivoir" : "Ouvrir Assistant Kivoir"}
-        className="flex h-14 w-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/25 transition-transform hover:scale-105 hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+        className={`flex h-14 w-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/25 transition-transform hover:scale-105 hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background ${open ? "hidden sm:flex" : ""}`}
       >
         {open ? <X className="h-6 w-6" aria-hidden="true" /> : <MessageCircle className="h-6 w-6" aria-hidden="true" />}
       </button>

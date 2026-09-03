@@ -103,8 +103,8 @@ function CabinetChooser({ invalidId, profession, doctor }: { invalidId?: string;
         </h1>
         <p className="mt-2 max-w-xl leading-6 text-muted-foreground">
           {invalidId
-            ? `L’identifiant « ${invalidId} » ne correspond à aucun cabinet. Saisissez le nom de votre médecin pour retrouver son réseau de soins.`
-            : "Entrez le nom de votre médecin pour afficher le réseau de soins de son cabinet et les professionnels recommandés."}
+            ? `L’identifiant « ${invalidId} » ne correspond à aucun cabinet. Saisissez le nom de votre médecin pour retrouver son carnet de recommandations.`
+            : "Entrez le nom de votre médecin pour afficher son carnet de recommandations et les professionnels recommandés."}
         </p>
 
         <form className="mt-6" onSubmit={handleSubmit}>

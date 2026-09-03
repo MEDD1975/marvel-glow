@@ -115,6 +115,28 @@ export function AssistantHome() {
           </Link>
         </div>
 
+        <div className="mt-6 rounded-2xl border border-border bg-muted/40 p-5">
+          <h2 className="flex items-center gap-2 text-sm font-semibold text-foreground">
+            <MessageCircleQuestion className="h-4 w-4 text-care" aria-hidden="true" />
+            Pourquoi utiliser l&apos;Assistant Kivoir&nbsp;?
+          </h2>
+          <ul className="mt-3 flex flex-col gap-3">
+            <li className="flex items-start gap-2.5 text-sm leading-6 text-muted-foreground">
+              <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-care" aria-hidden="true" />
+              Votre médecin a identifié votre trouble et vous avez encore des questions&nbsp;?
+            </li>
+            <li className="flex items-start gap-2.5 text-sm leading-6 text-muted-foreground">
+              <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-care" aria-hidden="true" />
+              Dans l&apos;attente de votre prochain rendez-vous, vous souhaitez voir des vidéos
+              d&apos;information ou avoir des conseils&nbsp;?
+            </li>
+            <li className="flex items-start gap-2.5 text-sm leading-6 text-muted-foreground">
+              <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-care" aria-hidden="true" />
+              Ou savoir avec quel professionnel de santé se poursuit votre prise en charge&nbsp;?
+            </li>
+          </ul>
+        </div>
+
         <p className="mt-5 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground">
           <PlayCircle className="h-4 w-4 text-care" aria-hidden="true" />
           Sans compte · Disponible à tout moment · Vos réponses restent confidentielles

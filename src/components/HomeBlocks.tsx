@@ -37,7 +37,7 @@ export function AssistantHome() {
           Proposé par votre médecin
         </div>
         <h1 className="mt-3 text-balance text-3xl font-semibold tracking-[-0.02em] text-foreground md:text-4xl">
-          Votre médecin vous propose cet outil d&apos;aide au parcours de soins
+          Votre médecin vous propose cet outil d&apos;information et d&apos;aide au parcours de soins
         </h1>
         <p className="mt-3 text-pretty text-base leading-7 text-muted-foreground">
           Votre outil d&apos;aide au parcours de soins, à utiliser quand vous voulez entre deux

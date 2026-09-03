@@ -50,6 +50,14 @@ export function NavireChatWidget() {
   const [privacyError, setPrivacyError] = useState<string | null>(null);
   const [isListening, setIsListening] = useState(false);
   const speechRecognitionRef = useRef<SpeechRecognitionInstance | null>(null);
+  const keepListeningRef = useRef(false);
+
+  function stopVoiceInput() {
+    keepListeningRef.current = false;
+    speechRecognitionRef.current?.stop();
+    speechRecognitionRef.current = null;
+    setIsListening(false);
+  }
 
   function toggleVoiceInput() {
     const SpeechRecognition = window.SpeechRecognition ?? window.webkitSpeechRecognition;
@@ -59,15 +67,15 @@ export function NavireChatWidget() {
     }
 
     if (isListening) {
-      speechRecognitionRef.current?.stop();
-      setIsListening(false);
+      stopVoiceInput();
       return;
     }
 
+    keepListeningRef.current = true;
     const recognition = new SpeechRecognition();
     recognition.lang = "fr-FR";
     recognition.interimResults = true;
-    recognition.continuous = false;
+    recognition.continuous = true;
     recognition.onresult = (event) => {
       const transcript = Array.from(event.results)
         .map((result) => result[0]?.transcript ?? "")
@@ -75,10 +83,19 @@ export function NavireChatWidget() {
       setMessage(transcript);
       if (privacyError) setPrivacyError(null);
     };
-    recognition.onend = () => setIsListening(false);
+    recognition.onend = () => {
+      if (!keepListeningRef.current) {
+        setIsListening(false);
+        return;
+      }
+      window.setTimeout(() => {
+        if (keepListeningRef.current) recognition.start();
+      }, 100);
+    };
     recognition.onerror = () => {
-      setIsListening(false);
+      if (!keepListeningRef.current) return;
       setPrivacyError("Impossible d’utiliser le microphone. Vérifiez l’autorisation de votre navigateur.");
+      setIsListening(false);
     };
     speechRecognitionRef.current = recognition;
     setPrivacyError(null);
@@ -87,6 +104,7 @@ export function NavireChatWidget() {
   }
 
   function closeAndForget() {
+    stopVoiceInput();
     setOpen(false);
     setMessage("");
     setMessages(initialMessages());
@@ -119,6 +137,8 @@ export function NavireChatWidget() {
       );
       return;
     }
+
+    stopVoiceInput();
 
     const history = messages
       .slice(1)

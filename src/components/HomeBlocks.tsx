@@ -62,7 +62,7 @@ export function AssistantHome() {
                   Votre suivi continue à la maison
                 </span>
                 <h1 className="mt-6 max-w-3xl text-balance text-3xl font-semibold tracking-[-0.03em] text-card-foreground md:text-4xl">
-                  Porté par votre médecin, l&apos;application qui éclaire votre parcours de soins
+                  Votre médecin vous propose cet outil d&apos;aide au parcours de soins
                 </h1>
                 <p className="mt-5 max-w-2xl text-pretty text-base leading-7 text-muted-foreground md:text-xl">
                   L&apos;Assistant Kivoir vous accompagne dans votre récupération, répond à vos

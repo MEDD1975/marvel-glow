@@ -30,13 +30,13 @@ function openAssistant() {
 
 export function AssistantHome() {
   return (
-    <section className="px-4 pb-8 pt-8 md:pb-12 md:pt-12">
-      <div className="mx-auto max-w-2xl">
+    <section className="px-4 pb-10 pt-8 md:pb-14 md:pt-12">
+      <div className="mx-auto max-w-2xl rounded-[2rem] border border-border/80 bg-card p-5 shadow-sm md:p-8">
         <div className="flex items-center gap-2 text-sm font-semibold text-care">
           <Bot className="h-4 w-4" aria-hidden="true" />
           Proposé par votre médecin
         </div>
-        <h1 className="mt-3 text-balance text-2xl font-semibold tracking-tight text-foreground md:text-3xl">
+        <h1 className="mt-3 text-balance text-3xl font-semibold tracking-[-0.02em] text-foreground md:text-4xl">
           Bienvenue sur Kivoir
         </h1>
         <p className="mt-3 text-pretty text-base leading-7 text-muted-foreground">
@@ -48,9 +48,9 @@ export function AssistantHome() {
           <button
             type="button"
             onClick={openAssistant}
-            className="group flex items-center gap-4 rounded-2xl border border-care/25 bg-care/5 p-4 text-left transition-colors hover:bg-care/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            className="group flex items-center gap-4 rounded-2xl border border-border bg-background p-4 text-left shadow-sm transition-all hover:-translate-y-0.5 hover:border-care/40 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
           >
-            <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-care/15 text-care">
+            <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-care/10 text-care ring-1 ring-care/10">
               <MessageCircleQuestion className="h-6 w-6" aria-hidden="true" />
             </span>
             <span className="min-w-0 flex-1 text-sm leading-6 text-foreground">
@@ -61,9 +61,9 @@ export function AssistantHome() {
           <button
             type="button"
             onClick={openAssistant}
-            className="group flex items-center gap-4 rounded-2xl border border-care/25 bg-care/5 p-4 text-left transition-colors hover:bg-care/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            className="group flex items-center gap-4 rounded-2xl border border-border bg-background p-4 text-left shadow-sm transition-all hover:-translate-y-0.5 hover:border-care/40 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
           >
-            <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-care/15 text-care">
+            <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-care/10 text-care ring-1 ring-care/10">
               <Lightbulb className="h-6 w-6" aria-hidden="true" />
             </span>
             <span className="min-w-0 flex-1 text-sm leading-6 text-foreground">
@@ -75,9 +75,9 @@ export function AssistantHome() {
           <button
             type="button"
             onClick={openAssistant}
-            className="group flex items-center gap-4 rounded-2xl border border-care/25 bg-care/5 p-4 text-left transition-colors hover:bg-care/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            className="group flex items-center gap-4 rounded-2xl border border-border bg-background p-4 text-left shadow-sm transition-all hover:-translate-y-0.5 hover:border-care/40 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
           >
-            <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-care/15 text-care">
+            <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-care/10 text-care ring-1 ring-care/10">
               <Compass className="h-6 w-6" aria-hidden="true" />
             </span>
             <span className="min-w-0 flex-1 text-sm leading-6 text-foreground">
@@ -90,7 +90,7 @@ export function AssistantHome() {
         <button
           type="button"
           onClick={openAssistant}
-          className="group mt-5 flex w-full items-center gap-3 rounded-2xl bg-primary p-4 text-left text-primary-foreground shadow-md shadow-primary/15 transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+          className="group mt-6 flex w-full items-center gap-4 rounded-2xl bg-primary p-4 text-left text-primary-foreground shadow-lg shadow-primary/20 transition-all hover:-translate-y-0.5 hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 md:p-5"
         >
           <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary-foreground/15">
             <Bot className="h-6 w-6" aria-hidden="true" />

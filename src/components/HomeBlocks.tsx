@@ -1,7 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import {
   AlertTriangle,
-  ArrowRight,
   Bot,
   ClipboardList,
   Compass,
@@ -60,7 +59,6 @@ export function AssistantHome() {
             <span className="min-w-0 flex-1 text-sm leading-6 text-foreground">
               Votre médecin a identifié votre trouble et vous avez encore des questions&nbsp;?
             </span>
-            <ArrowRight className="h-5 w-5 shrink-0 text-care transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
           </button>
 
           <button
@@ -75,7 +73,6 @@ export function AssistantHome() {
               Dans l&apos;attente de vos prochains rendez-vous, vous souhaitez voir des vidéos
               d&apos;information ou avoir des conseils&nbsp;?
             </span>
-            <ArrowRight className="h-5 w-5 shrink-0 text-care transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
           </button>
 
           <button
@@ -90,7 +87,6 @@ export function AssistantHome() {
               Vous souhaitez savoir avec quel professionnel de santé se passe la suite de votre prise
               en charge&nbsp;?
             </span>
-            <ArrowRight className="h-5 w-5 shrink-0 text-care transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
           </button>
         </div>
 
@@ -103,12 +99,11 @@ export function AssistantHome() {
             <Bot className="h-6 w-6" aria-hidden="true" />
           </span>
           <span className="min-w-0 flex-1">
-            <span className="block font-semibold">Tout cela est possible avec l&apos;Assistant Kivoir</span>
+            <span className="block font-semibold">Poser vos questions à l&apos;Assistant Kivoir</span>
             <span className="mt-0.5 block text-sm text-primary-foreground/85">
               Appuyez ici pour poser votre question dès maintenant
             </span>
           </span>
-          <ArrowRight className="h-5 w-5 shrink-0 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
         </button>
 
         <div className="mt-4 flex justify-end">

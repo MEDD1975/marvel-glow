@@ -3,12 +3,12 @@ import {
   AlertTriangle,
   ArrowRight,
   Bot,
-  ClipboardCheck,
+  ClipboardList,
+  Compass,
+  Lightbulb,
   MapPin,
   MessageCircleQuestion,
-  QrCode,
-  Stethoscope,
-  TrendingUp,
+  PlayCircle,
 } from "lucide-react";
 
 export const medicalDisclaimer =
@@ -27,193 +27,99 @@ export function MedicalDisclaimer({ className = "" }: { className?: string }) {
   );
 }
 
-const capabilities = [
-  {
-    icon: TrendingUp,
-    title: "Évaluer votre récupération",
-    description: "Faites le point sur votre évolution et identifiez ce qui mérite votre attention.",
-  },
-  {
-    icon: MessageCircleQuestion,
-    title: "Comprendre douleurs et consignes",
-    description: "Posez vos questions avec vos mots, depuis chez vous, quand vous en avez besoin.",
-  },
-  {
-    icon: MapPin,
-    title: "Être orienté au bon moment",
-    description: "Retrouvez le professionnel adapté parmi les recommandations de votre médecin.",
-  },
-];
-
 function openAssistant() {
   window.dispatchEvent(new CustomEvent("kivoir:open-assistant"));
 }
 
 export function AssistantHome() {
   return (
-    <>
-      <section className="px-4 pb-10 pt-10 md:pb-16 md:pt-16">
-        <div className="mx-auto max-w-5xl">
-          <div className="overflow-hidden rounded-3xl border border-care/25 bg-card shadow-lg shadow-care/10">
-            <div className="flex flex-col gap-8 p-6 md:flex-row md:items-center md:gap-10 md:p-10 lg:p-12">
-              <div className="flex-1">
-                <span className="inline-flex items-center gap-2 rounded-full border border-care/20 bg-care/10 px-3 py-1.5 text-xs font-semibold text-care">
-                  <Bot className="h-4 w-4" aria-hidden="true" />
-                  Votre suivi continue à la maison
-                </span>
-                <h1 className="mt-6 max-w-3xl text-balance text-3xl font-semibold tracking-[-0.03em] text-card-foreground md:text-4xl">
-                  Votre médecin vous propose cet outil d&apos;aide au parcours de soins
-                </h1>
-                <p className="mt-5 max-w-2xl text-pretty text-base leading-7 text-muted-foreground md:text-xl">
-                  L&apos;Assistant Kivoir vous accompagne dans votre récupération, répond à vos
-                  questions sur vos douleurs ou vos consignes et vous aide à savoir quand revoir un
-                  professionnel de santé.
-                </p>
-                <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-                  <button
-                    type="button"
-                    onClick={openAssistant}
-                    className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground shadow-md shadow-primary/15 transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card"
-                  >
-                    Parler à l&apos;Assistant Kivoir
-                    <ArrowRight className="h-4 w-4" aria-hidden="true" />
-                  </button>
-                  <Link
-                    to="/annuaire"
-                    className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-care/30 bg-background px-5 py-3 text-sm font-semibold text-care transition-colors hover:bg-care/10"
-                  >
-                    <MapPin className="h-4 w-4" aria-hidden="true" />
-                    Accéder au réseau de mon médecin
-                  </Link>
-                </div>
-                <p className="mt-4 text-xs leading-5 text-muted-foreground">
-                  Sans compte · Disponible à tout moment · Vos réponses restent confidentielles
-                </p>
-              </div>
-
-              <aside className="shrink-0 rounded-2xl border border-border bg-background p-5 md:w-80 lg:w-96" aria-label="Le parcours Kivoir en trois étapes">
-                <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.12em] text-care"><span className="h-2 w-2 rounded-full bg-care" aria-hidden="true" />Le parcours en 3 étapes</p>
-                <ol className="mt-4 flex flex-col gap-3">
-                  <li className="flex items-start gap-3 rounded-xl border border-border bg-card p-3">
-                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-care/10 text-care">
-                      <Stethoscope className="h-5 w-5" aria-hidden="true" />
-                    </span>
-                    <div>
-                      <p className="text-sm font-semibold text-card-foreground">1. Je consulte mon médecin</p>
-                      <p className="mt-0.5 text-xs leading-5 text-muted-foreground">Évaluation clinique et diagnostic</p>
-                    </div>
-                  </li>
-                  <li className="flex items-start gap-3 rounded-xl border border-border bg-card p-3">
-                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-care/10 text-care">
-                      <QrCode className="h-5 w-5" aria-hidden="true" />
-                    </span>
-                    <div>
-                      <p className="text-sm font-semibold text-card-foreground">2. Je scanne son QR code</p>
-                      <p className="mt-0.5 text-xs leading-5 text-muted-foreground">Accès direct au réseau de mon médecin et à l&apos;application Kivoir</p>
-                    </div>
-                  </li>
-                  <li className="flex items-start gap-3 rounded-xl border border-border bg-card p-3 shadow-sm">
-                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-care/15 text-care">
-                      <Bot className="h-5 w-5" aria-hidden="true" />
-                    </span>
-                    <div>
-                      <p className="text-sm font-semibold text-card-foreground">3. Je suis guidé après la consultation</p>
-                      <p className="mt-0.5 text-xs leading-5 text-muted-foreground">Assistant Kivoir + conseils et éducation de mon médecin</p>
-                    </div>
-                  </li>
-                </ol>
-              </aside>
-            </div>
-          </div>
+    <section className="px-4 pb-8 pt-8 md:pb-12 md:pt-12">
+      <div className="mx-auto max-w-2xl">
+        <div className="flex items-center gap-2 text-sm font-semibold text-care">
+          <Bot className="h-4 w-4" aria-hidden="true" />
+          Proposé par votre médecin
         </div>
-      </section>
+        <h1 className="mt-3 text-balance text-2xl font-semibold tracking-tight text-foreground md:text-3xl">
+          Bienvenue sur Kivoir
+        </h1>
+        <p className="mt-3 text-pretty text-base leading-7 text-muted-foreground">
+          Votre outil d&apos;aide au parcours de soins, à utiliser quand vous voulez entre deux
+          rendez-vous. Que souhaitez-vous faire&nbsp;?
+        </p>
 
-      <section className="px-4 pb-12 md:pb-16" aria-labelledby="care-pathway">
-        <div className="mx-auto max-w-5xl rounded-3xl border border-border bg-background p-6 md:p-8">
-          <div className="max-w-2xl">
-            <p className="text-sm font-semibold text-care">Le parcours Kivoir</p>
-            <h2 id="care-pathway" className="mt-2 text-balance text-2xl font-semibold text-foreground md:text-3xl">
-              De la consultation à l&apos;accompagnement, en trois étapes
-            </h2>
-            <p className="mt-3 text-pretty text-sm leading-6 text-muted-foreground md:text-base">
-              Kivoir prolonge le lien avec votre médecin et vous aide à avancer avec les bons repères.
-            </p>
-          </div>
-          <div className="mt-8 grid gap-4 md:grid-cols-3">
-            <article className="relative rounded-2xl border border-border bg-card p-5 md:after:absolute md:after:right-[-1.1rem] md:after:top-1/2 md:after:h-px md:after:w-4 md:after:bg-care/40">
-              <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-care/10 text-care"><Stethoscope className="h-5 w-5" aria-hidden="true" /></span>
-              <p className="mt-4 text-xs font-semibold uppercase tracking-wide text-care">Étape 1</p>
-              <h3 className="mt-1 font-semibold text-card-foreground">Je consulte mon médecin</h3>
-              <p className="mt-2 text-sm leading-6 text-muted-foreground">Votre médecin pose son diagnostic et vous explique la suite de votre prise en charge.</p>
-            </article>
-            <article className="relative rounded-2xl border border-border bg-card p-5 md:after:absolute md:after:right-[-1.1rem] md:after:top-1/2 md:after:h-px md:after:w-4 md:after:bg-care/40">
-              <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-care/10 text-care"><QrCode className="h-5 w-5" aria-hidden="true" /></span>
-              <p className="mt-4 text-xs font-semibold uppercase tracking-wide text-care">Étape 2</p>
-              <h3 className="mt-1 font-semibold text-card-foreground">Je scanne son QR code</h3>
-              <p className="mt-2 text-sm leading-6 text-muted-foreground">À la fin de la consultation, vous accédez simplement à votre espace de suivi.</p>
-            </article>
-            <article className="rounded-2xl border border-border bg-card p-5 shadow-sm transition-shadow hover:shadow-md">
-              <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-care/10 text-care"><Bot className="h-5 w-5" aria-hidden="true" /></span>
-              <p className="mt-4 text-xs font-semibold uppercase tracking-wide text-care">Étape 3</p>
-              <h3 className="mt-1 font-semibold text-card-foreground">Je suis guidé après la consultation</h3>
-              <p className="mt-2 text-sm leading-6 text-muted-foreground">Assistant Kivoir + conseils et éducation de mon médecin.</p>
-            </article>
-          </div>
-          <div className="mt-6 flex flex-wrap gap-3 text-xs font-medium text-muted-foreground">
-            <span className="rounded-full border border-border bg-card px-3 py-2">Parcours clair</span>
-            <span className="rounded-full border border-border bg-card px-3 py-2">Réseau recommandé par votre médecin</span>
-            <span className="rounded-full border border-border bg-card px-3 py-2">Disponible après la consultation</span>
-          </div>
+        <div className="mt-6 flex flex-col gap-3">
+          <button
+            type="button"
+            onClick={openAssistant}
+            className="group flex items-center gap-4 rounded-2xl border border-care/25 bg-care/5 p-4 text-left transition-colors hover:bg-care/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+          >
+            <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-care/15 text-care">
+              <MessageCircleQuestion className="h-6 w-6" aria-hidden="true" />
+            </span>
+            <span className="min-w-0 flex-1">
+              <span className="block font-semibold text-foreground">Poser une question sur ma pathologie</span>
+              <span className="mt-0.5 block text-sm leading-5 text-muted-foreground">
+                L&apos;Assistant Kivoir vous informe et peut vous partager des vidéos adaptées.
+              </span>
+            </span>
+            <ArrowRight className="h-5 w-5 shrink-0 text-care transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
+          </button>
+
+          <Link
+            to="/conseils"
+            className="group flex items-center gap-4 rounded-2xl border border-border bg-card p-4 transition-colors hover:bg-muted"
+          >
+            <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-care/10 text-care">
+              <Lightbulb className="h-6 w-6" aria-hidden="true" />
+            </span>
+            <span className="min-w-0 flex-1">
+              <span className="block font-semibold text-foreground">Des conseils en attendant mon rendez-vous</span>
+              <span className="mt-0.5 block text-sm leading-5 text-muted-foreground">
+                Les bons gestes et repères pour agir en attendant votre prochain interlocuteur.
+              </span>
+            </span>
+            <ArrowRight className="h-5 w-5 shrink-0 text-care transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
+          </Link>
+
+          <Link
+            to="/parcours"
+            className="group flex items-center gap-4 rounded-2xl border border-border bg-card p-4 transition-colors hover:bg-muted"
+          >
+            <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-care/10 text-care">
+              <Compass className="h-6 w-6" aria-hidden="true" />
+            </span>
+            <span className="min-w-0 flex-1">
+              <span className="block font-semibold text-foreground">Où j&apos;en suis dans mon parcours</span>
+              <span className="mt-0.5 block text-sm leading-5 text-muted-foreground">
+                Retrouvez la prochaine étape et le professionnel de santé à consulter ensuite.
+              </span>
+            </span>
+            <ArrowRight className="h-5 w-5 shrink-0 text-care transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
+          </Link>
         </div>
-      </section>
 
-      <section className="px-4 pb-12 md:pb-16" aria-labelledby="assistant-capabilities">
-        <div className="mx-auto max-w-5xl">
-          <div className="max-w-2xl">
-            <p className="text-sm font-semibold text-care">À vos côtés entre deux rendez-vous</p>
-            <h2
-              id="assistant-capabilities"
-              className="mt-2 text-balance text-2xl font-semibold text-foreground md:text-3xl"
-            >
-              Le bon repère, au moment où une question se pose
-            </h2>
-          </div>
-          <div className="mt-7 grid gap-4 md:grid-cols-3">
-            {capabilities.map((capability) => (
-              <article key={capability.title} className="rounded-2xl border border-border bg-card p-5 shadow-sm transition-shadow hover:shadow-md">
-                <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-care/10 text-care">
-                  <capability.icon className="h-5 w-5" aria-hidden="true" />
-                </span>
-                <h3 className="mt-4 font-semibold text-card-foreground">{capability.title}</h3>
-                <p className="mt-2 text-sm leading-6 text-muted-foreground">{capability.description}</p>
-              </article>
-            ))}
-          </div>
-
-          <div className="mt-8 flex flex-col gap-5 rounded-2xl border border-care/20 bg-care/5 p-6 md:flex-row md:items-center md:justify-between md:p-8">
-            <div className="max-w-2xl">
-              <p className="flex items-center gap-2 text-sm font-semibold text-care">
-                <ClipboardCheck className="h-4 w-4" aria-hidden="true" />
-                Besoin de consulter ?
-              </p>
-              <h2 className="mt-2 text-balance text-xl font-semibold text-foreground md:text-2xl">
-                Retrouvez les spécialistes recommandés par votre médecin
-              </h2>
-              <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                Consultez le carnet de recommandations de votre médecin et trouvez le bon
-                professionnel sans repartir de zéro.
-              </p>
-            </div>
-            <Link
-              to="/annuaire"
-              className="inline-flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
-            >
-              Ouvrir le carnet de recommandations
-              <ArrowRight className="h-4 w-4" aria-hidden="true" />
-            </Link>
-          </div>
+        <div className="mt-4 grid grid-cols-2 gap-3">
+          <Link
+            to="/annuaire"
+            className="flex items-center gap-3 rounded-xl border border-border bg-card p-3 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+          >
+            <MapPin className="h-5 w-5 shrink-0 text-care" aria-hidden="true" />
+            Le réseau de mon médecin
+          </Link>
+          <Link
+            to="/orientation"
+            className="flex items-center gap-3 rounded-xl border border-border bg-card p-3 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+          >
+            <ClipboardList className="h-5 w-5 shrink-0 text-care" aria-hidden="true" />
+            Faire le point (questionnaire)
+          </Link>
         </div>
-      </section>
-    </>
+
+        <p className="mt-5 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground">
+          <PlayCircle className="h-4 w-4 text-care" aria-hidden="true" />
+          Sans compte · Disponible à tout moment · Vos réponses restent confidentielles
+        </p>
+      </div>
+    </section>
   );
 }

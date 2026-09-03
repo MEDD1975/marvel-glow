@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { Link } from "@tanstack/react-router";
-import { ArrowRight, Bot, LoaderCircle, MessageCircle, Send, X } from "lucide-react";
+import { ArrowRight, Bot, LoaderCircle, MessageCircle, Mic, Send, X } from "lucide-react";
 import { askCareAgent, type CareAgentHistoryMessage } from "@/lib/care-agent";
 import type { ResourceLink } from "@/lib/condition-resources";
 
@@ -8,6 +8,26 @@ const welcomeMessage =
   "Bonjour, je suis l’Assistant Kivoir, votre compagnon après la consultation. Vous pouvez vous exprimer librement : racontez-moi comment s’est passée votre visite, ce que vous ressentez aujourd’hui, ou ce que votre médecin vous a conseillé ou prescrit. Comment puis-je vous aider ?";
 
 type ChatMessage = CareAgentHistoryMessage & { videos?: ResourceLink[] };
+
+type SpeechRecognitionInstance = {
+  lang: string;
+  interimResults: boolean;
+  continuous: boolean;
+  onresult: ((event: { results: ArrayLike<ArrayLike<{ transcript: string }>> }) => void) | null;
+  onend: (() => void) | null;
+  onerror: (() => void) | null;
+  start: () => void;
+  stop: () => void;
+};
+
+type SpeechRecognitionConstructor = new () => SpeechRecognitionInstance;
+
+declare global {
+  interface Window {
+    SpeechRecognition?: SpeechRecognitionConstructor;
+    webkitSpeechRecognition?: SpeechRecognitionConstructor;
+  }
+}
 
 function containsIdentifyingData(value: string) {
   return (
@@ -28,8 +48,63 @@ export function NavireChatWidget() {
   const [messages, setMessages] = useState<ChatMessage[]>(initialMessages);
   const [isSending, setIsSending] = useState(false);
   const [privacyError, setPrivacyError] = useState<string | null>(null);
+  const [isListening, setIsListening] = useState(false);
+  const speechRecognitionRef = useRef<SpeechRecognitionInstance | null>(null);
+  const keepListeningRef = useRef(false);
+
+  function stopVoiceInput() {
+    keepListeningRef.current = false;
+    speechRecognitionRef.current?.stop();
+    speechRecognitionRef.current = null;
+    setIsListening(false);
+  }
+
+  function toggleVoiceInput() {
+    const SpeechRecognition = window.SpeechRecognition ?? window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      setPrivacyError("La saisie vocale n’est pas disponible sur ce navigateur. Vous pouvez écrire votre question.");
+      return;
+    }
+
+    if (isListening) {
+      stopVoiceInput();
+      return;
+    }
+
+    keepListeningRef.current = true;
+    const recognition = new SpeechRecognition();
+    recognition.lang = "fr-FR";
+    recognition.interimResults = true;
+    recognition.continuous = true;
+    recognition.onresult = (event) => {
+      const transcript = Array.from(event.results)
+        .map((result) => result[0]?.transcript ?? "")
+        .join("");
+      setMessage(transcript);
+      if (privacyError) setPrivacyError(null);
+    };
+    recognition.onend = () => {
+      if (!keepListeningRef.current) {
+        setIsListening(false);
+        return;
+      }
+      window.setTimeout(() => {
+        if (keepListeningRef.current) recognition.start();
+      }, 100);
+    };
+    recognition.onerror = () => {
+      if (!keepListeningRef.current) return;
+      setPrivacyError("Impossible d’utiliser le microphone. Vérifiez l’autorisation de votre navigateur.");
+      setIsListening(false);
+    };
+    speechRecognitionRef.current = recognition;
+    setPrivacyError(null);
+    setIsListening(true);
+    recognition.start();
+  }
 
   function closeAndForget() {
+    stopVoiceInput();
     setOpen(false);
     setMessage("");
     setMessages(initialMessages());
@@ -62,6 +137,8 @@ export function NavireChatWidget() {
       );
       return;
     }
+
+    stopVoiceInput();
 
     const history = messages
       .slice(1)
@@ -180,6 +257,15 @@ export function NavireChatWidget() {
               Votre message à Assistant Kivoir
             </label>
             <div className="flex items-end gap-2 rounded-xl border border-input bg-background p-1.5 focus-within:ring-2 focus-within:ring-ring">
+              <button
+                type="button"
+                onClick={toggleVoiceInput}
+                aria-label={isListening ? "Arrêter la saisie vocale" : "Parler à l’Assistant Kivoir"}
+                aria-pressed={isListening}
+                className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${isListening ? "bg-destructive text-destructive-foreground animate-pulse" : "text-primary hover:bg-primary/10"}`}
+              >
+                <Mic className="h-4 w-4" aria-hidden="true" />
+              </button>
               <textarea
                 ref={messageInputRef}
                 id="navire-message"
@@ -210,6 +296,7 @@ export function NavireChatWidget() {
                 <Send className="h-4 w-4" aria-hidden="true" />
               </button>
             </div>
+            {isListening ? <p className="mt-2 px-1 text-xs text-primary">Je vous écoute…</p> : null}
             {privacyError ? (
               <p id="kivoir-privacy-error" role="alert" className="mt-2 px-1 text-xs leading-5 text-destructive">
                 {privacyError}

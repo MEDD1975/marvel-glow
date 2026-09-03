@@ -128,7 +128,7 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <Header />
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <div className="pb-20 sm:pb-0">
+      <div className="pb-28 sm:pb-0">
         <Outlet />
       </div>
       <MobileTabBar />

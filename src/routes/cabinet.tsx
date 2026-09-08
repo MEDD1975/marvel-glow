@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ArrowRight,
   CheckCircle2,
@@ -77,8 +77,6 @@ function CabinetPage() {
       cancelled = true;
     };
   }, [pathway]);
-
-  const updatePoster = (patch: Partial<PosterData>) => setPoster((prev) => ({ ...prev, ...patch }));
 
   const switchVideoCabinet = (cabinetId: string) => {
     setVideoCabinet(cabinetId);

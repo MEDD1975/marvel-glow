@@ -228,23 +228,6 @@ function CabinetPage() {
           Kivoir n'est pas prescrit : il est mis à disposition du patient comme un support d'information et de préparation
           à la consultation. Le médecin garde le libre choix de le proposer ou non, sans que cela soit un acte médical.
         </p>
-        <div className="mt-5 grid gap-4 md:grid-cols-2">
-          <div className="rounded-xl border border-border bg-card p-4">
-            <p className="text-xs font-semibold uppercase tracking-wide text-care">Avant la consultation</p>
-            <p className="mt-1 text-sm font-medium text-foreground">L'affiche QR en salle d'attente</p>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Le patient arrive avec son étape actuelle, ses questions et les documents utiles à l’échange.
-            </p>
-          </div>
-          <div className="rounded-xl border border-border bg-card p-4">
-            <p className="text-xs font-semibold uppercase tracking-wide text-care">Après la consultation</p>
-            <p className="mt-1 text-sm font-medium text-foreground">La carte remise au patient</p>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Il retrouve chez lui la feuille de route, la prochaine étape et vos consignes, sans vous solliciter à nouveau pour chaque détail.
-            </p>
-          </div>
-        </div>
-
         <ul className="mt-4 space-y-3">
           <li className="flex items-start gap-3 text-sm text-muted-foreground">
             <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-care" />

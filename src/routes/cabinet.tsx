@@ -221,29 +221,6 @@ function CabinetPage() {
         <WorkflowCard icon={Users} step="2" title="Après la consultation" text="Vous lui remettez une feuille de route : prochaine étape, consigne et éléments à préparer." />
       </section>
 
-      {/* Why propose Kivoir */}
-      <section className="mt-10 rounded-2xl border border-care/20 bg-care/5 p-6 md:p-8 print:hidden">
-        <h2 className="text-xl font-semibold text-foreground">Pourquoi proposer Kivoir au patient</h2>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Kivoir n'est pas prescrit : il est mis à disposition du patient comme un support d'information et de préparation
-          à la consultation. Le médecin garde le libre choix de le proposer ou non, sans que cela soit un acte médical.
-        </p>
-        <ul className="mt-4 space-y-3">
-          <li className="flex items-start gap-3 text-sm text-muted-foreground">
-            <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-care" />
-            Le patient arrive avec un parcours lisible : étape actuelle, démarches déjà réalisées, questions et documents disponibles.
-          </li>
-          <li className="flex items-start gap-3 text-sm text-muted-foreground">
-            <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-care" />
-            Il retrouve une feuille de route claire et peut préparer son prochain échange avec les bonnes informations.
-          </li>
-          <li className="flex items-start gap-3 text-sm text-muted-foreground">
-            <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-care" />
-            Le médecin peut se concentrer sur l'examen clinique et la décision médicale, sans temps perdu en répétitions.
-          </li>
-        </ul>
-      </section>
-
       {/* Value props */}
       <section className="mt-12 grid gap-6 sm:grid-cols-3 print:hidden">
         <ValueCard

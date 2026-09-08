@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import {
   ArrowRight,
@@ -147,50 +147,66 @@ function CabinetPage() {
 
   return (
     <main className="mx-auto max-w-5xl px-4 py-10 print:py-0">
-      {/* Hero */}
-      <section className="text-center print:hidden">
+      {/* Hero + tableau de bord */}
+      <section className="print:hidden">
         <span className="inline-flex items-center gap-1.5 rounded-full border border-care/20 bg-care/5 px-3 py-1 text-xs font-medium text-care">
           <Stethoscope className="h-3.5 w-3.5" />
-          Pour les professionnels de santé
+          Espace médecin
         </span>
-        <h1 className="mt-4 text-3xl font-semibold tracking-tight text-foreground md:text-4xl">
-          Le parcours continue après la consultation
+        <h1 className="mt-4 text-3xl font-semibold tracking-tight text-foreground md:text-4xl text-balance">
+          Que souhaitez-vous faire&nbsp;?
         </h1>
-        <p className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground">
-          Kivoir vous aide à donner au patient une feuille de route claire : ce qui a été fait, ce qui vient ensuite et ce qu’il doit préparer. Un support simple avant et après votre échange.
+        <p className="mt-3 max-w-2xl text-lg text-muted-foreground text-pretty">
+          Trois accès rapides pour accompagner votre patient, sans créer de dossier ni saisir de données de santé.
         </p>
-      </section>
 
-      <section className="mt-8 rounded-[2rem] border border-care/20 bg-card p-5 shadow-lg shadow-care/10 md:p-8 print:hidden" aria-labelledby="doctor-dashboard-title">
-        <div className="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-care">Espace médecin</p>
-            <h2 id="doctor-dashboard-title" className="mt-2 text-2xl font-semibold tracking-tight text-foreground md:text-3xl">Que souhaitez-vous faire ?</h2>
-            <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">Trois accès rapides pour accompagner votre patient, sans créer de dossier ni saisir de données de santé.</p>
-          </div>
-          <span className="inline-flex w-fit items-center rounded-full bg-care/10 px-3 py-1.5 text-xs font-semibold text-care">Prêt en moins de 30 secondes</span>
-        </div>
-        <div className="mt-6 grid gap-4 md:grid-cols-3">
-          <button type="button" onClick={() => document.getElementById("new-patient")?.scrollIntoView({ behavior: "smooth" })} className="group rounded-2xl border border-care/20 bg-care/5 p-5 text-left transition-all hover:-translate-y-1 hover:bg-care/10 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
-            <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-card text-care shadow-sm ring-1 ring-care/15"><QrCode className="h-6 w-6" aria-hidden="true" /></span>
-            <p className="mt-5 text-xs font-semibold uppercase tracking-wide text-care">1 · Première visite</p>
-            <h3 className="mt-1 text-lg font-semibold text-foreground">Nouveau patient</h3>
-            <p className="mt-2 text-sm leading-6 text-muted-foreground">Affichez le QR code ou partagez le lien du Compagnon Patient.</p>
+        <div className="mt-8 grid gap-4 md:grid-cols-3">
+          <button
+            type="button"
+            onClick={() => document.getElementById("new-patient")?.scrollIntoView({ behavior: "smooth" })}
+            className="group flex flex-col rounded-3xl border border-care/20 bg-card p-6 text-left shadow-sm transition-all hover:-translate-y-1 hover:border-care/40 hover:shadow-lg hover:shadow-care/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-care/10 text-care ring-1 ring-care/15">
+              <QrCode className="h-7 w-7" aria-hidden="true" />
+            </span>
+            <p className="mt-6 text-xs font-semibold uppercase tracking-[0.12em] text-care">1 · Première visite</p>
+            <h2 className="mt-1.5 text-xl font-semibold text-foreground">Nouveau patient</h2>
+            <p className="mt-2 flex-1 text-sm leading-6 text-muted-foreground">Affichez le QR code ou partagez le lien du Compagnon Patient.</p>
+            <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-care">Ouvrir <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" /></span>
           </button>
-          <button type="button" onClick={() => document.getElementById("follow-up")?.scrollIntoView({ behavior: "smooth" })} className="group rounded-2xl border border-care/20 bg-care/5 p-5 text-left transition-all hover:-translate-y-1 hover:bg-care/10 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
-            <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-card text-care shadow-sm ring-1 ring-care/15"><Video className="h-6 w-6" aria-hidden="true" /></span>
-            <p className="mt-5 text-xs font-semibold uppercase tracking-wide text-care">2 · Visite de suivi</p>
-            <h3 className="mt-1 text-lg font-semibold text-foreground">Post-examen</h3>
-            <p className="mt-2 text-sm leading-6 text-muted-foreground">Choisissez une vidéo ou une ressource validée à partager au patient.</p>
+
+          <button
+            type="button"
+            onClick={() => document.getElementById("follow-up")?.scrollIntoView({ behavior: "smooth" })}
+            className="group flex flex-col rounded-3xl border border-care/20 bg-card p-6 text-left shadow-sm transition-all hover:-translate-y-1 hover:border-care/40 hover:shadow-lg hover:shadow-care/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-care/10 text-care ring-1 ring-care/15">
+              <Video className="h-7 w-7" aria-hidden="true" />
+            </span>
+            <p className="mt-6 text-xs font-semibold uppercase tracking-[0.12em] text-care">2 · Visite de suivi</p>
+            <h2 className="mt-1.5 text-xl font-semibold text-foreground">Post-examen</h2>
+            <p className="mt-2 flex-1 text-sm leading-6 text-muted-foreground">Choisissez une vidéo ou une ressource validée à partager au patient.</p>
+            <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-care">Ouvrir <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" /></span>
           </button>
-          <Link to="/annuaire" className="group rounded-2xl border border-care/20 bg-care/5 p-5 text-left transition-all hover:-translate-y-1 hover:bg-care/10 hover:shadow-md">
-            <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-card text-care shadow-sm ring-1 ring-care/15"><Users className="h-6 w-6" aria-hidden="true" /></span>
-            <p className="mt-5 text-xs font-semibold uppercase tracking-wide text-care">3 · Orientation</p>
-            <h3 className="mt-1 text-lg font-semibold text-foreground">Annuaire du réseau CPTS</h3>
-            <p className="mt-2 text-sm leading-6 text-muted-foreground">Trouvez le professionnel partenaire adapté au territoire.</p>
+
+          <Link
+            to="/annuaire"
+            className="group flex flex-col rounded-3xl border border-care/20 bg-card p-6 text-left shadow-sm transition-all hover:-translate-y-1 hover:border-care/40 hover:shadow-lg hover:shadow-care/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-care/10 text-care ring-1 ring-care/15">
+              <Users className="h-7 w-7" aria-hidden="true" />
+            </span>
+            <p className="mt-6 text-xs font-semibold uppercase tracking-[0.12em] text-care">3 · Orientation</p>
+            <h2 className="mt-1.5 text-xl font-semibold text-foreground">Annuaire du réseau CPTS</h2>
+            <p className="mt-2 flex-1 text-sm leading-6 text-muted-foreground">Trouvez le professionnel partenaire adapté au territoire.</p>
+            <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-care">Ouvrir <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" /></span>
           </Link>
         </div>
-        <p className="mt-5 text-xs leading-5 text-muted-foreground"><ShieldCheck className="mr-1 inline h-3.5 w-3.5 text-care" aria-hidden="true" />Kivoir sert à orienter et partager des ressources validées : aucune donnée de santé n’est enregistrée ici.</p>
+
+        <p className="mt-5 flex items-start gap-2 text-xs leading-5 text-muted-foreground">
+          <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-care" aria-hidden="true" />
+          Kivoir sert à orienter et partager des ressources validées : aucune donnée de santé n’est enregistrée ici.
+        </p>
       </section>
 
       <section id="new-patient" className="mt-8 rounded-3xl border border-border bg-card p-6 md:p-8 print:hidden" aria-labelledby="questionnaire-title">

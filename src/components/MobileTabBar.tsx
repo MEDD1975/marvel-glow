@@ -1,18 +1,23 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useLocation } from "@tanstack/react-router";
 import { Home, ClipboardList, Route as RouteIcon, MapPin } from "lucide-react";
 
-const items = [
+const patientItems = [
   { to: "/", label: "Accueil", icon: Home, exact: true },
   { to: "/orientation", label: "Questionnaire", icon: ClipboardList, exact: false },
   { to: "/parcours", label: "Parcours", icon: RouteIcon, exact: false },
   { to: "/annuaire", label: "Annuaire", icon: MapPin, exact: false },
 ];
 
+const doctorItems = [{ to: "/cabinet", label: "Gestion médecin", icon: ClipboardList, exact: true }];
+
 /** Barre de navigation basse : accès en un geste aux 4 écrans clés sur mobile. */
 export function MobileTabBar() {
+  const location = useLocation();
+  const items = location.pathname.startsWith("/cabinet") ? doctorItems : patientItems;
+
   return (
     <nav className="fixed inset-x-3 bottom-3 z-50 overflow-hidden rounded-2xl border border-border/80 bg-background/90 shadow-[0_12px_40px_-22px_var(--foreground)] backdrop-blur-xl sm:hidden print:hidden">
-      <ul className="grid grid-cols-4">
+      <ul className={items.length === 1 ? "grid grid-cols-1" : "grid grid-cols-4"}>
         {items.map((item) => (
           <li key={item.to}>
             <Link

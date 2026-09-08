@@ -1,17 +1,22 @@
 import { useState } from "react";
-import { Link } from "@tanstack/react-router";
+import { Link, useLocation } from "@tanstack/react-router";
 import { Menu, X } from "lucide-react";
 import { Logo } from "@/components/Logo";
 
-const navItems = [
+const patientNavItems = [
   { to: "/", label: "Accueil", exact: true },
   { to: "/orientation", label: "Questionnaire" },
   { to: "/parcours", label: "Parcours" },
   { to: "/annuaire", label: "Annuaire" },
 ];
 
+const doctorNavItems = [{ to: "/cabinet", label: "Gestion et annuaire", exact: true }];
+
 export function Header() {
   const [open, setOpen] = useState(false);
+  const location = useLocation();
+  const isDoctorSpace = location.pathname.startsWith("/cabinet");
+  const navItems = isDoctorSpace ? doctorNavItems : patientNavItems;
 
   return (
     <header className="sticky top-0 z-50 border-b border-border/70 bg-background/80 backdrop-blur-xl print:hidden">
@@ -30,8 +35,9 @@ export function Header() {
           {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </button>
 
-        <nav className="hidden items-center gap-x-4 gap-y-1 text-sm sm:flex sm:flex-wrap">
-          {navItems.map((item) => (
+        <div className="hidden items-center gap-4 sm:flex">
+          <nav className="flex items-center gap-x-4 gap-y-1 text-sm">
+            {navItems.map((item) => (
             <Link
               key={item.to}
               to={item.to}
@@ -42,10 +48,16 @@ export function Header() {
               {item.label}
             </Link>
           ))}
-        </nav>
-      </div>
+          </nav>
+          <Link
+            to={isDoctorSpace ? "/" : "/cabinet"}
+            className="rounded-full border border-care/25 px-3 py-1.5 text-xs font-semibold text-care transition-colors hover:bg-care/10"
+          >
+            {isDoctorSpace ? "Espace patient" : "Espace médecin"}
+          </Link>
+        </div>
 
-      {open && (
+        {open && (
         <nav className="border-t border-border bg-background px-4 py-2 sm:hidden">
           {navItems.map((item) => (
             <Link
@@ -60,8 +72,16 @@ export function Header() {
               {item.label}
             </Link>
           ))}
+          <Link
+            to={isDoctorSpace ? "/" : "/cabinet"}
+            onClick={() => setOpen(false)}
+            className="mt-2 block rounded-lg border border-care/20 px-3 py-3 text-base font-semibold text-care"
+          >
+            {isDoctorSpace ? "Espace patient" : "Espace médecin"}
+          </Link>
         </nav>
-      )}
+        )}
+      </div>
     </header>
   );
 }

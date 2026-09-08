@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import {
   AlertTriangle,
@@ -28,7 +29,43 @@ function openAssistant() {
   window.dispatchEvent(new CustomEvent("kivoir:open-assistant"));
 }
 
+function KivoirCover({ onStart }: { onStart: () => void }) {
+  return (
+    <section className="flex min-h-[calc(100svh-7rem)] items-center justify-center px-4 py-10 sm:min-h-[calc(100svh-5rem)]">
+      <div className="relative w-full max-w-2xl overflow-hidden rounded-[2rem] border border-care/20 bg-card px-6 py-10 text-center shadow-xl shadow-care/10 md:px-12 md:py-16">
+        <div className="pointer-events-none absolute -right-16 -top-16 h-40 w-40 rounded-full bg-care/10 blur-2xl" aria-hidden="true" />
+        <div className="pointer-events-none absolute -bottom-20 -left-16 h-44 w-44 rounded-full bg-primary/10 blur-2xl" aria-hidden="true" />
+        <div className="relative">
+          <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-[2rem] border border-care/20 bg-care/10 p-5 shadow-sm">
+            <img src="/favicon.svg" alt="" className="h-full w-full" />
+          </div>
+          <p className="mt-7 text-sm font-semibold uppercase tracking-[0.16em] text-care">Votre espace patient</p>
+          <h1 className="mt-3 text-5xl font-semibold tracking-[-0.05em] text-foreground md:text-7xl">Kivoir</h1>
+          <p className="mx-auto mt-5 max-w-md text-pretty text-lg leading-8 text-muted-foreground md:text-xl">
+            Votre outil d&apos;information et d&apos;aide au parcours de soins, proposé par votre médecin.
+          </p>
+          <button
+            type="button"
+            onClick={onStart}
+            className="mt-9 inline-flex min-h-12 items-center justify-center rounded-xl bg-primary px-8 py-3 text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/20 transition-all hover:-translate-y-0.5 hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+          >
+            Commencer
+          </button>
+          <p className="mt-5 text-xs text-muted-foreground">Un accompagnement simple, entre deux rendez-vous</p>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 export function AssistantHome() {
+  const [hasStarted, setHasStarted] = useState(false);
+
+  if (!hasStarted) {
+    return <KivoirCover onStart={() => setHasStarted(true)} />;
+  }
+
+  return (
   return (
     <section className="px-4 pb-28 pt-8 md:pb-14 md:pt-12">
       <div className="mx-auto max-w-2xl rounded-[2rem] border border-care/20 bg-card p-5 shadow-lg shadow-care/10 md:p-8">

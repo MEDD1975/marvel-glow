@@ -30,6 +30,16 @@ function openAssistant() {
 }
 
 function KivoirCover({ onStart }: { onStart: () => void }) {
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      window.dispatchEvent(new CustomEvent("kivoir:cover-visibility", { detail: { visible: false } }));
+    }, 0);
+    return () => {
+      window.clearTimeout(timer);
+      window.dispatchEvent(new CustomEvent("kivoir:cover-visibility", { detail: { visible: true } }));
+    };
+  }, []);
+
   return (
     <section className="flex min-h-[calc(100svh-7rem)] items-center justify-center px-4 py-10 sm:min-h-[calc(100svh-5rem)]">
       <div className="relative w-full max-w-2xl overflow-hidden rounded-[2rem] border border-care/20 bg-card px-6 py-10 text-center shadow-xl shadow-care/10 md:px-12 md:py-16">

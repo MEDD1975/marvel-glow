@@ -43,6 +43,7 @@ const initialMessages = (): ChatMessage[] => [{ role: "assistant", text: welcome
 
 export function NavireChatWidget() {
   const [open, setOpen] = useState(false);
+  const [showLauncher, setShowLauncher] = useState(true);
   const [message, setMessage] = useState("");
   const messageInputRef = useRef<HTMLTextAreaElement>(null);
   const [messages, setMessages] = useState<ChatMessage[]>(initialMessages);
@@ -51,6 +52,14 @@ export function NavireChatWidget() {
   const [isListening, setIsListening] = useState(false);
   const speechRecognitionRef = useRef<SpeechRecognitionInstance | null>(null);
   const keepListeningRef = useRef(false);
+
+  useEffect(() => {
+    const handleCoverVisibility = (event: Event) => {
+      setShowLauncher((event as CustomEvent<{ visible: boolean }>).detail.visible);
+    };
+    window.addEventListener("kivoir:cover-visibility", handleCoverVisibility);
+    return () => window.removeEventListener("kivoir:cover-visibility", handleCoverVisibility);
+  }, []);
 
   function stopVoiceInput() {
     keepListeningRef.current = false;
@@ -309,16 +318,18 @@ export function NavireChatWidget() {
         </section>
       ) : null}
 
-      <button
-        type="button"
-        onClick={() => (open ? closeAndForget() : setOpen(true))}
+      {showLauncher ? (
+        <button
+          type="button"
+          onClick={() => (open ? closeAndForget() : setOpen(true))}
         aria-expanded={open}
         aria-controls="navire-chat-widget"
         aria-label={open ? "Fermer Assistant Kivoir" : "Ouvrir Assistant Kivoir"}
         className={`flex h-14 w-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/25 transition-transform hover:scale-105 hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background ${open ? "hidden sm:flex" : ""}`}
       >
-        {open ? <X className="h-6 w-6" aria-hidden="true" /> : <MessageCircle className="h-6 w-6" aria-hidden="true" />}
-      </button>
+          {open ? <X className="h-6 w-6" aria-hidden="true" /> : <MessageCircle className="h-6 w-6" aria-hidden="true" />}
+        </button>
+      ) : null}
     </div>
   );
 }

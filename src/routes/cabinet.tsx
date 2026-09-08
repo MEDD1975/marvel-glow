@@ -163,7 +163,7 @@ function CabinetPage() {
         <div className="mt-8 grid gap-4 md:grid-cols-3">
           <button
             type="button"
-            onClick={() => document.getElementById("new-patient")?.scrollIntoView({ behavior: "smooth" })}
+            onClick={() => document.getElementById("patient-card")?.scrollIntoView({ behavior: "smooth" })}
             className="group flex flex-col rounded-3xl border border-care/20 bg-card p-6 text-left shadow-sm transition-all hover:-translate-y-1 hover:border-care/40 hover:shadow-lg hover:shadow-care/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-care/10 text-care ring-1 ring-care/15">
@@ -209,12 +209,6 @@ function CabinetPage() {
         </p>
       </section>
 
-      <section id="new-patient" className="mt-8 rounded-3xl border border-border bg-card p-6 md:p-8 print:hidden" aria-labelledby="questionnaire-title">
-        <div className="flex items-start gap-3"><ClipboardCheck className="mt-1 text-care" aria-hidden="true" /><div><p className="text-xs font-semibold uppercase tracking-wide text-care">Questionnaire en salle d’attente</p><h2 id="questionnaire-title" className="mt-2 text-2xl font-semibold text-foreground">Ce que le médecin retrouve avant la consultation</h2><p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">Le patient décrit ce qu’il ressent. Kivoir rassemble ces réponses dans une synthèse structurée ; le médecin les complète par son examen clinique et sa décision médicale.</p></div></div>
-        <div className="mt-6 grid gap-3 sm:grid-cols-3"><div className="rounded-2xl bg-background p-4"><p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Intensité</p><p className="mt-2 font-semibold text-foreground">0 à 10</p><p className="mt-1 text-sm text-muted-foreground">Niveau de douleur déclaré.</p></div><div className="rounded-2xl bg-background p-4"><p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Durée</p><p className="mt-2 font-semibold text-foreground">Depuis quand ?</p><p className="mt-1 text-sm text-muted-foreground">Début, évolution et fréquence.</p></div><div className="rounded-2xl bg-background p-4"><p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Qualité</p><p className="mt-2 font-semibold text-foreground">Comment ?</p><p className="mt-1 text-sm text-muted-foreground">Contexte, localisation et gêne.</p></div></div>
-        <div className="mt-5 rounded-2xl border border-care/20 bg-care/5 p-4 text-sm leading-6 text-muted-foreground"><span className="font-semibold text-foreground">Après lecture :</span> le professionnel confirme le diagnostic ou la situation, décide des examens et orientations nécessaires, puis attribue le parcours adapté.</div>
-      </section>
-
       <section className="mt-8 rounded-3xl border border-care/25 bg-care/5 p-6 md:p-8 print:hidden" aria-labelledby="pathway-choice-title">
         <p className="text-xs font-semibold uppercase tracking-wide text-care">Attribution professionnelle</p>
         <h2 id="pathway-choice-title" className="mt-2 text-2xl font-semibold text-foreground">C’est vous qui attribuez le parcours</h2>
@@ -223,7 +217,7 @@ function CabinetPage() {
       </section>
 
       <section className="mt-10 grid gap-4 md:grid-cols-2 print:hidden" aria-label="Parcours du cabinet">
-        <WorkflowCard icon={QrCode} step="1" title="Avant la consultation" text="Le patient repère son étape, prépare ses questions et rassemble ses documents." />
+          <WorkflowCard icon={QrCode} step="1" title="Après la consultation" text="Vous remettez au patient une feuille de route claire à retrouver depuis son téléphone." />
         <WorkflowCard icon={Users} step="2" title="Après la consultation" text="Vous lui remettez une feuille de route : prochaine étape, consigne et éléments à préparer." />
       </section>
 
@@ -312,7 +306,7 @@ title="Vous validez la feuille"
       </section>
 
       {/* Poster editor */}
-      <section className="mt-16 poster-section">
+      <section className="mt-16 poster-section hidden">
         <div className="flex flex-wrap items-end justify-between gap-4 print:hidden">
           <div>
             <h2 className="text-2xl font-semibold text-foreground">Brique 1 — Affiche questionnaire</h2>
@@ -389,7 +383,7 @@ Placez l'affiche près des sièges de la salle d'attente. Le patient scanne et r
       </section>
 
       {/* Patient pocket cards */}
-      <section className="mt-16 card-section">
+      <section id="patient-card" className="mt-16 card-section">
         <div className="flex flex-wrap items-end justify-between gap-4 print:hidden">
           <div>
             <h2 className="text-2xl font-semibold text-foreground">Brique 2 — Carte patient</h2>

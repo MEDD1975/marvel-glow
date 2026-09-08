@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   ArrowRight,
   CheckCircle2,
@@ -19,7 +19,6 @@ import {
 import { MedicalDisclaimer } from "@/components/HomeBlocks";
 import { conditions } from "@/lib/conditions";
 import { getAllDoctorVideos, removeDoctorVideo, saveDoctorVideo, type DoctorVideo } from "@/lib/doctor-content";
-import { CabinetPoster, type PosterData } from "@/components/CabinetPoster";
 import { PatientCard } from "@/components/PatientCard";
 
 
@@ -46,14 +45,6 @@ export const Route = createFileRoute("/cabinet")({
 });
 
 function CabinetPage() {
-  const [poster, setPoster] = useState<PosterData>({
-    cabinetName: "Cabinet médical",
-    doctorName: "",
-    message: "Préparez le parcours de votre patient. Aucune donnée enregistrée.",
-    url: "",
-    qr: null,
-  });
-
   const [cardQr, setCardQr] = useState<{ url: string; qr: string | null }>({ url: "", qr: null });
 
   const [showDemo, setShowDemo] = useState(false);
@@ -71,21 +62,6 @@ function CabinetPage() {
     "douleur-lombaire": "Douleur lombaire",
     "post-operatoire": "Suivi post-opératoire",
   };
-
-  // Affiche salle d'attente → ouvre le questionnaire de pré-consultation.
-  useEffect(() => {
-    const target = `${window.location.origin}/orientation?src=affiche`;
-    setPoster((prev) => ({ ...prev, url: target }));
-    let cancelled = false;
-    void import("qrcode").then(async (mod) => {
-      const dataUrl = await mod.default.toDataURL(target, { width: 640, margin: 1, errorCorrectionLevel: "H" });
-      if (cancelled) return;
-      setPoster((prev) => ({ ...prev, qr: dataUrl }));
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
 
   // Carte remise au patient → ouvre le parcours attribué (étapes, conseils, vidéos, professionnels).
   useEffect(() => {
@@ -163,7 +139,7 @@ function CabinetPage() {
         <div className="mt-8 grid gap-4 md:grid-cols-3">
           <button
             type="button"
-            onClick={() => document.getElementById("new-patient")?.scrollIntoView({ behavior: "smooth" })}
+            onClick={() => document.getElementById("patient-card")?.scrollIntoView({ behavior: "smooth" })}
             className="group flex flex-col rounded-3xl border border-care/20 bg-card p-6 text-left shadow-sm transition-all hover:-translate-y-1 hover:border-care/40 hover:shadow-lg hover:shadow-care/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-care/10 text-care ring-1 ring-care/15">
@@ -209,12 +185,6 @@ function CabinetPage() {
         </p>
       </section>
 
-      <section id="new-patient" className="mt-8 rounded-3xl border border-border bg-card p-6 md:p-8 print:hidden" aria-labelledby="questionnaire-title">
-        <div className="flex items-start gap-3"><ClipboardCheck className="mt-1 text-care" aria-hidden="true" /><div><p className="text-xs font-semibold uppercase tracking-wide text-care">Questionnaire en salle d’attente</p><h2 id="questionnaire-title" className="mt-2 text-2xl font-semibold text-foreground">Ce que le médecin retrouve avant la consultation</h2><p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">Le patient décrit ce qu’il ressent. Kivoir rassemble ces réponses dans une synthèse structurée ; le médecin les complète par son examen clinique et sa décision médicale.</p></div></div>
-        <div className="mt-6 grid gap-3 sm:grid-cols-3"><div className="rounded-2xl bg-background p-4"><p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Intensité</p><p className="mt-2 font-semibold text-foreground">0 à 10</p><p className="mt-1 text-sm text-muted-foreground">Niveau de douleur déclaré.</p></div><div className="rounded-2xl bg-background p-4"><p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Durée</p><p className="mt-2 font-semibold text-foreground">Depuis quand ?</p><p className="mt-1 text-sm text-muted-foreground">Début, évolution et fréquence.</p></div><div className="rounded-2xl bg-background p-4"><p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Qualité</p><p className="mt-2 font-semibold text-foreground">Comment ?</p><p className="mt-1 text-sm text-muted-foreground">Contexte, localisation et gêne.</p></div></div>
-        <div className="mt-5 rounded-2xl border border-care/20 bg-care/5 p-4 text-sm leading-6 text-muted-foreground"><span className="font-semibold text-foreground">Après lecture :</span> le professionnel confirme le diagnostic ou la situation, décide des examens et orientations nécessaires, puis attribue le parcours adapté.</div>
-      </section>
-
       <section className="mt-8 rounded-3xl border border-care/25 bg-care/5 p-6 md:p-8 print:hidden" aria-labelledby="pathway-choice-title">
         <p className="text-xs font-semibold uppercase tracking-wide text-care">Attribution professionnelle</p>
         <h2 id="pathway-choice-title" className="mt-2 text-2xl font-semibold text-foreground">C’est vous qui attribuez le parcours</h2>
@@ -222,174 +192,9 @@ function CabinetPage() {
         <p className="mt-3 text-xs leading-5 text-muted-foreground">Kivoir n’interprète pas les symptômes et ne pose pas le diagnostic. Le professionnel reste responsable de la confirmation.</p>
       </section>
 
-      <section className="mt-10 grid gap-4 md:grid-cols-2 print:hidden" aria-label="Parcours du cabinet">
-        <WorkflowCard icon={QrCode} step="1" title="Avant la consultation" text="Le patient repère son étape, prépare ses questions et rassemble ses documents." />
-        <WorkflowCard icon={Users} step="2" title="Après la consultation" text="Vous lui remettez une feuille de route : prochaine étape, consigne et éléments à préparer." />
-      </section>
-
-      {/* Why propose Kivoir */}
-      <section className="mt-10 rounded-2xl border border-care/20 bg-care/5 p-6 md:p-8 print:hidden">
-        <h2 className="text-xl font-semibold text-foreground">Pourquoi proposer Kivoir au patient</h2>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Kivoir n'est pas prescrit : il est mis à disposition du patient comme un support d'information et de préparation
-          à la consultation. Le médecin garde le libre choix de le proposer ou non, sans que cela soit un acte médical.
-        </p>
-        <div className="mt-5 grid gap-4 md:grid-cols-2">
-          <div className="rounded-xl border border-border bg-card p-4">
-            <p className="text-xs font-semibold uppercase tracking-wide text-care">Avant la consultation</p>
-            <p className="mt-1 text-sm font-medium text-foreground">L'affiche QR en salle d'attente</p>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Le patient arrive avec son étape actuelle, ses questions et les documents utiles à l’échange.
-            </p>
-          </div>
-          <div className="rounded-xl border border-border bg-card p-4">
-            <p className="text-xs font-semibold uppercase tracking-wide text-care">Après la consultation</p>
-            <p className="mt-1 text-sm font-medium text-foreground">La carte remise au patient</p>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Il retrouve chez lui la feuille de route, la prochaine étape et vos consignes, sans vous solliciter à nouveau pour chaque détail.
-            </p>
-          </div>
-        </div>
-
-        <ul className="mt-4 space-y-3">
-          <li className="flex items-start gap-3 text-sm text-muted-foreground">
-            <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-care" />
-            Le patient arrive avec un parcours lisible : étape actuelle, démarches déjà réalisées, questions et documents disponibles.
-          </li>
-          <li className="flex items-start gap-3 text-sm text-muted-foreground">
-            <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-care" />
-            Il retrouve une feuille de route claire et peut préparer son prochain échange avec les bonnes informations.
-          </li>
-          <li className="flex items-start gap-3 text-sm text-muted-foreground">
-            <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-care" />
-            Le médecin peut se concentrer sur l'examen clinique et la décision médicale, sans temps perdu en répétitions.
-          </li>
-        </ul>
-      </section>
-
-      {/* Value props */}
-      <section className="mt-12 grid gap-6 sm:grid-cols-3 print:hidden">
-        <ValueCard
-          icon={Clock}
-          title="Moins de répétitions"
-          text="Le patient arrive avec son étape actuelle, ses questions et les éléments utiles à l’échange."
-        />
-        <ValueCard
-          icon={ShieldCheck}
-          title="Une suite plus claire"
-          text="Vous expliquez la prochaine étape ; le patient peut la retrouver ensuite sans solliciter le cabinet pour chaque détail."
-        />
-        <ValueCard
-          icon={QrCode}
-          title="Zéro installation"
-          text="Ni compte, ni application à installer, ni intégration technique avec votre logiciel médical."
-        />
-      </section>
-
-      {/* How it works */}
-      <section className="mt-16 print:hidden">
-        <h2 className="text-center text-2xl font-semibold text-foreground">Comment ça marche dans votre cabinet</h2>
-        <div className="mt-8 grid gap-6 md:grid-cols-3">
-          <StepCard
-            number={1}
-            icon={Printer}
-            title="Imprimez l'affiche"
-            text="Personnalisez le nom de votre cabinet et imprimez le QR code en quelques clics."
-          />
-          <StepCard
-            number={2}
-            icon={Users}
-title="Le patient prépare"
-                text="En salle d'attente, le patient repère son étape, ses questions et les documents utiles sur son téléphone."
-          />
-          <StepCard
-            number={3}
-            icon={ClipboardCheck}
-title="Vous validez la feuille"
-  text="En consultation, vous confirmez l’étape actuelle, la prochaine étape et les consignes à retrouver après l’échange."
-          />
-        </div>
-      </section>
-
-      {/* Poster editor */}
-      <section className="mt-16 poster-section">
-        <div className="flex flex-wrap items-end justify-between gap-4 print:hidden">
-          <div>
-            <h2 className="text-2xl font-semibold text-foreground">Brique 1 — Affiche questionnaire</h2>
-            <p className="mt-1 text-muted-foreground">
-              Le QR code ouvre le questionnaire de pré-consultation. Personnalisez le texte, puis imprimez ou affichez sur un écran en salle d’attente.
-            </p>
-          </div>
-          <button
-            onClick={() => printWith("poster")}
-            className="inline-flex items-center gap-2 rounded-lg bg-care px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-care/90 print:hidden"
-
-          >
-            <Printer className="h-4 w-4" />
-            Imprimer l'affiche
-          </button>
-        </div>
-
-        <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_auto]">
-          <div className="space-y-4 rounded-2xl border border-border bg-card p-6 print:hidden">
-            <div>
-              <label htmlFor="cabinetName" className="block text-sm font-medium text-foreground">
-                Nom du cabinet
-              </label>
-              <input
-                id="cabinetName"
-                type="text"
-                value={poster.cabinetName}
-                onChange={(e) => updatePoster({ cabinetName: e.target.value })}
-                placeholder="Cabinet médical du Dr Martin"
-                className="mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground outline-none focus:ring-2 focus:ring-ring"
-              />
-            </div>
-            <div>
-              <label htmlFor="doctorName" className="block text-sm font-medium text-foreground">
-                Nom du praticien (optionnel)
-              </label>
-              <input
-                id="doctorName"
-                type="text"
-                value={poster.doctorName}
-                onChange={(e) => updatePoster({ doctorName: e.target.value })}
-                placeholder="Martin"
-                className="mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground outline-none focus:ring-2 focus:ring-ring"
-              />
-            </div>
-            <div>
-              <label htmlFor="posterMessage" className="block text-sm font-medium text-foreground">
-                Message affiché
-              </label>
-              <textarea
-                id="posterMessage"
-                rows={2}
-                value={poster.message}
-                onChange={(e) => updatePoster({ message: e.target.value })}
-                className="mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground outline-none focus:ring-2 focus:ring-ring"
-              />
-            </div>
-            <div className="rounded-xl border border-soothe/40 bg-soothe/20 p-4">
-              <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-soothe-foreground">
-                <HelpCircle className="h-4 w-4" />
-                Conseil
-              </p>
-              <p className="mt-2 text-sm text-muted-foreground">
-Placez l'affiche près des sièges de la salle d'attente. Le patient scanne et remplit le questionnaire
-              avant d’entrer en consultation.
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-start justify-center">
-            <CabinetPoster data={poster} />
-          </div>
-        </div>
-      </section>
 
       {/* Patient pocket cards */}
-      <section className="mt-16 card-section">
+      <section id="patient-card" className="mt-16 card-section">
         <div className="flex flex-wrap items-end justify-between gap-4 print:hidden">
           <div>
             <h2 className="text-2xl font-semibold text-foreground">Brique 2 — Carte patient</h2>
@@ -442,7 +247,7 @@ Placez l'affiche près des sièges de la salle d'attente. Le patient scanne et r
           </div>
 
           <div className="flex items-start justify-center">
-            <PatientCard data={{ ...cardQr, cabinetName: poster.cabinetName, doctorName: poster.doctorName, pathwayLabel: pathwayLabels[pathway], note: cardNote }} />
+            <PatientCard data={{ ...cardQr, cabinetName: "Cabinet médical", doctorName: "", pathwayLabel: pathwayLabels[pathway], note: cardNote }} />
           </div>
         </div>
 
@@ -451,7 +256,7 @@ Placez l'affiche près des sièges de la salle d'attente. Le patient scanne et r
           {Array.from({ length: 8 }).map((_, i) => (
             <PatientCard
               key={i}
-              data={{ ...cardQr, cabinetName: poster.cabinetName, doctorName: poster.doctorName, pathwayLabel: pathwayLabels[pathway], note: cardNote }}
+              data={{ ...cardQr, cabinetName: "Cabinet médical", doctorName: "", pathwayLabel: pathwayLabels[pathway], note: cardNote }}
             />
           ))}
         </div>
@@ -574,59 +379,6 @@ Placez l'affiche près des sièges de la salle d'attente. Le patient scanne et r
         <MedicalDisclaimer />
       </div>
     </main>
-  );
-}
-
-function WorkflowCard({ icon: Icon, step, title, text }: { icon: React.ElementType; step: string; title: string; text: string }) {
-  return (
-    <div className="flex items-start gap-4 rounded-2xl border border-care/20 bg-card p-5 shadow-sm">
-      <div className="relative flex size-12 shrink-0 items-center justify-center rounded-xl bg-care/10 text-care">
-        <Icon aria-hidden="true" />
-        <span className="absolute -right-2 -top-2 flex size-5 items-center justify-center rounded-full bg-care text-xs font-semibold text-primary-foreground">{step}</span>
-      </div>
-      <div>
-        <p className="text-xs font-semibold uppercase tracking-wide text-care">Brique cabinet</p>
-        <h2 className="mt-1 text-lg font-semibold text-card-foreground">{title}</h2>
-        <p className="mt-1 text-sm leading-6 text-muted-foreground">{text}</p>
-      </div>
-    </div>
-  );
-}
-
-function ValueCard({ icon: Icon, title, text }: { icon: React.ElementType; title: string; text: string }) {
-  return (
-    <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
-      <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-care/10 text-care">
-        <Icon className="h-6 w-6" />
-      </div>
-      <h3 className="mt-4 text-lg font-semibold text-card-foreground">{title}</h3>
-      <p className="mt-2 text-sm text-muted-foreground">{text}</p>
-    </div>
-  );
-}
-
-function StepCard({
-  number,
-  icon: Icon,
-  title,
-  text,
-}: {
-  number: number;
-  icon: React.ElementType;
-  title: string;
-  text: string;
-}) {
-  return (
-    <div className="relative rounded-2xl border border-border bg-card p-6 shadow-sm">
-      <span className="absolute -top-3 left-6 flex h-6 w-6 items-center justify-center rounded-full bg-care text-xs font-semibold text-primary-foreground">
-        {number}
-      </span>
-      <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-care/10 text-care">
-        <Icon className="h-6 w-6" />
-      </div>
-      <h3 className="mt-4 text-lg font-semibold text-card-foreground">{title}</h3>
-      <p className="mt-2 text-sm text-muted-foreground">{text}</p>
-    </div>
   );
 }
 

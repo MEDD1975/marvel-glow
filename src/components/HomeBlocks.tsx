@@ -66,7 +66,6 @@ export function AssistantHome() {
   }
 
   return (
-  return (
     <section className="px-4 pb-28 pt-8 md:pb-14 md:pt-12">
       <div className="mx-auto max-w-2xl rounded-[2rem] border border-care/20 bg-card p-5 shadow-lg shadow-care/10 md:p-8">
         <div className="inline-flex items-center gap-2 rounded-full bg-care/10 px-3 py-1.5 text-sm font-semibold text-care">

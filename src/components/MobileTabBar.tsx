@@ -1,9 +1,8 @@
 import { Link, useLocation } from "@tanstack/react-router";
-import { Home, ClipboardList, Route as RouteIcon, MapPin } from "lucide-react";
+import { Home, ClipboardList, MapPin } from "lucide-react";
 
 const patientItems = [
   { to: "/", label: "Accueil", icon: Home, exact: true },
-  { to: "/parcours", label: "Parcours", icon: RouteIcon, exact: false },
   { to: "/annuaire", label: "Annuaire", icon: MapPin, exact: false },
 ];
 
@@ -16,7 +15,7 @@ export function MobileTabBar() {
 
   return (
     <nav className="fixed inset-x-3 bottom-3 z-50 overflow-hidden rounded-2xl border border-border/80 bg-background/90 shadow-[0_12px_40px_-22px_var(--foreground)] backdrop-blur-xl sm:hidden print:hidden">
-      <ul className={items.length === 1 ? "grid grid-cols-1" : "grid grid-cols-3"}>
+      <ul className={items.length === 1 ? "grid grid-cols-1" : "grid grid-cols-2"}>
         {items.map((item) => (
           <li key={item.to}>
             <Link

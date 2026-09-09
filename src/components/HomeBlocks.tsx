@@ -100,10 +100,10 @@ export function AssistantHome() {
             <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-sm">
               <Compass className="h-6 w-6" aria-hidden="true" />
             </span>
-            <span className="mt-5 text-xs font-semibold uppercase tracking-[0.12em] text-primary">Mon orientation</span>
-            <span className="mt-1.5 text-lg font-semibold text-foreground">Comprendre la suite</span>
-            <span className="mt-2 flex-1 text-sm leading-6 text-muted-foreground">Échangez avec l&apos;Assistant pour comprendre les prochaines étapes de votre parcours.</span>
-            <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-primary">Ouvrir <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" /></span>
+            <span className="mt-5 text-xs font-semibold uppercase tracking-[0.12em] text-primary">Poser mes questions</span>
+            <span className="mt-1.5 text-lg font-semibold text-foreground">Mon orientation</span>
+            <span className="mt-2 flex-1 text-sm leading-6 text-muted-foreground">Échangez avec l&apos;Assistant pour comprendre vos prochaines étapes et trouver le bon professionnel.</span>
+            <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-primary">Poser mes questions <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" /></span>
           </button>
 
           <Link

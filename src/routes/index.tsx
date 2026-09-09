@@ -4,10 +4,10 @@ import { AssistantHome, MedicalDisclaimer } from "@/components/HomeBlocks";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Assistant Kivoir — Votre suivi après la consultation" },
-      { name: "description", content: "À la maison après votre consultation, l’Assistant Kivoir vous aide à évaluer votre récupération, comprendre vos consignes et trouver le bon professionnel." },
-      { property: "og:title", content: "Assistant Kivoir — Votre suivi après la consultation" },
-      { property: "og:description", content: "Évaluez votre récupération, posez vos questions et consultez les recommandations de votre médecin avec l’Assistant Kivoir." },
+      { title: "Kivoir — Votre espace patient" },
+      { name: "description", content: "Votre espace patient Kivoir : posez vos questions à l’Assistant, retrouvez vos conseils et trouvez le bon professionnel de la CPTS." },
+      { property: "og:title", content: "Kivoir — Votre espace patient" },
+      { property: "og:description", content: "Posez vos questions, retrouvez vos conseils et trouvez le bon professionnel avec Kivoir." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],

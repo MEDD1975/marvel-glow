@@ -342,14 +342,7 @@ function AnnuairePage() {
           {nextAdvice && <p className="mt-3 max-w-2xl text-base leading-7 text-foreground">{nextAdvice}</p>}
           {condition && (
             <p className="mt-2 text-sm text-muted-foreground">
-              Pour {condition.name.toLowerCase()} : {condition.whoToSee}{" "}
-              <Link
-                to="/parcours"
-                search={{ pathway: condition.id }}
-                className="inline-flex items-center gap-1 font-medium text-care underline-offset-2 hover:underline"
-              >
-                Voir le parcours complet <ArrowRight className="h-3.5 w-3.5" />
-              </Link>
+              Pour {condition.name.toLowerCase()} : {condition.whoToSee}
             </p>
           )}
         </section>

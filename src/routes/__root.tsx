@@ -3,6 +3,7 @@ import {
   Outlet,
   Link,
   createRootRouteWithContext,
+  useLocation,
   useRouter,
   HeadContent,
   Scripts,
@@ -123,6 +124,8 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const location = useLocation();
+  const isDoctorSpace = location.pathname.startsWith("/cabinet");
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -132,7 +135,7 @@ function RootComponent() {
         <Outlet />
       </div>
       <MobileTabBar />
-      <NavireChatWidget />
+      {!isDoctorSpace ? <NavireChatWidget /> : null}
     </QueryClientProvider>
   );
 }

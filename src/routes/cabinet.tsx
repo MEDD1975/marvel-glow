@@ -3,9 +3,6 @@ import { useEffect, useState } from "react";
 import {
   ArrowRight,
   CheckCircle2,
-  ClipboardCheck,
-  Clock,
-  FileText,
   HelpCircle,
   Printer,
   QrCode,
@@ -47,7 +44,6 @@ export const Route = createFileRoute("/cabinet")({
 function CabinetPage() {
   const [cardQr, setCardQr] = useState<{ url: string; qr: string | null }>({ url: "", qr: null });
 
-  const [showDemo, setShowDemo] = useState(false);
   const [videoCabinet, setVideoCabinet] = useState("dr_a");
   const [doctorVideos, setDoctorVideos] = useState<DoctorVideo[]>(() => getAllDoctorVideos("dr_a"));
   const [videoCondition, setVideoCondition] = useState("entorse-cheville");
@@ -65,7 +61,7 @@ function CabinetPage() {
 
   // Carte remise au patient → ouvre le parcours attribué (étapes, conseils, vidéos, professionnels).
   useEffect(() => {
-    const cardTarget = `${window.location.origin}/parcours?pathway=${pathway}&src=carte`;
+    const cardTarget = `${window.location.origin}/?pathway=${pathway}&src=carte`;
     setCardQr({ url: cardTarget, qr: null });
     let cancelled = false;
     void import("qrcode").then(async (mod) => {
@@ -300,36 +296,6 @@ function CabinetPage() {
         </div>
       </section>
 
-      {/* Demo summary */}
-      <section className="mt-16 print:hidden">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div>
-            <h2 className="text-2xl font-semibold text-foreground">Exemple de feuille de route</h2>
-            <p className="mt-1 text-muted-foreground">Voici ce que le patient retrouve après votre validation.</p>
-          </div>
-          <button
-            onClick={() => setShowDemo((s) => !s)}
-            className="inline-flex items-center gap-2 rounded-lg border border-border bg-card px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
-          >
-            <FileText className="h-4 w-4" />
-            {showDemo ? "Masquer l'exemple" : "Voir un exemple"}
-          </button>
-        </div>
-
-        {showDemo && (
-          <div className="mt-6 rounded-3xl border border-care/20 bg-card p-6">
-            <p className="text-xs font-semibold uppercase tracking-wide text-care">Feuille validée</p>
-            <h3 className="mt-2 text-xl font-semibold text-foreground">Après la consultation</h3>
-            <div className="mt-5 grid gap-3 sm:grid-cols-3">
-              <div className="rounded-2xl bg-background p-4"><p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Étape actuelle</p><p className="mt-2 font-semibold text-foreground">Consultation réalisée</p></div>
-              <div className="rounded-2xl bg-care/5 p-4"><p className="text-xs font-semibold uppercase tracking-wide text-care">Prochaine étape</p><p className="mt-2 font-semibold text-foreground">Rassembler les documents utiles</p></div>
-              <div className="rounded-2xl bg-background p-4"><p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">À préparer</p><p className="mt-2 font-semibold text-foreground">Questions pour le prochain échange</p></div>
-            </div>
-            <p className="mt-5 text-sm leading-6 text-muted-foreground">Le patient retrouve cette feuille via le QR code. Vous confirmez les éléments et ajoutez vos consignes avant de la lui remettre.</p>
-          </div>
-        )}
-      </section>
-
       {/* Legal / positioning */}
       <section className="mt-16 rounded-2xl border border-border bg-card p-6 md:p-8 print:hidden">
         <h2 className="text-xl font-semibold text-foreground">Positionnement réglementaire</h2>
@@ -355,20 +321,20 @@ function CabinetPage() {
         <h2 className="text-2xl font-semibold text-foreground">Questions fréquentes</h2>
         <div className="mt-6 grid gap-4 md:grid-cols-2">
           <FaqCard
-            question="Est-ce que mes patients doivent créer un compte ?"
-            answer="Non. Ils scannent le QR code et retrouvent directement le parcours partagé."
+            question="Le patient doit-il créer un compte ?"
+            answer="Non. Il scanne la carte QR et accède directement à son espace patient."
           />
           <FaqCard
-            question="Où vont les données ?"
-            answer="Nulle part. Les réponses restent dans le navigateur du patient et disparaissent quand il ferme l'onglet."
+            question="Que peut-il retrouver dans son espace ?"
+            answer="L’Assistant Kivoir, les conseils et vidéos sélectionnés, ainsi que l’annuaire des professionnels partenaires."
           />
           <FaqCard
-            question="Comment le médecin récupère-t-il la synthèse ?"
-            answer="À la fin du questionnaire, un QR code s'affiche. Vous le scannez depuis votre poste : le texte structuré s'ouvre, prêt à copier-coller dans votre compte rendu."
+            question="Puis-je adapter l’accompagnement ?"
+            answer="Oui. Choisissez la pathologie de la carte QR et ajoutez les ressources vidéo utiles à ce parcours."
           />
           <FaqCard
-            question="Kivoir remplace-t-il l'examen clinique ?"
-            answer="Non. C'est un recueil déclaratif pour gagner du temps ; le diagnostic reste clinique."
+            question="Kivoir remplace-t-il le suivi médical ?"
+            answer="Non. Kivoir informe et oriente ; le diagnostic, les décisions et le suivi restent du ressort du professionnel de santé."
           />
         </div>
       </section>

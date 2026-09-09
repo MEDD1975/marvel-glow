@@ -3,9 +3,10 @@ import { Link } from "@tanstack/react-router";
 import {
   AlertTriangle,
   Bot,
+  ArrowRight,
+  BookOpen,
   Compass,
-  Lightbulb,
-  MessageCircleQuestion,
+  MapPin,
   PlayCircle,
 } from "lucide-react";
 
@@ -90,35 +91,46 @@ export function AssistantHome() {
           rendez-vous. Que souhaitez-vous faire&nbsp;?
         </p>
 
-        <div className="mt-6 flex flex-col gap-3">
-          <div className="flex items-center gap-4 rounded-2xl border border-care/15 bg-care/5 p-4 text-left shadow-sm">
-            <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-card text-care ring-1 ring-care/20 shadow-sm">
-              <MessageCircleQuestion className="h-6 w-6" aria-hidden="true" />
-            </span>
-            <span className="min-w-0 flex-1 text-sm leading-6 text-foreground">
-              Votre médecin a identifié votre trouble et vous avez encore des questions&nbsp;?
-            </span>
-          </div>
-
-          <div className="flex items-center gap-4 rounded-2xl border border-care/15 bg-care/5 p-4 text-left shadow-sm">
-            <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-card text-care ring-1 ring-care/20 shadow-sm">
-              <Lightbulb className="h-6 w-6" aria-hidden="true" />
-            </span>
-            <span className="min-w-0 flex-1 text-sm leading-6 text-foreground">
-              Dans l&apos;attente de vos prochains rendez-vous, vous souhaitez voir des vidéos
-              d&apos;information ou avoir des conseils&nbsp;?
-            </span>
-          </div>
-
-          <div className="flex items-center gap-4 rounded-2xl border border-care/15 bg-care/5 p-4 text-left shadow-sm">
-            <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-card text-care ring-1 ring-care/20 shadow-sm">
+        <div className="mt-7 grid gap-4 md:grid-cols-3">
+          <button
+            type="button"
+            onClick={openAssistant}
+            className="group flex min-h-48 flex-col rounded-3xl border border-primary/25 bg-primary/5 p-5 text-left shadow-sm transition-all hover:-translate-y-1 hover:border-primary/45 hover:bg-primary/10 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-sm">
               <Compass className="h-6 w-6" aria-hidden="true" />
             </span>
-            <span className="min-w-0 flex-1 text-sm leading-6 text-foreground">
-              Vous souhaitez savoir avec quel professionnel de santé se passe la suite de votre prise
-              en charge&nbsp;?
+            <span className="mt-5 text-xs font-semibold uppercase tracking-[0.12em] text-primary">Mon orientation</span>
+            <span className="mt-1.5 text-lg font-semibold text-foreground">Comprendre la suite</span>
+            <span className="mt-2 flex-1 text-sm leading-6 text-muted-foreground">Échangez avec l&apos;Assistant pour comprendre les prochaines étapes de votre parcours.</span>
+            <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-primary">Ouvrir <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" /></span>
+          </button>
+
+          <Link
+            to="/conseils"
+            className="group flex min-h-48 flex-col rounded-3xl border border-care/20 bg-care/5 p-5 text-left shadow-sm transition-all hover:-translate-y-1 hover:border-care/40 hover:bg-care/10 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-care text-primary-foreground shadow-sm">
+              <BookOpen className="h-6 w-6" aria-hidden="true" />
             </span>
-          </div>
+            <span className="mt-5 text-xs font-semibold uppercase tracking-[0.12em] text-care">Ma bibliothèque de conseils</span>
+            <span className="mt-1.5 text-lg font-semibold text-foreground">Fiches et vidéos utiles</span>
+            <span className="mt-2 flex-1 text-sm leading-6 text-muted-foreground">Retrouvez les conseils et vidéos validés, ciblés pour votre parcours.</span>
+            <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-care">Consulter <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" /></span>
+          </Link>
+
+          <Link
+            to="/annuaire"
+            className="group flex min-h-48 flex-col rounded-3xl border border-care/20 bg-care/5 p-5 text-left shadow-sm transition-all hover:-translate-y-1 hover:border-care/40 hover:bg-care/10 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-care text-primary-foreground shadow-sm">
+              <MapPin className="h-6 w-6" aria-hidden="true" />
+            </span>
+            <span className="mt-5 text-xs font-semibold uppercase tracking-[0.12em] text-care">L&apos;annuaire de la CPTS</span>
+            <span className="mt-1.5 text-lg font-semibold text-foreground">Trouver le bon professionnel</span>
+            <span className="mt-2 flex-1 text-sm leading-6 text-muted-foreground">Explorez les professionnels partenaires de votre territoire.</span>
+            <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-care">Voir l&apos;annuaire <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" /></span>
+          </Link>
         </div>
 
         <button

@@ -5,7 +5,6 @@ import { Logo } from "@/components/Logo";
 
 const patientNavItems = [
   { to: "/", label: "Accueil", exact: true },
-  { to: "/orientation", label: "Questionnaire" },
   { to: "/parcours", label: "Parcours" },
   { to: "/annuaire", label: "Annuaire" },
 ];

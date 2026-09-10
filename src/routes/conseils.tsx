@@ -56,10 +56,11 @@ function ConseilsPage() {
       <div className="mb-6">
         <Link
           to="/"
+          aria-label="Retourner à l’espace patient"
           className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
         >
           <ArrowLeft className="h-4 w-4" aria-hidden="true" />
-          Retour
+          Retour à mon espace patient
         </Link>
       </div>
 

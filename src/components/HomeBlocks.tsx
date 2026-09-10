@@ -79,9 +79,14 @@ export function AssistantHome() {
   return (
     <section className="px-4 pb-28 pt-8 md:pb-14 md:pt-12">
       <div className="mx-auto max-w-2xl rounded-[2rem] border border-care/20 bg-card p-5 shadow-lg shadow-care/10 md:p-8">
-        <div className="inline-flex items-center gap-2 rounded-full bg-care/10 px-3 py-1.5 text-sm font-semibold text-care">
-          <Bot className="h-4 w-4" aria-hidden="true" />
-          Proposé par votre médecin
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="inline-flex items-center gap-2 rounded-full bg-care/10 px-3 py-1.5 text-sm font-semibold text-care">
+            <Bot className="h-4 w-4" aria-hidden="true" />
+            Accès transmis par votre médecin
+          </span>
+          <span className="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-primary/5 px-3 py-1.5 text-xs font-semibold text-primary">
+            Partenaire CPTS
+          </span>
         </div>
         <h1 className="mt-3 text-balance text-3xl font-semibold tracking-[-0.02em] text-foreground md:text-4xl">
           Votre médecin vous propose cet outil d&apos;information et d&apos;aide au parcours de soins
@@ -102,7 +107,8 @@ export function AssistantHome() {
             </span>
             <span className="mt-5 text-xs font-semibold uppercase tracking-[0.12em] text-primary">Poser mes questions</span>
             <span className="mt-1.5 text-lg font-semibold text-foreground">Mon orientation</span>
-            <span className="mt-2 flex-1 text-sm leading-6 text-muted-foreground">Échangez avec l&apos;Assistant pour comprendre vos prochaines étapes et trouver le bon professionnel.</span>
+            <span className="mt-2 flex-1 text-sm leading-6 text-muted-foreground">Échangez avec l&apos;Assistant pour clarifier vos questions, identifier la bonne spécialité et trouver le bon professionnel.</span>
+            <span className="mt-2 text-xs leading-5 text-muted-foreground">L&apos;Assistant informe et oriente ; il ne remplace pas l&apos;avis médical.</span>
             <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-primary">Poser mes questions <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" /></span>
           </button>
 
@@ -115,7 +121,7 @@ export function AssistantHome() {
             </span>
             <span className="mt-5 text-xs font-semibold uppercase tracking-[0.12em] text-care">Ma bibliothèque de conseils</span>
             <span className="mt-1.5 text-lg font-semibold text-foreground">Fiches et vidéos utiles</span>
-            <span className="mt-2 flex-1 text-sm leading-6 text-muted-foreground">Retrouvez les conseils et vidéos validés, ciblés pour votre parcours.</span>
+            <span className="mt-2 flex-1 text-sm leading-6 text-muted-foreground">Retrouvez les fiches, vidéos et liens sélectionnés par votre médecin, organisés par thème.</span>
             <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-care">Consulter <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" /></span>
           </Link>
 
@@ -128,7 +134,7 @@ export function AssistantHome() {
             </span>
             <span className="mt-5 text-xs font-semibold uppercase tracking-[0.12em] text-care">L&apos;annuaire de la CPTS</span>
             <span className="mt-1.5 text-lg font-semibold text-foreground">Trouver le bon professionnel</span>
-            <span className="mt-2 flex-1 text-sm leading-6 text-muted-foreground">Explorez les professionnels partenaires de votre territoire.</span>
+            <span className="mt-2 flex-1 text-sm leading-6 text-muted-foreground">Recherchez les kinésithérapeutes, podologues et autres partenaires près de chez vous.</span>
             <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-care">Voir l&apos;annuaire <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" /></span>
           </Link>
         </div>

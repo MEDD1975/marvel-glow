@@ -9,8 +9,6 @@ import {
   Stethoscope,
 } from "lucide-react";
 import { MedicalDisclaimer } from "@/components/HomeBlocks";
-import { conditions } from "@/lib/conditions";
-import { pathways } from "@/lib/pathways";
 import {
   cabinets,
   findCabinetsByPractitionerName,
@@ -22,8 +20,6 @@ import {
 
 type Search = {
   cabinet?: string | undefined;
-  c?: string | undefined;
-  step?: string | undefined;
   profession?: Profession | undefined;
   doctor?: string | undefined;
 };
@@ -31,8 +27,6 @@ type Search = {
 export const Route = createFileRoute("/annuaire")({
   validateSearch: (search: Record<string, unknown>): Search => ({
     cabinet: typeof search["cabinet"] === "string" ? search["cabinet"] : undefined,
-    c: typeof search["c"] === "string" ? search["c"] : undefined,
-    step: typeof search["step"] === "string" ? search["step"] : undefined,
     profession:
       typeof search["profession"] === "string" && isProfession(search["profession"])
         ? search["profession"]
@@ -41,11 +35,11 @@ export const Route = createFileRoute("/annuaire")({
   }),
   head: () => ({
     meta: [
-      { title: "Prochaine étape et professionnels à Saint-Maur-des-Fossés — Kivoir" },
+      { title: "Professionnels partenaires à Saint-Maur-des-Fossés — Kivoir" },
       {
         name: "description",
         content:
-          "Dites où vous en êtes de votre parcours : Kivoir indique le professionnel à voir ensuite et affiche les praticiens disponibles à Saint-Maur-des-Fossés.",
+          "Dites où vous en êtes de votre parcours : Kivoir affiche les professionnels partenaires disponibles à Saint-Maur-des-Fossés.",
       },
       {
         property: "og:title",
@@ -177,25 +171,12 @@ function CabinetChooser({ invalidId, profession, doctor }: { invalidId?: string;
 }
 
 function AnnuairePage() {
-  const { cabinet: cabinetId, c, profession, doctor } = Route.useSearch();
+  const { cabinet: cabinetId, profession, doctor } = Route.useSearch();
   const navigate = useNavigate({ from: "/annuaire" });
   const [professionFilter, setProfessionFilter] = useState<Profession | null>(profession ?? null);
 
   const selectedCabinet = cabinets.find((cabinet) => cabinet.id === cabinetId) ?? null;
   const cabinetProviders = selectedCabinet?.providers ?? [];
-  const condition = conditions.find((item) => item.id === c) ?? null;
-  const pathway = condition ? pathways[condition.id] : undefined;
-  const conditionProfessionals = pathway
-    ? pathway.actors
-        .filter((actor) => actor.line <= 2)
-        .map((actor) => {
-          if (actor.role.includes("Urgences")) return "Urgences" as Profession;
-          return professionOrder.find((profession) => actor.role.includes(profession));
-        })
-        .filter((profession): profession is Profession => Boolean(profession))
-        .filter((profession, index, all) => all.indexOf(profession) === index)
-    : [];
-  const recommended = conditionProfessionals;
   const availableProfessions = professionOrder.filter((profession) =>
     cabinetProviders.some((provider) => provider.profession === profession),
   );
@@ -203,26 +184,19 @@ function AnnuairePage() {
   const list = useMemo(() => {
     const base = cabinetProviders.filter((provider) => {
       if (professionFilter) return provider.profession === professionFilter;
-      if (recommended.length > 0) return recommended.includes(provider.profession);
       return true;
     });
     return [...base].sort((a, b) => {
-      const ra = recommended.indexOf(a.profession);
-      const rb = recommended.indexOf(b.profession);
-      if (ra !== rb) return (ra === -1 ? 99 : ra) - (rb === -1 ? 99 : rb);
       return a.name.localeCompare(b.name, "fr");
     });
-  }, [cabinetProviders, professionFilter, recommended]);
-
-  const setSearch = (next: Partial<Search>) =>
-    navigate({ search: (prev: Search) => ({ ...prev, ...next }), resetScroll: false });
+  }, [cabinetProviders, professionFilter]);
 
   if (!selectedCabinet) {
     return <CabinetChooser {...(cabinetId ? { invalidId: cabinetId } : {})} {...(profession ? { profession } : {})} {...(doctor ? { doctor } : {})} />;
   }
 
   return (
-    <main className="mx-auto max-w-5xl px-4 py-10">
+    <main className="mx-auto max-w-5xl px-4 py-10 pb-32 sm:pb-10">
       <div className="flex flex-wrap items-center gap-2">
         <p className="inline-flex items-center gap-1.5 rounded-full bg-care/10 px-3 py-1 text-xs font-medium text-care">
           <MapPin className="h-3.5 w-3.5" /> Saint-Maur-des-Fossés (94)
@@ -242,55 +216,19 @@ function AnnuairePage() {
         {selectedCabinet.providers.length} professionnel{selectedCabinet.providers.length > 1 ? "s" : ""} dans ce cabinet
       </p>
       <p className="mt-2 max-w-2xl text-muted-foreground">
-        Sélectionnez éventuellement votre trouble pour afficher les professionnels recommandés près de chez vous.
+        Retrouvez directement les professionnels partenaires de votre réseau de soins à Saint-Maur.
       </p>
 
-
-      {/* Étape 1 — trouble */}
-      <section className="mt-8">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-          1. Votre trouble (optionnel)
-        </h2>
-        <div className="mt-3 flex flex-wrap gap-2">
-          {conditions.map((item) => {
-            const active = item.id === condition?.id;
-            return (
-              <button
-                key={item.id}
-                onClick={() => setSearch({ c: active ? undefined : item.id })}
-                className={`rounded-full border px-3 py-1.5 text-sm transition-colors ${
-                  active
-                    ? "border-care bg-care text-primary-foreground"
-                    : "border-border bg-card text-muted-foreground hover:border-care/40 hover:text-foreground"
-                }`}
-              >
-                {item.name}
-              </button>
-            );
-          })}
-        </div>
-      </section>
-
-
-      {/* Liste dynamique issue du fichier JSON */}
-      <section className="mt-8">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-            Professionnels partenaires
-          </h2>
-          <span className="text-xs text-muted-foreground">{list.length} résultat(s)</span>
-        </div>
-
+      <section className="mt-6">
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Filtrer par métier</h2>
         <div className="mt-3 flex flex-wrap gap-2">
           <button
             onClick={() => setProfessionFilter(null)}
-            className={`rounded-full border px-3 py-1 text-xs transition-colors ${
-              professionFilter === null
-                ? "border-foreground bg-foreground text-background"
-                : "border-border bg-card text-muted-foreground hover:text-foreground"
+            className={`rounded-full border px-3 py-1.5 text-xs transition-colors ${
+              professionFilter === null ? "border-foreground bg-foreground text-background" : "border-border bg-card text-muted-foreground hover:text-foreground"
             }`}
           >
-            {condition ? `Professionnels pour ${condition.name}` : "Tous les professionnels"}
+            Tous les professionnels
           </button>
           {availableProfessions.map((profession) => {
             const active = professionFilter === profession;
@@ -298,18 +236,17 @@ function AnnuairePage() {
               <button
                 key={profession}
                 onClick={() => setProfessionFilter(active ? null : profession)}
-                className="rounded-full border px-3 py-1 text-xs transition-colors"
-                style={
-                  active
-                    ? { backgroundColor: professionColor[profession], color: "#fff", borderColor: professionColor[profession] }
-                    : { borderColor: "var(--border)", color: professionColor[profession] }
-                }
+                className="rounded-full border px-3 py-1.5 text-xs transition-colors"
+                style={active ? { backgroundColor: professionColor[profession], color: "#fff", borderColor: professionColor[profession] } : { borderColor: "var(--border)", color: professionColor[profession] }}
               >
                 {profession}
               </button>
             );
           })}
         </div>
+      </section>
+
+      <section className="mt-8">
 
         {list.length > 0 ? (
           <ul className="mt-4 grid gap-4 md:grid-cols-2">

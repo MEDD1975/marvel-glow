@@ -2,7 +2,6 @@ import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import {
   ArrowRight,
-  CheckCircle2,
   MapPin,
   Navigation,
   Phone,
@@ -15,7 +14,6 @@ import { pathways } from "@/lib/pathways";
 import {
   cabinets,
   findCabinetsByPractitionerName,
-  journeySteps,
   professionColor,
   professionOrder,
   isProfession,
@@ -179,15 +177,13 @@ function CabinetChooser({ invalidId, profession, doctor }: { invalidId?: string;
 }
 
 function AnnuairePage() {
-  const { cabinet: cabinetId, c, step, profession, doctor } = Route.useSearch();
+  const { cabinet: cabinetId, c, profession, doctor } = Route.useSearch();
   const navigate = useNavigate({ from: "/annuaire" });
   const [professionFilter, setProfessionFilter] = useState<Profession | null>(profession ?? null);
 
   const selectedCabinet = cabinets.find((cabinet) => cabinet.id === cabinetId) ?? null;
   const cabinetProviders = selectedCabinet?.providers ?? [];
   const condition = conditions.find((item) => item.id === c) ?? null;
-  const currentStep = journeySteps.find((item) => item.id === step) ?? null;
-
   const pathway = condition ? pathways[condition.id] : undefined;
   const conditionProfessionals = pathway
     ? pathway.actors
@@ -199,15 +195,7 @@ function AnnuairePage() {
         .filter((profession): profession is Profession => Boolean(profession))
         .filter((profession, index, all) => all.indexOf(profession) === index)
     : [];
-  // L’étape déclarée par le patient est prioritaire : elle décrit l’action immédiate.
-  // Le trouble complète ensuite le contexte et les étapes suivantes du parcours.
-  const recommended = currentStep?.next ?? conditionProfessionals;
-  const nextAdvice = currentStep
-    ? currentStep.advice
-    : condition
-      ? `${condition.name} : ${condition.firstStep} Professionnel à consulter : ${condition.whoToSee}`
-      : undefined;
-
+  const recommended = conditionProfessionals;
   const availableProfessions = professionOrder.filter((profession) =>
     cabinetProviders.some((provider) => provider.profession === profession),
   );
@@ -254,8 +242,7 @@ function AnnuairePage() {
         {selectedCabinet.providers.length} professionnel{selectedCabinet.providers.length > 1 ? "s" : ""} dans ce cabinet
       </p>
       <p className="mt-2 max-w-2xl text-muted-foreground">
-        Indiquez l'étape de votre parcours : Kivoir affiche le professionnel suivant, puis les
-        praticiens correspondants près de chez vous.
+        Sélectionnez éventuellement votre trouble pour afficher les professionnels recommandés près de chez vous.
       </p>
 
 
@@ -284,73 +271,12 @@ function AnnuairePage() {
         </div>
       </section>
 
-      {/* Étape 2 — parcours */}
-      <section className="mt-8">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-          2. Où en êtes-vous de votre parcours ?
-        </h2>
-        <div className="mt-3 grid gap-3 md:grid-cols-2">
-          {journeySteps.map((item) => {
-            const active = item.id === currentStep?.id;
-            return (
-              <button
-                key={item.id}
-                onClick={() => {
-                  setProfessionFilter(null);
-                  setSearch({ step: active ? undefined : item.id });
-                }}
-                className={`rounded-2xl border p-4 text-left transition-all ${
-                  active
-                    ? "border-care bg-care/5 shadow-sm"
-                    : "border-border bg-card hover:border-care/40 hover:shadow-sm"
-                }`}
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <p className="font-medium text-foreground">{item.label}</p>
-                  {active && <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-care" />}
-                </div>
-                <p className="mt-1 text-sm text-muted-foreground">{item.context}</p>
-              </button>
-            );
-          })}
-        </div>
-      </section>
-
-      {/* Prochaine étape */}
-      {currentStep && (
-        <section className="mt-8 rounded-2xl border border-care/30 bg-care/5 p-5">
-          <p className="text-xs font-semibold uppercase tracking-wide text-care">Maintenant</p>
-          <h2 className="mt-1 flex items-center gap-2 text-xl font-semibold text-foreground">
-            <Navigation className="h-5 w-5 text-care" />
-            Votre prochaine étape
-          </h2>
-          <div className="mt-3 flex flex-wrap items-center gap-2">
-            {recommended.map((profession, index) => (
-              <span key={profession} className="flex items-center gap-2">
-                {index > 0 && <span className="text-xs text-muted-foreground">ou</span>}
-                <span
-                  className="rounded-full px-3 py-1 text-sm font-medium text-white"
-                  style={{ backgroundColor: professionColor[profession] }}
-                >
-                  {profession}
-                </span>
-              </span>
-            ))}
-          </div>
-          {nextAdvice && <p className="mt-3 max-w-2xl text-base leading-7 text-foreground">{nextAdvice}</p>}
-          {condition && (
-            <p className="mt-2 text-sm text-muted-foreground">
-              Pour {condition.name.toLowerCase()} : {condition.whoToSee}
-            </p>
-          )}
-        </section>
-      )}
 
       {/* Liste dynamique issue du fichier JSON */}
       <section className="mt-8">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-            3. Professionnels de ce cabinet
+            2. Professionnels de ce cabinet
           </h2>
           <span className="text-xs text-muted-foreground">{list.length} résultat(s)</span>
         </div>
@@ -364,7 +290,7 @@ function AnnuairePage() {
                 : "border-border bg-card text-muted-foreground hover:text-foreground"
             }`}
           >
-            {condition ? `Professionnels pour ${condition.name}` : currentStep ? "Suggérés pour mon étape" : "Tous"}
+            {condition ? `Professionnels pour ${condition.name}` : "Tous les professionnels"}
           </button>
           {availableProfessions.map((profession) => {
             const active = professionFilter === profession;

@@ -1,5 +1,5 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { AlertTriangle, Ban, Dumbbell, ExternalLink, Info, Play, Thermometer } from "lucide-react";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { AlertTriangle, ArrowLeft, Ban, Dumbbell, ExternalLink, Info, Play, Thermometer } from "lucide-react";
 import { MedicalDisclaimer } from "@/components/HomeBlocks";
 import { dailyTips } from "@/lib/care-data";
 import { conditions } from "@/lib/conditions";
@@ -53,6 +53,16 @@ function ConseilsPage() {
 
   return (
     <main className="mx-auto max-w-4xl px-4 py-10">
+      <div className="mb-6">
+        <Link
+          to="/"
+          className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+        >
+          <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+          Retour
+        </Link>
+      </div>
+
       <div className="text-center">
         <h1 className="text-2xl font-semibold text-foreground">Vidéos, exercices et conseils</h1>
         <p className="mx-auto mt-2 max-w-2xl text-muted-foreground">

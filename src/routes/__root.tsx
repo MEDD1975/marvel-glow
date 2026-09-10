@@ -131,10 +131,10 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <Header />
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <div className="pb-32 sm:pb-0">
-        <Outlet />
+      <Outlet />
+      <div className="px-3 pb-3 sm:hidden">
+        <MobileTabBar />
       </div>
-      <MobileTabBar />
       {!isDoctorSpace ? <NavireChatWidget /> : null}
     </QueryClientProvider>
   );

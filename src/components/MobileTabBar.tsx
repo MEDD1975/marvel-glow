@@ -14,7 +14,7 @@ export function MobileTabBar() {
   const items = location.pathname.startsWith("/cabinet") ? doctorItems : patientItems;
 
   return (
-    <nav className="fixed inset-x-3 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-50 overflow-hidden rounded-2xl border border-border/80 bg-background/90 shadow-[0_12px_40px_-22px_var(--foreground)] backdrop-blur-xl sm:hidden print:hidden">
+    <nav className="mt-8 overflow-hidden rounded-2xl border border-border/80 bg-background pb-[env(safe-area-inset-bottom)] sm:hidden print:hidden">
       <ul className={items.length === 1 ? "grid grid-cols-1" : "grid grid-cols-2"}>
         {items.map((item) => (
           <li key={item.to}>

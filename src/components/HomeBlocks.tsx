@@ -89,11 +89,10 @@ export function AssistantHome() {
           </span>
         </div>
         <h1 className="mt-3 text-balance text-3xl font-semibold tracking-[-0.02em] text-foreground md:text-4xl">
-          Votre médecin vous propose cet outil d&apos;information et d&apos;aide au parcours de soins
+          Prolongez votre consultation en toute simplicité
         </h1>
         <p className="mt-3 text-pretty text-base leading-7 text-muted-foreground">
-          Votre outil d&apos;aide au parcours de soins, à utiliser quand vous voulez entre deux
-          rendez-vous. Que souhaitez-vous faire&nbsp;?
+          Retrouvez vos questions, vos conseils et les bons professionnels après votre rendez-vous.
         </p>
 
         <div className="mt-7 grid gap-4 md:grid-cols-3">

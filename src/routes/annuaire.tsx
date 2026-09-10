@@ -212,15 +212,12 @@ function AnnuairePage() {
       <h1 className="mt-3 text-2xl font-semibold text-balance text-foreground md:text-3xl">
         {selectedCabinet.name}
       </h1>
-      <p className="mt-1 text-sm font-medium text-care">
-        {selectedCabinet.providers.length} professionnel{selectedCabinet.providers.length > 1 ? "s" : ""} dans ce cabinet
-      </p>
       <p className="mt-2 max-w-2xl text-muted-foreground">
         Retrouvez directement les professionnels partenaires de votre réseau de soins à Saint-Maur.
       </p>
 
       <section className="mt-6">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Filtrer par métier</h2>
+        <h2 className="text-lg font-semibold text-foreground">Professionnels partenaires</h2>
         <div className="mt-3 flex flex-wrap gap-2">
           <button
             onClick={() => setProfessionFilter(null)}

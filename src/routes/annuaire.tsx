@@ -9,7 +9,6 @@ import {
   Search,
   Stethoscope,
 } from "lucide-react";
-import { DirectoryShareTools } from "@/components/DirectoryShareTools";
 import { MedicalDisclaimer } from "@/components/HomeBlocks";
 import { conditions } from "@/lib/conditions";
 import { pathways } from "@/lib/pathways";
@@ -259,7 +258,6 @@ function AnnuairePage() {
         praticiens correspondants près de chez vous.
       </p>
 
-      <DirectoryShareTools cabinet={selectedCabinet} />
 
       {/* Étape 1 — trouble */}
       <section className="mt-8">

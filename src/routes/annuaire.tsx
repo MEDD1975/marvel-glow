@@ -1,6 +1,7 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import {
+  ArrowLeft,
   ArrowRight,
   MapPin,
   Navigation,
@@ -84,7 +85,16 @@ function CabinetChooser({ invalidId, profession, doctor }: { invalidId?: string;
   }
 
   return (
-    <main className="mx-auto max-w-3xl px-4 py-16">
+    <main className="mx-auto max-w-3xl px-4 py-10 md:py-16">
+      <Link
+        to="/"
+        search={{ started: true }}
+        aria-label="Retourner à l’espace patient"
+        className="mb-6 inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+      >
+        <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+        Retour à mon espace patient
+      </Link>
       <div className="rounded-2xl border border-border bg-card p-6 shadow-sm md:p-8">
         <span className="inline-flex rounded-full bg-care/10 px-3 py-1 text-xs font-semibold text-care">
           Annuaire Kivoir

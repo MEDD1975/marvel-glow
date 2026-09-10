@@ -13,7 +13,7 @@ export const Route = createFileRoute("/")({
     ],
   }),
   validateSearch: (search: Record<string, unknown>) => ({
-    started: search.started === "1",
+    started: search.started === true || search.started === "1",
   }),
   component: HomePage,
 });

@@ -276,7 +276,7 @@ function AnnuairePage() {
       <section className="mt-8">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-            2. Professionnels de ce cabinet
+            Professionnels partenaires
           </h2>
           <span className="text-xs text-muted-foreground">{list.length} résultat(s)</span>
         </div>

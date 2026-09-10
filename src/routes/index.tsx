@@ -12,13 +12,18 @@ export const Route = createFileRoute("/")({
       { name: "twitter:card", content: "summary" },
     ],
   }),
+  validateSearch: (search: Record<string, unknown>) => ({
+    started: search.started === "1",
+  }),
   component: HomePage,
 });
 
 function HomePage() {
+  const { started } = Route.useSearch();
+
   return (
     <main>
-      <AssistantHome />
+      <AssistantHome initialStarted={started} />
       <section className="mx-auto max-w-4xl px-4 pb-16">
         <MedicalDisclaimer />
       </section>

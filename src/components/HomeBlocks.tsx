@@ -69,8 +69,8 @@ function KivoirCover({ onStart }: { onStart: () => void }) {
   );
 }
 
-export function AssistantHome() {
-  const [hasStarted, setHasStarted] = useState(false);
+export function AssistantHome({ initialStarted = false }: { initialStarted?: boolean }) {
+  const [hasStarted, setHasStarted] = useState(initialStarted);
 
   if (!hasStarted) {
     return <KivoirCover onStart={() => setHasStarted(true)} />;

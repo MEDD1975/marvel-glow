@@ -196,7 +196,7 @@ function AnnuairePage() {
   }
 
   return (
-    <main className="mx-auto max-w-5xl px-4 py-10 pb-32 sm:pb-10">
+    <main className="mx-auto max-w-5xl px-4 py-10">
       <div className="flex flex-wrap items-center gap-2">
         <p className="inline-flex items-center gap-1.5 rounded-full bg-care/10 px-3 py-1 text-xs font-medium text-care">
           <MapPin className="h-3.5 w-3.5" /> Saint-Maur-des-Fossés (94)

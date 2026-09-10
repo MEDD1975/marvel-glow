@@ -13,7 +13,6 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { Header } from "@/components/Header";
-import { MobileTabBar } from "@/components/MobileTabBar";
 import { NavireChatWidget } from "@/components/NavireChatWidget";
 
 function NotFoundComponent() {
@@ -132,9 +131,6 @@ function RootComponent() {
       <Header />
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <Outlet />
-      <div className="px-3 pb-3 sm:hidden">
-        <MobileTabBar />
-      </div>
       {!isDoctorSpace ? <NavireChatWidget /> : null}
     </QueryClientProvider>
   );

@@ -26,13 +26,13 @@ export const Route = createFileRoute("/cabinet")({
       {
         name: "description",
         content:
-          "Créez une feuille de route simple : le patient comprend les étapes, prépare son échange et retrouve vos consignes après la consultation.",
+          "Créez une carte QR patient et partagez des ressources validées, sans stocker de données de santé.",
       },
       { property: "og:title", content: "Espace cabinet — Kivoir" },
       {
         property: "og:description",
         content:
-          "Un support partagé pour préparer la consultation et rendre la prochaine étape plus claire pour le patient.",
+          "Un espace de coordination CPTS pour remettre la bonne carte QR et orienter vers les bonnes ressources.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -154,7 +154,7 @@ function CabinetPage() {
               <Video className="h-7 w-7" aria-hidden="true" />
             </span>
             <p className="mt-6 text-xs font-semibold uppercase tracking-[0.12em] text-care">2 · Visite de suivi</p>
-            <h2 className="mt-1.5 text-xl font-semibold text-foreground">Post-examen</h2>
+            <h2 className="mt-1.5 text-xl font-semibold text-foreground">Partager une ressource</h2>
             <p className="mt-2 flex-1 text-sm leading-6 text-muted-foreground">Choisissez une vidéo ou une ressource validée à partager au patient.</p>
             <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-care">Ouvrir <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" /></span>
           </button>
@@ -180,10 +180,10 @@ function CabinetPage() {
       </section>
 
       <section className="mt-8 rounded-3xl border border-care/25 bg-care/5 p-6 md:p-8 print:hidden" aria-labelledby="pathway-choice-title">
-        <p className="text-xs font-semibold uppercase tracking-wide text-care">Attribution professionnelle</p>
-        <h2 id="pathway-choice-title" className="mt-2 text-2xl font-semibold text-foreground">C’est vous qui attribuez le parcours</h2>
-        <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">Le patient ne choisit pas sa pathologie. Après la consultation, vous confirmez le diagnostic ou la situation, puis vous choisissez le parcours directement sur la carte remise au patient (plus bas).</p>
-        <p className="mt-3 text-xs leading-5 text-muted-foreground">Kivoir n’interprète pas les symptômes et ne pose pas le diagnostic. Le professionnel reste responsable de la confirmation.</p>
+        <p className="text-xs font-semibold uppercase tracking-wide text-care">Coordination CPTS</p>
+        <h2 id="pathway-choice-title" className="mt-2 text-2xl font-semibold text-foreground">Une carte adaptée au motif de prise en charge</h2>
+        <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">Vous choisissez le type de carte correspondant à la situation déjà identifiée, puis vous remettez au patient un accès direct à son espace d’information.</p>
+        <p className="mt-3 text-xs leading-5 text-muted-foreground">Kivoir informe et oriente uniquement. Aucune donnée clinique n’est saisie, transmise ou conservée dans cet outil.</p>
       </section>
 
 
@@ -191,7 +191,7 @@ function CabinetPage() {
       <section id="patient-card" className="mt-16 card-section">
         <div className="flex flex-wrap items-end justify-between gap-4 print:hidden">
           <div>
-            <h2 className="text-2xl font-semibold text-foreground">Brique 2 — Carte patient</h2>
+            <h2 className="text-2xl font-semibold text-foreground">Cartes patient à remettre</h2>
             <p className="mt-1 max-w-2xl text-muted-foreground">
               À la fin de la consultation, remettez cette carte : le patient retrouve son parcours, des conseils et vidéos adaptés, et la suite de sa prise en charge.
             </p>

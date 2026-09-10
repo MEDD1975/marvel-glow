@@ -1,11 +1,10 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { AlertTriangle, Ban, Dumbbell, ExternalLink, Info, Play, Thermometer, User, Users } from "lucide-react";
+import { AlertTriangle, Ban, Dumbbell, ExternalLink, Info, Play, Thermometer } from "lucide-react";
 import { MedicalDisclaimer } from "@/components/HomeBlocks";
-import { dailyTips, professionals } from "@/lib/care-data";
+import { dailyTips } from "@/lib/care-data";
 import { conditions } from "@/lib/conditions";
 import { conditionAdvice, generalRedFlags } from "@/lib/condition-advice";
 import { conditionResources, generalLinks } from "@/lib/condition-resources";
-import { pathways } from "@/lib/pathways";
 
 type ConseilsSearch = { c?: string | undefined };
 
@@ -40,7 +39,6 @@ function ConseilsPage() {
 
   const selected = conditions.find((item) => item.id === c) ?? null;
   const advice = selected ? conditionAdvice[selected.id] : undefined;
-  const pathway = selected ? pathways[selected.id] : undefined;
   const resources = selected ? conditionResources[selected.id] : undefined;
   const exercises = resources?.exercises ?? [];
   const links = resources ? [...resources.links, ...generalLinks] : generalLinks;
@@ -51,10 +49,6 @@ function ConseilsPage() {
   const tips = advice?.tips ?? dailyTips;
   const avoid = advice?.avoid ?? [];
   const redFlags = advice ? [...advice.redFlags, ...generalRedFlags] : generalRedFlags;
-  const pros = pathway
-    ? pathway.actors.map((actor) => ({ role: actor.role, when: `${actor.trigger} Délai indicatif : ${actor.delay}.` }))
-    : professionals;
-
   const select = (id: string | undefined) => navigate({ search: { c: id }, resetScroll: false });
 
   return (
@@ -238,25 +232,6 @@ function ConseilsPage() {
         </div>
       </section>
 
-      <section className="mt-12">
-        <div className="flex items-center gap-2 text-lg font-semibold text-foreground">
-          <Users className="h-5 w-5 text-care" />
-          {selected ? `Qui consulter pour ${selected.name}` : "Qui consulter et quand"}
-        </div>
-        <div className="mt-4 space-y-3">
-          {pros.map((pro, i) => (
-            <div key={i} className="flex items-start gap-4 rounded-2xl border border-border bg-card p-5 shadow-sm">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-care/10 text-care">
-                <User className="h-5 w-5" />
-              </div>
-              <div>
-                <h3 className="font-semibold text-card-foreground">{pro.role}</h3>
-                <p className="mt-1 text-sm text-muted-foreground">{pro.when}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
 
       <section className="mt-12 rounded-2xl border border-border bg-card p-6">
         <div className="flex items-start gap-3">

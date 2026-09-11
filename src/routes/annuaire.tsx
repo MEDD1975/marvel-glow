@@ -127,7 +127,7 @@ function CabinetChooser({ invalidId, profession, doctor }: { invalidId?: string;
             </datalist>
           </div>
           <p className="mt-2 text-xs leading-5 text-muted-foreground">
-            Saisissez le nom de votre médecin, puis cliquez sur Valider pour retrouver son réseau.
+            Saisissez le nom de votre médecin, par exemple Dr A ou Dr B, puis cliquez sur Valider pour retrouver son réseau.
           </p>
           <button
             type="button"

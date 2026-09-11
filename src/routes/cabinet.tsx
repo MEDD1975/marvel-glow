@@ -60,7 +60,10 @@ function CabinetPage() {
 
   useEffect(() => {
     if (!session?.user) return;
-    void fetch("/api/doctor-resources").then((response) => response.json()).then((resources: DoctorResourceRecord[]) => setDoctorVideos(resources));
+    void fetch("/api/doctor-resources").then(async (response) => {
+      if (!response.ok) throw new Error("Impossible de charger les fichiers");
+      return response.json() as Promise<DoctorResourceRecord[]>;
+    }).then(setDoctorVideos).catch(() => setVideoNotice("Impossible de charger vos fichiers enregistrés."));
   }, [session?.user]);
   const [videoCondition, setVideoCondition] = useState("entorse-cheville");
   const [videoTitle, setVideoTitle] = useState("");
@@ -103,14 +106,24 @@ function CabinetPage() {
     if (selectedFile) {
       const formData = new FormData();
       formData.append("file", selectedFile);
+      formData.append("title", title);
+      formData.append("conditionId", videoCondition);
+      formData.append("source", videoSource.trim() || "Fichier partagé par le médecin");
       const response = await fetch("/api/doctor-file", { method: "POST", body: formData });
-      const result = await response.json() as { url?: string; error?: string };
-      if (!response.ok || !result.url) {
+      const result = await response.json() as DoctorResourceRecord & { error?: string };
+      if (!response.ok || !result.id) {
         setIsUploading(false);
         setVideoNotice(result.error ?? "Impossible d’ajouter le fichier.");
         return;
       }
-      url = result.url;
+      setDoctorVideos((current) => [result, ...current]);
+      setVideoTitle("");
+      setVideoUrl("");
+      setSelectedFile(null);
+      setVideoSource("");
+      setIsUploading(false);
+      setVideoNotice("Fichier ajouté : il sera proposé au patient pour ce trouble.");
+      return;
     }
     if (!/^https:\/\//i.test(url)) {
       setIsUploading(false);

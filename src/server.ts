@@ -85,7 +85,12 @@ export default {
         const allowedTypes = ["application/pdf", "image/jpeg", "image/png", "video/mp4", "video/quicktime"];
         if (!allowedTypes.includes(file.type)) return Response.json({ error: "Formats acceptés : PDF, JPG, PNG, MP4 ou MOV." }, { status: 400 });
         const blob = await put(`doctor-resources/${session.user.id}/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, "-")}`, file, { access: "public", addRandomSuffix: true });
-        return Response.json({ url: blob.url, filename: file.name, contentType: file.type });
+        const title = String(formData.get("title") ?? file.name).trim();
+        const conditionId = String(formData.get("conditionId") ?? "").trim();
+        const source = String(formData.get("source") ?? "Fichier partagé par le médecin").trim();
+        if (!title || !conditionId) return Response.json({ error: "Le titre et le trouble sont obligatoires." }, { status: 400 });
+        const resource = await createDoctorResource(session.user.id, { title, conditionId, url: blob.url, filename: file.name, contentType: file.type, source });
+        return Response.json(resource, { status: 201 });
       }
       if (url.pathname === "/api/doctor-network") {
         const session = await auth.api.getSession({ headers: request.headers });

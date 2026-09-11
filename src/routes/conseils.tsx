@@ -43,7 +43,10 @@ function ConseilsPage() {
   const [doctorResources, setDoctorResources] = useState<DoctorResourceRecord[]>([]);
   useEffect(() => {
     const query = selected ? `?conditionId=${encodeURIComponent(selected.id)}` : "";
-    void fetch(`/api/doctor-resources${query}`).then((response) => response.ok ? response.json() : []).then((resources: DoctorResourceRecord[]) => setDoctorResources(resources));
+    void fetch(`/api/doctor-resources${query}`).then(async (response) => {
+      if (!response.ok) return [] as DoctorResourceRecord[];
+      return response.json() as Promise<DoctorResourceRecord[]>;
+    }).then(setDoctorResources);
   }, [selected?.id]);
   const advice = selected ? conditionAdvice[selected.id] : undefined;
   const resources = selected ? conditionResources[selected.id] : undefined;

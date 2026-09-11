@@ -99,11 +99,11 @@ function CabinetPage() {
   }, [pathway]);
 
   const addDoctorVideo = async () => {
-    const title = videoTitle.trim();
-    if (!title || (!selectedFile && !videoUrl.trim())) {
-      notifyError("Ajoutez un titre et sélectionnez un fichier ou saisissez un lien HTTPS.");
+    if (!selectedFile && !videoUrl.trim()) {
+      notifyError("Sélectionnez un fichier ou saisissez un lien HTTPS.");
       return;
     }
+    const title = videoTitle.trim() || selectedFile?.name.replace(/\.[^.]+$/, "") || "Ressource partagée";
     setVideoNotice("");
     setVideoNoticeType("");
     setIsUploading(true);
@@ -335,7 +335,7 @@ function CabinetPage() {
             <select id="video-condition" value={videoCondition} onChange={(event) => setVideoCondition(event.target.value)} className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground">
               {conditions.map((condition) => <option key={condition.id} value={condition.id}>{condition.name}</option>)}
             </select>
-            <label className="block text-sm font-medium text-foreground" htmlFor="video-title">Titre de la ressource</label>
+            <label className="block text-sm font-medium text-foreground" htmlFor="video-title">Titre de la ressource <span className="font-normal text-muted-foreground">(facultatif)</span></label>
             <input id="video-title" value={videoTitle} onChange={(event) => setVideoTitle(event.target.value)} placeholder="Ex. Les bons gestes après une entorse ou une fiche pratique" className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground" />
             <label className="block text-sm font-medium text-foreground" htmlFor="doctor-file">Fichier à partager</label>
             <input id="doctor-file" type="file" accept=".pdf,.jpg,.jpeg,.png,.mp4,.mov" onChange={(event) => setSelectedFile(event.target.files?.[0] ?? null)} className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground file:mr-3 file:rounded-md file:border-0 file:bg-care/10 file:px-3 file:py-1 file:text-sm file:font-medium file:text-care" />

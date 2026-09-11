@@ -106,14 +106,22 @@ function CabinetPage() {
     setVideoNotice("");
     setVideoNoticeType("");
     setIsUploading(true);
-    let url = videoUrl.trim();
-    if (selectedFile) {
-      const formData = new FormData();
+    try {
+      let url = videoUrl.trim();
+      if (selectedFile) {
+        const formData = new FormData();
       formData.append("file", selectedFile);
       formData.append("title", title);
       formData.append("conditionId", videoCondition);
       formData.append("source", videoSource.trim() || "Fichier partagé par le médecin");
-      const response = await fetch("/api/doctor-file", { method: "POST", body: formData });
+        const controller = new AbortController();
+        const timeout = window.setTimeout(() => controller.abort(), 120_000);
+        let response: Response;
+        try {
+          response = await fetch("/api/doctor-file", { method: "POST", body: formData, signal: controller.signal });
+        } finally {
+          window.clearTimeout(timeout);
+        }
       const result = await response.json() as DoctorResourceRecord & { error?: string };
       if (!response.ok || !result.id) {
         setIsUploading(false);
@@ -154,7 +162,12 @@ function CabinetPage() {
     setSelectedFile(null);
     setVideoSource("");
     setIsUploading(false);
-    notifySuccess("Lien ajouté : il apparaît maintenant dans la bibliothèque de conseils du patient.");
+      notifySuccess("Lien ajouté : il apparaît maintenant dans la bibliothèque de conseils du patient.");
+    } catch (error) {
+      console.error("[v0] doctor resource upload failed", error);
+      setIsUploading(false);
+      notifyError(error instanceof DOMException && error.name === "AbortError" ? "L’enregistrement prend trop de temps. Vérifiez votre connexion ou utilisez un lien HTTPS vers la vidéo." : "L’enregistrement a échoué. Vérifiez votre connexion et réessayez.");
+    }
   };
 
   const deleteDoctorVideo = async (resourceId: string) => {

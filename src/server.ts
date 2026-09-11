@@ -83,7 +83,7 @@ export default {
           const file = formData.get("file");
           if (!file || typeof file !== "object" || !("size" in file) || !("name" in file) || !("type" in file)) return Response.json({ error: "Sélectionnez un fichier." }, { status: 400 });
           const uploadedFile = file as File;
-          if (uploadedFile.size > 10 * 1024 * 1024) return Response.json({ error: "Le fichier ne doit pas dépasser 10 Mo." }, { status: 400 });
+          if (uploadedFile.size > 50 * 1024 * 1024) return Response.json({ error: "Le fichier ne doit pas dépasser 50 Mo." }, { status: 400 });
           const allowedTypes = ["application/pdf", "image/jpeg", "image/png", "video/mp4", "video/quicktime"];
           if (!allowedTypes.includes(uploadedFile.type)) return Response.json({ error: "Formats acceptés : PDF, JPG, PNG, MP4 ou MOV." }, { status: 400 });
           const title = String(formData.get("title") ?? uploadedFile.name).trim();

@@ -49,8 +49,11 @@ function ConseilsPage() {
     }).then((all) => setAvailableConditionIds([...new Set(all.map((resource) => resource.conditionId))]));
   }, []);
   useEffect(() => {
-    const query = selected ? `?conditionId=${encodeURIComponent(selected.id)}` : "";
-    void fetch(`/api/doctor-resources${query}`).then(async (response) => {
+    if (!selected) {
+      setDoctorResources([]);
+      return;
+    }
+    void fetch(`/api/doctor-resources?conditionId=${encodeURIComponent(selected.id)}`).then(async (response) => {
       if (!response.ok) return [] as DoctorResourceRecord[];
       return response.json() as Promise<DoctorResourceRecord[]>;
     }).then(setDoctorResources);

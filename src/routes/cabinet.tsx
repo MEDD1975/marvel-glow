@@ -75,6 +75,7 @@ function CabinetPage() {
   const [isUploading, setIsUploading] = useState(false);
   const notifyError = (message: string) => { setVideoNoticeType("error"); setVideoNotice(message); };
   const notifySuccess = (message: string) => { setVideoNoticeType("success"); setVideoNotice(message); };
+  const conditionVideos = doctorVideos.filter((video) => video.conditionId === videoCondition);
   const [pathway, setPathway] = useState("entorse-cheville");
   const [cardNote, setCardNote] = useState("");
   const pathwayLabels: Record<string, string> = {
@@ -375,9 +376,9 @@ function CabinetPage() {
             {videoNotice ? <p className={`rounded-lg px-3 py-2 text-sm leading-5 ${videoNoticeType === "error" ? "bg-destructive/10 text-destructive" : videoNoticeType === "success" ? "bg-care/10 text-care" : "text-muted-foreground"}`} role={videoNoticeType === "error" ? "alert" : "status"}>{videoNotice}</p> : null}
           </div>
           <div className="rounded-2xl border border-border bg-card p-5">
-            <div className="flex items-center justify-between gap-3"><div><p className="text-xs font-semibold uppercase tracking-wide text-care">Visible par le patient</p><h3 className="mt-1 text-lg font-semibold text-foreground">Ressources personnalisées</h3></div><span className="rounded-full bg-care/10 px-2 py-1 text-xs font-medium text-care">{doctorVideos.length}</span></div>
+            <div className="flex items-center justify-between gap-3"><div><p className="text-xs font-semibold uppercase tracking-wide text-care">Visible par le patient</p><h3 className="mt-1 text-lg font-semibold text-foreground">Ressources personnalisées — {conditions.find((condition) => condition.id === videoCondition)?.name ?? videoCondition}</h3></div><span className="rounded-full bg-care/10 px-2 py-1 text-xs font-medium text-care">{conditionVideos.length}</span></div>
             <div className="mt-4 flex flex-col gap-3">
-              {doctorVideos.length === 0 ? <p className="rounded-xl border border-dashed border-border p-4 text-sm leading-6 text-muted-foreground">Aucune ressource personnalisée. Les ressources générales de Kivoir restent utilisées.</p> : doctorVideos.map((video) => <article key={video.id} className="flex items-start justify-between gap-3 rounded-xl border border-border bg-background p-3"><div><p className="font-semibold text-foreground">{video.title}</p><p className="mt-1 text-xs text-care">{conditions.find((condition) => condition.id === video.conditionId)?.name ?? video.conditionId}</p><p className="mt-1 text-xs text-muted-foreground">{video.source ?? video.filename ?? "Fichier partagé"}</p></div><button type="button" onClick={() => void deleteDoctorVideo(video.id)} aria-label={`Supprimer ${video.title}`} className="rounded-lg p-2 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"><Trash2 className="h-4 w-4" /></button></article>)}
+              {conditionVideos.length === 0 ? <p className="rounded-xl border border-dashed border-border p-4 text-sm leading-6 text-muted-foreground">Aucune ressource pour ce trouble. Les ressources générales de Kivoir restent utilisées.</p> : conditionVideos.map((video) => <article key={video.id} className="flex items-start justify-between gap-3 rounded-xl border border-border bg-background p-3"><div><p className="font-semibold text-foreground">{video.title}</p><p className="mt-1 text-xs text-care">{conditions.find((condition) => condition.id === video.conditionId)?.name ?? video.conditionId}</p><p className="mt-1 text-xs text-muted-foreground">{video.source ?? video.filename ?? "Fichier partagé"}</p></div><button type="button" onClick={() => void deleteDoctorVideo(video.id)} aria-label={`Supprimer ${video.title}`} className="rounded-lg p-2 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"><Trash2 className="h-4 w-4" /></button></article>)}
             </div>
           </div>
         </div>

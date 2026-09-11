@@ -81,7 +81,7 @@ function ConseilsPage() {
   const advice = selected ? conditionAdvice[selected.id] : undefined;
   const resources = selected ? conditionResources[selected.id] : undefined;
   const exercises = resources?.exercises ?? [];
-  const links = resources ? [...resources.links, ...generalLinks] : generalLinks;
+  const links = selected ? (resources?.links ?? []) : generalLinks;
   const videoLinks = links.filter((l) => l.kind === "video");
   const siteLinks = links.filter((l) => l.kind !== "video");
 
@@ -118,14 +118,14 @@ function ConseilsPage() {
       </div>
 
       <div className="mt-6 flex flex-wrap justify-center gap-2">
-        <button
-          onClick={() => select(undefined)}
-          className={`rounded-full border px-3 py-1.5 text-sm transition-colors ${
-            selected ? "border-border bg-card text-foreground hover:bg-accent" : "border-care bg-care text-primary-foreground"
-          }`}
-        >
-          Conseils généraux
-        </button>
+        {!selected && (
+          <button
+            onClick={() => select(undefined)}
+            className="rounded-full border border-care bg-care px-3 py-1.5 text-sm text-primary-foreground"
+          >
+            Conseils généraux
+          </button>
+        )}
         {visibleConditions.map((item) => (
           <button
             key={item.id}

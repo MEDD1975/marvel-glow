@@ -41,13 +41,6 @@ function ConseilsPage() {
 
   const selected = conditions.find((item) => item.id === c) ?? null;
   const [doctorResources, setDoctorResources] = useState<DoctorResourceRecord[]>([]);
-  const [availableConditionIds, setAvailableConditionIds] = useState<string[]>([]);
-  useEffect(() => {
-    void fetch(`/api/doctor-resources`).then(async (response) => {
-      if (!response.ok) return [] as DoctorResourceRecord[];
-      return response.json() as Promise<DoctorResourceRecord[]>;
-    }).then((all) => setAvailableConditionIds([...new Set(all.map((resource) => resource.conditionId))]));
-  }, []);
   useEffect(() => {
     if (!selected) {
       setDoctorResources([]);
@@ -58,9 +51,7 @@ function ConseilsPage() {
       return response.json() as Promise<DoctorResourceRecord[]>;
     }).then(setDoctorResources);
   }, [selected?.id]);
-  const visibleConditions = availableConditionIds.length
-    ? conditions.filter((item) => availableConditionIds.includes(item.id))
-    : conditions;
+  const visibleConditions = selected ? [selected] : [];
   const advice = selected ? conditionAdvice[selected.id] : undefined;
   const resources = selected ? conditionResources[selected.id] : undefined;
   const exercises = resources?.exercises ?? [];

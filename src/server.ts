@@ -5,6 +5,7 @@ import { renderErrorPage } from "./lib/error-page";
 import { auth } from "./lib/auth";
 import { getDoctorNetwork, saveDoctorNetwork } from "./lib/doctor-network-db";
 import { put } from "@vercel/blob";
+import { createDoctorResource, deleteDoctorResource, listAllActiveDoctorResources, listDoctorResources } from "./lib/doctor-resource-db";
 
 type ServerEntry = {
   fetch: (request: Request, env: unknown, ctx: unknown) => Promise<Response> | Response;
@@ -53,6 +54,26 @@ export default {
       const url = new URL(request.url);
       if (url.pathname.startsWith("/api/auth/")) {
         return await auth.handler(request);
+      }
+      if (url.pathname === "/api/doctor-resources") {
+        const conditionId = url.searchParams.get("conditionId") ?? undefined;
+        const session = await auth.api.getSession({ headers: request.headers });
+        if (request.method === "GET") {
+          return Response.json(session?.user ? await listDoctorResources(session.user.id, conditionId) : await listAllActiveDoctorResources(conditionId));
+        }
+        if (!session?.user) return Response.json({ error: "Unauthorized" }, { status: 401 });
+        if (request.method === "POST") {
+          const payload = await request.json();
+          if (!payload || typeof payload.title !== "string" || typeof payload.conditionId !== "string" || typeof payload.url !== "string") return Response.json({ error: "Informations invalides" }, { status: 400 });
+          return Response.json(await createDoctorResource(session.user.id, { title: payload.title.trim(), conditionId: payload.conditionId, url: payload.url, filename: typeof payload.filename === "string" ? payload.filename : undefined, contentType: typeof payload.contentType === "string" ? payload.contentType : undefined, source: typeof payload.source === "string" ? payload.source.trim() : undefined }), { status: 201 });
+        }
+        if (request.method === "DELETE") {
+          const payload = await request.json() as { id?: string };
+          if (!payload.id) return Response.json({ error: "Fichier introuvable" }, { status: 400 });
+          await deleteDoctorResource(session.user.id, payload.id);
+          return Response.json({ ok: true });
+        }
+        return new Response("Method Not Allowed", { status: 405 });
       }
       if (url.pathname === "/api/doctor-file" && request.method === "POST") {
         const session = await auth.api.getSession({ headers: request.headers });

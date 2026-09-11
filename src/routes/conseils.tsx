@@ -1,10 +1,12 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { AlertTriangle, ArrowLeft, Ban, Dumbbell, ExternalLink, Info, Play, Thermometer } from "lucide-react";
+import { useEffect, useState } from "react";
+import { AlertTriangle, ArrowLeft, Ban, Dumbbell, ExternalLink, FileText, Info, Play, Thermometer } from "lucide-react";
 import { MedicalDisclaimer } from "@/components/HomeBlocks";
 import { dailyTips } from "@/lib/care-data";
 import { conditions } from "@/lib/conditions";
 import { conditionAdvice, generalRedFlags } from "@/lib/condition-advice";
 import { conditionResources, generalLinks } from "@/lib/condition-resources";
+import type { DoctorResourceRecord } from "@/lib/doctor-resource-db";
 
 type ConseilsSearch = { c?: string | undefined };
 
@@ -38,6 +40,11 @@ function ConseilsPage() {
   const navigate = useNavigate({ from: "/conseils" });
 
   const selected = conditions.find((item) => item.id === c) ?? null;
+  const [doctorResources, setDoctorResources] = useState<DoctorResourceRecord[]>([]);
+  useEffect(() => {
+    const query = selected ? `?conditionId=${encodeURIComponent(selected.id)}` : "";
+    void fetch(`/api/doctor-resources${query}`).then((response) => response.ok ? response.json() : []).then((resources: DoctorResourceRecord[]) => setDoctorResources(resources));
+  }, [selected?.id]);
   const advice = selected ? conditionAdvice[selected.id] : undefined;
   const resources = selected ? conditionResources[selected.id] : undefined;
   const exercises = resources?.exercises ?? [];
@@ -95,6 +102,16 @@ function ConseilsPage() {
           </button>
         ))}
       </div>
+
+      {doctorResources.length > 0 && (
+        <section className="mt-8 rounded-2xl border border-care/30 bg-care/5 p-5" aria-labelledby="doctor-library-title">
+          <div className="flex items-center gap-2 text-lg font-semibold text-foreground"><FileText className="h-5 w-5 text-care" /><h2 id="doctor-library-title">Conseils de votre médecin</h2></div>
+          <p className="mt-1 text-sm text-muted-foreground">Les fichiers partagés par votre médecin pour ce parcours apparaissent ici.</p>
+          <div className="mt-4 grid gap-3 sm:grid-cols-2">
+            {doctorResources.map((resource) => <a key={resource.id} href={resource.url} target="_blank" rel="noopener noreferrer" className="flex items-start gap-3 rounded-xl border border-border bg-card p-4 transition-colors hover:bg-accent"><FileText className="mt-0.5 h-5 w-5 shrink-0 text-care" /><span><span className="block font-medium text-card-foreground">{resource.title}</span><span className="mt-1 block text-xs text-muted-foreground">{resource.filename ?? resource.source ?? "Fichier partagé"}</span></span><ExternalLink className="ml-auto h-4 w-4 shrink-0 text-muted-foreground" /></a>)}
+          </div>
+        </section>
+      )}
 
       {selected && (
         <div className="mt-6 rounded-2xl border border-border bg-card p-5 shadow-sm">

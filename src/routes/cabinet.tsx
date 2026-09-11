@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 import { MedicalDisclaimer } from "@/components/HomeBlocks";
 import { conditions } from "@/lib/conditions";
-import { getAllDoctorVideos, removeDoctorVideo, saveDoctorVideo, type DoctorVideo } from "@/lib/doctor-content";
+import type { DoctorResourceRecord } from "@/lib/doctor-resource-db";
 import { PatientCard } from "@/components/PatientCard";
 import { DoctorOnboarding } from "@/components/DoctorOnboarding";
 
@@ -56,7 +56,12 @@ function CabinetPage() {
   }, [isPending, navigate, session?.user]);
 
   const doctorNetworkId = session?.user.id ?? "doctor";
-  const [doctorVideos, setDoctorVideos] = useState<DoctorVideo[]>(() => getAllDoctorVideos(doctorNetworkId));
+  const [doctorVideos, setDoctorVideos] = useState<DoctorResourceRecord[]>([]);
+
+  useEffect(() => {
+    if (!session?.user) return;
+    void fetch("/api/doctor-resources").then((response) => response.json()).then((resources: DoctorResourceRecord[]) => setDoctorVideos(resources));
+  }, [session?.user]);
   const [videoCondition, setVideoCondition] = useState("entorse-cheville");
   const [videoTitle, setVideoTitle] = useState("");
   const [videoUrl, setVideoUrl] = useState("");
@@ -112,17 +117,18 @@ function CabinetPage() {
       setVideoNotice("Le lien doit commencer par https://.");
       return;
     }
-    const video: DoctorVideo = {
-      id: `${doctorNetworkId}-${Date.now()}`,
-      conditionId: videoCondition,
-      label: title,
-      url,
-      kind: "video",
-      source: videoSource.trim() || "Lien choisi par le médecin",
-      active: true,
-    };
-    saveDoctorVideo(doctorNetworkId, video);
-    setDoctorVideos(getAllDoctorVideos(doctorNetworkId));
+    const response = await fetch("/api/doctor-resources", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ title, conditionId: videoCondition, url, filename: selectedFile?.name, contentType: selectedFile?.type, source: videoSource.trim() || "Fichier partagé par le médecin" }),
+    });
+    if (!response.ok) {
+      setIsUploading(false);
+      setVideoNotice("Impossible d’enregistrer ce fichier.");
+      return;
+    }
+    const saved = await response.json() as DoctorResourceRecord;
+    setDoctorVideos((current) => [saved, ...current]);
     setVideoTitle("");
     setVideoUrl("");
     setSelectedFile(null);
@@ -131,9 +137,9 @@ function CabinetPage() {
     setVideoNotice("Fichier ajouté : il sera proposé au patient pour ce trouble.");
   };
 
-  const deleteDoctorVideo = (videoId: string) => {
-    removeDoctorVideo(doctorNetworkId, videoId);
-    setDoctorVideos(getAllDoctorVideos(doctorNetworkId));
+  const deleteDoctorVideo = async (resourceId: string) => {
+    const response = await fetch("/api/doctor-resources", { method: "DELETE", headers: { "content-type": "application/json" }, body: JSON.stringify({ id: resourceId }) });
+    if (response.ok) setDoctorVideos((current) => current.filter((resource) => resource.id !== resourceId));
   };
 
   const printWith = (mode: "poster" | "cards") => {
@@ -322,7 +328,7 @@ function CabinetPage() {
           <div className="rounded-2xl border border-border bg-card p-5">
             <div className="flex items-center justify-between gap-3"><div><p className="text-xs font-semibold uppercase tracking-wide text-care">Visible par le patient</p><h3 className="mt-1 text-lg font-semibold text-foreground">Ressources personnalisées</h3></div><span className="rounded-full bg-care/10 px-2 py-1 text-xs font-medium text-care">{doctorVideos.length}</span></div>
             <div className="mt-4 flex flex-col gap-3">
-              {doctorVideos.length === 0 ? <p className="rounded-xl border border-dashed border-border p-4 text-sm leading-6 text-muted-foreground">Aucune ressource personnalisée. Les ressources générales de Kivoir restent utilisées.</p> : doctorVideos.map((video) => <article key={video.id} className="flex items-start justify-between gap-3 rounded-xl border border-border bg-background p-3"><div><p className="font-semibold text-foreground">{video.label}</p><p className="mt-1 text-xs text-care">{conditions.find((condition) => condition.id === video.conditionId)?.name ?? video.conditionId}</p><p className="mt-1 text-xs text-muted-foreground">{video.source}</p></div><button type="button" onClick={() => deleteDoctorVideo(video.id)} aria-label={`Supprimer ${video.label}`} className="rounded-lg p-2 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"><Trash2 className="h-4 w-4" /></button></article>)}
+              {doctorVideos.length === 0 ? <p className="rounded-xl border border-dashed border-border p-4 text-sm leading-6 text-muted-foreground">Aucune ressource personnalisée. Les ressources générales de Kivoir restent utilisées.</p> : doctorVideos.map((video) => <article key={video.id} className="flex items-start justify-between gap-3 rounded-xl border border-border bg-background p-3"><div><p className="font-semibold text-foreground">{video.title}</p><p className="mt-1 text-xs text-care">{conditions.find((condition) => condition.id === video.conditionId)?.name ?? video.conditionId}</p><p className="mt-1 text-xs text-muted-foreground">{video.source ?? video.filename ?? "Fichier partagé"}</p></div><button type="button" onClick={() => void deleteDoctorVideo(video.id)} aria-label={`Supprimer ${video.title}`} className="rounded-lg p-2 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"><Trash2 className="h-4 w-4" /></button></article>)}
             </div>
           </div>
         </div>

@@ -1,5 +1,6 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { authClient } from "@/lib/auth-client";
 import {
   ArrowRight,
   CheckCircle2,
@@ -17,6 +18,7 @@ import { MedicalDisclaimer } from "@/components/HomeBlocks";
 import { conditions } from "@/lib/conditions";
 import { getAllDoctorVideos, removeDoctorVideo, saveDoctorVideo, type DoctorVideo } from "@/lib/doctor-content";
 import { PatientCard } from "@/components/PatientCard";
+import { DoctorOnboarding } from "@/components/DoctorOnboarding";
 
 
 export const Route = createFileRoute("/cabinet")({
@@ -42,7 +44,15 @@ export const Route = createFileRoute("/cabinet")({
 });
 
 function CabinetPage() {
+  const navigate = useNavigate();
+  const { data: session, isPending } = authClient.useSession();
   const [cardQr, setCardQr] = useState<{ url: string; qr: string | null }>({ url: "", qr: null });
+
+  useEffect(() => {
+    if (!isPending && !session?.user) {
+      void navigate({ to: "/connexion-medecin" });
+    }
+  }, [isPending, navigate, session?.user]);
 
   const [videoCabinet, setVideoCabinet] = useState("dr_a");
   const [doctorVideos, setDoctorVideos] = useState<DoctorVideo[]>(() => getAllDoctorVideos("dr_a"));
@@ -115,6 +125,10 @@ function CabinetPage() {
   };
 
 
+  if (isPending || !session?.user) {
+    return <main className="mx-auto max-w-3xl px-4 py-16"><p className="text-center text-sm text-muted-foreground">Vérification de votre session…</p></main>;
+  }
+
   return (
     <main className="mx-auto max-w-5xl px-4 py-10 print:py-0">
       {/* Hero + tableau de bord */}
@@ -178,6 +192,8 @@ function CabinetPage() {
           Kivoir sert à orienter et partager des ressources validées : aucune donnée de santé n’est enregistrée ici.
         </p>
       </section>
+
+      <DoctorOnboarding />
 
       <section className="mt-8 rounded-3xl border border-care/25 bg-care/5 p-6 md:p-8 print:hidden" aria-labelledby="pathway-choice-title">
         <p className="text-xs font-semibold uppercase tracking-wide text-care">Coordination CPTS</p>

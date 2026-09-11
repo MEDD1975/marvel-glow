@@ -14,16 +14,17 @@ export const Route = createFileRoute("/")({
   }),
   validateSearch: (search: Record<string, unknown>) => ({
     started: search.started === true || search.started === "1",
+    pathway: typeof search.pathway === "string" ? search.pathway : undefined,
   }),
   component: HomePage,
 });
 
 function HomePage() {
-  const { started } = Route.useSearch();
+  const { started, pathway } = Route.useSearch();
 
   return (
     <main>
-      <AssistantHome initialStarted={started} />
+      <AssistantHome initialStarted={started} pathway={pathway} />
       <section className="mx-auto max-w-4xl px-4 pb-16">
         <MedicalDisclaimer />
       </section>

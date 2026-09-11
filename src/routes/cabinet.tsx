@@ -338,8 +338,8 @@ function CabinetPage() {
             <label className="block text-sm font-medium text-foreground" htmlFor="video-title">Titre de la ressource <span className="font-normal text-muted-foreground">(facultatif)</span></label>
             <input id="video-title" value={videoTitle} onChange={(event) => setVideoTitle(event.target.value)} placeholder="Ex. Les bons gestes après une entorse ou une fiche pratique" className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground" />
             <label className="block text-sm font-medium text-foreground" htmlFor="doctor-file">Fichier à partager</label>
-            <input id="doctor-file" type="file" accept=".pdf,.jpg,.jpeg,.png,.mp4,.mov" onChange={(event) => setSelectedFile(event.target.files?.[0] ?? null)} className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground file:mr-3 file:rounded-md file:border-0 file:bg-care/10 file:px-3 file:py-1 file:text-sm file:font-medium file:text-care" />
-            <p className="text-xs text-muted-foreground">PDF, JPG, PNG, MP4 ou MOV — 50 Mo maximum.</p>
+            <input id="doctor-file" type="file" accept=".pdf,.jpg,.jpeg,.png,.heic,.heif,.webp,.mp4,.mov,.m4v,image/*,video/*,application/pdf" onChange={(event) => setSelectedFile(event.target.files?.[0] ?? null)} className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground file:mr-3 file:rounded-md file:border-0 file:bg-care/10 file:px-3 file:py-1 file:text-sm file:font-medium file:text-care" />
+            <p className="text-xs text-muted-foreground">PDF, JPG, PNG, HEIC, WEBP, MP4 ou MOV — 50 Mo maximum.</p>
             <label className="block text-sm font-medium text-foreground" htmlFor="video-url">Ou lien HTTPS</label>
             <input id="video-url" type="url" value={videoUrl} onChange={(event) => setVideoUrl(event.target.value)} placeholder="https://..." className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground" />
             <label className="block text-sm font-medium text-foreground" htmlFor="video-source">Source (optionnel)</label>

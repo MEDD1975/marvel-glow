@@ -83,15 +83,25 @@ export default {
           const file = formData.get("file");
           if (!file || typeof file !== "object" || !("size" in file) || !("name" in file) || !("type" in file)) return Response.json({ error: "Sélectionnez un fichier." }, { status: 400 });
           const uploadedFile = file as File;
+          if (uploadedFile.size === 0) return Response.json({ error: "Le fichier sélectionné est vide." }, { status: 400 });
           if (uploadedFile.size > 50 * 1024 * 1024) return Response.json({ error: "Le fichier ne doit pas dépasser 50 Mo." }, { status: 400 });
-          const allowedTypes = ["application/pdf", "image/jpeg", "image/png", "video/mp4", "video/quicktime"];
-          if (!allowedTypes.includes(uploadedFile.type)) return Response.json({ error: "Formats acceptés : PDF, JPG, PNG, MP4 ou MOV." }, { status: 400 });
-          const title = String(formData.get("title") ?? uploadedFile.name).trim();
+          const extension = uploadedFile.name.toLowerCase().match(/\.([a-z0-9]+)$/)?.[1] ?? "";
+          const extensionToType: Record<string, string> = {
+            pdf: "application/pdf", jpg: "image/jpeg", jpeg: "image/jpeg", png: "image/png",
+            heic: "image/heic", heif: "image/heif", webp: "image/webp",
+            mp4: "video/mp4", mov: "video/quicktime", m4v: "video/x-m4v",
+          };
+          const resolvedType = uploadedFile.type || extensionToType[extension] || "";
+          const allowedExtensions = Object.keys(extensionToType);
+          if (!allowedExtensions.includes(extension) && !Object.values(extensionToType).includes(resolvedType)) {
+            return Response.json({ error: "Formats acceptés : PDF, JPG, PNG, HEIC, WEBP, MP4 ou MOV." }, { status: 400 });
+          }
+          const title = String(formData.get("title") ?? uploadedFile.name).trim() || uploadedFile.name;
           const conditionId = String(formData.get("conditionId") ?? "").trim();
+          if (!conditionId) return Response.json({ error: "Choisissez un trouble ou parcours." }, { status: 400 });
           const source = String(formData.get("source") ?? "Fichier partagé par le médecin").trim();
-          if (!title || !conditionId) return Response.json({ error: "Le titre et le trouble sont obligatoires." }, { status: 400 });
           const blob = await put(`doctor-resources/${session.user.id}/${Date.now()}-${uploadedFile.name.replace(/[^a-zA-Z0-9._-]/g, "-")}`, uploadedFile, { access: "public", addRandomSuffix: true });
-          const resource = await createDoctorResource(session.user.id, { title, conditionId, url: blob.url, filename: uploadedFile.name, contentType: uploadedFile.type, source });
+          const resource = await createDoctorResource(session.user.id, { title, conditionId, url: blob.url, filename: uploadedFile.name, contentType: resolvedType || "application/octet-stream", source });
           return Response.json(resource, { status: 201 });
         } catch (error) {
           console.error("[v0] doctor file upload failed", error);

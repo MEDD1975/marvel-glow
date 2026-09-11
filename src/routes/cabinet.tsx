@@ -116,7 +116,9 @@ function CabinetPage() {
         setVideoNotice(result.error ?? "Impossible d’ajouter le fichier.");
         return;
       }
-      setDoctorVideos((current) => [result, ...current]);
+      const refreshed = await fetch("/api/doctor-resources");
+      const resources = refreshed.ok ? await refreshed.json() as DoctorResourceRecord[] : [result];
+      setDoctorVideos(resources);
       setVideoTitle("");
       setVideoUrl("");
       setSelectedFile(null);

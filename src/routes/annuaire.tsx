@@ -109,17 +109,13 @@ function CabinetChooser({ invalidId, profession, doctor }: { invalidId?: string;
         </p>
 
         <form className="mt-6" onSubmit={handleSubmit}>
-          <label htmlFor="doctor-search" className="text-sm font-medium text-foreground">
-            Nom de votre médecin
-          </label>
-          <div className="mt-2 flex items-center gap-2 rounded-xl border border-border bg-background px-3 py-2 focus-within:border-care/60">
+          <div className="flex items-center gap-2 rounded-xl border border-border bg-background px-3 py-2 focus-within:border-care/60">
             <Search className="h-4 w-4 shrink-0 text-muted-foreground" />
             <input
               id="doctor-search"
               type="text"
               value={query}
               onChange={(event) => setQuery(event.target.value)}
-              placeholder="Ex. Dr A ou Dr B"
               list="doctor-name-suggestions"
               autoComplete="off"
               className="w-full bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground"
@@ -131,7 +127,7 @@ function CabinetChooser({ invalidId, profession, doctor }: { invalidId?: string;
             </datalist>
           </div>
           <p className="mt-2 text-xs leading-5 text-muted-foreground">
-            Exemple : saisissez « Dr A » ou « Dr B », puis cliquez sur Valider.
+            Saisissez le nom de votre médecin, puis cliquez sur Valider pour retrouver son réseau.
           </p>
           <button
             type="button"

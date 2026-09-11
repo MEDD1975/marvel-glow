@@ -106,9 +106,9 @@ function ConseilsPage() {
       {doctorResources.length > 0 && (
         <section className="mt-8 rounded-2xl border border-care/30 bg-care/5 p-5" aria-labelledby="doctor-library-title">
           <div className="flex items-center gap-2 text-lg font-semibold text-foreground"><FileText className="h-5 w-5 text-care" /><h2 id="doctor-library-title">Conseils de votre médecin</h2></div>
-          <p className="mt-1 text-sm text-muted-foreground">Les fichiers partagés par votre médecin pour ce parcours apparaissent ici.</p>
+          <p className="mt-1 text-sm text-muted-foreground">Les fichiers partagés par votre médecin apparaissent ici, avec une photo, une vidéo ou un document selon le contenu.</p>
           <div className="mt-4 grid gap-3 sm:grid-cols-2">
-            {doctorResources.map((resource) => <a key={resource.id} href={resource.url} target="_blank" rel="noopener noreferrer" className="flex items-start gap-3 rounded-xl border border-border bg-card p-4 transition-colors hover:bg-accent"><FileText className="mt-0.5 h-5 w-5 shrink-0 text-care" /><span><span className="block font-medium text-card-foreground">{resource.title}</span><span className="mt-1 block text-xs text-muted-foreground">{resource.filename ?? resource.source ?? "Fichier partagé"}</span></span><ExternalLink className="ml-auto h-4 w-4 shrink-0 text-muted-foreground" /></a>)}
+            {doctorResources.map((resource) => <a key={resource.id} href={resource.url} target="_blank" rel="noopener noreferrer" className="flex items-start gap-3 rounded-xl border border-border bg-card p-4 transition-colors hover:bg-accent">{resource.contentType?.startsWith("image/") ? <img src={resource.url} alt="" className="h-16 w-16 shrink-0 rounded-lg object-cover" /> : <FileText className="mt-0.5 h-5 w-5 shrink-0 text-care" />}<span><span className="block font-medium text-card-foreground">{resource.title}</span><span className="mt-1 block text-xs text-muted-foreground">{resource.filename ?? resource.source ?? "Fichier partagé"}</span></span><ExternalLink className="ml-auto h-4 w-4 shrink-0 text-muted-foreground" /></a>)}
           </div>
         </section>
       )}

@@ -122,12 +122,13 @@ function CabinetPage() {
       headers: { "content-type": "application/json" },
       body: JSON.stringify({ title, conditionId: videoCondition, url, filename: selectedFile?.name, contentType: selectedFile?.type, source: videoSource.trim() || "Fichier partagé par le médecin" }),
     });
-    if (!response.ok) {
+    const savedResult = await response.json() as DoctorResourceRecord & { error?: string };
+    if (!response.ok || !savedResult.id) {
       setIsUploading(false);
-      setVideoNotice("Impossible d’enregistrer ce fichier.");
+      setVideoNotice(savedResult.error ?? "Impossible d’enregistrer ce fichier dans votre bibliothèque.");
       return;
     }
-    const saved = await response.json() as DoctorResourceRecord;
+    const saved = savedResult;
     setDoctorVideos((current) => [saved, ...current]);
     setVideoTitle("");
     setVideoUrl("");

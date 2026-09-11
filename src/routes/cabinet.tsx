@@ -74,10 +74,10 @@ function CabinetPage() {
   const [isUploading, setIsUploading] = useState(false);
   const notifyError = (message: string) => { setVideoNoticeType("error"); setVideoNotice(message); };
   const notifySuccess = (message: string) => { setVideoNoticeType("success"); setVideoNotice(message); };
-  const conditionVideos = doctorVideos.filter((video) => video.conditionId === pathway);
   const [pathway, setPathway] = useState("entorse-cheville");
   const [cardNote, setCardNote] = useState("");
   const pathwayLabel = conditions.find((condition) => condition.id === pathway)?.name ?? "";
+  const conditionVideos = doctorVideos.filter((video) => video.conditionId === pathway);
 
   // Carte remise au patient → ouvre le parcours attribué (étapes, conseils, vidéos, professionnels).
   useEffect(() => {

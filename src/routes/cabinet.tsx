@@ -78,10 +78,11 @@ function CabinetPage() {
   const conditionVideos = doctorVideos.filter((video) => video.conditionId === videoCondition);
   const [pathway, setPathway] = useState("entorse-cheville");
   const [cardNote, setCardNote] = useState("");
-  const pathwayLabels: Record<string, string> = {
-    "entorse-cheville": "Entorse de la cheville",
-    "douleur-lombaire": "Douleur lombaire",
-    "post-operatoire": "Suivi post-opératoire",
+  const pathwayLabel = conditions.find((condition) => condition.id === pathway)?.name ?? "";
+  // Le parcours choisi sur la carte définit aussi, par défaut, le trouble des ressources visibles par le patient.
+  const selectPathway = (value: string) => {
+    setPathway(value);
+    setVideoCondition(value);
   };
 
   // Carte remise au patient → ouvre le parcours attribué (étapes, conseils, vidéos, professionnels).
@@ -297,11 +298,11 @@ function CabinetPage() {
               <select
                 id="cardPathway"
                 value={pathway}
-                onChange={(e) => setPathway(e.target.value)}
+                onChange={(e) => selectPathway(e.target.value)}
                 className="mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground outline-none focus:ring-2 focus:ring-ring"
               >
-                {Object.entries(pathwayLabels).map(([value, label]) => (
-                  <option key={value} value={value}>{label}</option>
+                {conditions.map((condition) => (
+                  <option key={condition.id} value={condition.id}>{condition.name}</option>
                 ))}
               </select>
               <p className="mt-1 text-xs text-muted-foreground">La carte ouvre ce parcours : étapes, conseils, vidéos et professionnels à consulter.</p>
@@ -324,7 +325,7 @@ function CabinetPage() {
           </div>
 
           <div className="flex items-start justify-center">
-            <PatientCard data={{ ...cardQr, cabinetName: "Cabinet médical", doctorName: "", pathwayLabel: pathwayLabels[pathway], note: cardNote }} />
+            <PatientCard data={{ ...cardQr, cabinetName: "Cabinet médical", doctorName: "", pathwayLabel, note: cardNote }} />
           </div>
         </div>
 
@@ -333,7 +334,7 @@ function CabinetPage() {
           {Array.from({ length: 8 }).map((_, i) => (
             <PatientCard
               key={i}
-              data={{ ...cardQr, cabinetName: "Cabinet médical", doctorName: "", pathwayLabel: pathwayLabels[pathway], note: cardNote }}
+              data={{ ...cardQr, cabinetName: "Cabinet médical", doctorName: "", pathwayLabel, note: cardNote }}
             />
           ))}
         </div>

@@ -8,11 +8,12 @@ import { conditionAdvice, generalRedFlags } from "@/lib/condition-advice";
 import { conditionResources, generalLinks } from "@/lib/condition-resources";
 import type { DoctorResourceRecord } from "@/lib/doctor-resource-db";
 
-type ConseilsSearch = { c?: string | undefined };
+type ConseilsSearch = { c?: string | undefined; pathway?: string | undefined };
 
 export const Route = createFileRoute("/conseils")({
   validateSearch: (search: Record<string, unknown>): ConseilsSearch => ({
     c: typeof search["c"] === "string" ? search["c"] : undefined,
+    pathway: typeof search["pathway"] === "string" ? search["pathway"] : undefined,
   }),
   head: () => ({
     meta: [
@@ -36,10 +37,11 @@ export const Route = createFileRoute("/conseils")({
 });
 
 function ConseilsPage() {
-  const { c } = Route.useSearch();
+  const { c, pathway } = Route.useSearch();
   const navigate = useNavigate({ from: "/conseils" });
+  const conditionId = c ?? pathway;
 
-  const selected = conditions.find((item) => item.id === c) ?? null;
+  const selected = conditions.find((item) => item.id === conditionId) ?? null;
   const [doctorResources, setDoctorResources] = useState<DoctorResourceRecord[]>([]);
   useEffect(() => {
     if (!selected) {
@@ -70,7 +72,7 @@ function ConseilsPage() {
       <div className="mb-6">
         <Link
           to="/"
-          search={{ started: true, pathway: c }}
+          search={{ started: true, pathway: conditionId }}
           aria-label="Retourner à l’espace patient"
           className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
         >

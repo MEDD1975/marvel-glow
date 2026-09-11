@@ -74,6 +74,7 @@ function CabinetPage() {
   const [isUploading, setIsUploading] = useState(false);
   const notifyError = (message: string) => { setVideoNoticeType("error"); setVideoNotice(message); };
   const notifySuccess = (message: string) => { setVideoNoticeType("success"); setVideoNotice(message); };
+  const tmsConditions = conditions.slice(0, 10);
   const [pathway, setPathway] = useState("entorse-cheville");
   const [cardNote, setCardNote] = useState("");
   const pathwayLabel = conditions.find((condition) => condition.id === pathway)?.name ?? "";
@@ -295,7 +296,7 @@ function CabinetPage() {
                 onChange={(e) => setPathway(e.target.value)}
                 className="mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground outline-none focus:ring-2 focus:ring-ring"
               >
-                {conditions.map((condition) => (
+                {tmsConditions.map((condition) => (
                   <option key={condition.id} value={condition.id}>{condition.name}</option>
                 ))}
               </select>

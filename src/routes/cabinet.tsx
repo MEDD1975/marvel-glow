@@ -12,7 +12,6 @@ import {
   Users,
   FileText,
   Video,
-  Plus,
   Trash2,
 } from "lucide-react";
 import { MedicalDisclaimer } from "@/components/HomeBlocks";
@@ -340,11 +339,18 @@ function CabinetPage() {
             <label className="block text-sm font-medium text-foreground" htmlFor="doctor-file">Fichier à partager</label>
             <input id="doctor-file" type="file" accept=".pdf,.jpg,.jpeg,.png,.heic,.heif,.webp,.mp4,.mov,.m4v,image/*,video/*,application/pdf" onChange={(event) => setSelectedFile(event.target.files?.[0] ?? null)} className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground file:mr-3 file:rounded-md file:border-0 file:bg-care/10 file:px-3 file:py-1 file:text-sm file:font-medium file:text-care" />
             <p className="text-xs text-muted-foreground">PDF, JPG, PNG, HEIC, WEBP, MP4 ou MOV — 50 Mo maximum.</p>
+            {selectedFile ? <div className="rounded-xl border border-care/30 bg-care/5 p-3" aria-live="polite">
+              <p className="text-xs font-semibold uppercase tracking-wide text-care">Fichier sélectionné</p>
+              <div className="mt-2 flex items-center gap-3">
+                {selectedFile.type.startsWith("image/") ? <img src={URL.createObjectURL(selectedFile)} alt="Aperçu du fichier sélectionné" className="h-16 w-16 rounded-lg object-cover" /> : <FileText className="h-8 w-8 shrink-0 text-care" aria-hidden="true" />}
+                <p className="min-w-0 truncate text-sm font-medium text-foreground">{selectedFile.name}</p>
+              </div>
+              <button type="button" onClick={() => void addDoctorVideo()} disabled={isUploading} className="mt-3 inline-flex items-center rounded-lg bg-care px-4 py-2 text-sm font-semibold text-care-foreground hover:opacity-90 disabled:cursor-wait disabled:opacity-60">{isUploading ? "Enregistrement en cours…" : "Enregistrer ce fichier"}</button>
+            </div> : null}
             <label className="block text-sm font-medium text-foreground" htmlFor="video-url">Ou lien HTTPS</label>
             <input id="video-url" type="url" value={videoUrl} onChange={(event) => setVideoUrl(event.target.value)} placeholder="https://..." className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground" />
             <label className="block text-sm font-medium text-foreground" htmlFor="video-source">Source (optionnel)</label>
             <input id="video-source" value={videoSource} onChange={(event) => setVideoSource(event.target.value)} placeholder="Ex. Cabinet du Dr A" className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground" />
-            <button type="button" onClick={() => void addDoctorVideo()} disabled={isUploading} className="inline-flex items-center gap-2 rounded-lg bg-care px-4 py-2 text-sm font-semibold text-care-foreground hover:opacity-90 disabled:cursor-wait disabled:opacity-60"><Plus className="h-4 w-4" />{isUploading ? "Ajout en cours…" : "Ajouter fichier"}</button>
             {videoNotice ? <p className={`rounded-lg px-3 py-2 text-sm leading-5 ${videoNoticeType === "error" ? "bg-destructive/10 text-destructive" : videoNoticeType === "success" ? "bg-care/10 text-care" : "text-muted-foreground"}`} role={videoNoticeType === "error" ? "alert" : "status"}>{videoNotice}</p> : null}
           </div>
           <div className="rounded-2xl border border-border bg-card p-5">

@@ -1,6 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { authClient } from "@/lib/auth-client";
+import { put as putBlob } from "@vercel/blob/client";
 import {
   ArrowRight,
   CheckCircle2,
@@ -109,28 +110,35 @@ function CabinetPage() {
     try {
       const url = videoUrl.trim();
       if (selectedFile) {
-        const formData = new FormData();
-        formData.append("file", selectedFile);
-        formData.append("title", title);
-        formData.append("conditionId", videoCondition);
-        formData.append("source", videoSource.trim() || "Fichier partagé par le médecin");
-        const controller = new AbortController();
-        const timeout = window.setTimeout(() => controller.abort(), 120_000);
-        let response: Response;
-        try {
-          response = await fetch("/api/doctor-file", { method: "POST", body: formData, signal: controller.signal });
-        } finally {
-          window.clearTimeout(timeout);
-        }
-        const result = await response.json() as DoctorResourceRecord & { error?: string };
-        if (!response.ok || !result.id) {
+        const tokenResponse = await fetch("/api/doctor-file-token", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ filename: selectedFile.name, contentType: selectedFile.type }),
+        });
+        const tokenResult = await tokenResponse.json() as { token?: string; pathname?: string; error?: string };
+        if (!tokenResponse.ok || !tokenResult.token || !tokenResult.pathname) {
           setIsUploading(false);
-          notifyError(result.error ?? "Impossible d’ajouter le fichier.");
+          notifyError(tokenResult.error ?? "Impossible de préparer l’enregistrement du fichier.");
           return;
         }
-        const refreshed = await fetch("/api/doctor-resources");
-        const resources = refreshed.ok ? await refreshed.json() as DoctorResourceRecord[] : [result];
-        setDoctorVideos(resources);
+        const blob = await putBlob(tokenResult.pathname, selectedFile, {
+          access: "public",
+          token: tokenResult.token,
+          multipart: true,
+          contentType: selectedFile.type || undefined,
+        });
+        const metadataResponse = await fetch("/api/doctor-resources", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ title, conditionId: videoCondition, url: blob.url, filename: selectedFile.name, contentType: selectedFile.type || "application/octet-stream", source: videoSource.trim() || "Fichier partagé par le médecin" }),
+        });
+        const result = await metadataResponse.json() as DoctorResourceRecord & { error?: string };
+        if (!metadataResponse.ok || !result.id) {
+          setIsUploading(false);
+          notifyError(result.error ?? "Le fichier est chargé mais n’a pas pu être enregistré.");
+          return;
+        }
+        setDoctorVideos((current) => [result, ...current]);
         setVideoTitle("");
         setVideoUrl("");
         setSelectedFile(null);

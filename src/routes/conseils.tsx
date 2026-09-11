@@ -6,7 +6,18 @@ import { dailyTips } from "@/lib/care-data";
 import { conditions } from "@/lib/conditions";
 import { conditionAdvice, generalRedFlags } from "@/lib/condition-advice";
 import { conditionResources, generalLinks } from "@/lib/condition-resources";
+import { readStoredPathway, writeStoredPathway } from "@/lib/patient-pathway";
 import type { DoctorResourceRecord } from "@/lib/doctor-resource-db";
+
+function matchCondition(value: string | undefined) {
+  if (!value) return null;
+  const normalized = decodeURIComponent(value).trim().toLowerCase();
+  return (
+    conditions.find(
+      (item) => item.id === normalized || item.name.trim().toLowerCase() === normalized,
+    ) ?? null
+  );
+}
 
 type ConseilsSearch = { c?: string | undefined; pathway?: string | undefined };
 
@@ -39,15 +50,22 @@ export const Route = createFileRoute("/conseils")({
 function ConseilsPage() {
   const { c, pathway } = Route.useSearch();
   const navigate = useNavigate({ from: "/conseils" });
-  const rawCondition = c ?? pathway;
-  const normalizedCondition = rawCondition
-    ? decodeURIComponent(rawCondition).trim().toLowerCase()
-    : "";
-  const selected = conditions.find((item) =>
-    item.id === normalizedCondition ||
-    item.name.trim().toLowerCase() === normalizedCondition,
-  ) ?? null;
-  const conditionId = selected?.id;
+  const urlValue = c ?? pathway;
+  const [activeId, setActiveId] = useState<string | undefined>(() => matchCondition(urlValue)?.id);
+  const [hydrated, setHydrated] = useState(false);
+  useEffect(() => {
+    if (urlValue !== undefined) {
+      const matchedId = matchCondition(urlValue)?.id;
+      setActiveId(matchedId);
+      writeStoredPathway(matchedId);
+      setHydrated(true);
+    } else if (!hydrated) {
+      setActiveId(readStoredPathway() ?? undefined);
+      setHydrated(true);
+    }
+  }, [urlValue, hydrated]);
+  const selected = activeId ? conditions.find((item) => item.id === activeId) ?? null : null;
+  const conditionId = activeId;
   const [doctorResources, setDoctorResources] = useState<DoctorResourceRecord[]>([]);
   useEffect(() => {
     if (!selected) {
@@ -71,7 +89,12 @@ function ConseilsPage() {
   const tips = advice?.tips ?? dailyTips;
   const avoid = advice?.avoid ?? [];
   const redFlags = advice ? [...advice.redFlags, ...generalRedFlags] : generalRedFlags;
-  const select = (id: string | undefined) => navigate({ search: { c: id }, resetScroll: false });
+  const select = (id: string | undefined) => {
+    setActiveId(id);
+    writeStoredPathway(id);
+    setHydrated(true);
+    navigate({ search: { c: id }, resetScroll: false });
+  };
 
   return (
     <main className="mx-auto max-w-4xl px-4 py-10">

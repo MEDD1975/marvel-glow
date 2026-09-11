@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
+import { readStoredPathway, writeStoredPathway } from "@/lib/patient-pathway";
 import {
   AlertTriangle,
   Bot,
@@ -71,6 +72,16 @@ function KivoirCover({ onStart }: { onStart: () => void }) {
 
 export function AssistantHome({ initialStarted = false, pathway }: { initialStarted?: boolean; pathway?: string }) {
   const [hasStarted, setHasStarted] = useState(initialStarted);
+  const [storedPathway, setStoredPathway] = useState<string | undefined>(undefined);
+  useEffect(() => {
+    if (pathway) {
+      writeStoredPathway(pathway);
+      setStoredPathway(pathway);
+    } else {
+      setStoredPathway(readStoredPathway() ?? undefined);
+    }
+  }, [pathway]);
+  const effectivePathway = pathway ?? storedPathway;
 
   if (!hasStarted) {
     return <KivoirCover onStart={() => setHasStarted(true)} />;
@@ -113,7 +124,7 @@ export function AssistantHome({ initialStarted = false, pathway }: { initialStar
 
           <Link
             to="/conseils"
-            search={pathway ? { c: pathway } : undefined}
+            search={effectivePathway ? { c: effectivePathway } : undefined}
             className="group flex min-h-48 flex-col rounded-3xl border border-care/20 bg-care/5 p-5 text-left shadow-sm transition-all hover:-translate-y-1 hover:border-care/40 hover:bg-care/10 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-care text-primary-foreground shadow-sm">

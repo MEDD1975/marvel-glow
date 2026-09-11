@@ -48,7 +48,7 @@ export function Header() {
           ))}
           </nav>
           <Link
-            to={isDoctorSpace ? "/" : "/cabinet"}
+            to={isDoctorSpace ? "/" : "/connexion-medecin"}
             className="rounded-full border border-care/25 px-3 py-1.5 text-xs font-semibold text-care transition-colors hover:bg-care/10"
           >
             {isDoctorSpace ? "Espace patient" : "Espace médecin"}
@@ -71,7 +71,7 @@ export function Header() {
             </Link>
           ))}
           <Link
-            to={isDoctorSpace ? "/" : "/cabinet"}
+            to={isDoctorSpace ? "/" : "/connexion-medecin"}
             onClick={() => setOpen(false)}
             className="mt-2 block rounded-lg border border-care/20 px-3 py-3 text-base font-semibold text-care"
           >

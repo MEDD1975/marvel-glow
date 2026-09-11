@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AnnuaireRouteImport } from './routes/annuaire'
 import { Route as CabinetRouteImport } from './routes/cabinet'
+import { Route as ConnexionMedecinRouteImport } from './routes/connexion-medecin'
 import { Route as ConseilsRouteImport } from './routes/conseils'
 import { Route as OrientationRouteImport } from './routes/orientation'
 import { Route as ParcoursRouteImport } from './routes/parcours'
@@ -29,6 +30,11 @@ const AnnuaireRoute = AnnuaireRouteImport.update({
 const CabinetRoute = CabinetRouteImport.update({
   id: '/cabinet',
   path: '/cabinet',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ConnexionMedecinRoute = ConnexionMedecinRouteImport.update({
+  id: '/connexion-medecin',
+  path: '/connexion-medecin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ConseilsRoute = ConseilsRouteImport.update({
@@ -51,6 +57,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/annuaire': typeof AnnuaireRoute
   '/cabinet': typeof CabinetRoute
+  '/connexion-medecin': typeof ConnexionMedecinRoute
   '/conseils': typeof ConseilsRoute
   '/orientation': typeof OrientationRoute
   '/parcours': typeof ParcoursRoute
@@ -59,6 +66,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/annuaire': typeof AnnuaireRoute
   '/cabinet': typeof CabinetRoute
+  '/connexion-medecin': typeof ConnexionMedecinRoute
   '/conseils': typeof ConseilsRoute
   '/orientation': typeof OrientationRoute
   '/parcours': typeof ParcoursRoute
@@ -68,6 +76,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/annuaire': typeof AnnuaireRoute
   '/cabinet': typeof CabinetRoute
+  '/connexion-medecin': typeof ConnexionMedecinRoute
   '/conseils': typeof ConseilsRoute
   '/orientation': typeof OrientationRoute
   '/parcours': typeof ParcoursRoute
@@ -75,15 +84,28 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/annuaire' | '/cabinet' | '/conseils' | '/orientation' | '/parcours'
+    | '/'
+    | '/annuaire'
+    | '/cabinet'
+    | '/connexion-medecin'
+    | '/conseils'
+    | '/orientation'
+    | '/parcours'
   fileRoutesByTo: FileRoutesByTo
   to:
-    '/' | '/annuaire' | '/cabinet' | '/conseils' | '/orientation' | '/parcours'
+    | '/'
+    | '/annuaire'
+    | '/cabinet'
+    | '/connexion-medecin'
+    | '/conseils'
+    | '/orientation'
+    | '/parcours'
   id:
     | '__root__'
     | '/'
     | '/annuaire'
     | '/cabinet'
+    | '/connexion-medecin'
     | '/conseils'
     | '/orientation'
     | '/parcours'
@@ -93,6 +115,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AnnuaireRoute: typeof AnnuaireRoute
   CabinetRoute: typeof CabinetRoute
+  ConnexionMedecinRoute: typeof ConnexionMedecinRoute
   ConseilsRoute: typeof ConseilsRoute
   OrientationRoute: typeof OrientationRoute
   ParcoursRoute: typeof ParcoursRoute
@@ -119,6 +142,13 @@ declare module '@tanstack/react-router' {
       path: '/cabinet'
       fullPath: '/cabinet'
       preLoaderRoute: typeof CabinetRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/connexion-medecin': {
+      id: '/connexion-medecin'
+      path: '/connexion-medecin'
+      fullPath: '/connexion-medecin'
+      preLoaderRoute: typeof ConnexionMedecinRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/conseils': {
@@ -149,6 +179,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AnnuaireRoute: AnnuaireRoute,
   CabinetRoute: CabinetRoute,
+  ConnexionMedecinRoute: ConnexionMedecinRoute,
   ConseilsRoute: ConseilsRoute,
   OrientationRoute: OrientationRoute,
   ParcoursRoute: ParcoursRoute,

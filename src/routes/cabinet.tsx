@@ -1,5 +1,6 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { authClient } from "@/lib/auth-client";
 import {
   ArrowRight,
   CheckCircle2,
@@ -42,7 +43,23 @@ export const Route = createFileRoute("/cabinet")({
 });
 
 function CabinetPage() {
+  const navigate = useNavigate();
+  const { data: session, isPending } = authClient.useSession();
   const [cardQr, setCardQr] = useState<{ url: string; qr: string | null }>({ url: "", qr: null });
+
+  useEffect(() => {
+    if (!isPending && !session?.user) {
+      void navigate({ to: "/connexion-medecin" });
+    }
+  }, [isPending, navigate, session?.user]);
+
+  if (isPending || !session?.user) {
+    return (
+      <main className="mx-auto max-w-3xl px-4 py-16">
+        <p className="text-center text-sm text-muted-foreground">Vérification de votre session…</p>
+      </main>
+    );
+  }
 
   const [videoCabinet, setVideoCabinet] = useState("dr_a");
   const [doctorVideos, setDoctorVideos] = useState<DoctorVideo[]>(() => getAllDoctorVideos("dr_a"));

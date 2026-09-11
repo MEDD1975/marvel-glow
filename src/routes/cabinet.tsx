@@ -107,13 +107,13 @@ function CabinetPage() {
     setVideoNoticeType("");
     setIsUploading(true);
     try {
-      let url = videoUrl.trim();
+      const url = videoUrl.trim();
       if (selectedFile) {
         const formData = new FormData();
-      formData.append("file", selectedFile);
-      formData.append("title", title);
-      formData.append("conditionId", videoCondition);
-      formData.append("source", videoSource.trim() || "Fichier partagé par le médecin");
+        formData.append("file", selectedFile);
+        formData.append("title", title);
+        formData.append("conditionId", videoCondition);
+        formData.append("source", videoSource.trim() || "Fichier partagé par le médecin");
         const controller = new AbortController();
         const timeout = window.setTimeout(() => controller.abort(), 120_000);
         let response: Response;
@@ -122,46 +122,46 @@ function CabinetPage() {
         } finally {
           window.clearTimeout(timeout);
         }
-      const result = await response.json() as DoctorResourceRecord & { error?: string };
-      if (!response.ok || !result.id) {
+        const result = await response.json() as DoctorResourceRecord & { error?: string };
+        if (!response.ok || !result.id) {
+          setIsUploading(false);
+          notifyError(result.error ?? "Impossible d’ajouter le fichier.");
+          return;
+        }
+        const refreshed = await fetch("/api/doctor-resources");
+        const resources = refreshed.ok ? await refreshed.json() as DoctorResourceRecord[] : [result];
+        setDoctorVideos(resources);
+        setVideoTitle("");
+        setVideoUrl("");
+        setSelectedFile(null);
+        setVideoSource("");
         setIsUploading(false);
-        notifyError(result.error ?? "Impossible d’ajouter le fichier.");
+        notifySuccess("Fichier ajouté : il apparaît maintenant dans la bibliothèque de conseils du patient.");
         return;
       }
-      const refreshed = await fetch("/api/doctor-resources");
-      const resources = refreshed.ok ? await refreshed.json() as DoctorResourceRecord[] : [result];
-      setDoctorVideos(resources);
+
+      if (!/^https:\/\//i.test(url)) {
+        setIsUploading(false);
+        notifyError("Le lien doit commencer par https://.");
+        return;
+      }
+      const response = await fetch("/api/doctor-resources", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ title, conditionId: videoCondition, url, filename: undefined, contentType: "video/*", source: videoSource.trim() || "Fichier partagé par le médecin" }),
+      });
+      const savedResult = await response.json() as DoctorResourceRecord & { error?: string };
+      if (!response.ok || !savedResult.id) {
+        setIsUploading(false);
+        notifyError(savedResult.error ?? "Impossible d’enregistrer ce fichier dans votre bibliothèque.");
+        return;
+      }
+      setDoctorVideos((current) => [savedResult, ...current]);
       setVideoTitle("");
       setVideoUrl("");
       setSelectedFile(null);
       setVideoSource("");
       setIsUploading(false);
-      notifySuccess("Fichier ajouté : il apparaît maintenant dans la bibliothèque de conseils du patient.");
-      return;
-    }
-    if (!/^https:\/\//i.test(url)) {
-      setIsUploading(false);
-      notifyError("Le lien doit commencer par https://.");
-      return;
-    }
-    const response = await fetch("/api/doctor-resources", {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ title, conditionId: videoCondition, url, filename: selectedFile?.name, contentType: selectedFile?.type, source: videoSource.trim() || "Fichier partagé par le médecin" }),
-    });
-    const savedResult = await response.json() as DoctorResourceRecord & { error?: string };
-    if (!response.ok || !savedResult.id) {
-      setIsUploading(false);
-      notifyError(savedResult.error ?? "Impossible d’enregistrer ce fichier dans votre bibliothèque.");
-      return;
-    }
-    const saved = savedResult;
-    setDoctorVideos((current) => [saved, ...current]);
-    setVideoTitle("");
-    setVideoUrl("");
-    setSelectedFile(null);
-    setVideoSource("");
-    setIsUploading(false);
       notifySuccess("Lien ajouté : il apparaît maintenant dans la bibliothèque de conseils du patient.");
     } catch (error) {
       console.error("[v0] doctor resource upload failed", error);

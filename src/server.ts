@@ -3,6 +3,7 @@ import "./lib/error-capture";
 import { consumeLastCapturedError } from "./lib/error-capture";
 import { renderErrorPage } from "./lib/error-page";
 import { auth } from "./lib/auth";
+import { getDoctorNetwork, saveDoctorNetwork } from "./lib/doctor-network-db";
 
 type ServerEntry = {
   fetch: (request: Request, env: unknown, ctx: unknown) => Promise<Response> | Response;
@@ -51,6 +52,26 @@ export default {
       const url = new URL(request.url);
       if (url.pathname.startsWith("/api/auth/")) {
         return await auth.handler(request);
+      }
+      if (url.pathname === "/api/doctor-network") {
+        const session = await auth.api.getSession({ headers: request.headers });
+        if (!session?.user) return Response.json({ error: "Unauthorized" }, { status: 401 });
+        if (request.method === "GET") return Response.json(await getDoctorNetwork(session.user.id));
+        if (request.method === "POST") {
+          const payload = await request.json();
+          if (!payload || typeof payload.name !== "string" || typeof payload.address !== "string" || !Array.isArray(payload.practitioners)) {
+            return Response.json({ error: "Informations invalides" }, { status: 400 });
+          }
+          const practitioners = payload.practitioners.filter((item: unknown) => item && typeof item === "object" && typeof (item as { name?: unknown }).name === "string" && typeof (item as { profession?: unknown }).profession === "string");
+          if (!practitioners.length) return Response.json({ error: "Ajoutez au moins un praticien" }, { status: 400 });
+          return Response.json(await saveDoctorNetwork(session.user.id, {
+            name: payload.name.trim(),
+            address: payload.address.trim(),
+            phone: typeof payload.phone === "string" ? payload.phone.trim() : undefined,
+            practitioners: practitioners.map((item: { name: string; profession: string; phone?: string; email?: string }) => ({ name: item.name.trim(), profession: item.profession.trim(), phone: item.phone?.trim(), email: item.email?.trim() })),
+          }), { status: 201 });
+        }
+        return new Response("Method Not Allowed", { status: 405 });
       }
       const handler = await getServerEntry();
       const response = await handler.fetch(request, env, ctx);

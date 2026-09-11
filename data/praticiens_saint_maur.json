@@ -1,6 +1,6 @@
 {
   "dr_a": {
-    "nom_cabinet": "Cabinet Sport & Santé - Dr A",
+    "nom_cabinet": "Cabinet du Dr A",
     "praticiens": [
       { "nom": "Dr. Sophie Martin", "specialite": "Médecin du sport", "adresse": "10 Rue des Lilas, 94100 Saint-Maur", "telephone": "01 00 00 00 01" },
       { "nom": "Thomas Kine", "specialite": "Kinésithérapeute", "adresse": "10 Rue des Lilas, 94100 Saint-Maur", "telephone": "01 00 00 00 02" },

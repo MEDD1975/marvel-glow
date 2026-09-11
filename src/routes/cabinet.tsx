@@ -65,7 +65,6 @@ function CabinetPage() {
       return response.json() as Promise<DoctorResourceRecord[]>;
     }).then(setDoctorVideos).catch(() => notifyError("Impossible de charger vos fichiers enregistrés."));
   }, [session?.user]);
-  const [videoCondition, setVideoCondition] = useState("entorse-cheville");
   const [videoTitle, setVideoTitle] = useState("");
   const [videoUrl, setVideoUrl] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -75,15 +74,10 @@ function CabinetPage() {
   const [isUploading, setIsUploading] = useState(false);
   const notifyError = (message: string) => { setVideoNoticeType("error"); setVideoNotice(message); };
   const notifySuccess = (message: string) => { setVideoNoticeType("success"); setVideoNotice(message); };
-  const conditionVideos = doctorVideos.filter((video) => video.conditionId === videoCondition);
+  const conditionVideos = doctorVideos.filter((video) => video.conditionId === pathway);
   const [pathway, setPathway] = useState("entorse-cheville");
   const [cardNote, setCardNote] = useState("");
   const pathwayLabel = conditions.find((condition) => condition.id === pathway)?.name ?? "";
-  // Le parcours choisi sur la carte définit aussi, par défaut, le trouble des ressources visibles par le patient.
-  const selectPathway = (value: string) => {
-    setPathway(value);
-    setVideoCondition(value);
-  };
 
   // Carte remise au patient → ouvre le parcours attribué (étapes, conseils, vidéos, professionnels).
   useEffect(() => {
@@ -132,7 +126,7 @@ function CabinetPage() {
         const metadataResponse = await fetch("/api/doctor-resources", {
           method: "POST",
           headers: { "content-type": "application/json" },
-          body: JSON.stringify({ title, conditionId: videoCondition, url: blob.url, filename: selectedFile.name, contentType: selectedFile.type || "application/octet-stream", source: videoSource.trim() || "Fichier partagé par le médecin" }),
+          body: JSON.stringify({ title, conditionId: pathway, url: blob.url, filename: selectedFile.name, contentType: selectedFile.type || "application/octet-stream", source: videoSource.trim() || "Fichier partagé par le médecin" }),
         });
         const result = await metadataResponse.json() as DoctorResourceRecord & { error?: string };
         if (!metadataResponse.ok || !result.id) {
@@ -158,7 +152,7 @@ function CabinetPage() {
       const response = await fetch("/api/doctor-resources", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ title, conditionId: videoCondition, url, filename: undefined, contentType: "video/*", source: videoSource.trim() || "Fichier partagé par le médecin" }),
+          body: JSON.stringify({ title, conditionId: pathway, url, filename: undefined, contentType: "video/*", source: videoSource.trim() || "Fichier partagé par le médecin" }),
       });
       const savedResult = await response.json() as DoctorResourceRecord & { error?: string };
       if (!response.ok || !savedResult.id) {
@@ -298,7 +292,7 @@ function CabinetPage() {
               <select
                 id="cardPathway"
                 value={pathway}
-                onChange={(e) => selectPathway(e.target.value)}
+                onChange={(e) => setPathway(e.target.value)}
                 className="mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground outline-none focus:ring-2 focus:ring-ring"
               >
                 {conditions.map((condition) => (
@@ -354,9 +348,10 @@ function CabinetPage() {
         <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_1.2fr]">
           <div className="space-y-4 rounded-2xl border border-border bg-card p-5">
             <label className="block text-sm font-medium text-foreground" htmlFor="video-condition">Trouble ou parcours</label>
-            <select id="video-condition" value={videoCondition} onChange={(event) => setVideoCondition(event.target.value)} className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground">
+            <select id="video-condition" value={pathway} disabled aria-describedby="video-condition-hint" className="w-full cursor-not-allowed rounded-lg border border-input bg-muted px-3 py-2 text-sm text-foreground opacity-80">
               {conditions.map((condition) => <option key={condition.id} value={condition.id}>{condition.name}</option>)}
             </select>
+            <p id="video-condition-hint" className="text-xs text-muted-foreground">Défini par le « Parcours ouvert par la carte » ci-dessus. Modifiez-le en haut pour changer le trouble.</p>
             <label className="block text-sm font-medium text-foreground" htmlFor="video-title">Titre de la ressource <span className="font-normal text-muted-foreground">(facultatif)</span></label>
             <input id="video-title" value={videoTitle} onChange={(event) => setVideoTitle(event.target.value)} placeholder="Ex. Les bons gestes après une entorse ou une fiche pratique" className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground" />
             <label className="block text-sm font-medium text-foreground" htmlFor="doctor-file">Fichier à partager</label>
@@ -377,7 +372,7 @@ function CabinetPage() {
             {videoNotice ? <p className={`rounded-lg px-3 py-2 text-sm leading-5 ${videoNoticeType === "error" ? "bg-destructive/10 text-destructive" : videoNoticeType === "success" ? "bg-care/10 text-care" : "text-muted-foreground"}`} role={videoNoticeType === "error" ? "alert" : "status"}>{videoNotice}</p> : null}
           </div>
           <div className="rounded-2xl border border-border bg-card p-5">
-            <div className="flex items-center justify-between gap-3"><div><p className="text-xs font-semibold uppercase tracking-wide text-care">Visible par le patient</p><h3 className="mt-1 text-lg font-semibold text-foreground">Ressources personnalisées — {conditions.find((condition) => condition.id === videoCondition)?.name ?? videoCondition}</h3></div><span className="rounded-full bg-care/10 px-2 py-1 text-xs font-medium text-care">{conditionVideos.length}</span></div>
+            <div className="flex items-center justify-between gap-3"><div><p className="text-xs font-semibold uppercase tracking-wide text-care">Visible par le patient</p><h3 className="mt-1 text-lg font-semibold text-foreground">Ressources personnalisées — {pathwayLabel}</h3></div><span className="rounded-full bg-care/10 px-2 py-1 text-xs font-medium text-care">{conditionVideos.length}</span></div>
             <div className="mt-4 flex flex-col gap-3">
               {conditionVideos.length === 0 ? <p className="rounded-xl border border-dashed border-border p-4 text-sm leading-6 text-muted-foreground">Aucune ressource pour ce trouble. Les ressources générales de Kivoir restent utilisées.</p> : conditionVideos.map((video) => <article key={video.id} className="flex items-start justify-between gap-3 rounded-xl border border-border bg-background p-3"><div><p className="font-semibold text-foreground">{video.title}</p><p className="mt-1 text-xs text-care">{conditions.find((condition) => condition.id === video.conditionId)?.name ?? video.conditionId}</p><p className="mt-1 text-xs text-muted-foreground">{video.source ?? video.filename ?? "Fichier partagé"}</p></div><button type="button" onClick={() => void deleteDoctorVideo(video.id)} aria-label={`Supprimer ${video.title}`} className="rounded-lg p-2 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"><Trash2 className="h-4 w-4" /></button></article>)}
             </div>

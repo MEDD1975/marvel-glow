@@ -24,7 +24,7 @@ function HomePage() {
 
   return (
     <main>
-      <AssistantHome initialStarted={started} pathway={pathway} />
+      <AssistantHome initialStarted={started || Boolean(pathway)} pathway={pathway} />
       <section className="mx-auto max-w-4xl px-4 pb-16">
         <MedicalDisclaimer />
       </section>

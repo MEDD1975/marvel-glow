@@ -70,7 +70,7 @@ function ConseilsPage() {
       <div className="mb-6">
         <Link
           to="/"
-          search={{ started: true }}
+          search={{ started: true, pathway: c }}
           aria-label="Retourner à l’espace patient"
           className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
         >

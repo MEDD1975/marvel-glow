@@ -4,6 +4,7 @@ import { consumeLastCapturedError } from "./lib/error-capture";
 import { renderErrorPage } from "./lib/error-page";
 import { auth } from "./lib/auth";
 import { getDoctorNetwork, saveDoctorNetwork } from "./lib/doctor-network-db";
+import { put } from "@vercel/blob";
 
 type ServerEntry = {
   fetch: (request: Request, env: unknown, ctx: unknown) => Promise<Response> | Response;
@@ -52,6 +53,18 @@ export default {
       const url = new URL(request.url);
       if (url.pathname.startsWith("/api/auth/")) {
         return await auth.handler(request);
+      }
+      if (url.pathname === "/api/doctor-file" && request.method === "POST") {
+        const session = await auth.api.getSession({ headers: request.headers });
+        if (!session?.user) return Response.json({ error: "Unauthorized" }, { status: 401 });
+        const formData = await request.formData();
+        const file = formData.get("file");
+        if (!(file instanceof File)) return Response.json({ error: "Sélectionnez un fichier." }, { status: 400 });
+        if (file.size > 10 * 1024 * 1024) return Response.json({ error: "Le fichier ne doit pas dépasser 10 Mo." }, { status: 400 });
+        const allowedTypes = ["application/pdf", "image/jpeg", "image/png", "video/mp4", "video/quicktime"];
+        if (!allowedTypes.includes(file.type)) return Response.json({ error: "Formats acceptés : PDF, JPG, PNG, MP4 ou MOV." }, { status: 400 });
+        const blob = await put(`doctor-resources/${session.user.id}/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, "-")}`, file, { access: "public", addRandomSuffix: true });
+        return Response.json({ url: blob.url, filename: file.name, contentType: file.type });
       }
       if (url.pathname === "/api/doctor-network") {
         const session = await auth.api.getSession({ headers: request.headers });

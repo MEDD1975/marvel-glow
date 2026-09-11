@@ -45,6 +45,7 @@
     "@tanstack/react-start": "^1.168.32",
     "@tanstack/router-plugin": "^1.168.23",
     "@types/leaflet": "^1.9.22",
+    "@vercel/blob": "^2.8.0",
     "ai": "^7.0.58",
     "better-auth": "^1.7.4",
     "class-variance-authority": "^0.7.1",

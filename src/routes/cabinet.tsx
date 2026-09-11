@@ -60,8 +60,10 @@ function CabinetPage() {
   const [videoCondition, setVideoCondition] = useState("entorse-cheville");
   const [videoTitle, setVideoTitle] = useState("");
   const [videoUrl, setVideoUrl] = useState("");
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [videoSource, setVideoSource] = useState("");
   const [videoNotice, setVideoNotice] = useState("");
+  const [isUploading, setIsUploading] = useState(false);
   const [pathway, setPathway] = useState("entorse-cheville");
   const [cardNote, setCardNote] = useState("");
   const pathwayLabels: Record<string, string> = {
@@ -85,11 +87,29 @@ function CabinetPage() {
     };
   }, [pathway]);
 
-  const addDoctorVideo = () => {
+  const addDoctorVideo = async () => {
     const title = videoTitle.trim();
-    const url = videoUrl.trim();
-    if (!title || !url || !/^https:\/\//i.test(url)) {
-      setVideoNotice("Ajoutez un titre et une URL HTTPS valide.");
+    if (!title || (!selectedFile && !videoUrl.trim())) {
+      setVideoNotice("Ajoutez un titre et sélectionnez un fichier ou saisissez un lien HTTPS.");
+      return;
+    }
+    setIsUploading(true);
+    let url = videoUrl.trim();
+    if (selectedFile) {
+      const formData = new FormData();
+      formData.append("file", selectedFile);
+      const response = await fetch("/api/doctor-file", { method: "POST", body: formData });
+      const result = await response.json() as { url?: string; error?: string };
+      if (!response.ok || !result.url) {
+        setIsUploading(false);
+        setVideoNotice(result.error ?? "Impossible d’ajouter le fichier.");
+        return;
+      }
+      url = result.url;
+    }
+    if (!/^https:\/\//i.test(url)) {
+      setIsUploading(false);
+      setVideoNotice("Le lien doit commencer par https://.");
       return;
     }
     const video: DoctorVideo = {
@@ -105,8 +125,10 @@ function CabinetPage() {
     setDoctorVideos(getAllDoctorVideos(doctorNetworkId));
     setVideoTitle("");
     setVideoUrl("");
+    setSelectedFile(null);
     setVideoSource("");
-    setVideoNotice("Ressource ajoutée : elle sera proposée au patient pour ce trouble.");
+    setIsUploading(false);
+    setVideoNotice("Fichier ajouté : il sera proposé au patient pour ce trouble.");
   };
 
   const deleteDoctorVideo = (videoId: string) => {
@@ -287,11 +309,14 @@ function CabinetPage() {
             </select>
             <label className="block text-sm font-medium text-foreground" htmlFor="video-title">Titre de la ressource</label>
             <input id="video-title" value={videoTitle} onChange={(event) => setVideoTitle(event.target.value)} placeholder="Ex. Les bons gestes après une entorse ou une fiche pratique" className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground" />
-            <label className="block text-sm font-medium text-foreground" htmlFor="video-url">Lien du document ou de la vidéo</label>
+            <label className="block text-sm font-medium text-foreground" htmlFor="doctor-file">Fichier à partager</label>
+            <input id="doctor-file" type="file" accept=".pdf,.jpg,.jpeg,.png,.mp4,.mov" onChange={(event) => setSelectedFile(event.target.files?.[0] ?? null)} className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground file:mr-3 file:rounded-md file:border-0 file:bg-care/10 file:px-3 file:py-1 file:text-sm file:font-medium file:text-care" />
+            <p className="text-xs text-muted-foreground">PDF, JPG, PNG, MP4 ou MOV — 10 Mo maximum.</p>
+            <label className="block text-sm font-medium text-foreground" htmlFor="video-url">Ou lien HTTPS</label>
             <input id="video-url" type="url" value={videoUrl} onChange={(event) => setVideoUrl(event.target.value)} placeholder="https://..." className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground" />
             <label className="block text-sm font-medium text-foreground" htmlFor="video-source">Source (optionnel)</label>
             <input id="video-source" value={videoSource} onChange={(event) => setVideoSource(event.target.value)} placeholder="Ex. Cabinet du Dr A" className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground" />
-            <button type="button" onClick={addDoctorVideo} className="inline-flex items-center gap-2 rounded-lg bg-care px-4 py-2 text-sm font-semibold text-care-foreground hover:opacity-90"><Plus className="h-4 w-4" />Ajouter cette ressource</button>
+            <button type="button" onClick={() => void addDoctorVideo()} disabled={isUploading} className="inline-flex items-center gap-2 rounded-lg bg-care px-4 py-2 text-sm font-semibold text-care-foreground hover:opacity-90 disabled:cursor-wait disabled:opacity-60"><Plus className="h-4 w-4" />{isUploading ? "Ajout en cours…" : "Ajouter fichier"}</button>
             {videoNotice ? <p className="text-xs leading-5 text-muted-foreground" role="status">{videoNotice}</p> : null}
           </div>
           <div className="rounded-2xl border border-border bg-card p-5">

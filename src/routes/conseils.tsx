@@ -39,9 +39,15 @@ export const Route = createFileRoute("/conseils")({
 function ConseilsPage() {
   const { c, pathway } = Route.useSearch();
   const navigate = useNavigate({ from: "/conseils" });
-  const conditionId = c ?? pathway;
-
-  const selected = conditions.find((item) => item.id === conditionId) ?? null;
+  const rawCondition = c ?? pathway;
+  const normalizedCondition = rawCondition
+    ? decodeURIComponent(rawCondition).trim().toLowerCase()
+    : "";
+  const selected = conditions.find((item) =>
+    item.id === normalizedCondition ||
+    item.name.trim().toLowerCase() === normalizedCondition,
+  ) ?? null;
+  const conditionId = selected?.id;
   const [doctorResources, setDoctorResources] = useState<DoctorResourceRecord[]>([]);
   useEffect(() => {
     if (!selected) {

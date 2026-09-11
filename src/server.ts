@@ -5,6 +5,7 @@ import { renderErrorPage } from "./lib/error-page";
 import { auth } from "./lib/auth";
 import { getDoctorNetwork, saveDoctorNetwork } from "./lib/doctor-network-db";
 import { put } from "@vercel/blob";
+import { generateClientTokenFromReadWriteToken } from "@vercel/blob/client";
 import { createDoctorResource, deleteDoctorResource, listAllActiveDoctorResources, listDoctorResources } from "./lib/doctor-resource-db";
 
 type ServerEntry = {
@@ -74,6 +75,20 @@ export default {
           return Response.json({ ok: true });
         }
         return new Response("Method Not Allowed", { status: 405 });
+      }
+      if (url.pathname === "/api/doctor-file-token" && request.method === "POST") {
+        const session = await auth.api.getSession({ headers: request.headers });
+        if (!session?.user) return Response.json({ error: "Votre session médecin a expiré. Reconnectez-vous." }, { status: 401 });
+        const payload = await request.json() as { filename?: string; contentType?: string };
+        const filename = typeof payload.filename === "string" ? payload.filename.replace(/[^a-zA-Z0-9._-]/g, "-") : "resource.bin";
+        const pathname = `doctor-resources/${session.user.id}/${Date.now()}-${filename}`;
+        const token = await generateClientTokenFromReadWriteToken({
+          pathname,
+          maximumSizeInBytes: 50 * 1024 * 1024,
+          allowedContentTypes: ["image/*", "video/*", "application/pdf"],
+          addRandomSuffix: true,
+        });
+        return Response.json({ token, pathname });
       }
       if (url.pathname === "/api/doctor-file" && request.method === "POST") {
         try {

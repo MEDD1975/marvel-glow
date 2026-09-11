@@ -16,7 +16,7 @@ export const Route = createFileRoute("/conseils")({
   }),
   head: () => ({
     meta: [
-      { title: "Conseils et vidéos — Kivoir" },
+      { title: "Bibliothèque de conseils — Kivoir" },
       {
         name: "description",
         content:
@@ -76,7 +76,7 @@ function ConseilsPage() {
       </div>
 
       <div className="text-center">
-        <h1 className="text-2xl font-semibold text-foreground">Vidéos, exercices et conseils</h1>
+        <h1 className="text-2xl font-semibold text-foreground">Bibliothèque de conseils</h1>
         <p className="mx-auto mt-2 max-w-2xl text-muted-foreground">
           Consultez ces repères pour préparer votre prochain échange. Ils ne remplacent pas les consignes de votre professionnel.
         </p>
@@ -108,10 +108,17 @@ function ConseilsPage() {
 
       {doctorResources.length > 0 && (
         <section className="mt-8 rounded-2xl border border-care/30 bg-care/5 p-5" aria-labelledby="doctor-library-title">
-          <div className="flex items-center gap-2 text-lg font-semibold text-foreground"><FileText className="h-5 w-5 text-care" /><h2 id="doctor-library-title">Conseils de votre médecin</h2></div>
-          <p className="mt-1 text-sm text-muted-foreground">Les fichiers partagés par votre médecin apparaissent ici, avec une photo, une vidéo ou un document selon le contenu.</p>
+          <div className="flex items-center gap-2 text-lg font-semibold text-foreground"><FileText className="h-5 w-5 text-care" /><h2 id="doctor-library-title">Bibliothèque de conseils de votre médecin</h2></div>
+          <p className="mt-1 text-sm text-muted-foreground">Les vidéos, photos et documents partagés par votre médecin sont regroupés ici pour ce parcours.</p>
           <div className="mt-4 grid gap-3 sm:grid-cols-2">
-            {doctorResources.map((resource) => <a key={resource.id} href={resource.url} target="_blank" rel="noopener noreferrer" className="flex items-start gap-3 rounded-xl border border-border bg-card p-4 transition-colors hover:bg-accent">{resource.contentType?.startsWith("image/") ? <img src={resource.url} alt="" className="h-16 w-16 shrink-0 rounded-lg object-cover" /> : <FileText className="mt-0.5 h-5 w-5 shrink-0 text-care" />}<span><span className="block font-medium text-card-foreground">{resource.title}</span><span className="mt-1 block text-xs text-muted-foreground">{resource.filename ?? resource.source ?? "Fichier partagé"}</span></span><ExternalLink className="ml-auto h-4 w-4 shrink-0 text-muted-foreground" /></a>)}
+            {doctorResources.map((resource) => {
+              const isImage = resource.contentType?.startsWith("image/");
+              const isVideo = resource.contentType?.startsWith("video/");
+              return <a key={resource.id} href={resource.url} target="_blank" rel="noopener noreferrer" className="flex items-start gap-3 rounded-xl border border-border bg-card p-4 transition-colors hover:bg-accent">
+                {isImage ? <img src={resource.url} alt={`Aperçu de ${resource.title}`} className="h-16 w-16 shrink-0 rounded-lg object-cover" /> : <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-care/10 text-care">{isVideo ? <Play className="h-5 w-5" aria-hidden="true" /> : <FileText className="h-5 w-5" aria-hidden="true" />}</span>}
+                <span><span className="block font-medium text-card-foreground">{resource.title}</span><span className="mt-1 block text-xs text-muted-foreground">{isVideo ? "Vidéo" : isImage ? "Photo" : "Document"} · {resource.filename ?? resource.source ?? "Fichier partagé"}</span></span><ExternalLink className="ml-auto h-4 w-4 shrink-0 text-muted-foreground" />
+              </a>;
+            })}
           </div>
         </section>
       )}
@@ -126,7 +133,7 @@ function ConseilsPage() {
       <section className="mt-8 rounded-2xl border border-care/30 bg-care/5 p-5">
         <div className="flex items-center gap-2 text-lg font-semibold text-foreground">
           <Play className="h-5 w-5 text-care" />
-          Vidéos à regarder {selected ? `— ${selected.name}` : ""}
+          Vidéos et exercices {selected ? `— ${selected.name}` : ""}
         </div>
         <p className="mt-1 text-sm text-muted-foreground">
           Vidéos d'explication et d'exercices, sélectionnées auprès de kinésithérapeutes et de sources

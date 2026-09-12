@@ -285,7 +285,7 @@ function CabinetPage() {
       </div>
 
       {/* Patient pocket cards */}
-      <section id="patient-card" className={showNetworkConfig ? "hidden" : "order-2 mt-0 card-section"}>
+      <section id="patient-card" className={`${showNetworkConfig ? "hidden" : ""} ${showResourceConfig ? "order-2" : ""} mt-0 card-section`}>
         <div className="flex flex-wrap items-end justify-between gap-4 print:hidden">
           <div>
             <h2 className="text-2xl font-semibold text-foreground">Cartes patient à remettre</h2>
@@ -352,7 +352,7 @@ function CabinetPage() {
 
 
 
-      <section id="follow-up" style={{ display: showNetworkConfig ? "none" : undefined }} className="order-1 mt-16 rounded-3xl border border-care/25 bg-care/5 p-6 md:p-8 print:hidden" aria-labelledby="doctor-content-title">
+      <section id="follow-up" style={{ display: showNetworkConfig ? "none" : undefined }} className={`${showResourceConfig ? "order-1" : ""} mt-16 rounded-3xl border border-care/25 bg-care/5 p-6 md:p-8 print:hidden`} aria-labelledby="doctor-content-title">
         <div className="flex items-start gap-3">
           <FileText className="mt-1 text-care" aria-hidden="true" />
           <div>
@@ -397,7 +397,7 @@ function CabinetPage() {
       </section>
 
       {/* Legal / positioning */}
-      <section style={{ display: showNetworkConfig ? "none" : undefined }} className="mt-16 rounded-2xl border border-border bg-card p-6 md:p-8 print:hidden">
+      <section style={{ display: showNetworkConfig ? "none" : undefined }} className={`${showResourceConfig ? "order-3" : ""} mt-16 rounded-2xl border border-border bg-card p-6 md:p-8 print:hidden`}>
         <h2 className="text-xl font-semibold text-foreground">Positionnement réglementaire</h2>
         <ul className="mt-4 space-y-3">
           <li className="flex items-start gap-3 text-sm text-muted-foreground">
@@ -417,7 +417,7 @@ function CabinetPage() {
       </section>
 
       {/* FAQ */}
-      <section style={{ display: showNetworkConfig ? "none" : undefined }} className="mt-16 print:hidden">
+      <section style={{ display: showNetworkConfig ? "none" : undefined }} className={`${showResourceConfig ? "order-4" : ""} mt-16 print:hidden`}>
         <h2 className="text-2xl font-semibold text-foreground">Questions fréquentes</h2>
         <div className="mt-6 grid gap-4 md:grid-cols-2">
           <FaqCard
@@ -439,7 +439,7 @@ function CabinetPage() {
         </div>
       </section>
 
-      <div style={{ display: showNetworkConfig ? "none" : undefined }} className="mt-10 print:hidden">
+      <div style={{ display: showNetworkConfig ? "none" : undefined }} className={`${showResourceConfig ? "order-5" : ""} mt-10 print:hidden`}>
         <MedicalDisclaimer />
       </div>
     </main>

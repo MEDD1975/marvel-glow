@@ -117,7 +117,7 @@ export function AssistantHome({ initialStarted = false, pathway }: { initialStar
             </span>
             <span className="mt-5 text-xs font-semibold uppercase tracking-[0.12em] text-primary">Poser mes questions</span>
             <span className="mt-1.5 text-lg font-semibold text-foreground">Mon orientation</span>
-            <span className="mt-2 flex-1 text-sm leading-6 text-muted-foreground">Échangez avec l&apos;Assistant pour clarifier vos questions, identifier la bonne spécialité et trouver le bon professionnel.</span>
+            <span className="mt-2 flex-1 text-sm leading-6 text-muted-foreground">Échangez avec l&apos;Assistant pour clarifier vos questions, identifier la spécialité concernée et consulter le réseau professionnel.</span>
             <span className="mt-2 text-xs leading-5 text-muted-foreground">L&apos;Assistant informe et oriente ; il ne remplace pas l&apos;avis médical.</span>
             <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-primary">Poser mes questions <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" /></span>
           </button>
@@ -144,7 +144,7 @@ export function AssistantHome({ initialStarted = false, pathway }: { initialStar
               <MapPin className="h-6 w-6" aria-hidden="true" />
             </span>
             <span className="mt-5 text-xs font-semibold uppercase tracking-[0.12em] text-care">Réseau professionnel</span>
-            <span className="mt-1.5 text-lg font-semibold text-foreground">Trouver le bon professionnel</span>
+            <span className="mt-1.5 text-lg font-semibold text-foreground">Consulter le réseau professionnel</span>
             <span className="mt-2 flex-1 text-sm leading-6 text-muted-foreground">Recherchez les kinésithérapeutes, podologues et autres professionnels près de chez vous.</span>
             <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-care">Voir l&apos;annuaire <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" /></span>
           </Link>

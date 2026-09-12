@@ -16,7 +16,7 @@ const DISCLAIMER =
   "⚠️ Kivoir est un outil d'accompagnement au parcours de soin et ne remplace pas une consultation médicale.";
 
 // System Prompt de « Assistant Kivoir » : rôle, périmètre, règles strictes et style.
-const SYSTEM_PROMPT = `Tu es l'Assistant Kivoir, le compagnon intelligent post-consultation d'un patient anonyme. Tu l'aides à faire le point après sa visite chez le médecin et à identifier le bon professionnel au sein du réseau de soins de son cabinet. Tu es factuel, rassurant, pédagogue et rigoureux.
+const SYSTEM_PROMPT = `Tu es l'Assistant Kivoir, le compagnon intelligent post-consultation d'un patient anonyme. Tu l'aides à faire le point après sa visite chez le médecin et à consulter le réseau professionnel de son cabinet. Tu es factuel, rassurant, pédagogue et rigoureux.
 
 ACCUEIL ET ÉCOUTE :
 - Invite la personne à s'exprimer librement sur sa consultation, ce qu'elle ressent maintenant et les conseils, consignes ou prescriptions donnés par son médecin.
@@ -318,7 +318,7 @@ function ensureConversationalResponse(text: string, plan: CarePlan) {
 
   return conversationalResponse(
     clean || plan.summary,
-    "Je vous invite à consulter l'annuaire du réseau de soins pour trouver le professionnel adapté près de chez vous.",
+    "Je vous invite à consulter le réseau professionnel près de chez vous.",
   );
 }
 

@@ -37,7 +37,7 @@ function normalizeProfession(value: string): Profession | null {
 function toCabinets(networks: PublicNetwork[]): Cabinet[] {
   return networks.map((network) => ({
     id: network.id,
-    name: network.ownerName ? `${network.name} — ${network.ownerName}` : network.name,
+    name: network.ownerName ? `Cabinet du ${network.ownerName}` : network.name,
     providers: network.practitioners.flatMap((practitioner) => {
       const profession = normalizeProfession(practitioner.profession);
       if (!profession) return [];
@@ -115,9 +115,7 @@ export const Route = createFileRoute("/annuaire")({
 function CabinetChooser({ invalidId, profession, doctor }: { invalidId?: string; profession?: Profession; doctor?: string }) {
   const navigate = useNavigate({ from: "/annuaire" });
   const publicCabinets = usePublicCabinets();
-  const sourceCabinets = publicCabinets?.length
-    ? [...publicCabinets, ...cabinets.filter((cabinet) => !publicCabinets.some((network) => network.id === cabinet.id))]
-    : cabinets;
+  const sourceCabinets = publicCabinets ?? cabinets;
   const [query, setQuery] = useState(doctor ?? "");
   const [submittedQuery, setSubmittedQuery] = useState(doctor ?? "");
   const trimmed = query.trim();
@@ -244,9 +242,7 @@ function AnnuairePage() {
   const { cabinet: cabinetId, profession, doctor } = Route.useSearch();
   const navigate = useNavigate({ from: "/annuaire" });
   const publicCabinets = usePublicCabinets();
-  const sourceCabinets = publicCabinets?.length
-    ? [...publicCabinets, ...cabinets.filter((cabinet) => !publicCabinets.some((network) => network.id === cabinet.id))]
-    : cabinets;
+  const sourceCabinets = publicCabinets ?? cabinets;
   const [professionFilter, setProfessionFilter] = useState<Profession | null>(profession ?? null);
 
   const selectedCabinet = sourceCabinets.find((cabinet) => cabinet.id === cabinetId) ?? null;

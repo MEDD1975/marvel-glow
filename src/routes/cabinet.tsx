@@ -258,7 +258,7 @@ function CabinetPage() {
       <DoctorOnboarding />
 
       {/* Patient pocket cards */}
-      <section id="patient-card" className="mt-16 card-section">
+      <section id="patient-card" className="mt-0 card-section">
         <div className="flex flex-wrap items-end justify-between gap-4 print:hidden">
           <div>
             <h2 className="text-2xl font-semibold text-foreground">Cartes patient à remettre</h2>

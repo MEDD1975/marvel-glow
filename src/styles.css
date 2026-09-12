@@ -177,6 +177,10 @@
     margin: 0 !important;
   }
 
+  .card-preview {
+    display: none !important;
+  }
+
   .card-sheet {
     display: flex !important;
     justify-content: center !important;

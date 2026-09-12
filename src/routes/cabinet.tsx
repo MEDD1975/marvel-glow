@@ -319,7 +319,7 @@ function CabinetPage() {
             </div>
           </div>
 
-          <div className="flex items-start justify-center">
+          <div className="card-preview flex items-start justify-center">
             <PatientCard data={{ ...cardQr, cabinetName: "Cabinet médical", doctorName: "", pathwayLabel, note: cardNote }} />
           </div>
         </div>

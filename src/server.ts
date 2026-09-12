@@ -3,7 +3,7 @@ import "./lib/error-capture";
 import { consumeLastCapturedError } from "./lib/error-capture";
 import { renderErrorPage } from "./lib/error-page";
 import { auth } from "./lib/auth";
-import { getDoctorNetwork, saveDoctorNetwork } from "./lib/doctor-network-db";
+import { getDoctorNetwork, getPublicDoctorNetworks, saveDoctorNetwork } from "./lib/doctor-network-db";
 import { put } from "@vercel/blob";
 import { generateClientTokenFromReadWriteToken } from "@vercel/blob/client";
 import { createDoctorResource, deleteDoctorResource, listAllActiveDoctorResources, listDoctorResources } from "./lib/doctor-resource-db";
@@ -122,6 +122,9 @@ export default {
           console.error("[v0] doctor file upload failed", error);
           return Response.json({ error: "Le fichier n’a pas pu être enregistré. Réessayez." }, { status: 500 });
         }
+      }
+      if (url.pathname === "/api/public-networks" && request.method === "GET") {
+        return Response.json(await getPublicDoctorNetworks());
       }
       if (url.pathname === "/api/doctor-network") {
         const session = await auth.api.getSession({ headers: request.headers });

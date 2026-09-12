@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   ArrowLeft,
   ArrowRight,
@@ -12,18 +12,64 @@ import {
 import { MedicalDisclaimer } from "@/components/HomeBlocks";
 import {
   cabinets,
-  findCabinetsByPractitionerName,
   professionColor,
   professionOrder,
   isProfession,
   type Profession,
+  type Cabinet,
 } from "@/lib/directory";
+
+type PublicNetwork = {
+  id: string;
+  name: string;
+  address: string;
+  phone: string | null;
+  practitioners: Array<{ id: string; name: string; profession: string; phone: string | null; email: string | null }>;
+};
+
+function toCabinets(networks: PublicNetwork[]): Cabinet[] {
+  return networks.map((network) => ({
+    id: network.id,
+    name: network.name,
+    providers: network.practitioners.flatMap((practitioner) => {
+      if (!isProfession(practitioner.profession)) return [];
+      return [{
+        id: practitioner.id,
+        name: practitioner.name,
+        profession: practitioner.profession,
+        address: network.address,
+        postalCode: "",
+        city: "",
+        phone: practitioner.phone ?? undefined,
+        formattedPhone: practitioner.phone ?? undefined,
+        cabinetId: network.id,
+        cabinetName: network.name,
+      }];
+    }),
+  }));
+}
 
 type Search = {
   cabinet?: string | undefined;
   profession?: Profession | undefined;
   doctor?: string | undefined;
 };
+
+function usePublicCabinets() {
+  const [publicCabinets, setPublicCabinets] = useState<Cabinet[] | null>(null);
+  useEffect(() => {
+    let active = true;
+    void fetch("/api/public-networks")
+      .then((response) => response.ok ? response.json() : [])
+      .then((data: PublicNetwork[]) => {
+        if (active && data.length) setPublicCabinets(toCabinets(data));
+        else if (active) setPublicCabinets([]);
+      })
+      .catch(() => { if (active) setPublicCabinets([]); });
+    return () => { active = false; };
+  }, []);
+  return publicCabinets;
+}
 
 export const Route = createFileRoute("/annuaire")({
   validateSearch: (search: Record<string, unknown>): Search => ({
@@ -60,16 +106,20 @@ export const Route = createFileRoute("/annuaire")({
 
 function CabinetChooser({ invalidId, profession, doctor }: { invalidId?: string; profession?: Profession; doctor?: string }) {
   const navigate = useNavigate({ from: "/annuaire" });
+  const publicCabinets = usePublicCabinets();
+  const sourceCabinets = publicCabinets ?? cabinets;
   const [query, setQuery] = useState(doctor ?? "");
   const [submittedQuery, setSubmittedQuery] = useState(doctor ?? "");
   const trimmed = query.trim();
   const matches = useMemo(
-    () => (submittedQuery.length >= 2 ? findCabinetsByPractitionerName(submittedQuery) : []),
-    [submittedQuery],
+    () => (submittedQuery.length >= 2
+      ? sourceCabinets.filter((cabinet) => cabinet.providers.some((provider) => provider.name.toLowerCase().includes(submittedQuery.toLowerCase())))
+      : []),
+    [sourceCabinets, submittedQuery],
   );
   const doctorSuggestions = useMemo(
     () =>
-      cabinets
+      sourceCabinets
         .flatMap((cabinet) => cabinet.providers)
         .filter((provider) => provider.profession === "Médecin généraliste" || provider.profession === "Médecin du sport")
         .map((provider) => provider.name)
@@ -179,9 +229,11 @@ function CabinetChooser({ invalidId, profession, doctor }: { invalidId?: string;
 function AnnuairePage() {
   const { cabinet: cabinetId, profession, doctor } = Route.useSearch();
   const navigate = useNavigate({ from: "/annuaire" });
+  const publicCabinets = usePublicCabinets();
+  const sourceCabinets = publicCabinets ?? cabinets;
   const [professionFilter, setProfessionFilter] = useState<Profession | null>(profession ?? null);
 
-  const selectedCabinet = cabinets.find((cabinet) => cabinet.id === cabinetId) ?? null;
+  const selectedCabinet = sourceCabinets.find((cabinet) => cabinet.id === cabinetId) ?? null;
   const cabinetProviders = selectedCabinet?.providers ?? [];
   const availableProfessions = professionOrder.filter((profession) =>
     cabinetProviders.some((provider) => provider.profession === profession),

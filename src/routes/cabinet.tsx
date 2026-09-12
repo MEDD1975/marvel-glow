@@ -245,7 +245,7 @@ function CabinetPage() {
             </span>
             <p className="mt-6 text-xs font-semibold uppercase tracking-[0.12em] text-care">3 · Orientation</p>
             <h2 className="mt-1.5 text-xl font-semibold text-foreground">Annuaire du réseau CPTS</h2>
-            <p className="mt-2 flex-1 text-sm leading-6 text-muted-foreground">Trouvez le professionnel partenaire adapté au territoire.</p>
+            <p className="mt-2 flex-1 text-sm leading-6 text-muted-foreground">Trouvez le professionnel adapté à votre parcours sur le territoire.</p>
             <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-care">Ouvrir <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" /></span>
           </Link>
         </div>
@@ -319,13 +319,13 @@ function CabinetPage() {
             </div>
           </div>
 
-          <div className="card-preview flex items-start justify-center">
+          <div className="card-preview print:hidden flex items-start justify-center">
             <PatientCard data={{ ...cardQr, cabinetName: "Cabinet médical", doctorName: "", pathwayLabel, note: cardNote }} />
           </div>
         </div>
 
         {/* Version imprimée : une seule carte */}
-        <div className="card-sheet hidden">
+        <div className="card-sheet hidden print:flex">
           <PatientCard
             data={{ ...cardQr, cabinetName: "Cabinet médical", doctorName: "", pathwayLabel, note: cardNote }}
           />
@@ -408,7 +408,7 @@ function CabinetPage() {
           />
           <FaqCard
             question="Que peut-il retrouver dans son espace ?"
-            answer="L’Assistant Kivoir, les conseils et vidéos sélectionnés, ainsi que l’annuaire des professionnels partenaires."
+            answer="L’Assistant Kivoir, les conseils et vidéos sélectionnés, ainsi que l’annuaire du réseau professionnel."
           />
           <FaqCard
             question="Puis-je adapter l’accompagnement ?"

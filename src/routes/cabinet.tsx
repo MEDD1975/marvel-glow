@@ -35,7 +35,7 @@ export const Route = createFileRoute("/cabinet")({
       {
         property: "og:description",
         content:
-          "Un espace de coordination CPTS pour remettre la bonne carte QR et orienter vers les bonnes ressources.",
+          "Un espace professionnel pour remettre la bonne carte QR et orienter vers les bonnes ressources.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -244,7 +244,7 @@ function CabinetPage() {
               <Users className="h-7 w-7" aria-hidden="true" />
             </span>
             <p className="mt-6 text-xs font-semibold uppercase tracking-[0.12em] text-care">3 · Orientation</p>
-            <h2 className="mt-1.5 text-xl font-semibold text-foreground">Annuaire du réseau CPTS</h2>
+            <h2 className="mt-1.5 text-xl font-semibold text-foreground">Réseau professionnel</h2>
             <p className="mt-2 flex-1 text-sm leading-6 text-muted-foreground">Trouvez le professionnel adapté à votre parcours sur le territoire.</p>
             <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-care">Ouvrir <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" /></span>
           </Link>
@@ -259,7 +259,7 @@ function CabinetPage() {
       <DoctorOnboarding />
 
       <section className="mt-8 rounded-3xl border border-care/25 bg-care/5 p-6 md:p-8 print:hidden" aria-labelledby="pathway-choice-title">
-        <p className="text-xs font-semibold uppercase tracking-wide text-care">Coordination CPTS</p>
+        <p className="text-xs font-semibold uppercase tracking-wide text-care">Réseau professionnel</p>
         <h2 id="pathway-choice-title" className="mt-2 text-2xl font-semibold text-foreground">Une carte adaptée au motif de prise en charge</h2>
         <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">Vous choisissez le type de carte correspondant à la situation déjà identifiée, puis vous remettez au patient un accès direct à son espace d’information.</p>
         <p className="mt-3 text-xs leading-5 text-muted-foreground">Kivoir informe et oriente uniquement. Aucune donnée clinique n’est saisie, transmise ou conservée dans cet outil.</p>

@@ -30,7 +30,7 @@ type PublicNetwork = {
 function normalizeProfession(value: string): Profession | null {
   const normalized = value.trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
   return professionOrder.find((profession) => profession.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() === normalized)
-    ?? (normalized.includes("medecin") ? "Médecin" : null);
+    ?? (normalized ? "Médecin" : null);
 }
 
 function toCabinets(networks: PublicNetwork[]): Cabinet[] {

@@ -75,7 +75,6 @@ export async function saveDoctorNetwork(
         'UPDATE "doctor_network" SET "name" = $1, "address" = $2, "phone" = $3, "status" = $4 WHERE "id" = $5 AND "ownerId" = $6',
         [input.name, input.address, input.phone || null, "active", networkId, userId],
       );
-      await client.query('DELETE FROM "doctor_practitioner" WHERE "networkId" = $1', [networkId]);
     } else {
       await client.query(
         'INSERT INTO "doctor_network" ("id", "ownerId", "name", "address", "phone", "status") VALUES ($1, $2, $3, $4, $5, $6)',
@@ -83,10 +82,21 @@ export async function saveDoctorNetwork(
       );
     }
     for (const practitioner of input.practitioners) {
-      await client.query(
-        'INSERT INTO "doctor_practitioner" ("id", "networkId", "name", "profession", "phone", "email") VALUES ($1, $2, $3, $4, $5, $6)',
-        [`practitioner_${crypto.randomUUID()}`, networkId, practitioner.name, practitioner.profession, practitioner.phone || null, practitioner.email || null],
+      const existingPractitioner = await client.query<{ id: string }>(
+        'SELECT "id" FROM "doctor_practitioner" WHERE "networkId" = $1 AND lower(trim("name")) = lower(trim($2)) LIMIT 1',
+        [networkId, practitioner.name],
       );
+      if (existingPractitioner.rows[0]) {
+        await client.query(
+          'UPDATE "doctor_practitioner" SET "profession" = $1, "phone" = $2, "email" = $3 WHERE "id" = $4 AND "networkId" = $5',
+          [practitioner.profession, practitioner.phone || null, practitioner.email || null, existingPractitioner.rows[0].id, networkId],
+        );
+      } else {
+        await client.query(
+          'INSERT INTO "doctor_practitioner" ("id", "networkId", "name", "profession", "phone", "email") VALUES ($1, $2, $3, $4, $5, $6)',
+          [`practitioner_${crypto.randomUUID()}`, networkId, practitioner.name, practitioner.profession, practitioner.phone || null, practitioner.email || null],
+        );
+      }
     }
     await client.query("COMMIT");
     return getDoctorNetwork(userId);

@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { authClient } from "@/lib/auth-client";
 import { put as putBlob } from "@vercel/blob/client";
 import {
+  ArrowLeft,
   ArrowRight,
   CheckCircle2,
   HelpCircle,
@@ -258,6 +259,17 @@ function CabinetPage() {
           Kivoir sert à orienter et partager des ressources validées : aucune donnée de santé n’est enregistrée ici.
         </p>
       </section>
+
+      {showNetworkConfig ? (
+        <button
+          type="button"
+          onClick={() => setShowNetworkConfig(false)}
+          className="mb-6 inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+        >
+          <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+          Retour à mon espace médecin
+        </button>
+      ) : null}
 
       <DoctorOnboarding />
 

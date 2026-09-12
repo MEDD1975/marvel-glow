@@ -257,14 +257,6 @@ function CabinetPage() {
 
       <DoctorOnboarding />
 
-      <section className="mt-8 rounded-3xl border border-care/25 bg-care/5 p-6 md:p-8 print:hidden" aria-labelledby="pathway-choice-title">
-        <p className="text-xs font-semibold uppercase tracking-wide text-care">Réseau professionnel</p>
-        <h2 id="pathway-choice-title" className="mt-2 text-2xl font-semibold text-foreground">Une carte adaptée au motif de prise en charge</h2>
-        <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">Vous choisissez le type de carte correspondant à la situation déjà identifiée, puis vous remettez au patient un accès direct à son espace d’information.</p>
-        <p className="mt-3 text-xs leading-5 text-muted-foreground">Kivoir informe et oriente uniquement. Aucune donnée clinique n’est saisie, transmise ou conservée dans cet outil.</p>
-      </section>
-
-
       {/* Patient pocket cards */}
       <section id="patient-card" className="mt-16 card-section">
         <div className="flex flex-wrap items-end justify-between gap-4 print:hidden">

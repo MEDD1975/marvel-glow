@@ -260,10 +260,6 @@ function CabinetPage() {
           </Link>
         </div>
 
-        <p className="mt-5 flex items-start gap-2 text-xs leading-5 text-muted-foreground">
-          <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-care" aria-hidden="true" />
-          Kivoir sert à orienter et partager des ressources validées : aucune donnée de santé n’est enregistrée ici.
-        </p>
       </section>
 
       {showNetworkConfig || showResourceConfig ? (
@@ -284,8 +280,9 @@ function CabinetPage() {
         <DoctorOnboarding />
       </div>
 
-      {/* Patient pocket cards */}
-      <section id="patient-card" className={`${showNetworkConfig ? "hidden" : ""} ${showResourceConfig ? "order-2" : ""} mt-0 card-section`}>
+      {showResourceConfig ? <>
+        {/* Patient pocket cards */}
+        <section id="patient-card" className={`${showNetworkConfig ? "hidden" : ""} ${showResourceConfig ? "order-2" : ""} mt-0 card-section`}>
         <div className="flex flex-wrap items-end justify-between gap-4 print:hidden">
           <div>
             <h2 className="text-2xl font-semibold text-foreground">Cartes patient à remettre</h2>
@@ -442,6 +439,7 @@ function CabinetPage() {
       <div style={{ display: showNetworkConfig ? "none" : undefined }} className={`${showResourceConfig ? "order-5" : ""} mt-10 print:hidden`}>
         <MedicalDisclaimer />
       </div>
+      </> : null}
     </main>
   );
 }

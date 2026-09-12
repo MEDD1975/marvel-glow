@@ -276,7 +276,7 @@ function CabinetPage() {
         </button>
       ) : null}
 
-      <div style={{ display: showNetworkConfig || showResourceConfig ? "none" : undefined }}>
+      <div style={{ display: showNetworkConfig ? undefined : "none" }}>
         <DoctorOnboarding />
       </div>
 

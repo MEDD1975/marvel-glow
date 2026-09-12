@@ -324,14 +324,11 @@ function CabinetPage() {
           </div>
         </div>
 
-        {/* Feuille d'impression : 8 cartes à découper */}
+        {/* Version imprimée : une seule carte */}
         <div className="card-sheet hidden">
-          {Array.from({ length: 8 }).map((_, i) => (
-            <PatientCard
-              key={i}
-              data={{ ...cardQr, cabinetName: "Cabinet médical", doctorName: "", pathwayLabel, note: cardNote }}
-            />
-          ))}
+          <PatientCard
+            data={{ ...cardQr, cabinetName: "Cabinet médical", doctorName: "", pathwayLabel, note: cardNote }}
+          />
         </div>
       </section>
 

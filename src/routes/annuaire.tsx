@@ -119,7 +119,11 @@ function CabinetChooser({ invalidId, profession, doctor }: { invalidId?: string;
   const trimmed = query.trim();
   const matches = useMemo(
     () => (submittedQuery.length >= 2
-      ? sourceCabinets.filter((cabinet) => cabinet.providers.some((provider) => provider.name.toLowerCase().includes(submittedQuery.toLowerCase())))
+      ? sourceCabinets.filter((cabinet) => {
+          const search = submittedQuery.toLowerCase();
+          return cabinet.name.toLowerCase().includes(search)
+            || cabinet.providers.some((provider) => provider.name.toLowerCase().includes(search));
+        })
       : []),
     [sourceCabinets, submittedQuery],
   );

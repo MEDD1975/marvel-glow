@@ -2,6 +2,7 @@ import practitionersData from "../../data/praticiens_saint_maur.json";
 
 /** Annuaire local — le JSON est l'unique source des fiches affichées. */
 export type Profession =
+  | "Médecin"
   | "Médecin généraliste"
   | "Kinésithérapeute"
   | "Podologue"
@@ -44,6 +45,7 @@ export type Cabinet = {
 };
 
 export const professionOrder: Profession[] = [
+  "Médecin",
   "Médecin généraliste",
   "Kinésithérapeute",
   "Podologue",
@@ -56,6 +58,7 @@ export const professionOrder: Profession[] = [
 ];
 
 export const professionColor: Record<Profession, string> = {
+  Médecin: "#0e7490",
   "Médecin généraliste": "#0e7490",
   Kinésithérapeute: "#0f766e",
   Podologue: "#7c3aed",

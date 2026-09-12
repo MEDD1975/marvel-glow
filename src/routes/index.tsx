@@ -5,9 +5,9 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "Kivoir — Votre espace patient" },
-      { name: "description", content: "Votre espace patient Kivoir : posez vos questions à l’Assistant, retrouvez vos conseils et trouvez le bon professionnel." },
+      { name: "description", content: "Votre espace patient Kivoir : posez vos questions à l’Assistant, retrouvez vos conseils et consultez le réseau professionnel." },
       { property: "og:title", content: "Kivoir — Votre espace patient" },
-      { property: "og:description", content: "Posez vos questions, retrouvez vos conseils et trouvez le bon professionnel avec Kivoir." },
+      { property: "og:description", content: "Posez vos questions, retrouvez vos conseils et consultez le réseau professionnel avec Kivoir." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],

@@ -178,10 +178,9 @@
   }
 
   .card-sheet {
-    display: grid !important;
-    grid-template-columns: repeat(2, 85mm) !important;
-    gap: 6mm !important;
+    display: flex !important;
     justify-content: center !important;
+    width: 100% !important;
   }
 
   .patient-card {

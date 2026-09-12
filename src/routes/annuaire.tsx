@@ -36,7 +36,7 @@ export const Route = createFileRoute("/annuaire")({
   }),
   head: () => ({
     meta: [
-      { title: "Professionnels partenaires à Saint-Maur-des-Fossés — Kivoir" },
+      { title: "Réseau professionnel à Saint-Maur-des-Fossés — Kivoir" },
       {
         name: "description",
         content:
@@ -219,11 +219,11 @@ function AnnuairePage() {
         {selectedCabinet.name}
       </h1>
       <p className="mt-2 max-w-2xl text-muted-foreground">
-        Retrouvez directement les professionnels partenaires de votre réseau de soins à Saint-Maur.
+        Retrouvez les professionnels du réseau de soins proposé par ce cabinet à Saint-Maur.
       </p>
 
       <section className="mt-6">
-        <h2 className="text-lg font-semibold text-foreground">Professionnels partenaires</h2>
+        <h2 className="text-lg font-semibold text-foreground">Réseau professionnel</h2>
         <div className="mt-3 flex flex-wrap gap-2">
           <button
             onClick={() => setProfessionFilter(null)}

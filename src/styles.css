@@ -179,10 +179,12 @@
 
   .card-preview {
     display: none !important;
+    visibility: hidden !important;
   }
 
   .card-sheet {
     display: flex !important;
+    visibility: visible !important;
     justify-content: center !important;
     width: 100% !important;
   }

@@ -319,13 +319,13 @@ function CabinetPage() {
             </div>
           </div>
 
-          <div className="card-preview flex items-start justify-center">
+          <div className="card-preview print:hidden flex items-start justify-center">
             <PatientCard data={{ ...cardQr, cabinetName: "Cabinet médical", doctorName: "", pathwayLabel, note: cardNote }} />
           </div>
         </div>
 
         {/* Version imprimée : une seule carte */}
-        <div className="card-sheet hidden">
+        <div className="card-sheet hidden print:flex">
           <PatientCard
             data={{ ...cardQr, cabinetName: "Cabinet médical", doctorName: "", pathwayLabel, note: cardNote }}
           />

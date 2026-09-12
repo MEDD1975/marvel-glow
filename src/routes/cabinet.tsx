@@ -49,6 +49,7 @@ function CabinetPage() {
   const { data: session, isPending } = authClient.useSession();
   const [cardQr, setCardQr] = useState<{ url: string; qr: string | null }>({ url: "", qr: null });
   const [showNetworkConfig, setShowNetworkConfig] = useState(false);
+  const [showResourceConfig, setShowResourceConfig] = useState(false);
 
   useEffect(() => {
     if (!isPending && !session?.user) {
@@ -196,7 +197,7 @@ function CabinetPage() {
   return (
     <main className="mx-auto max-w-5xl px-4 py-10 print:py-0">
       {/* Hero + tableau de bord */}
-      <section className={showNetworkConfig ? "hidden" : "print:hidden"}>
+      <section className={showNetworkConfig || showResourceConfig ? "hidden" : "print:hidden"}>
         <span className="inline-flex items-center gap-1.5 rounded-full border border-care/20 bg-care/5 px-3 py-1 text-xs font-medium text-care">
           <Stethoscope className="h-3.5 w-3.5" />
           Espace médecin
@@ -212,6 +213,7 @@ function CabinetPage() {
           <button
             type="button"
             onClick={() => {
+              setShowResourceConfig(false);
               setShowNetworkConfig(true);
               requestAnimationFrame(() => document.getElementById("onboarding-title")?.scrollIntoView({ behavior: "smooth" }));
             }}
@@ -228,7 +230,11 @@ function CabinetPage() {
 
           <button
             type="button"
-            onClick={() => document.getElementById("follow-up")?.scrollIntoView({ behavior: "smooth" })}
+            onClick={() => {
+              setShowNetworkConfig(false);
+              setShowResourceConfig(true);
+              requestAnimationFrame(() => document.getElementById("patient-card")?.scrollIntoView({ behavior: "smooth" }));
+            }}
             className="group flex flex-col rounded-3xl border border-care/20 bg-card p-6 text-left shadow-sm transition-all hover:-translate-y-1 hover:border-care/40 hover:shadow-lg hover:shadow-care/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-care/10 text-care ring-1 ring-care/15">
@@ -260,18 +266,23 @@ function CabinetPage() {
         </p>
       </section>
 
-      {showNetworkConfig ? (
+      {showNetworkConfig || showResourceConfig ? (
         <button
           type="button"
-          onClick={() => setShowNetworkConfig(false)}
+          onClick={() => {
+            setShowNetworkConfig(false);
+            setShowResourceConfig(false);
+          }}
           className="mb-6 inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
         >
           <ArrowLeft className="h-4 w-4" aria-hidden="true" />
-          Retour à mon espace médecin
+          {showResourceConfig ? "Retour à mon espace médecin" : "Retour à mon espace médecin"}
         </button>
       ) : null}
 
-      <DoctorOnboarding />
+      <div style={{ display: showNetworkConfig || showResourceConfig ? "none" : undefined }}>
+        <DoctorOnboarding />
+      </div>
 
       {/* Patient pocket cards */}
       <section id="patient-card" className={showNetworkConfig ? "hidden" : "mt-0 card-section"}>

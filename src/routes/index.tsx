@@ -5,7 +5,7 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "Kivoir — Votre espace patient" },
-      { name: "description", content: "Votre espace patient Kivoir : posez vos questions à l’Assistant, retrouvez vos conseils et trouvez le bon professionnel de la CPTS." },
+      { name: "description", content: "Votre espace patient Kivoir : posez vos questions à l’Assistant, retrouvez vos conseils et trouvez le bon professionnel." },
       { property: "og:title", content: "Kivoir — Votre espace patient" },
       { property: "og:description", content: "Posez vos questions, retrouvez vos conseils et trouvez le bon professionnel avec Kivoir." },
       { property: "og:type", content: "website" },

@@ -36,11 +36,6 @@ function normalizeProfession(value: string): Profession | null {
 
 function toCabinets(networks: PublicNetwork[]): Cabinet[] {
   return networks.map((network) => {
-    const ownerNeedle = network.ownerName?.replace(/^Dr\.?\s*/i, "").trim().toLowerCase();
-    const matchingStaticCabinet = cabinets.find((cabinet) => {
-      const cabinetName = cabinet.name.toLowerCase();
-      return Boolean(ownerNeedle && cabinetName.includes(ownerNeedle));
-    });
     const dynamicProviders = network.practitioners.flatMap((practitioner) => {
       const profession = normalizeProfession(practitioner.profession);
       if (!profession) return [];
@@ -57,15 +52,10 @@ function toCabinets(networks: PublicNetwork[]): Cabinet[] {
         cabinetName: network.name,
       }];
     });
-    const dynamicNames = new Set(dynamicProviders.map((provider) => provider.name.trim().toLowerCase()));
-    const preservedProviders = matchingStaticCabinet?.providers
-      .filter((provider) => !dynamicNames.has(provider.name.trim().toLowerCase()))
-      .map((provider) => ({ ...provider, cabinetId: network.id, cabinetName: network.name })) ?? [];
-
     return {
       id: network.id,
       name: network.ownerName ? `Cabinet du ${network.ownerName}` : network.name,
-      providers: [...preservedProviders, ...dynamicProviders],
+      providers: dynamicProviders,
     };
   });
 }

@@ -36,11 +36,6 @@ function normalizeProfession(value: string): Profession | null {
 
 function toCabinets(networks: PublicNetwork[]): Cabinet[] {
   return networks.map((network) => {
-    const ownerNeedle = network.ownerName?.replace(/^Dr\.?\s*/i, "").trim().toLowerCase();
-    const matchingStaticCabinet = cabinets.find((cabinet) => {
-      const cabinetName = cabinet.name.toLowerCase();
-      return Boolean(ownerNeedle && cabinetName.includes(ownerNeedle));
-    });
     const dynamicProviders = network.practitioners.flatMap((practitioner) => {
       const profession = normalizeProfession(practitioner.profession);
       if (!profession) return [];
@@ -57,15 +52,10 @@ function toCabinets(networks: PublicNetwork[]): Cabinet[] {
         cabinetName: network.name,
       }];
     });
-    const dynamicNames = new Set(dynamicProviders.map((provider) => provider.name.trim().toLowerCase()));
-    const preservedProviders = matchingStaticCabinet?.providers
-      .filter((provider) => !dynamicNames.has(provider.name.trim().toLowerCase()))
-      .map((provider) => ({ ...provider, cabinetId: network.id, cabinetName: network.name })) ?? [];
-
     return {
       id: network.id,
       name: network.ownerName ? `Cabinet du ${network.ownerName}` : network.name,
-      providers: [...preservedProviders, ...dynamicProviders],
+      providers: dynamicProviders,
     };
   });
 }
@@ -136,8 +126,7 @@ function CabinetChooser({ invalidId, profession, doctor }: { invalidId?: string;
     () => (submittedQuery.length >= 2
       ? sourceCabinets.filter((cabinet) => {
           const search = submittedQuery.toLowerCase();
-          return cabinet.name.toLowerCase().includes(search)
-            || cabinet.providers.some((provider) => provider.name.toLowerCase().includes(search));
+          return cabinet.name.toLowerCase().includes(search);
         })
       : []),
     [sourceCabinets, submittedQuery],
@@ -145,9 +134,7 @@ function CabinetChooser({ invalidId, profession, doctor }: { invalidId?: string;
   const doctorSuggestions = useMemo(
     () =>
       sourceCabinets
-        .flatMap((cabinet) => cabinet.providers)
-        .filter((provider) => provider.profession === "Médecin" || provider.profession === "Médecin généraliste" || provider.profession === "Médecin du sport")
-        .map((provider) => provider.name)
+        .map((cabinet) => cabinet.name.replace(/^Cabinet du\s+/i, ""))
         .filter((name, index, names) => names.indexOf(name) === index),
     [sourceCabinets],
   );

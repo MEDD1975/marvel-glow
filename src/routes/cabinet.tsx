@@ -7,7 +7,6 @@ import {
   CheckCircle2,
   HelpCircle,
   Printer,
-  QrCode,
   ShieldCheck,
   Stethoscope,
   Users,
@@ -210,16 +209,16 @@ function CabinetPage() {
         <div className="mt-8 grid gap-4 md:grid-cols-3">
           <button
             type="button"
-            onClick={() => document.getElementById("patient-card")?.scrollIntoView({ behavior: "smooth" })}
+            onClick={() => document.getElementById("onboarding-title")?.scrollIntoView({ behavior: "smooth" })}
             className="group flex flex-col rounded-3xl border border-care/20 bg-card p-6 text-left shadow-sm transition-all hover:-translate-y-1 hover:border-care/40 hover:shadow-lg hover:shadow-care/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-care/10 text-care ring-1 ring-care/15">
-              <QrCode className="h-7 w-7" aria-hidden="true" />
+              <Users className="h-7 w-7" aria-hidden="true" />
             </span>
-            <p className="mt-6 text-xs font-semibold uppercase tracking-[0.12em] text-care">1 · Première visite</p>
-            <h2 className="mt-1.5 text-xl font-semibold text-foreground">Nouveau patient</h2>
-            <p className="mt-2 flex-1 text-sm leading-6 text-muted-foreground">Affichez le QR code ou partagez le lien du Compagnon Patient.</p>
-            <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-care">Ouvrir <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" /></span>
+            <p className="mt-6 text-xs font-semibold uppercase tracking-[0.12em] text-care">1 · Réseau professionnel</p>
+            <h2 className="mt-1.5 text-xl font-semibold text-foreground">Configurez votre réseau professionnel</h2>
+            <p className="mt-2 flex-1 text-sm leading-6 text-muted-foreground">Ajoutez et mettez à jour les professionnels que vos patients pourront retrouver.</p>
+            <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-care">Configurer <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" /></span>
           </button>
 
           <button

@@ -113,7 +113,9 @@ export const Route = createFileRoute("/annuaire")({
 function CabinetChooser({ invalidId, profession, doctor }: { invalidId?: string; profession?: Profession; doctor?: string }) {
   const navigate = useNavigate({ from: "/annuaire" });
   const publicCabinets = usePublicCabinets();
-  const sourceCabinets = publicCabinets ?? cabinets;
+  const sourceCabinets = publicCabinets?.length
+    ? [...publicCabinets, ...cabinets.filter((cabinet) => !publicCabinets.some((network) => network.id === cabinet.id))]
+    : cabinets;
   const [query, setQuery] = useState(doctor ?? "");
   const [submittedQuery, setSubmittedQuery] = useState(doctor ?? "");
   const trimmed = query.trim();
@@ -240,7 +242,9 @@ function AnnuairePage() {
   const { cabinet: cabinetId, profession, doctor } = Route.useSearch();
   const navigate = useNavigate({ from: "/annuaire" });
   const publicCabinets = usePublicCabinets();
-  const sourceCabinets = publicCabinets ?? cabinets;
+  const sourceCabinets = publicCabinets?.length
+    ? [...publicCabinets, ...cabinets.filter((cabinet) => !publicCabinets.some((network) => network.id === cabinet.id))]
+    : cabinets;
   const [professionFilter, setProfessionFilter] = useState<Profession | null>(profession ?? null);
 
   const selectedCabinet = sourceCabinets.find((cabinet) => cabinet.id === cabinetId) ?? null;

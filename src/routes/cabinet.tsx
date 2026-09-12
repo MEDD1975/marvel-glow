@@ -47,6 +47,7 @@ function CabinetPage() {
   const navigate = useNavigate();
   const { data: session, isPending } = authClient.useSession();
   const [cardQr, setCardQr] = useState<{ url: string; qr: string | null }>({ url: "", qr: null });
+  const [showNetworkConfig, setShowNetworkConfig] = useState(false);
 
   useEffect(() => {
     if (!isPending && !session?.user) {
@@ -194,7 +195,7 @@ function CabinetPage() {
   return (
     <main className="mx-auto max-w-5xl px-4 py-10 print:py-0">
       {/* Hero + tableau de bord */}
-      <section className="print:hidden">
+      <section className={showNetworkConfig ? "hidden" : "print:hidden"}>
         <span className="inline-flex items-center gap-1.5 rounded-full border border-care/20 bg-care/5 px-3 py-1 text-xs font-medium text-care">
           <Stethoscope className="h-3.5 w-3.5" />
           Espace médecin
@@ -209,7 +210,10 @@ function CabinetPage() {
         <div className="mt-8 grid gap-4 md:grid-cols-3">
           <button
             type="button"
-            onClick={() => document.getElementById("onboarding-title")?.scrollIntoView({ behavior: "smooth" })}
+            onClick={() => {
+              setShowNetworkConfig(true);
+              requestAnimationFrame(() => document.getElementById("onboarding-title")?.scrollIntoView({ behavior: "smooth" }));
+            }}
             className="group flex flex-col rounded-3xl border border-care/20 bg-card p-6 text-left shadow-sm transition-all hover:-translate-y-1 hover:border-care/40 hover:shadow-lg hover:shadow-care/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-care/10 text-care ring-1 ring-care/15">
@@ -258,7 +262,7 @@ function CabinetPage() {
       <DoctorOnboarding />
 
       {/* Patient pocket cards */}
-      <section id="patient-card" className="mt-0 card-section">
+      <section id="patient-card" className={showNetworkConfig ? "hidden" : "mt-0 card-section"}>
         <div className="flex flex-wrap items-end justify-between gap-4 print:hidden">
           <div>
             <h2 className="text-2xl font-semibold text-foreground">Cartes patient à remettre</h2>

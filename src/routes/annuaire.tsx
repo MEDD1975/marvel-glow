@@ -27,16 +27,22 @@ type PublicNetwork = {
   practitioners: Array<{ id: string; name: string; profession: string; phone: string | null; email: string | null }>;
 };
 
+function normalizeProfession(value: string): Profession | null {
+  const normalized = value.trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+  return professionOrder.find((profession) => profession.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() === normalized) ?? null;
+}
+
 function toCabinets(networks: PublicNetwork[]): Cabinet[] {
   return networks.map((network) => ({
     id: network.id,
     name: network.name,
     providers: network.practitioners.flatMap((practitioner) => {
-      if (!isProfession(practitioner.profession)) return [];
+      const profession = normalizeProfession(practitioner.profession);
+      if (!profession) return [];
       return [{
         id: practitioner.id,
         name: practitioner.name,
-        profession: practitioner.profession,
+        profession,
         address: network.address,
         postalCode: "",
         city: "",
@@ -124,7 +130,7 @@ function CabinetChooser({ invalidId, profession, doctor }: { invalidId?: string;
         .filter((provider) => provider.profession === "Médecin généraliste" || provider.profession === "Médecin du sport")
         .map((provider) => provider.name)
         .filter((name, index, names) => names.indexOf(name) === index),
-    [],
+    [sourceCabinets],
   );
   const hasSearched = submittedQuery.length >= 2;
 

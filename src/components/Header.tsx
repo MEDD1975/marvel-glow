@@ -5,7 +5,7 @@ import { Logo } from "@/components/Logo";
 
 const patientNavItems = [
   { to: "/", label: "Accueil", exact: true },
-  { to: "/annuaire", label: "Annuaire" },
+  { to: "/annuaire", label: "Réseau de votre médecin" },
 ];
 
 const doctorNavItems = [{ to: "/cabinet", label: "Espace médecin", exact: true }];

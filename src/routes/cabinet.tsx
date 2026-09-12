@@ -195,7 +195,7 @@ function CabinetPage() {
   }
 
   return (
-    <main className="mx-auto max-w-5xl px-4 py-10 print:py-0">
+    <main className={`mx-auto max-w-5xl px-4 py-10 print:py-0 ${showResourceConfig ? "flex flex-col" : ""}`}>
       {/* Hero + tableau de bord */}
       <section className={showNetworkConfig || showResourceConfig ? "hidden" : "print:hidden"}>
         <span className="inline-flex items-center gap-1.5 rounded-full border border-care/20 bg-care/5 px-3 py-1 text-xs font-medium text-care">
@@ -285,7 +285,7 @@ function CabinetPage() {
       </div>
 
       {/* Patient pocket cards */}
-      <section id="patient-card" className={showNetworkConfig ? "hidden" : "mt-0 card-section"}>
+      <section id="patient-card" className={showNetworkConfig ? "hidden" : "order-2 mt-0 card-section"}>
         <div className="flex flex-wrap items-end justify-between gap-4 print:hidden">
           <div>
             <h2 className="text-2xl font-semibold text-foreground">Cartes patient à remettre</h2>
@@ -352,7 +352,7 @@ function CabinetPage() {
 
 
 
-      <section id="follow-up" style={{ display: showNetworkConfig ? "none" : undefined }} className="mt-16 rounded-3xl border border-care/25 bg-care/5 p-6 md:p-8 print:hidden" aria-labelledby="doctor-content-title">
+      <section id="follow-up" style={{ display: showNetworkConfig ? "none" : undefined }} className="order-1 mt-16 rounded-3xl border border-care/25 bg-care/5 p-6 md:p-8 print:hidden" aria-labelledby="doctor-content-title">
         <div className="flex items-start gap-3">
           <FileText className="mt-1 text-care" aria-hidden="true" />
           <div>

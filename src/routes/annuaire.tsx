@@ -29,7 +29,8 @@ type PublicNetwork = {
 
 function normalizeProfession(value: string): Profession | null {
   const normalized = value.trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
-  return professionOrder.find((profession) => profession.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() === normalized) ?? null;
+  return professionOrder.find((profession) => profession.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() === normalized)
+    ?? (normalized.includes("medecin") ? "Médecin" : null);
 }
 
 function toCabinets(networks: PublicNetwork[]): Cabinet[] {
@@ -133,7 +134,7 @@ function CabinetChooser({ invalidId, profession, doctor }: { invalidId?: string;
     () =>
       sourceCabinets
         .flatMap((cabinet) => cabinet.providers)
-        .filter((provider) => provider.profession === "Médecin généraliste" || provider.profession === "Médecin du sport")
+        .filter((provider) => provider.profession === "Médecin" || provider.profession === "Médecin généraliste" || provider.profession === "Médecin du sport")
         .map((provider) => provider.name)
         .filter((name, index, names) => names.indexOf(name) === index),
     [sourceCabinets],

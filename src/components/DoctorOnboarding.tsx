@@ -55,8 +55,8 @@ export function DoctorOnboarding() {
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <p className="text-xs font-semibold uppercase tracking-wide text-care">Configuration du réseau</p>
-          <h2 id="onboarding-title" className="mt-2 text-2xl font-semibold text-foreground">Présentez votre cabinet</h2>
-          <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">Renseignez vos coordonnées et les professionnels avec lesquels votre cabinet travaille. Le réseau sera présenté aux patients à titre informatif.</p>
+          <h2 id="onboarding-title" className="mt-2 text-2xl font-semibold text-foreground">Configurez votre réseau professionnel</h2>
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">Ajoutez les professionnels avec lesquels vous travaillez afin de les présenter aux patients, à titre informatif.</p>
         </div>
         {network && <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-800">Réseau publié</span>}
       </div>

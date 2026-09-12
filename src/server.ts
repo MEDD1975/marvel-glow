@@ -3,7 +3,7 @@ import "./lib/error-capture";
 import { consumeLastCapturedError } from "./lib/error-capture";
 import { renderErrorPage } from "./lib/error-page";
 import { auth } from "./lib/auth";
-import { getDoctorNetwork, getPublicDoctorNetworks, saveDoctorNetwork } from "./lib/doctor-network-db";
+import { deleteDoctorPractitioner, getDoctorNetwork, getPublicDoctorNetworks, saveDoctorNetwork } from "./lib/doctor-network-db";
 import { put } from "@vercel/blob";
 import { generateClientTokenFromReadWriteToken } from "@vercel/blob/client";
 import { createDoctorResource, deleteDoctorResource, listAllActiveDoctorResources, listDoctorResources } from "./lib/doctor-resource-db";
@@ -143,6 +143,11 @@ export default {
             phone: typeof payload.phone === "string" ? payload.phone.trim() : undefined,
             practitioners: practitioners.map((item: { name: string; profession: string; phone?: string; email?: string }) => ({ name: item.name.trim(), profession: item.profession.trim(), phone: item.phone?.trim(), email: item.email?.trim() })),
           }), { status: 201 });
+        }
+        if (request.method === "DELETE") {
+          const payload = await request.json() as { practitionerId?: string };
+          if (!payload.practitionerId) return Response.json({ error: "Professionnel introuvable" }, { status: 400 });
+          return Response.json(await deleteDoctorPractitioner(session.user.id, payload.practitionerId));
         }
         return new Response("Method Not Allowed", { status: 405 });
       }

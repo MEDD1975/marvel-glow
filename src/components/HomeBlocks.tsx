@@ -100,10 +100,10 @@ export function AssistantHome({ initialStarted = false, pathway }: { initialStar
           </span>
         </div>
         <h1 className="mt-3 text-balance text-3xl font-semibold tracking-[-0.02em] text-foreground md:text-4xl">
-          Prolongez votre consultation en toute simplicité
+          Votre assistant après consultation
         </h1>
         <p className="mt-3 text-pretty text-base leading-7 text-muted-foreground">
-          Retrouvez vos questions, vos conseils et les bons professionnels après votre rendez-vous.
+          Retrouvez vos questions, vos conseils et les bons professionnels pour mieux comprendre la suite de votre prise en charge.
         </p>
 
         <div className="mt-7 grid gap-4 md:grid-cols-3">
@@ -115,11 +115,11 @@ export function AssistantHome({ initialStarted = false, pathway }: { initialStar
             <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-sm">
               <Compass className="h-6 w-6" aria-hidden="true" />
             </span>
-            <span className="mt-5 text-xs font-semibold uppercase tracking-[0.12em] text-primary">Poser mes questions</span>
-            <span className="mt-1.5 text-lg font-semibold text-foreground">Mon orientation</span>
-            <span className="mt-2 flex-1 text-sm leading-6 text-muted-foreground">Échangez avec l&apos;Assistant pour clarifier vos questions, identifier la spécialité concernée et consulter le réseau professionnel.</span>
-            <span className="mt-2 text-xs leading-5 text-muted-foreground">L&apos;Assistant informe et oriente ; il ne remplace pas l&apos;avis médical.</span>
-            <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-primary">Poser mes questions <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" /></span>
+            <span className="mt-5 text-xs font-semibold uppercase tracking-[0.12em] text-primary">Après ma consultation</span>
+            <span className="mt-1.5 text-lg font-semibold text-foreground">Mes questions santé</span>
+            <span className="mt-2 flex-1 text-sm leading-6 text-muted-foreground">Posez vos questions sur votre atteinte, vos symptômes ou les consignes reçues après votre consultation avec l&apos;Assistant Kivoir.</span>
+            <span className="mt-2 text-xs leading-5 text-muted-foreground">Kivoir vous informe et vous aide à préparer la suite ; il ne remplace pas l&apos;avis médical.</span>
+            <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-primary">Parler à Kivoir <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" /></span>
           </button>
 
           <Link
@@ -149,22 +149,6 @@ export function AssistantHome({ initialStarted = false, pathway }: { initialStar
             <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-care">Voir l&apos;annuaire <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" /></span>
           </Link>
         </div>
-
-        <button
-          type="button"
-          onClick={openAssistant}
-          className="group mt-6 flex w-full items-center gap-4 rounded-2xl bg-primary p-4 text-left text-primary-foreground shadow-xl shadow-primary/20 ring-1 ring-primary/20 transition-all hover:-translate-y-0.5 hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 md:p-5"
-        >
-          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary-foreground/15">
-            <Bot className="h-6 w-6" aria-hidden="true" />
-          </span>
-          <span className="min-w-0 flex-1">
-            <span className="block font-semibold">Poser vos questions à l&apos;Assistant Kivoir</span>
-            <span className="mt-0.5 block text-sm text-primary-foreground/85">
-              Appuyez ici pour poser votre question dès maintenant
-            </span>
-          </span>
-        </button>
 
         <p className="mt-5 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground">
           <PlayCircle className="h-4 w-4 text-care" aria-hidden="true" />

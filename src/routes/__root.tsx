@@ -3,7 +3,6 @@ import {
   Outlet,
   Link,
   createRootRouteWithContext,
-  useLocation,
   useRouter,
   HeadContent,
   Scripts,
@@ -13,7 +12,6 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { Header } from "@/components/Header";
-import { NavireChatWidget } from "@/components/NavireChatWidget";
 
 function NotFoundComponent() {
   return (
@@ -124,14 +122,11 @@ function RootShell({ children }: { children: ReactNode }) {
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const location = useLocation();
-  const isDoctorSpace = location.pathname.startsWith("/cabinet");
-
   return (
     <QueryClientProvider client={queryClient}>
       <Header />
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <Outlet />
-      {!isDoctorSpace ? <NavireChatWidget /> : null}
     </QueryClientProvider>
   );
 }

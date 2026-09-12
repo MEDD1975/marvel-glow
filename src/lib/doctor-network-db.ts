@@ -38,6 +38,25 @@ export async function getDoctorNetwork(userId: string) {
   return { ...network, practitioners: practitioners.rows } satisfies DoctorNetworkRecord;
 }
 
+export async function getPublicDoctorNetworks() {
+  const networkResult = await pool.query<{
+    id: string;
+    name: string;
+    address: string;
+    phone: string | null;
+  }>('SELECT "id", "name", "address", "phone" FROM "doctor_network" WHERE "status" IN ($1, $2) ORDER BY "createdAt" DESC', ["active", "pending"]);
+
+  const networks = [];
+  for (const network of networkResult.rows) {
+    const practitioners = await pool.query<DoctorNetworkRecord["practitioners"][number]>(
+      'SELECT "id", "name", "profession", "phone", "email" FROM "doctor_practitioner" WHERE "networkId" = $1 ORDER BY "createdAt" ASC',
+      [network.id],
+    );
+    networks.push({ ...network, practitioners: practitioners.rows });
+  }
+  return networks;
+}
+
 export async function saveDoctorNetwork(
   userId: string,
   input: { name: string; address: string; phone?: string; practitioners: Array<{ name: string; profession: string; phone?: string; email?: string }> },
@@ -45,11 +64,23 @@ export async function saveDoctorNetwork(
   const client = await pool.connect();
   try {
     await client.query("BEGIN");
-    const networkId = `network_${crypto.randomUUID()}`;
-    await client.query(
-      'INSERT INTO "doctor_network" ("id", "ownerId", "name", "address", "phone", "status") VALUES ($1, $2, $3, $4, $5, $6)',
-      [networkId, userId, input.name, input.address, input.phone || null, "pending"],
+    const existing = await client.query<{ id: string }>(
+      'SELECT "id" FROM "doctor_network" WHERE "ownerId" = $1 ORDER BY "createdAt" DESC LIMIT 1',
+      [userId],
     );
+    const networkId = existing.rows[0]?.id ?? `network_${crypto.randomUUID()}`;
+    if (existing.rows[0]) {
+      await client.query(
+        'UPDATE "doctor_network" SET "name" = $1, "address" = $2, "phone" = $3, "status" = $4 WHERE "id" = $5 AND "ownerId" = $6',
+        [input.name, input.address, input.phone || null, "active", networkId, userId],
+      );
+      await client.query('DELETE FROM "doctor_practitioner" WHERE "networkId" = $1', [networkId]);
+    } else {
+      await client.query(
+        'INSERT INTO "doctor_network" ("id", "ownerId", "name", "address", "phone", "status") VALUES ($1, $2, $3, $4, $5, $6)',
+        [networkId, userId, input.name, input.address, input.phone || null, "active"],
+      );
+    }
     for (const practitioner of input.practitioners) {
       await client.query(
         'INSERT INTO "doctor_practitioner" ("id", "networkId", "name", "profession", "phone", "email") VALUES ($1, $2, $3, $4, $5, $6)',

@@ -24,6 +24,7 @@ type PublicNetwork = {
   name: string;
   address: string;
   phone: string | null;
+  ownerName: string | null;
   practitioners: Array<{ id: string; name: string; profession: string; phone: string | null; email: string | null }>;
 };
 
@@ -36,7 +37,7 @@ function normalizeProfession(value: string): Profession | null {
 function toCabinets(networks: PublicNetwork[]): Cabinet[] {
   return networks.map((network) => ({
     id: network.id,
-    name: network.name,
+    name: network.ownerName ? `${network.name} — ${network.ownerName}` : network.name,
     providers: network.practitioners.flatMap((practitioner) => {
       const profession = normalizeProfession(practitioner.profession);
       if (!profession) return [];

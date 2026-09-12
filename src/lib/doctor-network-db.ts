@@ -44,7 +44,8 @@ export async function getPublicDoctorNetworks() {
     name: string;
     address: string;
     phone: string | null;
-  }>('SELECT "id", "name", "address", "phone" FROM "doctor_network" WHERE "status" IN ($1, $2) ORDER BY "createdAt" DESC', ["active", "pending"]);
+    ownerName: string | null;
+  }>('SELECT n."id", n."name", n."address", n."phone", u."name" AS "ownerName" FROM "doctor_network" n LEFT JOIN "user" u ON u."id" = n."ownerId" WHERE n."status" IN ($1, $2) ORDER BY n."createdAt" DESC', ["active", "pending"]);
 
   const networks = [];
   for (const network of networkResult.rows) {

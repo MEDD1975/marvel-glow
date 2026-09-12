@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { authClient } from "@/lib/auth-client";
 import { put as putBlob } from "@vercel/blob/client";
 import {
+  ArrowLeft,
   ArrowRight,
   CheckCircle2,
   HelpCircle,
@@ -259,6 +260,17 @@ function CabinetPage() {
         </p>
       </section>
 
+      {showNetworkConfig ? (
+        <button
+          type="button"
+          onClick={() => setShowNetworkConfig(false)}
+          className="mb-6 inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+        >
+          <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+          Retour à mon espace médecin
+        </button>
+      ) : null}
+
       <DoctorOnboarding />
 
       {/* Patient pocket cards */}
@@ -329,7 +341,7 @@ function CabinetPage() {
 
 
 
-      <section id="follow-up" className={showNetworkConfig ? "hidden" : "mt-16 rounded-3xl border border-care/25 bg-care/5 p-6 md:p-8 print:hidden"} aria-labelledby="doctor-content-title">
+      <section id="follow-up" style={{ display: showNetworkConfig ? "none" : undefined }} className="mt-16 rounded-3xl border border-care/25 bg-care/5 p-6 md:p-8 print:hidden" aria-labelledby="doctor-content-title">
         <div className="flex items-start gap-3">
           <FileText className="mt-1 text-care" aria-hidden="true" />
           <div>
@@ -374,7 +386,7 @@ function CabinetPage() {
       </section>
 
       {/* Legal / positioning */}
-      <section className={showNetworkConfig ? "hidden" : "mt-16 rounded-2xl border border-border bg-card p-6 md:p-8 print:hidden"}>
+      <section style={{ display: showNetworkConfig ? "none" : undefined }} className="mt-16 rounded-2xl border border-border bg-card p-6 md:p-8 print:hidden">
         <h2 className="text-xl font-semibold text-foreground">Positionnement réglementaire</h2>
         <ul className="mt-4 space-y-3">
           <li className="flex items-start gap-3 text-sm text-muted-foreground">
@@ -394,7 +406,7 @@ function CabinetPage() {
       </section>
 
       {/* FAQ */}
-      <section className={showNetworkConfig ? "hidden" : "mt-16 print:hidden"}>
+      <section style={{ display: showNetworkConfig ? "none" : undefined }} className="mt-16 print:hidden">
         <h2 className="text-2xl font-semibold text-foreground">Questions fréquentes</h2>
         <div className="mt-6 grid gap-4 md:grid-cols-2">
           <FaqCard
@@ -416,7 +428,7 @@ function CabinetPage() {
         </div>
       </section>
 
-      <div className="mt-10 print:hidden">
+      <div style={{ display: showNetworkConfig ? "none" : undefined }} className="mt-10 print:hidden">
         <MedicalDisclaimer />
       </div>
     </main>

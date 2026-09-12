@@ -172,7 +172,7 @@ function CabinetChooser({ invalidId, profession, doctor }: { invalidId?: string;
       </Link>
       <div className="rounded-2xl border border-border bg-card p-6 shadow-sm md:p-8">
         <span className="inline-flex rounded-full bg-care/10 px-3 py-1 text-xs font-semibold text-care">
-          Annuaire Kivoir
+          Réseau professionnel
         </span>
         <h1 className="mt-4 text-2xl font-semibold text-balance text-foreground md:text-3xl">
           {invalidId ? "Ce cabinet n’est pas disponible" : "Retrouvez le réseau de votre médecin"}

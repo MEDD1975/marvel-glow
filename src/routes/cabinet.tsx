@@ -102,7 +102,11 @@ function CabinetPage() {
       notifyError("Sélectionnez un fichier ou saisissez un lien HTTPS.");
       return;
     }
-    const title = videoTitle.trim() || selectedFile?.name.replace(/\.[^.]+$/, "") || "Ressource partagée";
+    const title = videoTitle.trim();
+    if (!title) {
+      notifyError("Saisissez un titre pour que le patient identifie facilement ce contenu.");
+      return;
+    }
     setVideoNotice("");
     setVideoNoticeType("");
     setIsUploading(true);
@@ -365,8 +369,9 @@ function CabinetPage() {
               {conditions.map((condition) => <option key={condition.id} value={condition.id}>{condition.name}</option>)}
             </select>
             <p id="video-condition-hint" className="text-xs text-muted-foreground">Défini par le « Parcours ouvert par la carte » ci-dessus. Modifiez-le en haut pour changer le trouble.</p>
-            <label className="block text-sm font-medium text-foreground" htmlFor="video-title">Titre de la ressource <span className="font-normal text-muted-foreground">(facultatif)</span></label>
-            <input id="video-title" value={videoTitle} onChange={(event) => setVideoTitle(event.target.value)} placeholder="Ex. Les bons gestes après une entorse ou une fiche pratique" className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground" />
+<label className="block text-sm font-medium text-foreground" htmlFor="video-title">Titre du contenu médical <span className="font-normal text-muted-foreground">(obligatoire)</span></label>
+  <input id="video-title" required value={videoTitle} onChange={(event) => setVideoTitle(event.target.value)} placeholder="Ex. Les bons gestes après une entorse" className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground" />
+  <p className="text-xs text-muted-foreground">Ce titre sera affiché au patient à la place de « Ressource partagée ».</p>
             <label className="block text-sm font-medium text-foreground" htmlFor="doctor-file">Fichier à partager</label>
             <input id="doctor-file" type="file" accept=".pdf,.jpg,.jpeg,.png,.heic,.heif,.webp,.mp4,.mov,.m4v,image/*,video/*,application/pdf" onChange={(event) => setSelectedFile(event.target.files?.[0] ?? null)} className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground file:mr-3 file:rounded-md file:border-0 file:bg-care/10 file:px-3 file:py-1 file:text-sm file:font-medium file:text-care" />
             <p className="text-xs text-muted-foreground">PDF, JPG, PNG, HEIC, WEBP, MP4 ou MOV — 50 Mo maximum.</p>
@@ -382,7 +387,7 @@ function CabinetPage() {
             <label className="block text-sm font-medium text-foreground" htmlFor="video-source">Source (optionnel)</label>
             <input id="video-source" value={videoSource} onChange={(event) => setVideoSource(event.target.value)} placeholder="Ex. Cabinet du Dr A" className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground" />
             {videoNotice ? <p className={`rounded-lg px-3 py-2 text-sm leading-5 ${videoNoticeType === "error" ? "bg-destructive/10 text-destructive" : videoNoticeType === "success" ? "bg-care/10 text-care" : "text-muted-foreground"}`} role={videoNoticeType === "error" ? "alert" : "status"}>{videoNotice}</p> : null}
-            <button type="button" onClick={() => void addDoctorVideo()} disabled={isUploading || (!selectedFile && !videoUrl.trim())} className="inline-flex w-full items-center justify-center rounded-lg bg-care px-4 py-2.5 text-sm font-semibold text-care-foreground hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50">{isUploading ? "Ajout en cours…" : "Ajouter à l’espace patient"}</button>
+            <button type="button" onClick={() => void addDoctorVideo()} disabled={isUploading || !videoTitle.trim() || (!selectedFile && !videoUrl.trim())} className="inline-flex w-full items-center justify-center rounded-lg bg-care px-4 py-2.5 text-sm font-semibold text-care-foreground hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50">{isUploading ? "Ajout en cours…" : "Ajouter à l’espace patient"}</button>
             <p className="text-center text-xs text-muted-foreground">La ressource apparaîtra aussitôt dans la bibliothèque de conseils du patient.</p>
           </div>
           <div className="rounded-2xl border border-border bg-card p-5">

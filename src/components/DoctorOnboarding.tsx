@@ -49,9 +49,9 @@ export function DoctorOnboarding() {
     return "default" as const;
   };
   const professionStyles = {
-    red: { text: "text-red-600", border: "border-red-200", active: "bg-red-600 text-white" },
-    green: { text: "text-emerald-700", border: "border-emerald-200", active: "bg-emerald-600 text-white" },
-    default: { text: "text-muted-foreground", border: "border-border", active: "bg-care text-care-foreground" },
+    red: { text: "#dc2626", border: "#fecaca", active: "#dc2626" },
+    green: { text: "#15803d", border: "#bbf7d0", active: "#15803d" },
+    default: { text: "var(--muted-foreground)", border: "var(--border)", active: "var(--care)" },
   };
 
   const updateDraft = (index: number, field: keyof typeof emptyPractitioner, value: string) => {
@@ -136,7 +136,12 @@ export function DoctorOnboarding() {
                   key={profession}
                   type="button"
                   onClick={() => setProfessionFilter(profession)}
-                  className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${professionFilter === profession ? professionStyles[professionTone(profession)].active : `border ${professionStyles[professionTone(profession)].border} bg-background ${professionStyles[professionTone(profession)].text}`}`}
+                  className={`rounded-full border px-4 py-2 text-sm font-medium transition-colors ${professionFilter === profession ? "text-white" : "bg-background"}`}
+                style={{
+                  color: professionFilter === profession ? "#fff" : professionStyles[professionTone(profession)].text,
+                  backgroundColor: professionFilter === profession ? professionStyles[professionTone(profession)].active : undefined,
+                  borderColor: professionStyles[professionTone(profession)].border,
+                }}
                 >
                   {profession}
                 </button>
@@ -149,10 +154,14 @@ export function DoctorOnboarding() {
 
           <ul className="space-y-3">
             {visiblePractitioners.map((practitioner) => (
-              <li key={practitioner.id} className={`flex items-start justify-between gap-4 rounded-2xl border bg-card p-4 ${professionStyles[professionTone(practitioner.profession)].border}`}>
+              <li
+                key={practitioner.id}
+                className="flex items-start justify-between gap-4 rounded-2xl border bg-card p-4"
+                style={{ borderColor: professionStyles[professionTone(practitioner.profession)].border }}
+              >
                 <div className="min-w-0">
                   <p className="truncate font-semibold text-foreground">{practitioner.name}</p>
-                  <p className={`text-sm font-semibold ${professionStyles[professionTone(practitioner.profession)].text}`}>{practitioner.profession}</p>
+                  <p className="text-sm font-semibold" style={{ color: professionStyles[professionTone(practitioner.profession)].text }}>{practitioner.profession}</p>
                   {(practitioner.phone || practitioner.email) && (
                     <p className="mt-1 truncate text-xs text-muted-foreground">{[practitioner.phone, practitioner.email].filter(Boolean).join(" · ")}</p>
                   )}

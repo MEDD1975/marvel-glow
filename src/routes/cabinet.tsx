@@ -288,9 +288,9 @@ function CabinetPage() {
         <section id="patient-card" className={`${showNetworkConfig ? "hidden" : ""} ${showResourceConfig ? "order-2" : ""} mt-12 card-section`}>
         <div className="flex flex-wrap items-end justify-between gap-4 print:hidden">
           <div>
-            <h2 className="text-2xl font-semibold text-foreground">Cartes patient à remettre</h2>
+            <h2 className="text-2xl font-semibold text-foreground">Document patient à imprimer</h2>
             <p className="mt-1 max-w-2xl text-muted-foreground">
-              À la fin de la consultation, remettez cette carte : le patient retrouve son parcours, des conseils et vidéos adaptés, et la suite de sa prise en charge.
+              Le patient imprime ce document et le joint à son ordonnance pour le transmettre aux professionnels de santé qui assureront sa prise en charge.
             </p>
           </div>
           <button

@@ -52,14 +52,11 @@ function toCabinets(networks: PublicNetwork[]): Cabinet[] {
         cabinetName: network.name,
       }];
     });
-    const storedProviders = network.ownerName?.trim().toLowerCase() === "dr a"
-      ? cabinets.find((cabinet) => cabinet.id === "dr_a")?.providers ?? dynamicProviders
-      : dynamicProviders;
     return {
       id: network.id,
-      name: network.name || (network.ownerName ? `Cabinet du ${network.ownerName}` : "Réseau professionnel"),
-      searchNames: network.ownerName ? [network.ownerName] : undefined,
-      providers: storedProviders,
+      name: network.ownerName ? `Réseau du ${network.ownerName}` : (network.name || "Réseau professionnel"),
+      searchNames: [network.ownerName, network.name].filter((value): value is string => Boolean(value)),
+      providers: dynamicProviders,
     };
   });
 }
@@ -69,6 +66,15 @@ type Search = {
   profession?: Profession | undefined;
   doctor?: string | undefined;
 };
+
+function cabinetMatchesQuery(cabinet: Cabinet, query: string): boolean {
+  const search = query.trim().toLowerCase();
+  if (search.length < 2) return false;
+  const matchesCabinet = cabinet.name.toLowerCase().includes(search);
+  const matchesOwner = cabinet.searchNames?.some((name) => name.toLowerCase().includes(search)) ?? false;
+  const matchesPractitioner = cabinet.providers.some((provider) => provider.name.toLowerCase().includes(search));
+  return matchesCabinet || matchesOwner || matchesPractitioner;
+}
 
 function usePublicCabinets() {
   const [publicCabinets, setPublicCabinets] = useState<Cabinet[] | null>(null);
@@ -128,20 +134,14 @@ function CabinetChooser({ invalidId, profession, doctor }: { invalidId?: string;
   const trimmed = query.trim();
   const matches = useMemo(
     () => (submittedQuery.length >= 2
-      ? sourceCabinets.filter((cabinet) => {
-          const search = submittedQuery.toLowerCase();
-          const matchesCabinet = cabinet.name.toLowerCase().includes(search);
-          const matchesOwner = cabinet.searchNames?.some((name) => name.toLowerCase().includes(search)) ?? false;
-          const matchesPractitioner = cabinet.providers.some((provider) => provider.name.toLowerCase().includes(search));
-          return matchesCabinet || matchesOwner || matchesPractitioner;
-        })
+      ? sourceCabinets.filter((cabinet) => cabinetMatchesQuery(cabinet, submittedQuery))
       : []),
     [sourceCabinets, submittedQuery],
   );
   const doctorSuggestions = useMemo(
     () =>
       sourceCabinets
-        .map((cabinet) => cabinet.name.replace(/^Cabinet du\s+/i, ""))
+        .flatMap((cabinet) => cabinet.searchNames ?? [cabinet.name.replace(/^Cabinet du\s+/i, "")])
         .filter((name, index, names) => names.indexOf(name) === index),
     [sourceCabinets],
   );
@@ -149,10 +149,10 @@ function CabinetChooser({ invalidId, profession, doctor }: { invalidId?: string;
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const matchingCabinet = sourceCabinets.find((cabinet) => cabinet.name.toLowerCase() === `cabinet du ${trimmed}`.toLowerCase());
+    const found = sourceCabinets.filter((cabinet) => cabinetMatchesQuery(cabinet, trimmed));
 
-    if (matchingCabinet) {
-      navigate({ search: { cabinet: matchingCabinet.id, profession } as Search, resetScroll: false });
+    if (found.length === 1) {
+      navigate({ search: { cabinet: found[0]!.id, profession } as Search, resetScroll: false });
       return;
     }
 

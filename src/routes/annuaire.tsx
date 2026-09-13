@@ -142,6 +142,13 @@ function CabinetChooser({ invalidId, profession, doctor }: { invalidId?: string;
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    const matchingCabinet = sourceCabinets.find((cabinet) => cabinet.name.toLowerCase() === `cabinet du ${trimmed}`.toLowerCase());
+
+    if (matchingCabinet) {
+      navigate({ search: { cabinet: matchingCabinet.id, profession } as Search, resetScroll: false });
+      return;
+    }
+
     setSubmittedQuery(trimmed);
     navigate({ search: { doctor: trimmed, profession } as Search, resetScroll: false });
   }
@@ -192,11 +199,7 @@ function CabinetChooser({ invalidId, profession, doctor }: { invalidId?: string;
             Saisissez le nom de votre médecin, par exemple Dr A ou Dr B, puis cliquez sur Valider pour retrouver son réseau.
           </p>
           <button
-            type="button"
-            onClick={() => {
-              setSubmittedQuery(trimmed);
-              navigate({ search: { doctor: trimmed, profession } as Search, resetScroll: false });
-            }}
+            type="submit"
             disabled={trimmed.length < 2}
             className="mt-3 inline-flex items-center justify-center rounded-xl bg-care px-4 py-2.5 text-sm font-semibold text-care-foreground transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
           >

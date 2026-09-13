@@ -42,6 +42,17 @@ export function DoctorOnboarding() {
   const visiblePractitioners = professionFilter
     ? existing.filter((practitioner) => practitioner.profession.trim() === professionFilter)
     : existing;
+  const professionTone = (profession: string) => {
+    const normalized = profession.trim().toLocaleLowerCase("fr");
+    if (normalized === "rhumatologue") return "red" as const;
+    if (normalized === "médecin du sport") return "green" as const;
+    return "default" as const;
+  };
+  const professionStyles = {
+    red: { text: "text-red-600", border: "border-red-200", active: "bg-red-600 text-white" },
+    green: { text: "text-emerald-700", border: "border-emerald-200", active: "bg-emerald-600 text-white" },
+    default: { text: "text-muted-foreground", border: "border-border", active: "bg-care text-care-foreground" },
+  };
 
   const updateDraft = (index: number, field: keyof typeof emptyPractitioner, value: string) => {
     setDrafts((current) => current.map((item, itemIndex) => itemIndex === index ? { ...item, [field]: value } : item));
@@ -125,7 +136,7 @@ export function DoctorOnboarding() {
                   key={profession}
                   type="button"
                   onClick={() => setProfessionFilter(profession)}
-                  className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${professionFilter === profession ? "bg-care text-care-foreground" : "border border-border bg-background text-muted-foreground hover:text-foreground"}`}
+                  className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${professionFilter === profession ? professionStyles[professionTone(profession)].active : `border ${professionStyles[professionTone(profession)].border} bg-background ${professionStyles[professionTone(profession)].text}`}`}
                 >
                   {profession}
                 </button>
@@ -138,10 +149,10 @@ export function DoctorOnboarding() {
 
           <ul className="space-y-3">
             {visiblePractitioners.map((practitioner) => (
-              <li key={practitioner.id} className="flex items-start justify-between gap-4 rounded-2xl border border-border bg-card p-4">
+              <li key={practitioner.id} className={`flex items-start justify-between gap-4 rounded-2xl border bg-card p-4 ${professionStyles[professionTone(practitioner.profession)].border}`}>
                 <div className="min-w-0">
                   <p className="truncate font-semibold text-foreground">{practitioner.name}</p>
-                  <p className="text-sm text-muted-foreground">{practitioner.profession}</p>
+                  <p className={`text-sm font-semibold ${professionStyles[professionTone(practitioner.profession)].text}`}>{practitioner.profession}</p>
                   {(practitioner.phone || practitioner.email) && (
                     <p className="mt-1 truncate text-xs text-muted-foreground">{[practitioner.phone, practitioner.email].filter(Boolean).join(" · ")}</p>
                   )}

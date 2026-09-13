@@ -241,7 +241,7 @@ function CabinetPage() {
               <Video className="h-7 w-7" aria-hidden="true" />
             </span>
             <p className="mt-6 text-xs font-semibold uppercase tracking-[0.12em] text-care">2 · Bibliothèque de ressources</p>
-            <h2 className="mt-1.5 text-xl font-semibold text-foreground">Partager une ressource</h2>
+            <h2 className="mt-1.5 text-xl font-semibold text-foreground">Partager des contenus médicaux</h2>
             <p className="mt-2 flex-1 text-sm leading-6 text-muted-foreground">Choisissez des vidéos ou des ressources validées à partager au patient.</p>
             <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-care">Ouvrir <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" /></span>
           </button>

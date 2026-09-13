@@ -45,6 +45,7 @@ export function NavireChatWidget() {
   const [open, setOpen] = useState(false);
   const [showLauncher, setShowLauncher] = useState(true);
   const [message, setMessage] = useState("");
+  const [inputKey, setInputKey] = useState(0);
   const messageInputRef = useRef<HTMLTextAreaElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [messages, setMessages] = useState<ChatMessage[]>(initialMessages);
@@ -166,7 +167,7 @@ export function NavireChatWidget() {
 
     setPrivacyError(null);
     setMessage("");
-    if (messageInputRef.current) messageInputRef.current.value = "";
+    setInputKey((current) => current + 1);
     setMessages((current) => [...current, { role: "user", text: trimmed }]);
     setIsSending(true);
 
@@ -286,8 +287,9 @@ export function NavireChatWidget() {
               >
                 <Mic className="h-4 w-4" aria-hidden="true" />
               </button>
-              <textarea
-                ref={messageInputRef}
+            <textarea
+              key={inputKey}
+              ref={messageInputRef}
                 id="navire-message"
                 value={message}
                 onChange={(event) => {

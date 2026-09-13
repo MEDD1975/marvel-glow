@@ -88,8 +88,8 @@ export function AssistantHome({ initialStarted = false, pathway }: { initialStar
   }
 
   return (
-    <section className="px-4 py-8 md:py-12">
-      <div className="mx-auto max-w-2xl rounded-[2rem] border border-care/20 bg-card p-5 shadow-lg shadow-care/10 md:p-8">
+    <section className="px-4 py-4 md:py-6 lg:py-8">
+      <div className="mx-auto max-w-2xl rounded-[2rem] border border-care/20 bg-card p-4 shadow-lg shadow-care/10 md:max-w-5xl md:p-6 lg:p-8">
         <div className="flex flex-wrap items-center gap-2">
           <span className="inline-flex items-center gap-2 rounded-full bg-care/10 px-3 py-1.5 text-sm font-semibold text-care">
             <Bot className="h-4 w-4" aria-hidden="true" />
@@ -99,18 +99,18 @@ export function AssistantHome({ initialStarted = false, pathway }: { initialStar
             Réseau professionnel
           </span>
         </div>
-        <h1 className="mt-3 text-balance text-3xl font-semibold tracking-[-0.02em] text-foreground md:text-4xl">
+        <h1 className="mt-2 text-balance text-2xl font-semibold tracking-[-0.02em] text-foreground md:text-3xl lg:text-4xl">
           Votre assistant après consultation
         </h1>
-        <p className="mt-3 text-pretty text-base leading-7 text-muted-foreground">
+        <p className="mt-2 text-pretty text-sm leading-6 text-muted-foreground md:text-base">
           Retrouvez vos questions, vos conseils et les bons professionnels pour mieux comprendre la suite de votre prise en charge.
         </p>
 
-        <div className="mt-7 grid gap-4 md:grid-cols-3">
+        <div className="mt-5 grid gap-3 md:mt-5 md:grid-cols-3 md:gap-3">
           <button
             type="button"
             onClick={openAssistant}
-            className="group flex min-h-48 flex-col rounded-3xl border border-primary/25 bg-primary/5 p-5 text-left shadow-sm transition-all hover:-translate-y-1 hover:border-primary/45 hover:bg-primary/10 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className="group flex min-h-48 flex-col rounded-3xl border border-primary/25 bg-primary/5 p-4 md:min-h-0 md:p-4 text-left shadow-sm transition-all hover:-translate-y-1 hover:border-primary/45 hover:bg-primary/10 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-sm">
               <Compass className="h-6 w-6" aria-hidden="true" />
@@ -125,7 +125,7 @@ export function AssistantHome({ initialStarted = false, pathway }: { initialStar
           <Link
             to="/conseils"
             search={effectivePathway ? { c: effectivePathway } : undefined}
-            className="group flex min-h-48 flex-col rounded-3xl border border-care/20 bg-care/5 p-5 text-left shadow-sm transition-all hover:-translate-y-1 hover:border-care/40 hover:bg-care/10 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className="group flex min-h-48 flex-col rounded-3xl border border-care/20 bg-care/5 p-4 md:min-h-0 md:p-4 text-left shadow-sm transition-all hover:-translate-y-1 hover:border-care/40 hover:bg-care/10 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-care text-primary-foreground shadow-sm">
               <BookOpen className="h-6 w-6" aria-hidden="true" />
@@ -138,7 +138,7 @@ export function AssistantHome({ initialStarted = false, pathway }: { initialStar
 
           <Link
             to="/annuaire"
-            className="group flex min-h-48 flex-col rounded-3xl border border-care/20 bg-care/5 p-5 text-left shadow-sm transition-all hover:-translate-y-1 hover:border-care/40 hover:bg-care/10 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className="group flex min-h-48 flex-col rounded-3xl border border-care/20 bg-care/5 p-4 md:min-h-0 md:p-4 text-left shadow-sm transition-all hover:-translate-y-1 hover:border-care/40 hover:bg-care/10 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-care text-primary-foreground shadow-sm">
               <MapPin className="h-6 w-6" aria-hidden="true" />

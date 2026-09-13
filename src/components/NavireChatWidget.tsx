@@ -106,7 +106,11 @@ export function NavireChatWidget() {
         else interimTranscript += transcript;
       }
 
-      setMessage(`${voiceBaseRef.current}${voiceFinalRef.current}${interimTranscript}`.trimStart());
+      const dictatedText = [voiceBaseRef.current, voiceFinalRef.current, interimTranscript]
+        .map((segment) => segment.trim())
+        .filter(Boolean)
+        .join(" ");
+      setMessage(dictatedText);
       if (privacyError) setPrivacyError(null);
     };
     recognition.onend = () => {

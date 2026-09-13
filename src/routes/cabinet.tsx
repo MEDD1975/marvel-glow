@@ -76,7 +76,6 @@ function CabinetPage() {
   const [isUploading, setIsUploading] = useState(false);
   const notifyError = (message: string) => { setVideoNoticeType("error"); setVideoNotice(message); };
   const notifySuccess = (message: string) => { setVideoNoticeType("success"); setVideoNotice(message); };
-  const tmsConditions = conditions.slice(0, 10);
   const [pathway, setPathway] = useState("entorse-cheville");
   const [cardNote, setCardNote] = useState("");
   const pathwayLabel = conditions.find((condition) => condition.id === pathway)?.name ?? "";
@@ -306,20 +305,8 @@ function CabinetPage() {
         <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_auto]">
           <div className="space-y-4 rounded-2xl border border-border bg-card p-6 print:hidden">
             <div>
-              <label htmlFor="cardPathway" className="block text-sm font-medium text-foreground">
-                Parcours ouvert par la carte
-              </label>
-              <select
-                id="cardPathway"
-                value={pathway}
-                onChange={(e) => setPathway(e.target.value)}
-                className="mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground outline-none focus:ring-2 focus:ring-ring"
-              >
-                {tmsConditions.map((condition) => (
-                  <option key={condition.id} value={condition.id}>{condition.name}</option>
-                ))}
-              </select>
-              <p className="mt-1 text-xs text-muted-foreground">La carte ouvre ce parcours : étapes, conseils, vidéos et professionnels à consulter.</p>
+              <p className="text-sm font-medium text-foreground">Parcours ouvert par la carte</p>
+              <p className="mt-1 text-xs leading-5 text-muted-foreground">La carte ouvrira automatiquement le trouble ou parcours choisi dans la bibliothèque de ressources.</p>
             </div>
             <div>
               <label htmlFor="cardNote" className="block text-sm font-medium text-foreground">
@@ -365,10 +352,10 @@ function CabinetPage() {
         <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_1.2fr]">
           <div className="space-y-4 rounded-2xl border border-border bg-card p-5">
             <label className="block text-sm font-medium text-foreground" htmlFor="video-condition">Trouble ou parcours</label>
-            <select id="video-condition" value={pathway} disabled aria-describedby="video-condition-hint" className="w-full cursor-not-allowed rounded-lg border border-input bg-muted px-3 py-2 text-sm text-foreground opacity-80">
+            <select id="video-condition" value={pathway} onChange={(event) => setPathway(event.target.value)} aria-describedby="video-condition-hint" className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground outline-none focus:ring-2 focus:ring-ring">
               {conditions.map((condition) => <option key={condition.id} value={condition.id}>{condition.name}</option>)}
             </select>
-            <p id="video-condition-hint" className="text-xs text-muted-foreground">Défini par le « Parcours ouvert par la carte » ci-dessus. Modifiez-le en haut pour changer le trouble.</p>
+            <p id="video-condition-hint" className="text-xs text-muted-foreground">Ce choix définit automatiquement le parcours ouvert par la carte patient.</p>
 <label className="block text-sm font-medium text-foreground" htmlFor="video-title">Titre du contenu médical <span className="font-normal text-muted-foreground">(obligatoire)</span></label>
   <input id="video-title" required value={videoTitle} onChange={(event) => setVideoTitle(event.target.value)} placeholder="Ex. Les bons gestes après une entorse" className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground" />
   <p className="text-xs text-muted-foreground">Ce titre sera affiché au patient à la place de « Ressource partagée ».</p>

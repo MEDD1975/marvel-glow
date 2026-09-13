@@ -302,6 +302,13 @@ function CabinetPage() {
               <Printer className="h-4 w-4" />
               Imprimer le QR code
             </button>
+            <button
+              onClick={() => printWith("cards")}
+              className="inline-flex items-center gap-2 rounded-lg border border-care bg-card px-4 py-2 text-sm font-medium text-care transition-colors hover:bg-care/10"
+            >
+              <Download className="h-4 w-4" />
+              Exporter en PDF
+            </button>
             {cardQr.qr ? (
               <a
                 href={cardQr.qr}

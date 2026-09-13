@@ -307,7 +307,7 @@ function CabinetPage() {
             <div>
               <p className="text-sm font-medium text-foreground">Parcours ouvert par la carte</p>
               <p className="mt-1 text-xs leading-5 text-muted-foreground">La carte ouvrira automatiquement le trouble ou parcours choisi dans la bibliothèque de ressources.</p>
-              <label htmlFor="card-pathway-default" className="mt-3 block text-xs font-semibold uppercase tracking-wide text-care">Choix par défaut</label>
+              <label htmlFor="card-pathway-default" className="mt-3 block text-xs font-semibold uppercase tracking-wide text-care">Choix du parcours</label>
               <select id="card-pathway-default" value={pathway} disabled aria-describedby="card-pathway-default-hint" className="mt-1 w-full cursor-not-allowed rounded-lg border border-input bg-muted px-3 py-2 text-sm font-medium text-foreground opacity-90">
                 {conditions.map((condition) => <option key={condition.id} value={condition.id}>{condition.name}</option>)}
               </select>

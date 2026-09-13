@@ -115,8 +115,8 @@ export function AssistantHome({ initialStarted = false, pathway }: { initialStar
             <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-sm">
               <Compass className="h-6 w-6" aria-hidden="true" />
             </span>
-            <span className="mt-5 text-xs font-semibold uppercase tracking-[0.12em] text-primary">Après ma consultation</span>
-            <span className="mt-1.5 text-lg font-semibold text-foreground">Mes questions santé</span>
+            <span className="mt-5 text-xs font-semibold uppercase tracking-[0.12em] text-primary">Assistant Kivoir</span>
+            <span className="mt-1.5 text-lg font-semibold text-foreground">Mes questions santé sur mon trouble</span>
             <span className="mt-2 flex-1 text-sm leading-6 text-muted-foreground">Posez vos questions sur votre atteinte, vos symptômes ou les consignes reçues après votre consultation avec l&apos;Assistant Kivoir.</span>
             <span className="mt-2 text-xs leading-5 text-muted-foreground">Kivoir vous informe et vous aide à préparer la suite ; il ne remplace pas l&apos;avis médical.</span>
             <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-primary">Ouvrir l&apos;agent conversationnel Kivoir <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" /></span>
@@ -144,8 +144,8 @@ export function AssistantHome({ initialStarted = false, pathway }: { initialStar
               <MapPin className="h-6 w-6" aria-hidden="true" />
             </span>
             <span className="mt-5 text-xs font-semibold uppercase tracking-[0.12em] text-care">Réseau professionnel</span>
-            <span className="mt-1.5 text-lg font-semibold text-foreground">Consulter le réseau professionnel</span>
-            <span className="mt-2 flex-1 text-sm leading-6 text-muted-foreground">Recherchez les kinésithérapeutes, podologues et autres professionnels près de chez vous.</span>
+            <span className="mt-1.5 text-lg font-semibold text-foreground">Consulter le réseau de votre médecin</span>
+            <span className="mt-2 flex-1 text-sm leading-6 text-muted-foreground">Retrouvez les professionnels du réseau de votre médecin.</span>
             <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-care">Voir l&apos;annuaire <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" /></span>
           </Link>
         </div>

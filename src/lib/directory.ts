@@ -41,6 +41,7 @@ export type Provider = {
 export type Cabinet = {
   id: string;
   name: string;
+  searchNames?: string[];
   providers: Provider[];
 };
 

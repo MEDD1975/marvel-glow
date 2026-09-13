@@ -260,7 +260,12 @@ function CabinetPage() {
             onClick={() => {
               setShowResourceConfig(false);
               setShowNetworkConfig(true);
-              requestAnimationFrame(() => document.getElementById("onboarding-title")?.scrollIntoView({ behavior: "smooth" }));
+              requestAnimationFrame(() => {
+                const section = document.getElementById("onboarding-title");
+                if (!section) return;
+                const top = section.getBoundingClientRect().top + window.scrollY - 96;
+                window.scrollTo({ top, behavior: "smooth" });
+              });
             }}
             className="group flex flex-col rounded-3xl border border-care/20 bg-card p-6 text-left shadow-sm transition-all hover:-translate-y-1 hover:border-care/40 hover:shadow-lg hover:shadow-care/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >

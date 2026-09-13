@@ -195,23 +195,26 @@ function CabinetPage() {
 
   const downloadPatientQr = async () => {
     if (!cardQr.qr) return;
-    const isAppleTouchDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
-    if (isAppleTouchDevice) {
+    try {
+      const response = await fetch(cardQr.qr);
+      const blob = await response.blob();
+      const file = new File([blob], "kivoir-qr-code.png", { type: "image/png" });
+      if (navigator.share && navigator.canShare?.({ files: [file] })) {
+        await navigator.share({ files: [file], title: "QR code Kivoir" });
+        return;
+      }
+      const objectUrl = URL.createObjectURL(blob);
       const link = document.createElement("a");
-      link.href = cardQr.qr;
-      link.target = "_blank";
-      link.rel = "noopener noreferrer";
+      link.href = objectUrl;
+      link.download = "kivoir-qr-code.png";
+      document.body.appendChild(link);
       link.click();
-      return;
+      link.remove();
+      window.setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
+    } catch (error) {
+      if (error instanceof DOMException && error.name === "AbortError") return;
+      console.error("[v0] QR code download failed", error);
     }
-    const response = await fetch(cardQr.qr);
-    const blob = await response.blob();
-    const objectUrl = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = objectUrl;
-    link.download = "kivoir-qr-code.png";
-    link.click();
-    window.setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
   };
 
   const exportPatientQrPdf = async () => {
@@ -356,7 +359,7 @@ function CabinetPage() {
                 className="inline-flex items-center gap-2 rounded-lg bg-care px-4 py-2 text-sm font-medium text-care-foreground transition-colors hover:opacity-90 disabled:cursor-wait disabled:opacity-50"
               >
                 <Download className="h-4 w-4" />
-                Ouvrir / enregistrer le QR code
+                Partager / enregistrer le QR code
               </button>
             ) : null}
           </div>

@@ -6,6 +6,7 @@ import {
   ArrowLeft,
   ArrowRight,
   CheckCircle2,
+  Download,
   HelpCircle,
   Printer,
   ShieldCheck,
@@ -288,18 +289,30 @@ function CabinetPage() {
         <section id="patient-card" className={`${showNetworkConfig ? "hidden" : ""} ${showResourceConfig ? "order-2" : ""} mt-12 card-section`}>
         <div className="flex flex-wrap items-end justify-between gap-4 print:hidden">
           <div>
-            <h2 className="text-2xl font-semibold text-foreground">Document patient à imprimer</h2>
+            <h2 className="text-2xl font-semibold text-foreground">QR code du parcours patient</h2>
             <p className="mt-1 max-w-2xl text-muted-foreground">
-              Imprimez ce document et remettez-le au patient avec son ordonnance.
+              Imprimez ou téléchargez le QR code pour le transmettre au patient par le canal de votre choix.
             </p>
           </div>
-          <button
-            onClick={() => printWith("cards")}
-            className="inline-flex items-center gap-2 rounded-lg border border-care bg-card px-4 py-2 text-sm font-medium text-care transition-colors hover:bg-care/10 print:hidden"
-          >
-            <Printer className="h-4 w-4" />
-            Imprimer la carte
-          </button>
+          <div className="flex flex-wrap items-center gap-2 print:hidden">
+            <button
+              onClick={() => printWith("cards")}
+              className="inline-flex items-center gap-2 rounded-lg border border-care bg-card px-4 py-2 text-sm font-medium text-care transition-colors hover:bg-care/10"
+            >
+              <Printer className="h-4 w-4" />
+              Imprimer le QR code
+            </button>
+            {cardQr.qr ? (
+              <a
+                href={cardQr.qr}
+                download="kivoir-qr-code.png"
+                className="inline-flex items-center gap-2 rounded-lg bg-care px-4 py-2 text-sm font-medium text-care-foreground transition-colors hover:opacity-90"
+              >
+                <Download className="h-4 w-4" />
+                Télécharger le QR code
+              </a>
+            ) : null}
+          </div>
         </div>
 
         <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_auto]">

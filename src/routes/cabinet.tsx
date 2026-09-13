@@ -285,7 +285,7 @@ function CabinetPage() {
 
       {showResourceConfig ? <>
         {/* Patient pocket cards */}
-        <section id="patient-card" className={`${showNetworkConfig ? "hidden" : ""} ${showResourceConfig ? "order-2" : ""} mt-0 card-section`}>
+        <section id="patient-card" className={`${showNetworkConfig ? "hidden" : ""} ${showResourceConfig ? "order-2" : ""} mt-12 card-section`}>
         <div className="flex flex-wrap items-end justify-between gap-4 print:hidden">
           <div>
             <h2 className="text-2xl font-semibold text-foreground">Cartes patient à remettre</h2>

@@ -290,7 +290,7 @@ function CabinetPage() {
           <div>
             <h2 className="text-2xl font-semibold text-foreground">Document patient à imprimer</h2>
             <p className="mt-1 max-w-2xl text-muted-foreground">
-              Imprimez ce document depuis votre ordinateur et remettez-le au patient avec son ordonnance.
+              Imprimez ce document et remettez-le au patient avec son ordonnance.
             </p>
           </div>
           <button

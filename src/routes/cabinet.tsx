@@ -193,6 +193,20 @@ function CabinetPage() {
     window.setTimeout(() => document.body.classList.remove("printing-cards"), 500);
   };
 
+  const downloadPatientQr = async () => {
+    if (!cardQr.qr) return;
+    const response = await fetch(cardQr.qr);
+    const blob = await response.blob();
+    const objectUrl = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = objectUrl;
+    link.download = "kivoir-qr-code.png";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
+  };
+
   const exportPatientQrPdf = async () => {
     if (!cardQr.qr) return;
     const { jsPDF } = await import("jspdf");
@@ -308,7 +322,7 @@ function CabinetPage() {
           <div>
             <h2 className="text-2xl font-semibold text-foreground">QR code du parcours patient</h2>
             <p className="mt-1 max-w-2xl text-muted-foreground">
-              Imprimez ou téléchargez le QR code pour le transmettre au patient par le canal de votre choix.
+              Imprimez ou téléchargez le QR code pour le transmettre au patient par le canal de votre choix. Le fichier se retrouve ensuite dans vos téléchargements et peut être ajouté comme pièce jointe dans Doctolib ou un e-mail.
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2 print:hidden">
@@ -328,14 +342,15 @@ function CabinetPage() {
               Exporter en PDF
             </button>
             {cardQr.qr ? (
-              <a
-                href={cardQr.qr}
-                download="kivoir-qr-code.png"
-                className="inline-flex items-center gap-2 rounded-lg bg-care px-4 py-2 text-sm font-medium text-care-foreground transition-colors hover:opacity-90"
+              <button
+                type="button"
+                onClick={() => void downloadPatientQr()}
+                disabled={!cardQr.qr}
+                className="inline-flex items-center gap-2 rounded-lg bg-care px-4 py-2 text-sm font-medium text-care-foreground transition-colors hover:opacity-90 disabled:cursor-wait disabled:opacity-50"
               >
                 <Download className="h-4 w-4" />
                 Télécharger le QR code
-              </a>
+              </button>
             ) : null}
           </div>
         </div>

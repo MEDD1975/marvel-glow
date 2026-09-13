@@ -46,6 +46,7 @@ export function NavireChatWidget() {
   const [showLauncher, setShowLauncher] = useState(true);
   const [message, setMessage] = useState("");
   const messageInputRef = useRef<HTMLTextAreaElement>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
   const [messages, setMessages] = useState<ChatMessage[]>(initialMessages);
   const [isSending, setIsSending] = useState(false);
   const [privacyError, setPrivacyError] = useState<string | null>(null);
@@ -129,6 +130,14 @@ export function NavireChatWidget() {
     window.addEventListener("kivoir:open-assistant", openAssistant);
     return () => window.removeEventListener("kivoir:open-assistant", openAssistant);
   }, []);
+
+  useEffect(() => {
+    if (!open) return;
+    const scrollFrame = window.requestAnimationFrame(() => {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+    });
+    return () => window.cancelAnimationFrame(scrollFrame);
+  }, [messages, isSending, open]);
 
   useEffect(() => {
     if (!open) return;
@@ -259,6 +268,7 @@ export function NavireChatWidget() {
                 Assistant Kivoir prépare sa réponse…
               </div>
             ) : null}
+            <div ref={messagesEndRef} aria-hidden="true" />
           </div>
 
           <form onSubmit={handleSubmit} className="shrink-0 border-t border-border bg-card p-3">

@@ -9,11 +9,15 @@ const welcomeMessage =
 
 type ChatMessage = CareAgentHistoryMessage & { videos?: ResourceLink[] };
 
+type SpeechRecognitionResultItem = { transcript: string };
 type SpeechRecognitionInstance = {
   lang: string;
   interimResults: boolean;
   continuous: boolean;
-  onresult: ((event: { results: ArrayLike<ArrayLike<{ transcript: string }>> }) => void) | null;
+  onresult: ((event: {
+    resultIndex: number;
+    results: ArrayLike<ArrayLike<SpeechRecognitionResultItem> & { isFinal?: boolean }>;
+  }) => void) | null;
   onend: (() => void) | null;
   onerror: (() => void) | null;
   start: () => void;
@@ -54,6 +58,8 @@ export function NavireChatWidget() {
   const [isListening, setIsListening] = useState(false);
   const speechRecognitionRef = useRef<SpeechRecognitionInstance | null>(null);
   const keepListeningRef = useRef(false);
+  const voiceBaseRef = useRef("");
+  const voiceFinalRef = useRef("");
 
   useEffect(() => {
     const handleCoverVisibility = (event: Event) => {
@@ -65,6 +71,8 @@ export function NavireChatWidget() {
 
   function stopVoiceInput() {
     keepListeningRef.current = false;
+    voiceBaseRef.current = "";
+    voiceFinalRef.current = "";
     speechRecognitionRef.current?.stop();
     speechRecognitionRef.current = null;
     setIsListening(false);
@@ -83,15 +91,22 @@ export function NavireChatWidget() {
     }
 
     keepListeningRef.current = true;
+    voiceBaseRef.current = messageInputRef.current?.value ?? message;
+    voiceFinalRef.current = "";
     const recognition = new SpeechRecognition();
     recognition.lang = "fr-FR";
     recognition.interimResults = true;
     recognition.continuous = true;
     recognition.onresult = (event) => {
-      const transcript = Array.from(event.results)
-        .map((result) => result[0]?.transcript ?? "")
-        .join("");
-      setMessage(transcript);
+      let interimTranscript = "";
+      for (let index = event.resultIndex; index < event.results.length; index += 1) {
+        const result = event.results[index];
+        const transcript = result?.[0]?.transcript ?? "";
+        if (result?.isFinal) voiceFinalRef.current += transcript;
+        else interimTranscript += transcript;
+      }
+
+      setMessage(`${voiceBaseRef.current}${voiceFinalRef.current}${interimTranscript}`.trimStart());
       if (privacyError) setPrivacyError(null);
     };
     recognition.onend = () => {
@@ -302,7 +317,12 @@ export function NavireChatWidget() {
                 id="navire-message"
                 value={message}
                 onChange={(event) => {
-                  setMessage(event.target.value);
+                  const nextValue = event.target.value;
+                  setMessage(nextValue);
+                  if (isListening) {
+                    voiceBaseRef.current = nextValue;
+                    voiceFinalRef.current = "";
+                  }
                   if (privacyError) setPrivacyError(null);
                 }}
                 aria-describedby="kivoir-privacy-note kivoir-privacy-error"

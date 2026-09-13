@@ -43,9 +43,13 @@ export function DoctorOnboarding() {
     ? existing.filter((practitioner) => practitioner.profession.trim() === professionFilter)
     : existing;
   const professionTone = (profession: string) => {
-    const normalized = profession.trim().toLocaleLowerCase("fr");
+    const normalized = profession
+      .trim()
+      .toLocaleLowerCase("fr")
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "");
     if (normalized === "rhumatologue") return "red" as const;
-    if (normalized === "médecin du sport") return "green" as const;
+    if (normalized === "medecin du sport" || normalized.includes("sport")) return "green" as const;
     return "default" as const;
   };
   const professionStyles = {

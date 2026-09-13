@@ -52,10 +52,14 @@ function toCabinets(networks: PublicNetwork[]): Cabinet[] {
         cabinetName: network.name,
       }];
     });
+    const storedProviders = network.ownerName?.trim().toLowerCase() === "dr a"
+      ? cabinets.find((cabinet) => cabinet.id === "dr_a")?.providers ?? dynamicProviders
+      : dynamicProviders;
     return {
       id: network.id,
       name: network.name || (network.ownerName ? `Cabinet du ${network.ownerName}` : "Réseau professionnel"),
-      providers: dynamicProviders,
+      searchNames: network.ownerName ? [network.ownerName] : undefined,
+      providers: storedProviders,
     };
   });
 }
@@ -127,8 +131,9 @@ function CabinetChooser({ invalidId, profession, doctor }: { invalidId?: string;
       ? sourceCabinets.filter((cabinet) => {
           const search = submittedQuery.toLowerCase();
           const matchesCabinet = cabinet.name.toLowerCase().includes(search);
+          const matchesOwner = cabinet.searchNames?.some((name) => name.toLowerCase().includes(search)) ?? false;
           const matchesPractitioner = cabinet.providers.some((provider) => provider.name.toLowerCase().includes(search));
-          return matchesCabinet || matchesPractitioner;
+          return matchesCabinet || matchesOwner || matchesPractitioner;
         })
       : []),
     [sourceCabinets, submittedQuery],

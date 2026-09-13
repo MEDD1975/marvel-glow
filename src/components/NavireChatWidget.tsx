@@ -166,6 +166,7 @@ export function NavireChatWidget() {
 
     setPrivacyError(null);
     setMessage("");
+    if (messageInputRef.current) messageInputRef.current.value = "";
     setMessages((current) => [...current, { role: "user", text: trimmed }]);
     setIsSending(true);
 

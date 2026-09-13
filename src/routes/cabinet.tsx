@@ -193,6 +193,23 @@ function CabinetPage() {
     window.setTimeout(() => document.body.classList.remove("printing-cards"), 500);
   };
 
+  const exportPatientQrPdf = async () => {
+    if (!cardQr.qr) return;
+    const { jsPDF } = await import("jspdf");
+    const pdf = new jsPDF({ unit: "mm", format: "a4" });
+    pdf.setTextColor(16, 35, 72);
+    pdf.setFontSize(18);
+    pdf.text("Kivoir — Parcours patient", 20, 24);
+    pdf.setTextColor(60, 72, 90);
+    pdf.setFontSize(11);
+    pdf.text("Scannez ce QR code pour accéder au parcours patient.", 20, 34);
+    pdf.addImage(cardQr.qr, "PNG", 20, 48, 82, 82);
+    pdf.setFontSize(10);
+    pdf.text("Lien :", 20, 144);
+    pdf.text(pdf.splitTextToSize(cardQr.url, 165), 20, 151);
+    pdf.save("kivoir-parcours-patient.pdf");
+  };
+
 
   if (isPending || !session?.user) {
     return <main className="mx-auto max-w-3xl px-4 py-16"><p className="text-center text-sm text-muted-foreground">Vérification de votre session…</p></main>;
@@ -303,8 +320,9 @@ function CabinetPage() {
               Imprimer le QR code
             </button>
             <button
-              onClick={() => printWith("cards")}
-              className="inline-flex items-center gap-2 rounded-lg border border-care bg-card px-4 py-2 text-sm font-medium text-care transition-colors hover:bg-care/10"
+              onClick={() => void exportPatientQrPdf()}
+              disabled={!cardQr.qr}
+              className="inline-flex items-center gap-2 rounded-lg border border-care bg-card px-4 py-2 text-sm font-medium text-care transition-colors hover:bg-care/10 disabled:cursor-wait disabled:opacity-50"
             >
               <Download className="h-4 w-4" />
               Exporter en PDF

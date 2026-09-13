@@ -204,7 +204,7 @@ export function NavireChatWidget() {
             </button>
           </header>
 
-          <div className="flex-1 space-y-3 overflow-y-auto bg-muted/30 p-4" aria-live="polite">
+          <div className="min-h-0 flex-1 space-y-3 overflow-y-auto bg-muted/30 p-4" aria-live="polite">
             {messages.map((item, index) => (
               <div
                 key={`${item.role}-${index}`}
@@ -261,7 +261,7 @@ export function NavireChatWidget() {
             ) : null}
           </div>
 
-          <form onSubmit={handleSubmit} className="border-t border-border bg-card p-3">
+          <form onSubmit={handleSubmit} className="shrink-0 border-t border-border bg-card p-3">
             <label htmlFor="navire-message" className="sr-only">
               Votre message à Assistant Kivoir
             </label>

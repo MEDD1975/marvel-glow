@@ -22,6 +22,7 @@ export function DoctorOnboarding() {
   const [notice, setNotice] = useState("");
   const [saving, setSaving] = useState(false);
   const [removingId, setRemovingId] = useState<string | null>(null);
+  const [professionFilter, setProfessionFilter] = useState<string | null>(null);
 
   useEffect(() => {
     void fetch("/api/doctor-network").then(async (response) => {
@@ -37,6 +38,10 @@ export function DoctorOnboarding() {
   }, []);
 
   const existing = network?.practitioners ?? [];
+  const availableProfessions = Array.from(new Set(existing.map((practitioner) => practitioner.profession.trim()).filter(Boolean))).sort((a, b) => a.localeCompare(b, "fr"));
+  const visiblePractitioners = professionFilter
+    ? existing.filter((practitioner) => practitioner.profession.trim() === professionFilter)
+    : existing;
 
   const updateDraft = (index: number, field: keyof typeof emptyPractitioner, value: string) => {
     setDrafts((current) => current.map((item, itemIndex) => itemIndex === index ? { ...item, [field]: value } : item));
@@ -106,12 +111,33 @@ export function DoctorOnboarding() {
 
         <div className="space-y-3">
           <h3 className="font-semibold text-foreground">Professionnels de votre réseau</h3>
+          {availableProfessions.length > 0 && (
+            <div className="flex flex-wrap gap-2" aria-label="Filtrer par spécialité">
+              <button
+                type="button"
+                onClick={() => setProfessionFilter(null)}
+                className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${professionFilter === null ? "bg-foreground text-background" : "border border-border bg-background text-muted-foreground hover:text-foreground"}`}
+              >
+                Tous les professionnels
+              </button>
+              {availableProfessions.map((profession) => (
+                <button
+                  key={profession}
+                  type="button"
+                  onClick={() => setProfessionFilter(profession)}
+                  className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${professionFilter === profession ? "bg-care text-care-foreground" : "border border-border bg-background text-muted-foreground hover:text-foreground"}`}
+                >
+                  {profession}
+                </button>
+              ))}
+            </div>
+          )}
           {existing.length === 0 && drafts.length === 0 && (
             <p className="rounded-2xl border border-dashed border-border bg-card/60 p-4 text-sm text-muted-foreground">Aucun professionnel pour le moment. Ajoutez la première personne de votre réseau ci-dessous.</p>
           )}
 
           <ul className="space-y-3">
-            {existing.map((practitioner) => (
+            {visiblePractitioners.map((practitioner) => (
               <li key={practitioner.id} className="flex items-start justify-between gap-4 rounded-2xl border border-border bg-card p-4">
                 <div className="min-w-0">
                   <p className="truncate font-semibold text-foreground">{practitioner.name}</p>

@@ -54,7 +54,7 @@ function toCabinets(networks: PublicNetwork[]): Cabinet[] {
     });
     return {
       id: network.id,
-      name: network.ownerName ? `Cabinet du ${network.ownerName}` : network.name,
+      name: network.name || (network.ownerName ? `Cabinet du ${network.ownerName}` : "Réseau professionnel"),
       providers: dynamicProviders,
     };
   });
@@ -126,7 +126,9 @@ function CabinetChooser({ invalidId, profession, doctor }: { invalidId?: string;
     () => (submittedQuery.length >= 2
       ? sourceCabinets.filter((cabinet) => {
           const search = submittedQuery.toLowerCase();
-          return cabinet.name.toLowerCase().includes(search);
+          const matchesCabinet = cabinet.name.toLowerCase().includes(search);
+          const matchesPractitioner = cabinet.providers.some((provider) => provider.name.toLowerCase().includes(search));
+          return matchesCabinet || matchesPractitioner;
         })
       : []),
     [sourceCabinets, submittedQuery],

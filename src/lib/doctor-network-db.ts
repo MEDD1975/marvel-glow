@@ -45,7 +45,7 @@ export async function getPublicDoctorNetworks() {
     address: string;
     phone: string | null;
     ownerName: string | null;
-  }>('SELECT n."id", n."name", n."address", n."phone", u."name" AS "ownerName" FROM "doctor_network" n LEFT JOIN "user" u ON u."id" = n."ownerId" WHERE n."status" IN ($1, $2) ORDER BY n."createdAt" DESC', ["active", "pending"]);
+  }>('SELECT n."id", n."name", n."address", n."phone", u."name" AS "ownerName" FROM "doctor_network" n LEFT JOIN "user" u ON u."id" = n."ownerId" WHERE n."status" NOT IN ($1) ORDER BY n."createdAt" DESC', ["archived"]);
 
   const networks = [];
   for (const network of networkResult.rows) {

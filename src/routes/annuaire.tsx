@@ -11,7 +11,6 @@ import {
 } from "lucide-react";
 import { MedicalDisclaimer } from "@/components/HomeBlocks";
 import {
-  cabinets,
   professionColor,
   professionOrder,
   isProfession,
@@ -128,7 +127,7 @@ export const Route = createFileRoute("/annuaire")({
 function CabinetChooser({ invalidId, profession, doctor }: { invalidId?: string; profession?: Profession; doctor?: string }) {
   const navigate = useNavigate({ from: "/annuaire" });
   const publicCabinets = usePublicCabinets();
-  const sourceCabinets = publicCabinets ?? cabinets;
+  const sourceCabinets = publicCabinets ?? [];
   const [query, setQuery] = useState(doctor ?? "");
   const [submittedQuery, setSubmittedQuery] = useState(doctor ?? "");
   const trimmed = query.trim();
@@ -252,7 +251,7 @@ function AnnuairePage() {
   const { cabinet: cabinetId, profession, doctor } = Route.useSearch();
   const navigate = useNavigate({ from: "/annuaire" });
   const publicCabinets = usePublicCabinets();
-  const sourceCabinets = publicCabinets ?? cabinets;
+  const sourceCabinets = publicCabinets ?? [];
   const [professionFilter, setProfessionFilter] = useState<Profession | null>(profession ?? null);
 
   const selectedCabinet = sourceCabinets.find((cabinet) => cabinet.id === cabinetId) ?? null;

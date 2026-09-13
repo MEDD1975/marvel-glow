@@ -263,7 +263,7 @@ function CabinetPage() {
               requestAnimationFrame(() => {
                 const section = document.getElementById("onboarding-title");
                 if (!section) return;
-                const top = section.getBoundingClientRect().top + window.scrollY - 96;
+                const top = section.getBoundingClientRect().top + window.scrollY - 128;
                 window.scrollTo({ top, behavior: "smooth" });
               });
             }}

@@ -141,6 +141,15 @@ export function NavireChatWidget() {
   }, [messages, isSending, open]);
 
   useEffect(() => {
+    const input = messageInputRef.current;
+    if (!input) return;
+    input.style.height = "auto";
+    input.style.height = `${Math.min(input.scrollHeight, 120)}px`;
+    input.style.overflowY = input.scrollHeight > 120 ? "auto" : "hidden";
+    input.scrollTop = input.scrollHeight;
+  }, [message]);
+
+  useEffect(() => {
     if (!open) return;
     const focusTimer = window.setTimeout(() => messageInputRef.current?.focus(), 0);
     return () => window.clearTimeout(focusTimer);
@@ -307,7 +316,7 @@ export function NavireChatWidget() {
                 rows={2}
                 maxLength={800}
                 disabled={isSending}
-                className="min-h-10 flex-1 resize-none border-0 bg-transparent px-2 py-1 text-sm leading-6 text-foreground outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-60"
+                className="min-h-10 max-h-[120px] flex-1 resize-none overflow-y-auto border-0 bg-transparent px-2 py-1 text-sm leading-6 text-foreground outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-60"
               />
               <button
                 type="submit"

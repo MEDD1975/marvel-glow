@@ -197,7 +197,11 @@ function CabinetPage() {
     if (!cardQr.qr) return;
     const isAppleTouchDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
     if (isAppleTouchDevice) {
-      window.open(cardQr.qr, "_blank", "noopener,noreferrer");
+      const link = document.createElement("a");
+      link.href = cardQr.qr;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      link.click();
       return;
     }
     const response = await fetch(cardQr.qr);

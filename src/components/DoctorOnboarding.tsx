@@ -47,7 +47,7 @@ export function DoctorOnboarding() {
   const visiblePractitioners = existing.filter((practitioner) => {
     const matchesProfession = !professionFilter || practitioner.profession.trim() === professionFilter;
     const matchesSearch = !normalizedQuery || [practitioner.name, practitioner.profession, practitioner.phone, practitioner.email]
-      .some((value) => value.toLocaleLowerCase("fr").includes(normalizedQuery));
+      .some((value) => String(value ?? "").toLocaleLowerCase("fr").includes(normalizedQuery));
     return matchesProfession && matchesSearch;
   });
   const professionTone = (profession: string) => {

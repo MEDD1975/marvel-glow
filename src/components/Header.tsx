@@ -39,10 +39,10 @@ export function Header() {
             <Link
               key={item.to}
               to={item.to}
-              activeProps={{ className: "font-medium text-foreground" }}
+              activeProps={{ className: "font-semibold text-foreground" }}
               inactiveProps={{ className: "text-muted-foreground hover:text-foreground" }}
               activeOptions={{ exact: item.exact ?? false }}
-              className={location.pathname === item.to ? "font-medium text-foreground" : "text-muted-foreground hover:text-foreground"}
+              className={location.pathname === item.to ? "font-semibold text-foreground" : "text-muted-foreground hover:text-foreground"}
               onClick={() => setOpen(false)}
             >
               {item.label}

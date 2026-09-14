@@ -8,7 +8,7 @@ const patientNavItems = [
   { to: "/annuaire", label: "Réseau de votre médecin" },
 ];
 
-const doctorNavItems = [{ to: "/cabinet", label: "Espace médecin", exact: true }];
+const doctorNavItems: typeof patientNavItems = [];
 
 export function Header() {
   const [open, setOpen] = useState(false);

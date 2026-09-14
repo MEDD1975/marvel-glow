@@ -13,7 +13,8 @@ const doctorNavItems = [{ to: "/cabinet", label: "Espace médecin", exact: true 
 export function Header() {
   const [open, setOpen] = useState(false);
   const location = useLocation();
-  const isDoctorSpace = location.pathname.startsWith("/cabinet");
+  const isDoctorSpace =
+    location.pathname.startsWith("/cabinet") || location.pathname.startsWith("/connexion-medecin");
   const navItems = isDoctorSpace ? doctorNavItems : patientNavItems;
 
   return (

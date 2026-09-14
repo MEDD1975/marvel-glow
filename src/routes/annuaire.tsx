@@ -66,12 +66,20 @@ type Search = {
   doctor?: string | undefined;
 };
 
+function normalizeSearchValue(value: string): string {
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/\s+/g, "")
+    .toLocaleLowerCase("fr");
+}
+
 function cabinetMatchesQuery(cabinet: Cabinet, query: string): boolean {
-  const search = query.trim().toLowerCase();
+  const search = normalizeSearchValue(query);
   if (search.length < 2) return false;
-  const matchesCabinet = cabinet.name.toLowerCase().includes(search);
-  const matchesOwner = cabinet.searchNames?.some((name) => name.toLowerCase().includes(search)) ?? false;
-  const matchesPractitioner = cabinet.providers.some((provider) => provider.name.toLowerCase().includes(search));
+  const matchesCabinet = normalizeSearchValue(cabinet.name).includes(search);
+  const matchesOwner = cabinet.searchNames?.some((name) => normalizeSearchValue(name).includes(search)) ?? false;
+  const matchesPractitioner = cabinet.providers.some((provider) => normalizeSearchValue(provider.name).includes(search));
   return matchesCabinet || matchesOwner || matchesPractitioner;
 }
 

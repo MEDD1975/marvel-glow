@@ -42,7 +42,11 @@ export function Header() {
               activeProps={{ className: "font-semibold text-foreground" }}
               inactiveProps={{ className: "text-muted-foreground hover:text-foreground" }}
               activeOptions={{ exact: item.exact ?? false }}
-              className={location.pathname === item.to ? "font-semibold text-foreground" : "text-muted-foreground hover:text-foreground"}
+              className={
+                (item.exact ? location.pathname === item.to : location.pathname.startsWith(item.to))
+                  ? "rounded-full border border-care/25 px-3 py-1.5 font-semibold text-foreground"
+                  : "rounded-full border border-transparent px-3 py-1.5 text-muted-foreground hover:border-border hover:text-foreground"
+              }
               onClick={() => setOpen(false)}
             >
               {item.label}
@@ -51,9 +55,13 @@ export function Header() {
           </nav>
           <Link
             to={isDoctorSpace ? "/" : "/connexion-medecin"}
-            className="rounded-full border border-border px-3 py-1.5 text-xs font-semibold text-muted-foreground transition-colors hover:border-foreground/30 hover:text-foreground"
+            className={
+              isDoctorSpace
+                ? "rounded-full border border-care/25 px-3 py-1.5 text-xs font-semibold text-foreground"
+                : "rounded-full border border-border px-3 py-1.5 text-xs font-semibold text-muted-foreground transition-colors hover:border-foreground/30 hover:text-foreground"
+            }
           >
-            {isDoctorSpace ? "Espace patient" : "Accéder à l’espace médecin"}
+            {isDoctorSpace ? "Espace médecin" : "Accéder à l’espace médecin"}
           </Link>
         </div>
 
@@ -64,8 +72,8 @@ export function Header() {
               key={item.to}
               to={item.to}
               onClick={() => setOpen(false)}
-              activeProps={{ className: "bg-care/10 font-semibold text-care" }}
-              inactiveProps={{ className: "text-foreground hover:bg-muted" }}
+              activeProps={{ className: "border border-care/25 bg-care/10 font-semibold text-care" }}
+              inactiveProps={{ className: "border border-transparent text-foreground hover:bg-muted" }}
               activeOptions={{ exact: item.exact ?? false }}
               className="block rounded-lg px-3 py-3 text-base"
             >
@@ -75,9 +83,13 @@ export function Header() {
           <Link
             to={isDoctorSpace ? "/" : "/connexion-medecin"}
             onClick={() => setOpen(false)}
-            className="mt-2 block rounded-lg border border-border px-3 py-3 text-base font-semibold text-muted-foreground"
+            className={
+              isDoctorSpace
+                ? "mt-2 block rounded-lg border border-care/25 bg-care/10 px-3 py-3 text-base font-semibold text-care"
+                : "mt-2 block rounded-lg border border-border px-3 py-3 text-base font-semibold text-muted-foreground"
+            }
           >
-            {isDoctorSpace ? "Espace patient" : "Accéder à l’espace médecin"}
+            {isDoctorSpace ? "Espace médecin" : "Accéder à l’espace médecin"}
           </Link>
         </nav>
         )}

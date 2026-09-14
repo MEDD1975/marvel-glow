@@ -3,7 +3,7 @@ import "./lib/error-capture";
 import { consumeLastCapturedError } from "./lib/error-capture";
 import { renderErrorPage } from "./lib/error-page";
 import { auth } from "./lib/auth";
-import { deleteDoctorPractitioner, getDoctorNetwork, getPublicDoctorNetworks, saveDoctorNetwork } from "./lib/doctor-network-db";
+import { deleteDoctorPractitioner, getDoctorNetwork, getPublicDoctorNetworks, saveDoctorNetwork, updateDoctorPractitioner } from "./lib/doctor-network-db";
 import { put } from "@vercel/blob";
 import { generateClientTokenFromReadWriteToken } from "@vercel/blob/client";
 import { createDoctorResource, deleteDoctorResource, listAllActiveDoctorResources, listDoctorResources } from "./lib/doctor-resource-db";
@@ -143,6 +143,19 @@ export default {
             phone: typeof payload.phone === "string" ? payload.phone.trim() : undefined,
             practitioners: practitioners.map((item: { name: string; profession: string; phone?: string; email?: string }) => ({ name: item.name.trim(), profession: item.profession.trim(), phone: item.phone?.trim(), email: item.email?.trim() })),
           }), { status: 201 });
+        }
+        if (request.method === "PATCH") {
+          const payload = await request.json() as { id?: string; name?: string; profession?: string; phone?: string; email?: string };
+          if (!payload.id || !payload.name?.trim() || !payload.profession?.trim()) {
+            return Response.json({ error: "Le nom et la spécialité sont obligatoires." }, { status: 400 });
+          }
+          return Response.json(await updateDoctorPractitioner(session.user.id, {
+            id: payload.id,
+            name: payload.name.trim(),
+            profession: payload.profession.trim(),
+            phone: payload.phone?.trim(),
+            email: payload.email?.trim(),
+          }));
         }
         if (request.method === "DELETE") {
           const payload = await request.json() as { practitionerId?: string };

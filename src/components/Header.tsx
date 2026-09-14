@@ -42,6 +42,7 @@ export function Header() {
               activeProps={{ className: "font-medium text-foreground" }}
               inactiveProps={{ className: "text-muted-foreground hover:text-foreground" }}
               activeOptions={{ exact: item.exact ?? false }}
+              className={location.pathname === item.to ? "font-medium text-foreground" : "text-muted-foreground hover:text-foreground"}
               onClick={() => setOpen(false)}
             >
               {item.label}

@@ -273,9 +273,9 @@ function CabinetPage() {
               <Users className="h-7 w-7" aria-hidden="true" />
             </span>
             <p className="mt-6 text-xs font-semibold uppercase tracking-[0.12em] text-care">1 · Réseau professionnel</p>
-            <h2 className="mt-1.5 text-xl font-semibold text-foreground">Configurez votre réseau professionnel</h2>
+            <h2 className="mt-1.5 text-xl font-semibold text-foreground">Gérez votre réseau professionnel</h2>
             <p className="mt-2 flex-1 text-sm leading-6 text-muted-foreground">Ajoutez et mettez à jour les professionnels que vos patients pourront retrouver.</p>
-            <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-care">Configurer <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" /></span>
+            <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-care">Gérer mon réseau <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" /></span>
           </button>
 
           <button
@@ -436,7 +436,7 @@ function CabinetPage() {
             <p id="video-condition-hint" className="text-xs text-muted-foreground">Ce choix définit automatiquement le parcours ouvert par la carte patient.</p>
 <label className="block text-sm font-medium text-foreground" htmlFor="video-title">Titre du contenu médical <span className="font-normal text-muted-foreground">(obligatoire)</span></label>
   <input id="video-title" required value={videoTitle} onChange={(event) => setVideoTitle(event.target.value)} placeholder="Ex. Les bons gestes après une entorse" className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground" />
-  <p className="text-xs text-muted-foreground">Ce titre sera affiché au patient à la place de « Ressource partagée ».</p>
+  <p className="text-xs text-muted-foreground">Ce titre sera affiché au patient à la place de « Ressource partag��e ».</p>
             <label className="block text-sm font-medium text-foreground" htmlFor="doctor-file">Fichier à partager</label>
             <input id="doctor-file" type="file" accept=".pdf,.jpg,.jpeg,.png,.heic,.heif,.webp,.mp4,.mov,.m4v,image/*,video/*,application/pdf" onChange={(event) => setSelectedFile(event.target.files?.[0] ?? null)} className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground file:mr-3 file:rounded-md file:border-0 file:bg-care/10 file:px-3 file:py-1 file:text-sm file:font-medium file:text-care" />
             <p className="text-xs text-muted-foreground">PDF, JPG, PNG, HEIC, WEBP, MP4 ou MOV — 50 Mo maximum.</p>

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Check, Pencil, Trash2, Plus, X } from "lucide-react";
+import { Check, Pencil, Search, Trash2, Plus, X } from "lucide-react";
 
 const emptyPractitioner = { name: "", profession: "", phone: "", email: "" };
 
@@ -23,6 +23,7 @@ export function DoctorOnboarding() {
   const [saving, setSaving] = useState(false);
   const [removingId, setRemovingId] = useState<string | null>(null);
   const [professionFilter, setProfessionFilter] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingPractitioner, setEditingPractitioner] = useState<Practitioner | null>(null);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
@@ -42,9 +43,13 @@ export function DoctorOnboarding() {
 
   const existing = network?.practitioners ?? [];
   const availableProfessions = Array.from(new Set(existing.map((practitioner) => practitioner.profession.trim()).filter(Boolean))).sort((a, b) => a.localeCompare(b, "fr"));
-  const visiblePractitioners = professionFilter
-    ? existing.filter((practitioner) => practitioner.profession.trim() === professionFilter)
-    : existing;
+  const normalizedQuery = searchQuery.trim().toLocaleLowerCase("fr");
+  const visiblePractitioners = existing.filter((practitioner) => {
+    const matchesProfession = !professionFilter || practitioner.profession.trim() === professionFilter;
+    const matchesSearch = !normalizedQuery || [practitioner.name, practitioner.profession, practitioner.phone, practitioner.email]
+      .some((value) => value.toLocaleLowerCase("fr").includes(normalizedQuery));
+    return matchesProfession && matchesSearch;
+  });
   const professionTone = (profession: string) => {
     const normalized = profession
       .trim()
@@ -160,6 +165,19 @@ export function DoctorOnboarding() {
 
         <div className="space-y-3">
           <h3 className="font-semibold text-foreground">Professionnels de votre réseau</h3>
+          {existing.length > 0 && (
+            <label className="flex items-center gap-2 rounded-xl border border-border bg-background px-3 py-2 focus-within:border-care/60 focus-within:ring-2 focus-within:ring-care/10">
+              <Search className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+              <span className="sr-only">Rechercher un professionnel</span>
+              <input
+                value={searchQuery}
+                onChange={(event) => setSearchQuery(event.target.value)}
+                className="min-w-0 flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground"
+                placeholder="Rechercher par nom, spécialité ou téléphone"
+                type="search"
+              />
+            </label>
+          )}
           {availableProfessions.length > 0 && (
             <div className="flex flex-wrap gap-2" aria-label="Filtrer par spécialité">
               <button
@@ -226,6 +244,12 @@ export function DoctorOnboarding() {
               </li>
             ))}
           </ul>
+
+          {existing.length > 0 && visiblePractitioners.length === 0 && (
+            <p className="rounded-2xl border border-dashed border-border bg-card/60 p-4 text-sm text-muted-foreground">
+              Aucun professionnel ne correspond à votre recherche.
+            </p>
+          )}
 
           {drafts.map((practitioner, index) => (
             <div key={`draft-${index}`} className="rounded-2xl border border-care/30 bg-background p-4">

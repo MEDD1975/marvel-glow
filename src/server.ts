@@ -124,7 +124,9 @@ export default {
         }
       }
       if (url.pathname === "/api/public-networks" && request.method === "GET") {
-        return Response.json(await getPublicDoctorNetworks());
+        const networks = await getPublicDoctorNetworks();
+        const requestedId = url.searchParams.get("id");
+        return Response.json(requestedId ? networks.filter((network) => network.id === requestedId) : networks);
       }
       if (url.pathname === "/api/doctor-network") {
         const session = await auth.api.getSession({ headers: request.headers });

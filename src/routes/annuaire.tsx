@@ -264,6 +264,17 @@ function AnnuairePage() {
 
   const selectedCabinet = sourceCabinets.find((cabinet) => cabinet.id === cabinetId) ?? null;
   const cabinetProviders = selectedCabinet?.providers ?? [];
+
+  if (cabinetId && publicCabinets === null) {
+    return (
+      <main className="mx-auto max-w-5xl px-4 py-10 md:py-16">
+        <div className="rounded-2xl border border-border bg-card p-8 text-center shadow-sm">
+          <p className="text-lg font-semibold text-foreground">Chargement de votre réseau professionnel…</p>
+          <p className="mt-2 text-sm text-muted-foreground">La prévisualisation va s’afficher dans un instant.</p>
+        </div>
+      </main>
+    );
+  }
   const availableProfessions = professionOrder.filter((profession) =>
     cabinetProviders.some((provider) => provider.profession === profession),
   );

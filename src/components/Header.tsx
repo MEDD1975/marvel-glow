@@ -42,6 +42,7 @@ export function Header() {
               activeProps={{ className: "font-medium text-foreground" }}
               inactiveProps={{ className: "text-muted-foreground hover:text-foreground" }}
               activeOptions={{ exact: item.exact ?? false }}
+              onClick={() => setOpen(false)}
             >
               {item.label}
             </Link>
@@ -49,9 +50,9 @@ export function Header() {
           </nav>
           <Link
             to={isDoctorSpace ? "/" : "/connexion-medecin"}
-            className="rounded-full border border-care/25 px-3 py-1.5 text-xs font-semibold text-care transition-colors hover:bg-care/10"
+            className="rounded-full border border-border px-3 py-1.5 text-xs font-semibold text-muted-foreground transition-colors hover:border-foreground/30 hover:text-foreground"
           >
-            {isDoctorSpace ? "Espace patient" : "Espace médecin"}
+            {isDoctorSpace ? "Espace patient" : "Accéder à l’espace médecin"}
           </Link>
         </div>
 
@@ -73,9 +74,9 @@ export function Header() {
           <Link
             to={isDoctorSpace ? "/" : "/connexion-medecin"}
             onClick={() => setOpen(false)}
-            className="mt-2 block rounded-lg border border-care/20 px-3 py-3 text-base font-semibold text-care"
+            className="mt-2 block rounded-lg border border-border px-3 py-3 text-base font-semibold text-muted-foreground"
           >
-            {isDoctorSpace ? "Espace patient" : "Espace médecin"}
+            {isDoctorSpace ? "Espace patient" : "Accéder à l’espace médecin"}
           </Link>
         </nav>
         )}

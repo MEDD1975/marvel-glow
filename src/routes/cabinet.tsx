@@ -303,7 +303,14 @@ function CabinetPage() {
 
           <button
             type="button"
-            onClick={() => navigate({ to: "/annuaire" })}
+            onClick={async () => {
+              const response = await fetch("/api/doctor-network");
+              if (!response.ok) return;
+              const network = await response.json() as { id?: string };
+              if (network.id) {
+                await navigate({ to: "/annuaire", search: { cabinet: network.id } });
+              }
+            }}
             className="group flex flex-col rounded-3xl border border-care/20 bg-card p-6 text-left shadow-sm transition-all hover:-translate-y-1 hover:border-care/40 hover:shadow-lg hover:shadow-care/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-care/10 text-care ring-1 ring-care/15">

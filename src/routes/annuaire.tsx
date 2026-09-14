@@ -83,19 +83,23 @@ function cabinetMatchesQuery(cabinet: Cabinet, query: string): boolean {
   return matchesCabinet || matchesOwner || matchesPractitioner;
 }
 
-function usePublicCabinets() {
+function usePublicCabinets(previewCabinetId?: string) {
   const [publicCabinets, setPublicCabinets] = useState<Cabinet[] | null>(null);
   useEffect(() => {
     let active = true;
-    void fetch("/api/public-networks")
-      .then((response) => response.ok ? response.json() : [])
-      .then((data: PublicNetwork[]) => {
-        if (active && data.length) setPublicCabinets(toCabinets(data));
-        else if (active) setPublicCabinets([]);
+    const endpoint = previewCabinetId
+      ? `/api/public-networks?id=${encodeURIComponent(previewCabinetId)}`
+      : "/api/public-networks";
+    void fetch(endpoint)
+      .then((response) => response.ok ? response.json() : null)
+      .then((data: PublicNetwork | PublicNetwork[] | null) => {
+        if (!active) return;
+        const networks = Array.isArray(data) ? data : data ? [data] : [];
+        setPublicCabinets(toCabinets(networks));
       })
       .catch(() => { if (active) setPublicCabinets([]); });
     return () => { active = false; };
-  }, []);
+  }, [previewCabinetId]);
   return publicCabinets;
 }
 
@@ -255,10 +259,10 @@ function CabinetChooser({ invalidId, profession, doctor }: { invalidId?: string;
   );
 }
 
-function AnnuairePage() {
-  const { cabinet: cabinetId, profession, doctor } = Route.useSearch();
-  const navigate = useNavigate({ from: "/annuaire" });
-  const publicCabinets = usePublicCabinets();
+  function AnnuairePage() {
+    const { cabinet: cabinetId, profession, doctor } = Route.useSearch();
+    const navigate = useNavigate();
+    const publicCabinets = usePublicCabinets(cabinetId);
   const sourceCabinets = publicCabinets ?? [];
   const [professionFilter, setProfessionFilter] = useState<Profession | null>(profession ?? null);
 

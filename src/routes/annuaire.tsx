@@ -293,6 +293,15 @@ function CabinetChooser({ invalidId, profession, doctor }: { invalidId?: string;
 
   return (
     <main className="mx-auto max-w-5xl px-4 py-10">
+      {cabinetId && (
+        <Link
+          to="/cabinet"
+          className="mb-6 inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+        >
+          <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+          Retour à mon espace médecin
+        </Link>
+      )}
       <div className="flex flex-wrap items-center gap-2">
         <p className="inline-flex items-center gap-1.5 rounded-full bg-care/10 px-3 py-1 text-xs font-medium text-care">
           <MapPin className="h-3.5 w-3.5" /> Saint-Maur-des-Fossés (94)

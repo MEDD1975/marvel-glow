@@ -66,6 +66,17 @@ export async function deleteDoctorPractitioner(userId: string, practitionerId: s
   return getDoctorNetwork(userId);
 }
 
+export async function updateDoctorPractitioner(
+  userId: string,
+  practitioner: { id: string; name: string; profession: string; phone?: string; email?: string },
+) {
+  await pool.query(
+    'UPDATE "doctor_practitioner" SET "name" = $1, "profession" = $2, "phone" = $3, "email" = $4 WHERE "id" = $5 AND "networkId" IN (SELECT "id" FROM "doctor_network" WHERE "ownerId" = $6)',
+    [practitioner.name, practitioner.profession, practitioner.phone || null, practitioner.email || null, practitioner.id, userId],
+  );
+  return getDoctorNetwork(userId);
+}
+
 export async function saveDoctorNetwork(
   userId: string,
   input: { name: string; address: string; phone?: string; practitioners: Array<{ name: string; profession: string; phone?: string; email?: string }> },

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Trash2, Plus } from "lucide-react";
+import { Check, Pencil, Trash2, Plus, X } from "lucide-react";
 
 const emptyPractitioner = { name: "", profession: "", phone: "", email: "" };
 
@@ -23,6 +23,9 @@ export function DoctorOnboarding() {
   const [saving, setSaving] = useState(false);
   const [removingId, setRemovingId] = useState<string | null>(null);
   const [professionFilter, setProfessionFilter] = useState<string | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editingPractitioner, setEditingPractitioner] = useState<Practitioner | null>(null);
+  const [updatingId, setUpdatingId] = useState<string | null>(null);
 
   useEffect(() => {
     void fetch("/api/doctor-network").then(async (response) => {
@@ -60,6 +63,37 @@ export function DoctorOnboarding() {
 
   const updateDraft = (index: number, field: keyof typeof emptyPractitioner, value: string) => {
     setDrafts((current) => current.map((item, itemIndex) => itemIndex === index ? { ...item, [field]: value } : item));
+  };
+
+  const startEditing = (practitioner: Practitioner) => {
+    setEditingId(practitioner.id ?? null);
+    setEditingPractitioner({ ...practitioner, phone: practitioner.phone ?? "", email: practitioner.email ?? "" });
+    setNotice("");
+  };
+
+  const cancelEditing = () => {
+    setEditingId(null);
+    setEditingPractitioner(null);
+  };
+
+  const saveEdit = async () => {
+    if (!editingId || !editingPractitioner) return;
+    setUpdatingId(editingId);
+    setNotice("");
+    const response = await fetch("/api/doctor-network", {
+      method: "PATCH",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(editingPractitioner),
+    });
+    const data = await response.json();
+    setUpdatingId(null);
+    if (!response.ok) {
+      setNotice(data.error ?? "Impossible de modifier ce professionnel.");
+      return;
+    }
+    setNetwork(data);
+    cancelEditing();
+    setNotice("Professionnel modifié.");
   };
 
   const removeExisting = async (practitionerId: string) => {
@@ -163,23 +197,32 @@ export function DoctorOnboarding() {
                 className="flex items-start justify-between gap-4 rounded-2xl border bg-card p-4"
                 style={{ borderColor: professionStyles[professionTone(practitioner.profession)].border }}
               >
-                <div className="min-w-0">
-                  <p className="truncate font-semibold text-foreground">{practitioner.name}</p>
-                  <p className="text-sm font-semibold" style={{ color: professionStyles[professionTone(practitioner.profession)].text }}>{practitioner.profession}</p>
-                  {(practitioner.phone || practitioner.email) && (
-                    <p className="mt-1 truncate text-xs text-muted-foreground">{[practitioner.phone, practitioner.email].filter(Boolean).join(" · ")}</p>
-                  )}
-                </div>
-                <button
-                  type="button"
-                  onClick={() => practitioner.id && removeExisting(practitioner.id)}
-                  disabled={removingId === practitioner.id}
-                  className="flex shrink-0 items-center gap-1.5 rounded-lg border border-destructive/30 px-2.5 py-1.5 text-xs font-semibold text-destructive transition-colors hover:bg-destructive/10 disabled:opacity-50"
-                  aria-label={`Retirer ${practitioner.name} du réseau`}
-                >
-                  <Trash2 className="h-4 w-4" aria-hidden="true" />
-                  {removingId === practitioner.id ? "Suppression…" : "Supprimer"}
-                </button>
+                {editingId === practitioner.id && editingPractitioner ? (
+                  <div className="w-full space-y-3">
+                    <div className="grid gap-3 md:grid-cols-2">
+                      <input required value={editingPractitioner.name} onChange={(event) => setEditingPractitioner({ ...editingPractitioner, name: event.target.value })} className="rounded-lg border border-input bg-background px-3 py-2" aria-label="Nom du professionnel" />
+                      <input required value={editingPractitioner.profession} onChange={(event) => setEditingPractitioner({ ...editingPractitioner, profession: event.target.value })} className="rounded-lg border border-input bg-background px-3 py-2" aria-label="Spécialité du professionnel" />
+                      <input value={editingPractitioner.phone ?? ""} onChange={(event) => setEditingPractitioner({ ...editingPractitioner, phone: event.target.value })} className="rounded-lg border border-input bg-background px-3 py-2" placeholder="Téléphone (optionnel)" aria-label="Téléphone du professionnel" />
+                      <input type="email" value={editingPractitioner.email ?? ""} onChange={(event) => setEditingPractitioner({ ...editingPractitioner, email: event.target.value })} className="rounded-lg border border-input bg-background px-3 py-2" placeholder="Email (optionnel)" aria-label="Email du professionnel" />
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      <button type="button" onClick={saveEdit} disabled={updatingId === practitioner.id} className="flex items-center gap-1.5 rounded-lg bg-care px-3 py-2 text-xs font-semibold text-primary-foreground disabled:opacity-50"><Check className="h-4 w-4" aria-hidden="true" />{updatingId === practitioner.id ? "Enregistrement…" : "Enregistrer"}</button>
+                      <button type="button" onClick={cancelEditing} className="flex items-center gap-1.5 rounded-lg border border-border px-3 py-2 text-xs font-semibold text-muted-foreground"><X className="h-4 w-4" aria-hidden="true" />Annuler</button>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <div className="min-w-0">
+                      <p className="truncate font-semibold text-foreground">{practitioner.name}</p>
+                      <p className="text-sm font-semibold" style={{ color: professionStyles[professionTone(practitioner.profession)].text }}>{practitioner.profession}</p>
+                      {(practitioner.phone || practitioner.email) && <p className="mt-1 truncate text-xs text-muted-foreground">{[practitioner.phone, practitioner.email].filter(Boolean).join(" · ")}</p>}
+                    </div>
+                    <div className="flex shrink-0 gap-2">
+                      <button type="button" onClick={() => startEditing(practitioner)} className="flex items-center gap-1.5 rounded-lg border border-care/30 px-2.5 py-1.5 text-xs font-semibold text-care hover:bg-care/10" aria-label={`Modifier ${practitioner.name}`}><Pencil className="h-4 w-4" aria-hidden="true" />Modifier</button>
+                      <button type="button" onClick={() => practitioner.id && removeExisting(practitioner.id)} disabled={removingId === practitioner.id} className="flex items-center gap-1.5 rounded-lg border border-destructive/30 px-2.5 py-1.5 text-xs font-semibold text-destructive transition-colors hover:bg-destructive/10 disabled:opacity-50" aria-label={`Retirer ${practitioner.name} du réseau`}><Trash2 className="h-4 w-4" aria-hidden="true" />{removingId === practitioner.id ? "Suppression…" : "Supprimer"}</button>
+                    </div>
+                  </>
+                )}
               </li>
             ))}
           </ul>

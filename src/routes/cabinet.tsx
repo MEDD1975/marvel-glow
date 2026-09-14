@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { authClient } from "@/lib/auth-client";
 import { put as putBlob } from "@vercel/blob/client";
@@ -301,8 +301,18 @@ function CabinetPage() {
             <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-care">Ouvrir <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" /></span>
           </button>
 
-          <Link
-            to="/annuaire"
+          <button
+            type="button"
+            onClick={() => {
+              setShowResourceConfig(false);
+              setShowNetworkConfig(true);
+              requestAnimationFrame(() => {
+                const section = document.getElementById("onboarding-title");
+                if (!section) return;
+                const top = section.getBoundingClientRect().top + window.scrollY - 128;
+                window.scrollTo({ top, behavior: "smooth" });
+              });
+            }}
             className="group flex flex-col rounded-3xl border border-care/20 bg-card p-6 text-left shadow-sm transition-all hover:-translate-y-1 hover:border-care/40 hover:shadow-lg hover:shadow-care/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-care/10 text-care ring-1 ring-care/15">
@@ -312,7 +322,7 @@ function CabinetPage() {
             <h2 className="mt-1.5 text-xl font-semibold text-foreground">Réseau professionnel</h2>
             <p className="mt-2 flex-1 text-sm leading-6 text-muted-foreground">Consultez les professionnels du réseau sur le territoire.</p>
             <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-care">Ouvrir <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" /></span>
-          </Link>
+          </button>
         </div>
 
       </section>

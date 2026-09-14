@@ -52,14 +52,16 @@ export function Header() {
             </Link>
           ))}
           </nav>
-          {isDoctorSpace && (
-            <Link
-              to="/"
-              className="rounded-full border border-care/25 px-3 py-1.5 text-xs font-semibold text-foreground"
-            >
-              Espace médecin
-            </Link>
-          )}
+          <Link
+            to={isDoctorSpace ? "/" : "/connexion-medecin"}
+            className={
+              isDoctorSpace
+                ? "rounded-full border border-care/25 px-3 py-1.5 text-xs font-semibold text-foreground"
+                : "rounded-full border border-transparent px-3 py-1.5 text-xs font-semibold text-muted-foreground transition-colors hover:border-border hover:text-foreground"
+            }
+          >
+            {isDoctorSpace ? "Espace médecin" : "Accéder à l’espace médecin"}
+          </Link>
         </div>
 
         {open && (
@@ -77,15 +79,17 @@ export function Header() {
               {item.label}
             </Link>
           ))}
-          {isDoctorSpace && (
-            <Link
-              to="/"
-              onClick={() => setOpen(false)}
-              className="mt-2 block rounded-lg border border-care/25 bg-care/10 px-3 py-3 text-base font-semibold text-care"
-            >
-              Espace médecin
-            </Link>
-          )}
+          <Link
+            to={isDoctorSpace ? "/" : "/connexion-medecin"}
+            onClick={() => setOpen(false)}
+            className={
+              isDoctorSpace
+                ? "mt-2 block rounded-lg border border-care/25 bg-care/10 px-3 py-3 text-base font-semibold text-care"
+                : "mt-2 block rounded-lg border border-transparent px-3 py-3 text-base font-semibold text-muted-foreground hover:bg-muted"
+            }
+          >
+            {isDoctorSpace ? "Espace médecin" : "Accéder à l’espace médecin"}
+          </Link>
         </nav>
         )}
       </div>

@@ -446,7 +446,19 @@ function CabinetPage() {
   <input id="video-title" required value={videoTitle} onChange={(event) => setVideoTitle(event.target.value)} placeholder="Ex. Les bons gestes après une entorse" className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground" />
   <p className="text-xs text-muted-foreground">Ce titre sera affiché au patient à la place de « Ressource partag��e ».</p>
             <label className="block text-sm font-medium text-foreground" htmlFor="doctor-file">Fichier à partager</label>
-            <input id="doctor-file" type="file" accept=".pdf,.jpg,.jpeg,.png,.heic,.heif,.webp,.mp4,.mov,.m4v,image/*,video/*,application/pdf" onChange={(event) => setSelectedFile(event.target.files?.[0] ?? null)} className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground file:mr-3 file:rounded-md file:border-0 file:bg-care/10 file:px-3 file:py-1 file:text-sm file:font-medium file:text-care" />
+            <input
+              id="doctor-file"
+              type="file"
+              accept=".pdf,.jpg,.jpeg,.png,.heic,.heif,.webp,.mp4,.mov,.m4v,image/*,video/*,application/pdf"
+              onChange={(event) => {
+                const file = event.target.files?.[0] ?? null;
+                setSelectedFile(file);
+                if (file && !videoTitle.trim()) {
+                  setVideoTitle(file.name.replace(/\.[^/.]+$/, ""));
+                }
+              }}
+              className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground file:mr-3 file:rounded-md file:border-0 file:bg-care/10 file:px-3 file:py-1 file:text-sm file:font-medium file:text-care"
+            />
             <p className="text-xs text-muted-foreground">PDF, JPG, PNG, HEIC, WEBP, MP4 ou MOV — 50 Mo maximum.</p>
             {selectedFile ? <div className="rounded-xl border border-care/30 bg-care/5 p-3" aria-live="polite">
               <p className="text-xs font-semibold uppercase tracking-wide text-care">Fichier sélectionné</p>

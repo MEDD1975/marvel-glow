@@ -96,7 +96,7 @@ function CabinetPage() {
     return () => {
       cancelled = true;
     };
-  }, [pathway]);
+  }, [cardNote, pathway]);
 
   const addDoctorVideo = async () => {
     if (!selectedFile && !videoUrl.trim()) {

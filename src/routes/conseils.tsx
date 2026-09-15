@@ -19,12 +19,13 @@ function matchCondition(value: string | undefined) {
   );
 }
 
-type ConseilsSearch = { c?: string | undefined; pathway?: string | undefined };
+type ConseilsSearch = { c?: string | undefined; pathway?: string | undefined; note?: string | undefined };
 
 export const Route = createFileRoute("/conseils")({
   validateSearch: (search: Record<string, unknown>): ConseilsSearch => ({
     c: typeof search["c"] === "string" ? search["c"] : undefined,
     pathway: typeof search["pathway"] === "string" ? search["pathway"] : undefined,
+    note: typeof search["note"] === "string" ? search["note"] : undefined,
   }),
   head: () => ({
     meta: [
@@ -48,7 +49,7 @@ export const Route = createFileRoute("/conseils")({
 });
 
 function ConseilsPage() {
-  const { c, pathway } = Route.useSearch();
+  const { c, pathway, note } = Route.useSearch();
   const navigate = useNavigate({ from: "/conseils" });
   const urlValue = c ?? pathway;
   const [activeId, setActiveId] = useState<string | undefined>(() => matchCondition(urlValue)?.id);
@@ -162,6 +163,11 @@ function ConseilsPage() {
         <div className="mt-6 rounded-2xl border border-border bg-card p-5 shadow-sm">
           <h2 className="font-semibold text-card-foreground">{selected.name}</h2>
           <p className="mt-1 text-sm text-muted-foreground">{selected.summary}</p>
+          {note ? (
+            <p className="mt-4 rounded-lg bg-care/10 px-3 py-2 text-sm font-medium text-care">
+              Consigne de votre médecin : {note}
+            </p>
+          ) : null}
         </div>
       )}
 

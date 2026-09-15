@@ -84,7 +84,8 @@ function CabinetPage() {
 
   // Carte remise au patient → ouvre le parcours attribué (étapes, conseils, vidéos, professionnels).
   useEffect(() => {
-    const cardTarget = `${window.location.origin}/conseils?c=${encodeURIComponent(pathway)}&src=carte`;
+    const noteParam = cardNote.trim() ? `&note=${encodeURIComponent(cardNote.trim())}` : "";
+    const cardTarget = `${window.location.origin}/conseils?c=${encodeURIComponent(pathway)}&src=carte${noteParam}`;
     setCardQr({ url: cardTarget, qr: null });
     let cancelled = false;
     void import("qrcode").then(async (mod) => {

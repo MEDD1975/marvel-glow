@@ -7,6 +7,7 @@ import { deleteDoctorPractitioner, getDoctorNetwork, getPublicDoctorNetworks, sa
 import { put } from "@vercel/blob";
 import { generateClientTokenFromReadWriteToken } from "@vercel/blob/client";
 import { createDoctorResource, deleteDoctorResource, listAllActiveDoctorResources, listDoctorResources } from "./lib/doctor-resource-db";
+import { createFollowUpStep, deleteFollowUpStep, listFollowUpSteps, reorderFollowUpSteps, updateFollowUpStep, type FollowUpAnswer, type FollowUpStepInput } from "./lib/follow-up-db";
 
 type ServerEntry = {
   fetch: (request: Request, env: unknown, ctx: unknown) => Promise<Response> | Response;
@@ -47,6 +48,43 @@ function isH3SwallowedErrorBody(body: string): boolean {
   } catch {
     return false;
   }
+}
+
+// Validates a doctor-authored follow-up step. All medical wording comes from the
+// doctor: nothing is defaulted or pre-filled here.
+function parseFollowUpStepInput(payload: Record<string, unknown>): { value: FollowUpStepInput } | { error: string } {
+  const rawTitle = payload["title"];
+  const title = typeof rawTitle === "string" ? rawTitle.trim() : "";
+  if (!title) return { error: "Le titre de l’étape est obligatoire." };
+  const rawInstruction = payload["instruction"];
+  const instruction = typeof rawInstruction === "string" ? rawInstruction.trim() : "";
+  const rawDelay = payload["delayText"];
+  const delayText = typeof rawDelay === "string" && rawDelay.trim() ? rawDelay.trim() : null;
+  const rawQuestion = payload["question"];
+  const question = typeof rawQuestion === "string" && rawQuestion.trim() ? rawQuestion.trim() : null;
+
+  let answers: FollowUpAnswer[] = [];
+  if (question) {
+    const rawAnswers = Array.isArray(payload["answers"]) ? (payload["answers"] as unknown[]) : [];
+    answers = rawAnswers
+      .map((item): FollowUpAnswer | null => {
+        if (!item || typeof item !== "object") return null;
+        const entry = item as Record<string, unknown>;
+        const rawLabel = entry["label"];
+        const label = typeof rawLabel === "string" ? rawLabel.trim() : "";
+        if (!label) return null;
+        const action = entry["action"] === "redirect" ? "redirect" : "continue";
+        const rawRedirect = entry["redirectMessage"];
+        const redirectMessage = action === "redirect" && typeof rawRedirect === "string" && rawRedirect.trim() ? rawRedirect.trim() : null;
+        const rawId = entry["id"];
+        return { id: typeof rawId === "string" && rawId ? rawId : `answer_${crypto.randomUUID()}`, label, action, redirectMessage };
+      })
+      .filter((item): item is FollowUpAnswer => item !== null)
+      .slice(0, 3);
+    if (answers.length < 2) return { error: "Une question de contrôle doit proposer 2 ou 3 réponses." };
+  }
+
+  return { value: { title, instruction, delayText, question, answers } };
 }
 
 export default {
@@ -122,6 +160,42 @@ export default {
           console.error("[v0] doctor file upload failed", error);
           return Response.json({ error: "Le fichier n’a pas pu être enregistré. Réessayez." }, { status: 500 });
         }
+      }
+      if (url.pathname === "/api/follow-up-steps") {
+        const conditionId = url.searchParams.get("conditionId") ?? undefined;
+        const session = await auth.api.getSession({ headers: request.headers });
+        if (request.method === "GET") {
+          return Response.json(session?.user ? await listFollowUpSteps(session.user.id, conditionId) : await listFollowUpSteps(undefined, conditionId));
+        }
+        if (!session?.user) return Response.json({ error: "Votre session médecin a expiré. Reconnectez-vous." }, { status: 401 });
+        if (request.method === "POST") {
+          const payload = await request.json() as { conditionId?: unknown; reorder?: unknown } & Record<string, unknown>;
+          if (Array.isArray(payload.reorder)) {
+            if (typeof payload.conditionId !== "string" || !payload.conditionId.trim()) return Response.json({ error: "Trouble manquant." }, { status: 400 });
+            const orderedIds = payload.reorder.filter((item): item is string => typeof item === "string");
+            return Response.json(await reorderFollowUpSteps(session.user.id, payload.conditionId, orderedIds));
+          }
+          if (typeof payload.conditionId !== "string" || !payload.conditionId.trim()) return Response.json({ error: "Choisissez un trouble." }, { status: 400 });
+          const parsed = parseFollowUpStepInput(payload);
+          if ("error" in parsed) return Response.json({ error: parsed.error }, { status: 400 });
+          return Response.json(await createFollowUpStep(session.user.id, payload.conditionId, parsed.value), { status: 201 });
+        }
+        if (request.method === "PATCH") {
+          const payload = await request.json() as { id?: unknown } & Record<string, unknown>;
+          if (typeof payload.id !== "string" || !payload.id) return Response.json({ error: "Étape introuvable." }, { status: 400 });
+          const parsed = parseFollowUpStepInput(payload);
+          if ("error" in parsed) return Response.json({ error: parsed.error }, { status: 400 });
+          const updated = await updateFollowUpStep(session.user.id, payload.id, parsed.value);
+          if (!updated) return Response.json({ error: "Étape introuvable." }, { status: 404 });
+          return Response.json(updated);
+        }
+        if (request.method === "DELETE") {
+          const payload = await request.json() as { id?: string };
+          if (!payload.id) return Response.json({ error: "Étape introuvable." }, { status: 400 });
+          await deleteFollowUpStep(session.user.id, payload.id);
+          return Response.json({ ok: true });
+        }
+        return new Response("Method Not Allowed", { status: 405 });
       }
       if (url.pathname === "/api/public-networks" && request.method === "GET") {
         const networks = await getPublicDoctorNetworks();

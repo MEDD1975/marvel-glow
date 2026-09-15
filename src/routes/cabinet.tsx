@@ -21,6 +21,7 @@ import { conditions } from "@/lib/conditions";
 import type { DoctorResourceRecord } from "@/lib/doctor-resource-db";
 import { PatientCard } from "@/components/PatientCard";
 import { DoctorOnboarding } from "@/components/DoctorOnboarding";
+import { FollowUpStepsManager } from "@/components/FollowUpStepsManager";
 
 
 export const Route = createFileRoute("/cabinet")({
@@ -433,7 +434,7 @@ function CabinetPage() {
           <div>
             <p className="text-xs font-semibold uppercase tracking-wide text-care">Espace médecin</p>
             <h2 id="doctor-content-title" className="mt-2 text-2xl font-semibold text-foreground">Choisissez ce que le patient peut voir</h2>
-            <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">Ajoutez une vidéo ou un document d’information par trouble. Ces ressources seront proposées par l’Assistant Kivoir lorsque le patient demande un conseil ou une explication.</p>
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">Composez le suivi par étapes du patient et ajoutez les vidéos ou documents d’information par trouble. Le patient retrouvera vos étapes et vos ressources dans son espace.</p>
           </div>
         </div>
         <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_1.2fr]">
@@ -489,6 +490,9 @@ function CabinetPage() {
             </div>
           </div>
         </div>
+        <div className="mt-6">
+          <FollowUpStepsManager conditionId={pathway} conditionLabel={pathwayLabel} />
+        </div>
       </section>
 
       {/* Legal / positioning */}
@@ -521,7 +525,7 @@ function CabinetPage() {
           />
           <FaqCard
             question="Que peut-il retrouver dans son espace ?"
-            answer="L’Assistant Kivoir, les conseils et vidéos sélectionnés, ainsi que l’annuaire du réseau professionnel."
+            answer="Son suivi par étapes, les conseils et vidéos sélectionnés, ainsi que l’annuaire du réseau professionnel."
           />
           <FaqCard
             question="Puis-je adapter l’accompagnement ?"

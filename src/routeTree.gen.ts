@@ -16,6 +16,7 @@ import { Route as ConnexionMedecinRouteImport } from './routes/connexion-medecin
 import { Route as ConseilsRouteImport } from './routes/conseils'
 import { Route as OrientationRouteImport } from './routes/orientation'
 import { Route as ParcoursRouteImport } from './routes/parcours'
+import { Route as SuiviRouteImport } from './routes/suivi'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -52,6 +53,11 @@ const ParcoursRoute = ParcoursRouteImport.update({
   path: '/parcours',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SuiviRoute = SuiviRouteImport.update({
+  id: '/suivi',
+  path: '/suivi',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -61,6 +67,7 @@ export interface FileRoutesByFullPath {
   '/conseils': typeof ConseilsRoute
   '/orientation': typeof OrientationRoute
   '/parcours': typeof ParcoursRoute
+  '/suivi': typeof SuiviRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -70,6 +77,7 @@ export interface FileRoutesByTo {
   '/conseils': typeof ConseilsRoute
   '/orientation': typeof OrientationRoute
   '/parcours': typeof ParcoursRoute
+  '/suivi': typeof SuiviRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -80,6 +88,7 @@ export interface FileRoutesById {
   '/conseils': typeof ConseilsRoute
   '/orientation': typeof OrientationRoute
   '/parcours': typeof ParcoursRoute
+  '/suivi': typeof SuiviRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -91,6 +100,7 @@ export interface FileRouteTypes {
     | '/conseils'
     | '/orientation'
     | '/parcours'
+    | '/suivi'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -100,6 +110,7 @@ export interface FileRouteTypes {
     | '/conseils'
     | '/orientation'
     | '/parcours'
+    | '/suivi'
   id:
     | '__root__'
     | '/'
@@ -109,6 +120,7 @@ export interface FileRouteTypes {
     | '/conseils'
     | '/orientation'
     | '/parcours'
+    | '/suivi'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -119,6 +131,7 @@ export interface RootRouteChildren {
   ConseilsRoute: typeof ConseilsRoute
   OrientationRoute: typeof OrientationRoute
   ParcoursRoute: typeof ParcoursRoute
+  SuiviRoute: typeof SuiviRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -172,6 +185,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ParcoursRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/suivi': {
+      id: '/suivi'
+      path: '/suivi'
+      fullPath: '/suivi'
+      preLoaderRoute: typeof SuiviRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -183,6 +203,7 @@ const rootRouteChildren: RootRouteChildren = {
   ConseilsRoute: ConseilsRoute,
   OrientationRoute: OrientationRoute,
   ParcoursRoute: ParcoursRoute,
+  SuiviRoute: SuiviRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

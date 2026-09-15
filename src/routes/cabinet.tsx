@@ -457,8 +457,14 @@ function CabinetPage() {
                   setVideoTitle(file.name.replace(/\.[^/.]+$/, ""));
                 }
               }}
-              className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground file:mr-3 file:rounded-md file:border-0 file:bg-care/10 file:px-3 file:py-1 file:text-sm file:font-medium file:text-care"
+              className="sr-only"
             />
+            <label
+              htmlFor="doctor-file"
+              className="inline-flex cursor-pointer items-center rounded-lg bg-care/10 px-3 py-2 text-sm font-semibold text-care transition-colors hover:bg-care/15 focus-within:ring-2 focus-within:ring-ring"
+            >
+              Choisir le fichier
+            </label>
             <p className="text-xs text-muted-foreground">PDF, JPG, PNG, HEIC, WEBP, MP4 ou MOV — 50 Mo maximum.</p>
             {selectedFile ? <div className="rounded-xl border border-care/30 bg-care/5 p-3" aria-live="polite">
               <p className="text-xs font-semibold uppercase tracking-wide text-care">Fichier sélectionné</p>

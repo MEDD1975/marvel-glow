@@ -7,12 +7,13 @@ import { readStoredPathway, writeStoredPathway } from "@/lib/patient-pathway";
 import { readFollowUpProgress, writeFollowUpProgress } from "@/lib/follow-up-progress";
 import type { FollowUpAnswer, FollowUpStepRecord } from "@/lib/follow-up-db";
 
-type SuiviSearch = { c?: string | undefined; pathway?: string | undefined };
+type SuiviSearch = { c?: string | undefined; pathway?: string | undefined; src?: string | undefined };
 
 export const Route = createFileRoute("/suivi")({
   validateSearch: (search: Record<string, unknown>): SuiviSearch => ({
     c: typeof search["c"] === "string" ? search["c"] : undefined,
     pathway: typeof search["pathway"] === "string" ? search["pathway"] : undefined,
+    src: typeof search["src"] === "string" ? search["src"] : undefined,
   }),
   head: () => ({
     meta: [
@@ -34,7 +35,7 @@ function matchConditionId(value: string | undefined) {
 }
 
 function SuiviPage() {
-  const { c, pathway } = Route.useSearch();
+  const { c, pathway, src } = Route.useSearch();
   const urlValue = c ?? pathway;
   const [conditionId, setConditionId] = useState<string | undefined>(() => matchConditionId(urlValue));
   const [hydrated, setHydrated] = useState(false);
@@ -66,7 +67,8 @@ function SuiviPage() {
     }
     let cancelled = false;
     setLoading(true);
-    setCompletedStepIds(readFollowUpProgress(conditionId).completedStepIds);
+    // A freshly scanned doctor card starts a new consultation follow-up.
+    setCompletedStepIds(src === "carte" ? [] : readFollowUpProgress(conditionId).completedStepIds);
     void fetch(`/api/follow-up-steps?conditionId=${encodeURIComponent(conditionId)}`)
       .then(async (response) => (response.ok ? ((await response.json()) as FollowUpStepRecord[]) : []))
       .then((rows) => {
@@ -253,11 +255,11 @@ function SuiviPage() {
           {allDone ? (
             <section className="mt-6 rounded-2xl border border-care/30 bg-care/5 p-6 text-center">
               <CheckCircle2 className="mx-auto h-8 w-8 text-care" aria-hidden="true" />
-              <h2 className="mt-2 text-lg font-semibold text-foreground">Vous avez parcouru toutes les étapes</h2>
-              <p className="mt-1 text-sm leading-6 text-muted-foreground">Continuez à suivre les consignes de votre professionnel. En cas de doute ou d’aggravation, recontactez-le.</p>
+              <h2 className="mt-2 text-lg font-semibold text-foreground">Vous avez consulté toutes les étapes disponibles</h2>
+              <p className="mt-1 text-sm leading-6 text-muted-foreground">Cela ne signifie pas que votre prise en charge est terminée. Continuez à suivre les consignes reçues lors de votre consultation et recontactez votre médecin en cas de doute ou d’aggravation.</p>
               <div className="mt-4 flex flex-wrap justify-center gap-2">
                 <Link to="/conseils" search={{ c: condition.id }} className="inline-flex items-center gap-2 rounded-xl border border-care/40 bg-card px-4 py-2.5 text-sm font-semibold text-care hover:bg-care/10">Revoir mes conseils</Link>
-                <button type="button" onClick={resetProgress} className="inline-flex items-center gap-2 rounded-xl border border-border bg-card px-4 py-2.5 text-sm font-semibold text-muted-foreground hover:text-foreground">Recommencer le suivi</button>
+                <button type="button" onClick={resetProgress} className="inline-flex items-center gap-2 rounded-xl border border-border bg-card px-4 py-2.5 text-sm font-semibold text-muted-foreground hover:text-foreground">Revoir le suivi</button>
               </div>
             </section>
           ) : null}

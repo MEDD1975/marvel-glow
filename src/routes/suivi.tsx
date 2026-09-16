@@ -131,7 +131,7 @@ function SuiviPage() {
         </span>
         <h1 className="mt-3 text-2xl font-semibold text-foreground">{condition ? `Suivi — ${condition.name}` : "Mon suivi"}</h1>
         <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-muted-foreground">
-          Avancez à votre rythme dans les étapes définies par votre professionnel de santé. Répondez aux questions lorsqu’elles apparaissent.
+          Retrouvez les repères généraux liés à votre trouble après votre consultation. Votre médecin reste la référence pour votre situation.
         </p>
       </div>
 
@@ -144,11 +144,34 @@ function SuiviPage() {
       ) : loading ? (
         <p className="mt-10 text-center text-sm text-muted-foreground">Chargement de votre suivi…</p>
       ) : steps.length === 0 ? (
-        <div className="mt-10 rounded-2xl border border-dashed border-border bg-card px-5 py-6 text-center">
-          <p className="text-lg font-semibold text-foreground">Aucune étape n’a encore été définie</p>
-          <p className="mt-1 text-sm leading-6 text-muted-foreground">Votre professionnel de santé n’a pas encore ajouté d’étapes de suivi pour ce trouble. Revenez plus tard ou consultez vos conseils.</p>
-          <Link to="/conseils" search={{ c: condition.id }} className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-care">Voir la bibliothèque de conseils <ArrowRight className="h-4 w-4" aria-hidden="true" /></Link>
-        </div>
+        <section className="mt-8 space-y-4" aria-labelledby="general-follow-up-title">
+          <div className="rounded-2xl border border-care/30 bg-care/5 p-5">
+            <p className="text-xs font-semibold uppercase tracking-[0.12em] text-care">Après votre consultation</p>
+            <h2 id="general-follow-up-title" className="mt-1 text-lg font-semibold text-foreground">Repères généraux pour votre suivi</h2>
+            <p className="mt-2 text-sm leading-6 text-muted-foreground">Ces informations complètent les explications de votre médecin. Elles ne remplacent pas ses consignes et ne correspondent pas à un calendrier à suivre automatiquement.</p>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-3">
+            <article className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+              <p className="text-xs font-semibold uppercase tracking-[0.12em] text-care">1 · Après la consultation</p>
+              <h3 className="mt-2 font-semibold text-foreground">Relire les consignes</h3>
+              <p className="mt-2 text-sm leading-6 text-muted-foreground">{condition.firstStep}</p>
+            </article>
+            <article className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+              <p className="text-xs font-semibold uppercase tracking-[0.12em] text-care">2 · Selon votre évolution</p>
+              <h3 className="mt-2 font-semibold text-foreground">Poursuivre progressivement</h3>
+              <p className="mt-2 text-sm leading-6 text-muted-foreground">Adaptez la reprise de vos activités aux consignes reçues et à votre évolution. Ne forcez pas et demandez conseil en cas de doute.</p>
+            </article>
+            <article className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+              <p className="text-xs font-semibold uppercase tracking-[0.12em] text-care">3 · Si besoin</p>
+              <h3 className="mt-2 font-semibold text-foreground">Recontacter un professionnel</h3>
+              <p className="mt-2 text-sm leading-6 text-muted-foreground">{condition.whoToSee}</p>
+            </article>
+          </div>
+          <div className="flex flex-wrap gap-3">
+            <Link to="/conseils" search={{ c: condition.id }} className="inline-flex items-center gap-2 rounded-xl bg-care px-4 py-2.5 text-sm font-semibold text-care-foreground hover:opacity-90">Voir la bibliothèque de conseils <ArrowRight className="h-4 w-4" /></Link>
+            <Link to="/annuaire" className="inline-flex items-center gap-2 rounded-xl border border-border bg-card px-4 py-2.5 text-sm font-semibold text-foreground hover:border-care">Ouvrir l’annuaire <MapPin className="h-4 w-4" /></Link>
+          </div>
+        </section>
       ) : (
         <>
           {/* Frise de progression */}

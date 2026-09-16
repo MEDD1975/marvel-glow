@@ -86,7 +86,7 @@ function CabinetPage() {
   // Carte remise au patient → ouvre le parcours attribué (étapes, conseils, vidéos, professionnels).
   useEffect(() => {
     const noteParam = cardNote.trim() ? `&note=${encodeURIComponent(cardNote.trim())}` : "";
-    const cardTarget = `${window.location.origin}/conseils?c=${encodeURIComponent(pathway)}&src=carte${noteParam}`;
+    const cardTarget = `${window.location.origin}/suivi?c=${encodeURIComponent(pathway)}&src=carte${noteParam}`;
     setCardQr({ url: cardTarget, qr: null });
     let cancelled = false;
     void import("qrcode").then(async (mod) => {
@@ -389,7 +389,7 @@ function CabinetPage() {
           <div className="space-y-4 rounded-2xl border border-border bg-card p-6 print:hidden">
             <div>
               <p className="text-sm font-medium text-foreground">Parcours ouvert par la carte</p>
-              <p className="mt-1 text-xs leading-5 text-muted-foreground">La carte ouvrira automatiquement le trouble ou parcours choisi dans la bibliothèque de ressources.</p>
+              <p className="mt-1 text-xs leading-5 text-muted-foreground">La carte ouvrira automatiquement le suivi du trouble ou parcours choisi.</p>
               <label htmlFor="card-pathway-default" className="mt-3 block text-xs font-semibold uppercase tracking-wide text-care">Choix du parcours</label>
               <select id="card-pathway-default" value={pathway} disabled aria-describedby="card-pathway-default-hint" className="mt-1 w-full cursor-not-allowed rounded-lg border border-input bg-muted px-3 py-2 text-sm font-medium text-foreground opacity-90">
                 {conditions.map((condition) => <option key={condition.id} value={condition.id}>{condition.name}</option>)}

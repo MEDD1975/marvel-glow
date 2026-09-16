@@ -162,8 +162,8 @@ export function FollowUpStepsManager({ conditionId, conditionLabel }: { conditio
       <div className="flex items-center gap-2">
         <ListChecks className="h-5 w-5 text-care" aria-hidden="true" />
         <div>
-          <p className="text-xs font-semibold uppercase tracking-wide text-care">Suivi par étapes</p>
-          <h3 className="mt-0.5 text-lg font-semibold text-foreground">Étapes du suivi — {conditionLabel}</h3>
+<p className="text-xs font-semibold uppercase tracking-wide text-care">Optionnel</p>
+  <h3 className="mt-0.5 text-lg font-semibold text-foreground">Ajouter des étapes personnalisées — {conditionLabel}</h3>
         </div>
         <span className="ml-auto rounded-full bg-care/10 px-2 py-1 text-xs font-medium text-care">{orderedSteps.length}</span>
       </div>

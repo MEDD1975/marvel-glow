@@ -13,7 +13,7 @@ export function Header() {
   const location = useLocation();
   const isDoctorLogin = location.pathname.startsWith("/connexion-medecin");
   const isDoctorSpace = location.pathname.startsWith("/cabinet") || isDoctorLogin;
-  const navItems = isDoctorSpace ? [] : patientNavItems;
+  const navItems = patientNavItems;
 
   return (
     <header className="sticky top-0 z-50 border-b border-border/70 bg-background/80 backdrop-blur-xl print:hidden">

@@ -28,7 +28,7 @@ export function Header() {
           setOpen(false);
           if (isDoctorSpace) {
             event.preventDefault();
-            window.location.assign("/cabinet/accueil");
+            window.dispatchEvent(new CustomEvent("kivoir:doctor-home"));
           }
         }}>
           <Logo size="md" showTagline />
@@ -61,7 +61,7 @@ export function Header() {
                 setOpen(false);
                 if (isDoctorSpace && item.to === "/cabinet/accueil") {
                   event.preventDefault();
-                  window.location.assign("/cabinet/accueil");
+                  window.dispatchEvent(new CustomEvent("kivoir:doctor-home"));
                 }
               }}
             >
@@ -91,7 +91,7 @@ export function Header() {
                 setOpen(false);
                 if (isDoctorSpace && item.to === "/cabinet/accueil") {
                   event.preventDefault();
-                  window.location.assign("/cabinet/accueil");
+                  window.dispatchEvent(new CustomEvent("kivoir:doctor-home"));
                 }
               }}
               activeOptions={{ exact: item.exact ?? false }}

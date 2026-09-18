@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { ArrowRight, FileText, Users } from "lucide-react";
 
@@ -20,6 +20,12 @@ function DoctorIntro({ onStart }: { onStart: () => void }) {
 
 export function DoctorHome() {
   const [hasStarted, setHasStarted] = useState(false);
+
+  useEffect(() => {
+    const showIntro = () => setHasStarted(false);
+    window.addEventListener("kivoir:doctor-home", showIntro);
+    return () => window.removeEventListener("kivoir:doctor-home", showIntro);
+  }, []);
 
   if (!hasStarted) {
     return <DoctorIntro onStart={() => setHasStarted(true)} />;

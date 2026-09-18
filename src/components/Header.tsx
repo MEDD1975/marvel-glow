@@ -8,12 +8,18 @@ const patientNavItems = [
   { to: "/annuaire", label: "Réseau de votre médecin" },
 ];
 
+const doctorNavItems = [
+  { to: "/", label: "Accueil", exact: true },
+  { to: "/cabinet", label: "Bibliothèque de contenus", exact: true },
+  { to: "/annuaire", label: "Réseau professionnel" },
+];
+
 export function Header() {
   const [open, setOpen] = useState(false);
   const location = useLocation();
   const isDoctorLogin = location.pathname.startsWith("/connexion-medecin");
   const isDoctorSpace = location.pathname.startsWith("/cabinet") || isDoctorLogin;
-  const navItems = patientNavItems;
+  const navItems = isDoctorSpace ? doctorNavItems : patientNavItems;
 
   return (
     <header className="sticky top-0 z-50 border-b border-border/70 bg-background/80 backdrop-blur-xl print:hidden">
@@ -59,7 +65,7 @@ export function Header() {
                 : "rounded-full border border-transparent px-3 py-1.5 text-xs font-semibold text-muted-foreground transition-colors hover:border-border hover:text-foreground"
             }
           >
-            {isDoctorSpace ? "Espace médecin" : "Accéder à l’espace médecin"}
+            {isDoctorSpace ? "Quitter l’espace médecin" : "Accéder à l’espace médecin"}
           </Link>
         </div>
 
@@ -90,7 +96,7 @@ export function Header() {
                 : "mt-2 block rounded-lg border border-transparent px-3 py-3 text-base font-semibold text-muted-foreground hover:bg-muted"
             }
           >
-            {isDoctorSpace ? "Espace médecin" : "Accéder à l’espace médecin"}
+            {isDoctorSpace ? "Quitter l’espace médecin" : "Accéder à l’espace médecin"}
           </Link>
         </nav>
         )}

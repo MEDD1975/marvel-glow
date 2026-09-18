@@ -84,8 +84,8 @@ export function AssistantHome({ initialStarted = false, pathway }: { initialStar
   }
 
   return (
-    <section className="px-4 py-4 md:py-6 lg:py-8">
-      <div className="mx-auto max-w-2xl rounded-[2rem] border border-care/20 bg-card p-4 shadow-lg shadow-care/10 md:max-w-5xl md:p-6 lg:p-8">
+    <section className="px-4 py-3 md:py-4 lg:py-5">
+      <div className="mx-auto w-full max-w-6xl rounded-[2rem] border border-care/20 bg-card p-4 shadow-lg shadow-care/10 md:p-5 lg:p-6">
         <div className="flex flex-wrap items-center gap-2">
           <span className="inline-flex items-center gap-2 rounded-full bg-care/10 px-3 py-1.5 text-sm font-semibold text-care">
             <Bot className="h-4 w-4" aria-hidden="true" />
@@ -102,7 +102,7 @@ export function AssistantHome({ initialStarted = false, pathway }: { initialStar
           Retrouvez vos questions, vos conseils et les bons professionnels pour mieux comprendre la suite de votre prise en charge.
         </p>
 
-        <div className="mt-5 grid gap-3 md:mt-5 md:grid-cols-3 md:gap-3">
+        <div className="mt-4 grid gap-3 md:mt-4 md:grid-cols-3 md:gap-3">
           <Link
             to="/suivi"
             search={effectivePathway ? { c: effectivePathway } : undefined}

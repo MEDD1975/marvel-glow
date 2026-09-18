@@ -27,7 +27,25 @@ export function MedicalDisclaimer({ className = "" }: { className?: string }) {
   );
 }
 
-export function AssistantHome({ pathway }: { pathway?: string }) {
+function KivoirCover({ onStart }: { onStart: () => void }) {
+  return (
+    <section className="flex justify-center py-2 md:py-4">
+      <div className="w-full max-w-2xl rounded-[2rem] border border-care/20 bg-card px-6 py-8 text-center shadow-lg shadow-care/10 md:px-12 md:py-10">
+        <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-3xl border border-care/20 bg-care/10 p-4">
+          <img src="/favicon.svg" alt="" className="h-full w-full" />
+        </div>
+        <p className="mt-5 text-sm font-semibold uppercase tracking-[0.16em] text-care">Votre espace patient</p>
+        <h1 className="mt-2 text-5xl font-semibold tracking-[-0.05em] text-foreground md:text-6xl">Kivoir</h1>
+        <p className="mx-auto mt-4 max-w-md text-pretty text-lg leading-8 text-muted-foreground">Votre outil d&apos;information et d&apos;aide au parcours de soins, proposé par votre médecin.</p>
+        <button type="button" onClick={onStart} className="mt-7 inline-flex min-h-12 items-center justify-center rounded-xl bg-primary px-8 py-3 text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/20 transition hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">Commencer</button>
+        <p className="mt-4 text-xs text-muted-foreground">Un accompagnement simple, entre deux rendez-vous</p>
+      </div>
+    </section>
+  );
+}
+
+export function AssistantHome({ initialStarted = false, pathway }: { initialStarted?: boolean; pathway?: string }) {
+  const [hasStarted, setHasStarted] = useState(initialStarted || Boolean(pathway));
   const [storedPathway, setStoredPathway] = useState<string | undefined>(undefined);
   useEffect(() => {
     if (pathway) {
@@ -38,6 +56,10 @@ export function AssistantHome({ pathway }: { pathway?: string }) {
     }
   }, [pathway]);
   const effectivePathway = pathway ?? storedPathway;
+
+  if (!hasStarted) {
+    return <KivoirCover onStart={() => setHasStarted(true)} />;
+  }
 
   return (
     <section className="px-4 py-3 md:py-4 lg:py-5">

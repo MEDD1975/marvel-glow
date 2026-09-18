@@ -21,7 +21,6 @@ import { conditions } from "@/lib/conditions";
 import type { DoctorResourceRecord } from "@/lib/doctor-resource-db";
 import { PatientCard } from "@/components/PatientCard";
 import { DoctorOnboarding } from "@/components/DoctorOnboarding";
-import { FollowUpStepsManager } from "@/components/FollowUpStepsManager";
 
 
 export const Route = createFileRoute("/cabinet")({
@@ -434,7 +433,7 @@ function CabinetPage() {
           <div>
             <p className="text-xs font-semibold uppercase tracking-wide text-care">Espace médecin</p>
             <h2 id="doctor-content-title" className="mt-2 text-2xl font-semibold text-foreground">Choisissez ce que le patient peut voir</h2>
-            <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">Composez le suivi par étapes du patient et ajoutez les vidéos ou documents d’information par trouble. Le patient retrouvera vos étapes et vos ressources dans son espace.</p>
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">Ajoutez les vidéos ou documents d’information que votre patient pourra retrouver après la consultation, dans sa bibliothèque de conseils.</p>
           </div>
         </div>
         <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_1.2fr]">
@@ -489,9 +488,6 @@ function CabinetPage() {
               {conditionVideos.length === 0 ? <p className="rounded-xl border border-dashed border-border p-4 text-sm leading-6 text-muted-foreground">Aucune ressource pour ce trouble. Les ressources générales de Kivoir restent utilisées.</p> : conditionVideos.map((video) => <article key={video.id} className="flex items-start justify-between gap-3 rounded-xl border border-border bg-background p-3"><div><p className="font-semibold text-foreground">{video.title}</p><p className="mt-1 text-xs text-care">{conditions.find((condition) => condition.id === video.conditionId)?.name ?? video.conditionId}</p><p className="mt-1 text-xs text-muted-foreground">{video.source ?? video.filename ?? "Fichier partagé"}</p></div><button type="button" onClick={() => void deleteDoctorVideo(video.id)} aria-label={`Supprimer ${video.title}`} className="rounded-lg p-2 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"><Trash2 className="h-4 w-4" /></button></article>)}
             </div>
           </div>
-        </div>
-        <div className="mt-6">
-          <FollowUpStepsManager conditionId={pathway} conditionLabel={pathwayLabel} />
         </div>
       </section>
 

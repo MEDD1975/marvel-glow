@@ -66,8 +66,7 @@ function KivoirCover({ onStart }: { onStart: () => void }) {
   );
 }
 
-export function AssistantHome({ initialStarted = false, pathway }: { initialStarted?: boolean; pathway?: string }) {
-  const [hasStarted, setHasStarted] = useState(initialStarted);
+export function AssistantHome({ pathway }: { pathway?: string }) {
   const [storedPathway, setStoredPathway] = useState<string | undefined>(undefined);
   useEffect(() => {
     if (pathway) {
@@ -78,10 +77,6 @@ export function AssistantHome({ initialStarted = false, pathway }: { initialStar
     }
   }, [pathway]);
   const effectivePathway = pathway ?? storedPathway;
-
-  if (!hasStarted) {
-    return <KivoirCover onStart={() => setHasStarted(true)} />;
-  }
 
   return (
     <section className="px-4 py-3 md:py-4 lg:py-5">

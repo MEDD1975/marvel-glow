@@ -23,9 +23,9 @@ function HomePage() {
   const { started, pathway } = Route.useSearch();
 
   return (
-    <main>
+    <main className="flex flex-col px-4 py-6 md:px-8 lg:py-8">
       <AssistantHome initialStarted={started || Boolean(pathway)} pathway={pathway} />
-      <section className="mx-auto w-full max-w-6xl px-4 pb-8 sm:px-6 lg:px-8">
+      <section className="mx-auto w-full max-w-6xl pb-8">
         <MedicalDisclaimer />
       </section>
     </main>

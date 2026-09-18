@@ -38,13 +38,12 @@ export function Header() {
             <Link
               key={item.to}
               to={item.to}
-              activeProps={{ className: "font-semibold text-foreground" }}
-              inactiveProps={{ className: "text-muted-foreground hover:text-foreground" }}
               activeOptions={{ exact: item.exact ?? false }}
+              aria-current={(item.exact ? location.pathname === item.to : location.pathname.startsWith(item.to)) ? "page" : undefined}
               className={
                 (item.exact ? location.pathname === item.to : location.pathname.startsWith(item.to))
-                  ? "rounded-full border border-care/25 px-3 py-1.5 font-semibold text-foreground"
-                  : "rounded-full border border-transparent px-3 py-1.5 text-muted-foreground hover:border-border hover:text-foreground"
+                  ? "rounded-full border-2 border-care bg-care/10 px-3 py-1.5 font-bold text-foreground shadow-sm"
+                  : "rounded-full border border-transparent px-3 py-1.5 text-muted-foreground transition-colors hover:border-border hover:text-foreground"
               }
               onClick={() => setOpen(false)}
             >
@@ -71,10 +70,13 @@ export function Header() {
               key={item.to}
               to={item.to}
               onClick={() => setOpen(false)}
-              activeProps={{ className: "border border-care/25 bg-care/10 font-semibold text-care" }}
-              inactiveProps={{ className: "border border-transparent text-foreground hover:bg-muted" }}
               activeOptions={{ exact: item.exact ?? false }}
-              className="block rounded-lg px-3 py-3 text-base"
+              aria-current={(item.exact ? location.pathname === item.to : location.pathname.startsWith(item.to)) ? "page" : undefined}
+              className={
+                (item.exact ? location.pathname === item.to : location.pathname.startsWith(item.to))
+                  ? "block rounded-lg border-2 border-care bg-care/10 px-3 py-3 text-base font-bold text-care"
+                  : "block rounded-lg border border-transparent px-3 py-3 text-base text-foreground hover:bg-muted"
+              }
             >
               {item.label}
             </Link>

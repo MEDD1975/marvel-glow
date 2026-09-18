@@ -178,7 +178,7 @@ function CabinetPage() {
     } catch (error) {
       console.error("[v0] doctor resource upload failed", error);
       setIsUploading(false);
-      notifyError(error instanceof DOMException && error.name === "AbortError" ? "L’enregistrement prend trop de temps. Vérifiez votre connexion ou utilisez un lien HTTPS vers la vidéo." : "L’enregistrement a échoué. Vérifiez votre connexion et réessayez.");
+      notifyError(error instanceof DOMException && error.name === "AbortError" ? "L��enregistrement prend trop de temps. Vérifiez votre connexion ou utilisez un lien HTTPS vers la vidéo." : "L’enregistrement a échoué. Vérifiez votre connexion et réessayez.");
     }
   };
 
@@ -296,7 +296,7 @@ function CabinetPage() {
             <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-care/10 text-care ring-1 ring-care/15">
               <Video className="h-7 w-7" aria-hidden="true" />
             </span>
-            <p className="mt-6 text-xs font-semibold uppercase tracking-[0.12em] text-care">2 · Bibliothèque de ressources</p>
+            <p className="mt-6 text-xs font-semibold uppercase tracking-[0.12em] text-care">2 · Bibliothèque de contenus</p>
             <h2 className="mt-1.5 text-xl font-semibold text-foreground">Partager des contenus médicaux</h2>
             <p className="mt-2 flex-1 text-sm leading-6 text-muted-foreground">Choisissez des vidéos ou des ressources validées à partager au patient.</p>
             <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-care">Ouvrir <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" /></span>
@@ -431,8 +431,8 @@ function CabinetPage() {
         <div className="flex items-start gap-3">
           <FileText className="mt-1 text-care" aria-hidden="true" />
           <div>
-            <p className="text-xs font-semibold uppercase tracking-wide text-care">Espace médecin</p>
-            <h2 id="doctor-content-title" className="mt-2 text-2xl font-semibold text-foreground">Choisissez ce que le patient peut voir</h2>
+            <p className="text-xs font-semibold uppercase tracking-wide text-care">Bibliothèque de fichiers</p>
+            <h2 id="doctor-content-title" className="mt-2 text-2xl font-semibold text-foreground">Créer le contenu destiné au patient</h2>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">Ajoutez les vidéos ou documents d’information que votre patient pourra retrouver après la consultation, dans sa bibliothèque de conseils.</p>
           </div>
         </div>
@@ -529,7 +529,7 @@ function CabinetPage() {
           />
           <FaqCard
             question="Kivoir remplace-t-il le suivi médical ?"
-            answer="Non. Kivoir informe et oriente ; le diagnostic, les décisions et le suivi restent du ressort du professionnel de santé."
+            answer="Non. Kivoir informe et oriente ; le diagnostic, les d��cisions et le suivi restent du ressort du professionnel de santé."
           />
         </div>
       </section>

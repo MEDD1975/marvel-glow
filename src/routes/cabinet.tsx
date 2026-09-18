@@ -242,7 +242,7 @@ function CabinetPage() {
   }
 
   return (
-    <main className={`mx-auto max-w-5xl px-4 py-10 print:py-0 ${showResourceConfig ? "flex flex-col" : ""}`}>
+    <main className={`mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 lg:px-8 print:py-0 ${showResourceConfig ? "flex flex-col" : ""}`}>
       {/* Hero + tableau de bord */}
       <section className={showNetworkConfig || showResourceConfig ? "hidden" : "print:hidden"}>
         <span className="inline-flex items-center gap-1.5 rounded-full border border-care/20 bg-care/5 px-3 py-1 text-xs font-medium text-care">

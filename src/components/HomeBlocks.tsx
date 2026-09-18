@@ -39,8 +39,8 @@ function KivoirCover({ onStart }: { onStart: () => void }) {
   }, []);
 
   return (
-    <section className="flex min-h-[calc(100svh-7rem)] items-center justify-center px-4 py-10 sm:min-h-[calc(100svh-5rem)]">
-      <div className="relative w-full max-w-2xl overflow-hidden rounded-[2rem] border border-care/20 bg-card px-6 py-10 text-center shadow-xl shadow-care/10 md:px-12 md:py-16">
+    <section className="flex items-center justify-center py-4 md:py-6">
+      <div className="relative w-full max-w-2xl overflow-hidden rounded-[2rem] border border-care/20 bg-card px-6 py-8 text-center shadow-xl shadow-care/10 md:px-12 md:py-10">
         <div className="pointer-events-none absolute -right-16 -top-16 h-40 w-40 rounded-full bg-care/10 blur-2xl" aria-hidden="true" />
         <div className="pointer-events-none absolute -bottom-20 -left-16 h-44 w-44 rounded-full bg-primary/10 blur-2xl" aria-hidden="true" />
         <div className="relative">

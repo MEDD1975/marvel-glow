@@ -9,7 +9,7 @@ const patientNavItems = [
 ];
 
 const doctorNavItems = [
-  { to: "/cabinet/accueil", label: "Accueil", exact: true },
+  { to: "/cabinet/", label: "Accueil", exact: true },
   { to: "/cabinet/?view=resources", label: "Bibliothèque de contenus", exact: true },
   { to: "/cabinet/?view=network", label: "Réseau professionnel", exact: true },
 ];
@@ -32,7 +32,7 @@ export function Header() {
   return (
     <header className="sticky top-0 z-50 border-b border-border/70 bg-background/80 backdrop-blur-xl print:hidden">
       <div className="mx-auto grid w-full max-w-7xl grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-4 py-3 sm:flex sm:justify-between sm:px-6 lg:px-8">
-        <Link to={isDoctorSpace ? "/cabinet/accueil" : "/"} className="flex min-w-0 items-center gap-2 text-foreground" onClick={() => setOpen(false)}>
+        <Link to={isDoctorSpace ? "/cabinet/" : "/"} className="flex min-w-0 items-center gap-2 text-foreground" onClick={() => setOpen(false)}>
           <Logo size="md" showTagline />
         </Link>
 

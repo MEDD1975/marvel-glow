@@ -10,8 +10,8 @@ const patientNavItems = [
 
 const doctorNavItems = [
   { to: "/cabinet/accueil", label: "Accueil", exact: true },
-  { to: "/cabinet/", label: "Bibliothèque de contenus", exact: true },
-  { to: "/annuaire", label: "Réseau professionnel", exact: false },
+  { to: "/cabinet/?view=resources", label: "Bibliothèque de contenus", exact: true },
+  { to: "/cabinet/?view=network", label: "Réseau professionnel", exact: true },
 ];
 
 export function Header() {
@@ -22,7 +22,11 @@ export function Header() {
   const navItems = isDoctorSpace ? doctorNavItems : patientNavItems;
   const isActive = (item: (typeof navItems)[number]) => {
     const pathname = location.pathname === "/cabinet" ? "/cabinet/" : location.pathname;
-    return item.exact ? pathname === item.to : pathname.startsWith(item.to);
+    const [itemPath, itemQuery] = item.to.split("?");
+    if (itemPath === "/cabinet/" && itemQuery) {
+      return pathname === itemPath && new URLSearchParams(location.search).toString() === itemQuery;
+    }
+    return item.exact ? pathname === itemPath : pathname.startsWith(itemPath);
   };
 
   return (

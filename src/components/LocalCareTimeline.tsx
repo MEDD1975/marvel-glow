@@ -13,10 +13,10 @@ type TimelineEntry = {
 const entryTypes = ["Médecin traitant", "Spécialiste", "Imagerie / Examen", "Autre démarche"];
 
 const defaultEntries = (condition?: Condition | null): TimelineEntry[] => [
-  { id: "diagnosis-understanding", type: "Diagnostic & Compréhension", date: "", notes: condition ? `Informations reçues concernant ${condition.name}.` : "", done: false },
-  { id: "care-and-specialists", type: "Protocoles & Soins / Spécialistes", date: "", notes: "", done: false },
-  { id: "observe", type: "Observer mon évolution", date: "", notes: "", done: false },
-  { id: "follow-up", type: "Préparer le point de suivi", date: "", notes: "", done: false },
+  { id: "diagnosis-understanding", type: "Comprendre mon diagnostic", date: "", notes: condition ? `Informations reçues concernant ${condition.name}.` : "", done: false },
+  { id: "care-and-specialists", type: "Mes séances & mes rendez-vous", date: "", notes: "", done: false },
+  { id: "observe", type: "Suivre mes progrès au quotidien", date: "", notes: "", done: false },
+  { id: "follow-up", type: "Préparer mon prochain échange", date: "", notes: "", done: false },
 ];
 
 function storageKey(conditionId?: string) {
@@ -24,7 +24,7 @@ function storageKey(conditionId?: string) {
 }
 
 function formatDate(value: string) {
-  if (!value) return "Date non renseignée";
+  if (!value) return "Aucune date ajoutée";
   return new Intl.DateTimeFormat("fr-FR").format(new Date(`${value}T12:00:00`));
 }
 
@@ -91,7 +91,7 @@ export function LocalCareTimeline({ condition }: { condition: Condition | null }
       {(isAdding || editingId) && !isShareMode && (
         <div className="mt-4 rounded-2xl border border-border bg-muted/20 p-4">
           <div className="grid gap-3 md:grid-cols-3">
-            <label className="text-sm font-medium text-foreground">Professionnel ou jalon<select value={draft.type} onChange={(event) => setDraft({ ...draft, type: event.target.value })} className="mt-1.5 h-11 w-full rounded-lg border border-input bg-background px-3 text-sm"><option value="Diagnostic & Compréhension">Diagnostic &amp; Compréhension</option>{entryTypes.map((type) => <option key={type}>{type}</option>)}</select></label>
+            <label className="text-sm font-medium text-foreground">Professionnel ou jalon<select value={draft.type} onChange={(event) => setDraft({ ...draft, type: event.target.value })} className="mt-1.5 h-11 w-full rounded-lg border border-input bg-background px-3 text-sm"><option value="Comprendre mon diagnostic">Comprendre mon diagnostic</option>{entryTypes.map((type) => <option key={type}>{type}</option>)}</select></label>
             <label className="text-sm font-medium text-foreground">Date<input type="date" value={draft.date} onChange={(event) => setDraft({ ...draft, date: event.target.value })} className="mt-1.5 h-11 w-full rounded-lg border border-input bg-background px-3 text-sm" /></label>
             <label className="text-sm font-medium text-foreground md:col-span-1">Note logistique <textarea value={draft.notes} onChange={(event) => setDraft({ ...draft, notes: event.target.value })} maxLength={240} rows={2} placeholder="Question à poser au prochain rendez-vous" className="mt-1.5 w-full resize-none rounded-lg border border-input bg-background px-3 py-2 text-sm" /></label>
           </div>

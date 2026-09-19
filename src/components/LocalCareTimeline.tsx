@@ -5,24 +5,25 @@ import type { Condition } from "@/lib/conditions";
 type TimelineStep = { id: string; label: string; detail: string };
 
 const defaultSteps: TimelineStep[] = [
-  { id: "understand", label: "Comprendre mes repères", detail: "Relire les informations remises et noter mes questions." },
-  { id: "first-actions", label: "Mettre en place les bons réflexes", detail: "Appliquer progressivement les conseils généraux adaptés à mon quotidien." },
-  { id: "observe", label: "Observer mon évolution", detail: "Prendre un temps pour regarder ce qui s’améliore ou persiste." },
-  { id: "next-step", label: "Préparer la prochaine étape", detail: "Savoir quand demander un avis et préparer mon échange avec un professionnel." },
+  { id: "diagnosis-understanding", label: "Diagnostic & Compréhension", detail: "Intégrer les informations reçues après la consultation, que le diagnostic soit confirmé ou encore en cours." },
+  { id: "care-and-physio", label: "Protocoles & Soins / Kiné", detail: "Appliquer les consignes, exercices ou séances recommandés par les professionnels." },
+  { id: "observe", label: "Observer mon évolution", detail: "Suivre mes repères au quotidien et mesurer progressivement mes progrès." },
+  { id: "follow-up", label: "Préparer le point de suivi", detail: "Noter mes questions pour le prochain échange avec mon médecin ou mon thérapeute." },
 ];
+
 
 const stepsByCondition: Record<string, TimelineStep[]> = {
   "entorse-cheville": [
-    { id: "ankle-protect", label: "Protéger et comprendre", detail: "Repérer les conseils reçus pour protéger votre cheville." },
-    { id: "ankle-move", label: "Reprendre les mouvements", detail: "Observer progressivement votre mobilité, sans forcer." },
-    { id: "ankle-activity", label: "Reprendre les activités", detail: "Identifier les activités reprises confortablement." },
-    { id: "ankle-review", label: "Faire le point", detail: "Préparer vos questions ou demander un avis si besoin." },
+    { id: "ankle-diagnosis", label: "Diagnostic & Compréhension", detail: "Intégrer les informations de la consultation, que l’entorse soit confirmée ou encore en cours d’évaluation." },
+    { id: "ankle-care", label: "Protocoles & Soins / Kiné", detail: "Appliquer les consignes, exercices ou séances recommandés pour votre cheville." },
+    { id: "ankle-observe", label: "Observer mon évolution", detail: "Suivre vos repères au quotidien et mesurer vos progrès sans forcer." },
+    { id: "ankle-follow-up", label: "Préparer le point de suivi", detail: "Noter vos questions pour le prochain échange avec votre médecin ou votre thérapeute." },
   ],
   "aponevrosite-plantaire": [
-    { id: "foot-understand", label: "Comprendre mes repères", detail: "Relire les explications et conseils transmis." },
-    { id: "foot-habits", label: "Adapter mes habitudes", detail: "Observer l’effet des adaptations conseillées au quotidien." },
-    { id: "foot-move", label: "Reprendre progressivement", detail: "Noter les mouvements et activités mieux tolérés." },
-    { id: "foot-review", label: "Faire le point", detail: "Préparer la suite avec un professionnel si nécessaire." },
+    { id: "foot-diagnosis", label: "Diagnostic & Compréhension", detail: "Intégrer les informations de la consultation, que le diagnostic soit confirmé ou encore en cours." },
+    { id: "foot-care", label: "Protocoles & Soins / Kiné", detail: "Appliquer les consignes, exercices ou séances recommandés par les professionnels." },
+    { id: "foot-observe", label: "Observer mon évolution", detail: "Suivre vos repères au quotidien et mesurer les progrès observés." },
+    { id: "foot-follow-up", label: "Préparer le point de suivi", detail: "Noter vos questions pour le prochain échange avec votre médecin ou votre thérapeute." },
   ],
 };
 

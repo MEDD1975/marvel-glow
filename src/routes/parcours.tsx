@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { AlertTriangle, ArrowRight, Clock, FileText, MapPin, PlayCircle, Printer, Stethoscope } from "lucide-react";
+import { AlertTriangle, Clock, FileText, MapPin, PlayCircle, Printer, Stethoscope } from "lucide-react";
 import { MedicalDisclaimer } from "@/components/HomeBlocks";
 import { LocalCareTimeline } from "@/components/LocalCareTimeline";
 import { pathways, lineLabels, type CareLine } from "@/lib/pathways";
@@ -40,14 +40,7 @@ function ParcoursPage() {
 
       <LocalCareTimeline condition={condition} />
 
-      {!condition || !carePathway ? (
-        <div className="mt-10 rounded-2xl border border-border bg-card px-5 py-6">
-          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Parcours non attribué</p>
-          <p className="mt-2 text-lg font-semibold text-foreground">Ouvrez le lien remis par votre professionnel de santé</p>
-          <p className="mt-1 text-sm leading-6 text-muted-foreground">Le parcours s’affiche ici après confirmation d’un diagnostic. Kivoir organise les étapes, il ne pose pas le diagnostic.</p>
-          <Link to="/conseils" className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-care">Consulter les repères généraux <ArrowRight aria-hidden="true" /></Link>
-        </div>
-      ) : (
+      {condition && carePathway && (
         <>
           <div className="mt-10 rounded-2xl border border-care/25 bg-care/5 px-5 py-5">
             <p className="text-xs font-semibold uppercase tracking-wide text-care">Parcours confirmé par votre professionnel</p>

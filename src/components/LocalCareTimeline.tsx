@@ -18,20 +18,18 @@ function DraftForm({ draft, setDraft, onSave, onCancel }: { draft: Draft; setDra
     <div className="rounded-2xl border border-border bg-muted/20 p-4">
       <div className="grid gap-3 md:grid-cols-3">
         <label className="text-sm font-medium text-foreground md:col-span-1">Professionnel
-          <select value={draft.providerId} onChange={(event) => { const provider = providers.find((item) => item.id === event.target.value); setDraft({ ...draft, providerId: event.target.value, providerName: provider?.name ?? "", type: provider?.profession ?? draft.type }); }} className="mt-1.5 h-11 w-full rounded-lg border border-input bg-background px-3 text-sm"><option value="">Saisir librement ci-dessous</option>{providers.map((provider) => <option key={provider.id} value={provider.id}>{provider.name} — {provider.profession}</option>)}</select>
+          <select required aria-label="Professionnel de santé" value={draft.providerId} onChange={(event) => { const provider = providers.find((item) => item.id === event.target.value); setDraft({ ...draft, providerId: event.target.value, providerName: provider?.name ?? "", type: provider?.profession ?? draft.type }); }} className="mt-1.5 h-11 w-full rounded-lg border border-input bg-background px-3 text-sm"><option value="">Saisir librement ci-dessous</option>{providers.map((provider) => <option key={provider.id} value={provider.id}>{provider.name} — {provider.profession}</option>)}</select>
           <input type="text" value={draft.providerName} onChange={(event) => setDraft({ ...draft, providerId: "", providerName: event.target.value, type: event.target.value })} placeholder="Nom ou profession" className="mt-1.5 h-11 w-full rounded-lg border border-input bg-background px-3 text-sm" />
         </label>
-        <label className="text-sm font-medium text-foreground">Date<input type="date" value={draft.date} onChange={(event) => setDraft({ ...draft, date: event.target.value })} className="mt-1.5 h-11 w-full rounded-lg border border-input bg-background px-3 text-sm" /></label>
+        <label className="text-sm font-medium text-foreground">Date<input required aria-label="Date du rendez-vous ou de la consultation" type="date" value={draft.date} onChange={(event) => setDraft({ ...draft, date: event.target.value })} className="mt-1.5 h-11 w-full rounded-lg border border-input bg-background px-3 text-sm" /></label>
         <label className="text-sm font-medium text-foreground md:col-span-1">Une note <textarea value={draft.notes} onChange={(event) => setDraft({ ...draft, notes: event.target.value })} maxLength={240} rows={2} placeholder="Ce qui m’a été dit ou prescrit…" className="mt-1.5 w-full resize-none rounded-lg border border-input bg-background px-3 py-2 text-sm" /></label>
       </div>
 
 
-      <div className="mt-3 flex gap-2"><button type="button" onClick={onSave} disabled={!draft.type.trim()} className="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground disabled:opacity-50">Enregistrer localement</button><button type="button" onClick={onCancel} className="rounded-lg border border-border px-4 py-2 text-sm font-semibold">Annuler</button></div>
+      <div className="mt-3 flex gap-2"><button type="button" onClick={onSave} disabled={!draft.type.trim() || !draft.providerName.trim() || !draft.date} className="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground disabled:opacity-50">Enregistrer localement</button><button type="button" onClick={onCancel} className="rounded-lg border border-border px-4 py-2 text-sm font-semibold">Annuler</button></div>
     </div>
   );
 }
-
-const defaultEntries = (): TimelineEntry[] => [];
 
 function storageKey(conditionId?: string) {
   return `kivoir-local-timeline:${conditionId ?? "general"}`;
@@ -52,9 +50,9 @@ export function LocalCareTimeline() {
   useEffect(() => {
     try {
       const saved = window.localStorage.getItem(key);
-      setEntries(saved ? (JSON.parse(saved) as TimelineEntry[]) : defaultEntries());
+      setEntries(saved ? (JSON.parse(saved) as TimelineEntry[]) : []);
     } catch {
-      setEntries(defaultEntries(condition));
+      setEntries([]);
     }
   }, [key]);
 
@@ -72,7 +70,7 @@ export function LocalCareTimeline() {
   const startEditing = (entry: TimelineEntry) => {
     setIsAdding(false);
     setEditingId(entry.id);
-    setDraft({ type: entry.type, date: entry.date, notes: entry.notes, pain: entry.pain ?? null, providerId: entry.providerId ?? "", providerName: entry.providerName ?? entry.type });
+    setDraft({ type: entry.type, date: entry.date, notes: entry.notes, providerId: entry.providerId ?? "", providerName: entry.providerName ?? entry.type });
   };
   const cancelDraft = () => {
     setIsAdding(false);
@@ -80,7 +78,7 @@ export function LocalCareTimeline() {
     setDraft({ type: "", date: "", notes: "", providerId: "", providerName: "" });
   };
   const saveDraft = () => {
-    if (!draft.type.trim()) return;
+    if (!draft.type.trim() || !draft.providerName.trim() || !draft.date) return;
     const next = editingId
       ? entries.map((entry) => entry.id === editingId ? { ...entry, ...draft } : entry)
       : [...entries, { id: crypto.randomUUID(), ...draft }];

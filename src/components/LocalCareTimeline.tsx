@@ -35,6 +35,10 @@ function storageKey(conditionId?: string) {
   return `kivoir-local-timeline:${conditionId ?? "general"}`;
 }
 
+// Legacy versions pre-seeded these fixed steps. Strip them so old localStorage
+// data doesn't resurface as pre-filled entries for a fresh patient timeline.
+const LEGACY_ENTRY_IDS = new Set(["diagnosis-understanding", "care-and-specialists", "observe", "follow-up"]);
+
 function formatDate(value: string) {
   if (!value) return "Aucune date ajoutée";
   return new Intl.DateTimeFormat("fr-FR").format(new Date(`${value}T12:00:00`));
@@ -50,7 +54,13 @@ export function LocalCareTimeline() {
   useEffect(() => {
     try {
       const saved = window.localStorage.getItem(key);
-      setEntries(saved ? (JSON.parse(saved) as TimelineEntry[]) : []);
+      const parsed = saved ? (JSON.parse(saved) as TimelineEntry[]) : [];
+      const cleaned = parsed.filter((entry) => !LEGACY_ENTRY_IDS.has(entry.id));
+      if (cleaned.length !== parsed.length) {
+        if (cleaned.length) window.localStorage.setItem(key, JSON.stringify(cleaned));
+        else window.localStorage.removeItem(key);
+      }
+      setEntries(cleaned);
     } catch {
       setEntries([]);
     }

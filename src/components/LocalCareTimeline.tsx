@@ -14,7 +14,7 @@ const entryTypes = ["Médecin traitant", "Kinésithérapeute", "Spécialiste", "
 
 const defaultEntries = (condition?: Condition | null): TimelineEntry[] => [
   { id: "diagnosis-understanding", type: "Diagnostic & Compréhension", date: "", notes: condition ? `Informations reçues concernant ${condition.name}.` : "", done: false },
-  { id: "care-and-physio", type: "Protocoles & Soins / Kiné", date: "", notes: "", done: false },
+  { id: "care-and-specialists", type: "Protocoles & Soins / Spécialistes", date: "", notes: "", done: false },
   { id: "observe", type: "Observer mon évolution", date: "", notes: "", done: false },
   { id: "follow-up", type: "Préparer le point de suivi", date: "", notes: "", done: false },
 ];
@@ -63,7 +63,8 @@ export function LocalCareTimeline({ condition }: { condition: Condition | null }
   const toggleDone = (id: string) => persist(entries.map((entry) => entry.id === id ? { ...entry, done: !entry.done } : entry));
   const reset = () => {
     const next = defaultEntries(condition);
-    persist(next);
+    window.localStorage.setItem(key, JSON.stringify(next));
+    setEntries(next);
   };
 
   return (

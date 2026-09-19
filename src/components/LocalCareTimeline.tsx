@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { ArrowDown, ArrowUp, CalendarDays, Pencil, Plus, Trash2 } from "lucide-react";
 import { providers } from "@/lib/directory";
 
@@ -41,6 +41,12 @@ const LEGACY_ENTRY_IDS = new Set(["diagnosis-understanding", "care-and-specialis
 function formatDate(value: string) {
   if (!value) return "Aucune date ajoutée";
   return new Intl.DateTimeFormat("fr-FR").format(new Date(`${value}T12:00:00`));
+}
+
+function daysBetween(first: string, second: string) {
+  const firstDate = new Date(`${first}T12:00:00`);
+  const secondDate = new Date(`${second}T12:00:00`);
+  return Math.round(Math.abs(secondDate.getTime() - firstDate.getTime()) / 86400000);
 }
 
 export function LocalCareTimeline() {
@@ -133,7 +139,9 @@ export function LocalCareTimeline() {
 
       <ol className="mt-6 space-y-3">
         {sortedEntries.map((entry, index) => (
-          <li key={entry.id} className={`group rounded-2xl border p-4 transition-all duration-300 md:p-5 ${editingId === entry.id ? "border-care/40 bg-care/[0.04] shadow-md" : "border-border bg-background hover:-translate-y-0.5 hover:border-care/30 hover:shadow-lg"}`}>
+          <Fragment key={entry.id}>
+          {index > 0 && sortedEntries[index - 1].date && entry.date && <div className="flex items-center gap-3 px-5 py-1.5 text-xs font-semibold text-muted-foreground"><div className="h-5 w-px bg-care/30" aria-hidden="true" /><span className="rounded-full border border-care/20 bg-care/5 px-3 py-1 text-care">{daysBetween(sortedEntries[index - 1].date, entry.date)} {daysBetween(sortedEntries[index - 1].date, entry.date) === 1 ? "jour" : "jours"} entre ces rendez-vous</span></div>}
+          <li className={`group rounded-2xl border p-4 transition-all duration-300 md:p-5 ${editingId === entry.id ? "border-care/40 bg-care/[0.04] shadow-md" : "border-border bg-background hover:-translate-y-0.5 hover:border-care/30 hover:shadow-lg"}`}>
             {editingId === entry.id ? (
               <div className="animate-in fade-in slide-in-from-top-2 duration-300"><DraftForm draft={draft} setDraft={setDraft} onSave={saveDraft} onCancel={cancelDraft} /></div>
             ) : (
@@ -144,6 +152,7 @@ export function LocalCareTimeline() {
               </div>
             )}
           </li>
+          </Fragment>
         ))}
       </ol>
       <p className="mt-4 text-xs text-muted-foreground">Vos données restent uniquement sur cet appareil.</p>

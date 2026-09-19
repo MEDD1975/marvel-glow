@@ -10,7 +10,7 @@ type TimelineEntry = {
   done: boolean;
 };
 
-const entryTypes = ["Médecin traitant", "Kinésithérapeute", "Spécialiste", "Imagerie / Examen", "Autre démarche"];
+const entryTypes = ["Médecin traitant", "Spécialiste", "Imagerie / Examen", "Autre démarche"];
 
 const defaultEntries = (condition?: Condition | null): TimelineEntry[] => [
   { id: "diagnosis-understanding", type: "Diagnostic & Compréhension", date: "", notes: condition ? `Informations reçues concernant ${condition.name}.` : "", done: false },

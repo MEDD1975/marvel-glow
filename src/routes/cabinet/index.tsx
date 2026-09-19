@@ -52,6 +52,12 @@ function CabinetPage() {
   const [showNetworkConfig, setShowNetworkConfig] = useState(false);
   const [showResourceConfig, setShowResourceConfig] = useState(false);
 
+  useEffect(() => {
+    const view = new URLSearchParams(window.location.search).get("view");
+    setShowNetworkConfig(view === "network");
+    setShowResourceConfig(view === "resources");
+  }, []);
+
   const doctorNetworkId = session?.user.id ?? "doctor";
   const [doctorVideos, setDoctorVideos] = useState<DoctorResourceRecord[]>([]);
 

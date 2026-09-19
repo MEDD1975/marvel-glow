@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { authClient } from "@/lib/auth-client";
 import { put as putBlob } from "@vercel/blob/client";
@@ -23,7 +23,7 @@ import { PatientCard } from "@/components/PatientCard";
 import { DoctorOnboarding } from "@/components/DoctorOnboarding";
 
 
-export const Route = createFileRoute("/cabinet")({
+export const Route = createFileRoute("/cabinet/")({
   head: () => ({
     meta: [
       { title: "Espace cabinet — Kivoir" },
@@ -46,17 +46,10 @@ export const Route = createFileRoute("/cabinet")({
 });
 
 function CabinetPage() {
-  const navigate = useNavigate();
-  const { data: session, isPending } = authClient.useSession();
+  const { data: session } = authClient.useSession();
   const [cardQr, setCardQr] = useState<{ url: string; qr: string | null }>({ url: "", qr: null });
   const [showNetworkConfig, setShowNetworkConfig] = useState(false);
   const [showResourceConfig, setShowResourceConfig] = useState(false);
-
-  useEffect(() => {
-    if (!isPending && !session?.user) {
-      void navigate({ to: "/connexion-medecin" });
-    }
-  }, [isPending, navigate, session?.user]);
 
   const doctorNetworkId = session?.user.id ?? "doctor";
   const [doctorVideos, setDoctorVideos] = useState<DoctorResourceRecord[]>([]);
@@ -178,7 +171,7 @@ function CabinetPage() {
     } catch (error) {
       console.error("[v0] doctor resource upload failed", error);
       setIsUploading(false);
-      notifyError(error instanceof DOMException && error.name === "AbortError" ? "L��enregistrement prend trop de temps. Vérifiez votre connexion ou utilisez un lien HTTPS vers la vidéo." : "L’enregistrement a échoué. Vérifiez votre connexion et réessayez.");
+      notifyError(error instanceof DOMException && error.name === "AbortError" ? "L����enregistrement prend trop de temps. Vérifiez votre connexion ou utilisez un lien HTTPS vers la vidéo." : "L’enregistrement a échoué. Vérifiez votre connexion et réessayez.");
     }
   };
 

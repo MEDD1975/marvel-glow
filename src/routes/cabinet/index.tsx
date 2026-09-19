@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useLocation, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { authClient } from "@/lib/auth-client";
 import { put as putBlob } from "@vercel/blob/client";
@@ -47,16 +47,17 @@ export const Route = createFileRoute("/cabinet/")({
 
 function CabinetPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { data: session, isPending } = authClient.useSession();
   const [cardQr, setCardQr] = useState<{ url: string; qr: string | null }>({ url: "", qr: null });
   const [showNetworkConfig, setShowNetworkConfig] = useState(false);
   const [showResourceConfig, setShowResourceConfig] = useState(false);
 
   useEffect(() => {
-    const view = new URLSearchParams(window.location.search).get("view");
+    const view = (location.search as { view?: string }).view;
     setShowNetworkConfig(view === "network");
     setShowResourceConfig(view === "resources");
-  }, []);
+  }, [location.search]);
 
   const doctorNetworkId = session?.user.id ?? "doctor";
   const [doctorVideos, setDoctorVideos] = useState<DoctorResourceRecord[]>([]);
@@ -276,7 +277,7 @@ function CabinetPage() {
             <p className="mt-6 text-xs font-semibold uppercase tracking-[0.12em] text-care">1 · Réseau professionnel</p>
             <h2 className="mt-1.5 text-xl font-semibold text-foreground">Gérez votre réseau professionnel</h2>
             <p className="mt-2 flex-1 text-sm leading-6 text-muted-foreground">Ajoutez et mettez à jour les professionnels que vos patients pourront retrouver.</p>
-            <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-care">Gérer mon réseau <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" /></span>
+            <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-care">Ouvrir <span className="sr-only">la gestion du réseau professionnel</span> <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" /></span>
           </button>
 
           <button
@@ -318,7 +319,7 @@ function CabinetPage() {
               <Users className="h-7 w-7" aria-hidden="true" />
             </span>
             <p className="mt-6 text-xs font-semibold uppercase tracking-[0.12em] text-care">3 · Aperçu patient</p>
-            <h2 className="mt-1.5 text-xl font-semibold text-foreground">Prévisualiser mon réseau</h2>
+            <h2 className="mt-1.5 text-xl font-semibold text-foreground">Prévisualiser l’aperçu patient</h2>
             <p className="mt-2 flex-1 text-sm leading-6 text-muted-foreground">Vérifiez la page publique telle que vos patients la voient.</p>
             <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-care">Voir l’aperçu <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" /></span>
           </button>

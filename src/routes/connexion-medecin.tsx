@@ -29,7 +29,7 @@ function DoctorSignInPage() {
       setError(mode === "sign-up" ? "Impossible de créer ce compte. Vérifiez vos informations." : "Email ou mot de passe incorrect.");
       return;
     }
-    await navigate({ to: "/cabinet" });
+    await navigate({ to: "/cabinet/accueil" });
   }
 
   return (

@@ -38,7 +38,7 @@ function ParcoursPage() {
         <p className="mt-5 text-pretty text-lg leading-8 text-muted-foreground">Une fois le diagnostic confirmé par votre professionnel, retrouvez qui consulter, dans quel ordre et à quel moment.</p>
       </section>
 
-      <LocalCareTimeline condition={condition} />
+      <LocalCareTimeline />
 
       {condition && carePathway && (
         <>

@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { authClient } from "@/lib/auth-client";
 import { put as putBlob } from "@vercel/blob/client";
@@ -46,7 +46,8 @@ export const Route = createFileRoute("/cabinet/")({
 });
 
 function CabinetPage() {
-  const { data: session } = authClient.useSession();
+  const navigate = useNavigate();
+  const { data: session, isPending } = authClient.useSession();
   const [cardQr, setCardQr] = useState<{ url: string; qr: string | null }>({ url: "", qr: null });
   const [showNetworkConfig, setShowNetworkConfig] = useState(false);
   const [showResourceConfig, setShowResourceConfig] = useState(false);

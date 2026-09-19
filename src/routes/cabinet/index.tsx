@@ -319,9 +319,9 @@ function CabinetPage() {
               <Users className="h-7 w-7" aria-hidden="true" />
             </span>
             <p className="mt-6 text-xs font-semibold uppercase tracking-[0.12em] text-care">3 · Aperçu patient</p>
-            <h2 className="mt-1.5 text-xl font-semibold text-foreground">Prévisualiser l’aperçu patient</h2>
+            <h2 className="mt-1.5 text-xl font-semibold text-foreground">Prévisualisez mon réseau</h2>
             <p className="mt-2 flex-1 text-sm leading-6 text-muted-foreground">Vérifiez la page publique telle que vos patients la voient.</p>
-            <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-care">Voir l’aperçu <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" /></span>
+            <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-care">Prévisualisez mon réseau <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" /></span>
           </button>
         </div>
 

@@ -6,23 +6,22 @@ type TimelineEntry = {
   id: string;
   type: string;
   date: string;
-  notes: string;
   providerId?: string;
   providerName?: string;
+  providerProfession?: string;
 };
 
-type Draft = { type: string; date: string; notes: string; providerId: string; providerName: string };
+type Draft = { type: string; date: string; providerId: string; providerName: string; providerProfession: string };
 
 function DraftForm({ draft, setDraft, onSave, onCancel }: { draft: Draft; setDraft: (draft: Draft) => void; onSave: () => void; onCancel: () => void }) {
   return (
     <div className="rounded-2xl border border-border bg-muted/20 p-4">
       <div className="grid gap-3 md:grid-cols-3">
         <label className="text-sm font-medium text-foreground md:col-span-1">Professionnel
-          <select required aria-label="Professionnel de santé" value={draft.providerId} onChange={(event) => { const provider = providers.find((item) => item.id === event.target.value); setDraft({ ...draft, providerId: event.target.value, providerName: provider?.name ?? "", type: provider?.profession ?? draft.type }); }} className="mt-1.5 h-11 w-full rounded-lg border border-input bg-background px-3 text-sm"><option value="">Saisir librement ci-dessous</option>{providers.map((provider) => <option key={provider.id} value={provider.id}>{provider.name} — {provider.profession}</option>)}</select>
+          <select required aria-label="Professionnel de santé" value={draft.providerId} onChange={(event) => { const provider = providers.find((item) => item.id === event.target.value); setDraft({ ...draft, providerId: event.target.value, providerName: provider?.name ?? "", providerProfession: provider?.profession ?? "", type: provider?.profession ?? draft.type }); }} className="mt-1.5 h-11 w-full rounded-lg border border-input bg-background px-3 text-sm"><option value="">Saisir librement ci-dessous</option>{providers.map((provider) => <option key={provider.id} value={provider.id}>{provider.name} — {provider.profession}</option>)}</select>
           <input type="text" value={draft.providerName} onChange={(event) => setDraft({ ...draft, providerId: "", providerName: event.target.value, type: event.target.value })} placeholder="Nom ou profession" className="mt-1.5 h-11 w-full rounded-lg border border-input bg-background px-3 text-sm" />
         </label>
         <label className="text-sm font-medium text-foreground">Date<input required aria-label="Date du rendez-vous ou de la consultation" type="date" value={draft.date} onChange={(event) => setDraft({ ...draft, date: event.target.value })} className="mt-1.5 h-11 w-full rounded-lg border border-input bg-background px-3 text-sm" /></label>
-        <label className="text-sm font-medium text-foreground md:col-span-1">Une note <textarea value={draft.notes} onChange={(event) => setDraft({ ...draft, notes: event.target.value })} maxLength={240} rows={2} placeholder="Ce qui m’a été dit ou prescrit…" className="mt-1.5 w-full resize-none rounded-lg border border-input bg-background px-3 py-2 text-sm" /></label>
       </div>
 
 
@@ -49,7 +48,7 @@ export function LocalCareTimeline() {
   const [entries, setEntries] = useState<TimelineEntry[]>([]);
   const [isAdding, setIsAdding] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [draft, setDraft] = useState<Draft>({ type: "", date: "", notes: "", providerId: "", providerName: "" });
+  const [draft, setDraft] = useState<Draft>({ type: "", date: "", providerId: "", providerName: "", providerProfession: "" });
 
   useEffect(() => {
     try {
@@ -74,26 +73,26 @@ export function LocalCareTimeline() {
   };
   const startAdding = () => {
     setEditingId(null);
-    setDraft({ type: "", date: "", notes: "", providerId: "", providerName: "" });
+    setDraft({ type: "", date: "", providerId: "", providerName: "", providerProfession: "" });
     setIsAdding(true);
   };
   const startEditing = (entry: TimelineEntry) => {
     setIsAdding(false);
     setEditingId(entry.id);
-    setDraft({ type: entry.type, date: entry.date, notes: entry.notes, providerId: entry.providerId ?? "", providerName: entry.providerName ?? entry.type });
+    setDraft({ type: entry.type, date: entry.date, providerId: entry.providerId ?? "", providerName: entry.providerName ?? entry.type, providerProfession: entry.providerProfession ?? (entry.providerId ? providers.find((provider) => provider.id === entry.providerId)?.profession ?? "" : "") });
   };
   const cancelDraft = () => {
     setIsAdding(false);
     setEditingId(null);
-    setDraft({ type: "", date: "", notes: "", providerId: "", providerName: "" });
+    setDraft({ type: "", date: "", providerId: "", providerName: "", providerProfession: "" });
   };
   const saveDraft = () => {
     if (!draft.type.trim() || !draft.providerName.trim() || !draft.date) return;
     const next = editingId
       ? entries.map((entry) => entry.id === editingId ? { ...entry, ...draft } : entry)
-      : [...entries, { id: crypto.randomUUID(), ...draft }];
+      : [...entries, { id: crypto.randomUUID(), type: draft.type, date: draft.date, providerId: draft.providerId, providerName: draft.providerName, providerProfession: draft.providerProfession }];
     persist(next);
-    setDraft({ type: "", date: "", notes: "", providerId: "", providerName: "" });
+    setDraft({ type: "", date: "", providerId: "", providerName: "", providerProfession: "" });
     setEditingId(null);
     setIsAdding(false);
   };
@@ -140,7 +139,7 @@ export function LocalCareTimeline() {
             ) : (
               <div className="flex gap-3">
                 <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-care/10 text-lg font-bold text-care">{index + 1}</div>
-                <div className="min-w-0 flex-1"><div className="flex items-start gap-3"><div className="min-w-0 flex-1"><div className="flex flex-wrap items-center gap-x-3 gap-y-1"><h3 className="font-semibold text-foreground">{entry.providerName || entry.type}</h3>{entry.date && <span className="inline-flex items-center gap-1 text-xs text-muted-foreground"><CalendarDays className="size-3.5" aria-hidden="true" />{new Date(`${entry.date}T12:00:00`) < new Date() ? "Vu le" : "Prévu le"} {formatDate(entry.date)}</span>}</div>{entry.notes && <p className="mt-1 text-sm text-muted-foreground">{entry.notes}</p>}</div></div></div>
+                <div className="min-w-0 flex-1"><div className="flex items-start gap-3"><div className="min-w-0 flex-1"><div className="flex flex-wrap items-center gap-x-3 gap-y-1"><h3 className="font-semibold text-foreground">{entry.providerName || entry.type}{(entry.providerProfession || (entry.providerId && providers.find((provider) => provider.id === entry.providerId)?.profession)) && <span className="font-normal text-muted-foreground"> — {entry.providerProfession || providers.find((provider) => provider.id === entry.providerId)?.profession}</span>}</h3>{entry.date && <span className="inline-flex items-center gap-1 text-xs text-muted-foreground"><CalendarDays className="size-3.5" aria-hidden="true" />{new Date(`${entry.date}T12:00:00`) < new Date() ? "Vu le" : "Prévu le"} {formatDate(entry.date)}</span>}</div></div></div></div>
                 <div className="flex shrink-0 gap-1 opacity-70 transition-opacity group-hover:opacity-100"><button type="button" onClick={() => moveEntry(index, -1)} disabled={index === 0} aria-label={`Monter ${entry.type}`} className="rounded-xl p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:opacity-30"><ArrowUp className="size-4" aria-hidden="true" /></button><button type="button" onClick={() => moveEntry(index, 1)} disabled={index === sortedEntries.length - 1} aria-label={`Descendre ${entry.type}`} className="rounded-xl p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:opacity-30"><ArrowDown className="size-4" aria-hidden="true" /></button><button type="button" onClick={() => startEditing(entry)} aria-label={`Modifier ${entry.type}`} className="rounded-xl p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"><Pencil className="size-4" aria-hidden="true" /></button><button type="button" onClick={() => remove(entry.id)} aria-label={`Supprimer ${entry.type}`} className="rounded-xl p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-destructive"><Trash2 className="size-4" aria-hidden="true" /></button></div>
               </div>
             )}

@@ -82,39 +82,39 @@ export function AssistantHome({ initialStarted = false, pathway }: { initialStar
 
         <div className="mt-4 grid gap-3 md:mt-4 md:grid-cols-3 md:gap-3">
           <Link
-            to="/suivi"
-            search={effectivePathway ? { c: effectivePathway } : undefined}
-            className="group flex min-h-48 flex-col rounded-3xl border border-primary/25 bg-primary/5 p-4 md:min-h-0 md:p-4 text-left shadow-sm transition-all hover:-translate-y-1 hover:border-primary/45 hover:bg-primary/10 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            to="/parcours"
+            search={effectivePathway ? { pathway: effectivePathway } : undefined}
+            className="group flex min-h-48 flex-col rounded-3xl border border-border bg-card p-4 md:min-h-0 md:p-4 text-left shadow-sm transition-all hover:-translate-y-1 hover:border-care/40 hover:bg-muted/30 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
-            <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-sm">
+            <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-muted text-foreground shadow-sm">
               <ListChecks className="h-6 w-6" aria-hidden="true" />
             </span>
-            <span className="mt-5 text-xs font-semibold uppercase tracking-[0.12em] text-primary">Mon suivi</span>
-            <span className="mt-1.5 text-lg font-semibold text-foreground">Suivre mes étapes de soin</span>
-            <span className="mt-2 flex-1 text-sm leading-6 text-muted-foreground">Avancez, étape par étape, dans les consignes définies par votre professionnel de santé et répondez à ses questions de contrôle.</span>
+            <span className="mt-5 text-xs font-semibold uppercase tracking-[0.12em] text-care">MON PARCOURS &amp; ÉTAPES</span>
+            <span className="mt-1.5 text-lg font-semibold text-foreground">Mes repères, à mon rythme</span>
+            <span className="mt-2 flex-1 text-sm leading-6 text-muted-foreground">Explorez une frise interactive et cochez les repères de votre parcours, selon votre situation.</span>
             <span className="mt-2 text-xs leading-5 text-muted-foreground">Kivoir vous informe et vous aide à préparer la suite ; il ne remplace pas l&apos;avis médical.</span>
-            <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-primary">Ouvrir mon suivi <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" /></span>
+            <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-primary">Ouvrir mon parcours <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" /></span>
           </Link>
 
           <Link
             to="/conseils"
             search={effectivePathway ? { c: effectivePathway } : undefined}
-            className="group flex min-h-48 flex-col rounded-3xl border border-care/20 bg-care/5 p-4 md:min-h-0 md:p-4 text-left shadow-sm transition-all hover:-translate-y-1 hover:border-care/40 hover:bg-care/10 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className="group flex min-h-48 flex-col rounded-3xl border border-border bg-card p-4 md:min-h-0 md:p-4 text-left shadow-sm transition-all hover:-translate-y-1 hover:border-care/40 hover:bg-muted/30 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
-            <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-care text-primary-foreground shadow-sm">
+            <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-muted text-foreground shadow-sm">
               <BookOpen className="h-6 w-6" aria-hidden="true" />
             </span>
             <span className="mt-5 text-xs font-semibold uppercase tracking-[0.12em] text-care">Ma bibliothèque de conseils</span>
             <span className="mt-1.5 text-lg font-semibold text-foreground">Fiches et vidéos utiles</span>
-            <span className="mt-2 flex-1 text-sm leading-6 text-muted-foreground">Retrouvez les fiches, vidéos et liens sélectionnés par votre médecin, organisés par thème.</span>
+            <span className="mt-2 flex-1 text-sm leading-6 text-muted-foreground">Retrouvez fiches, vidéos, bons réflexes, sources fiables et signes d’alerte, organisés par thème.</span>
             <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-care">Consulter <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" /></span>
           </Link>
 
           <Link
             to="/annuaire"
-            className="group flex min-h-48 flex-col rounded-3xl border border-care/20 bg-care/5 p-4 md:min-h-0 md:p-4 text-left shadow-sm transition-all hover:-translate-y-1 hover:border-care/40 hover:bg-care/10 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className="group flex min-h-48 flex-col rounded-3xl border border-border bg-card p-4 md:min-h-0 md:p-4 text-left shadow-sm transition-all hover:-translate-y-1 hover:border-care/40 hover:bg-muted/30 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
-            <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-care text-primary-foreground shadow-sm">
+            <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-muted text-foreground shadow-sm">
               <MapPin className="h-6 w-6" aria-hidden="true" />
             </span>
             <span className="mt-5 text-xs font-semibold uppercase tracking-[0.12em] text-care">Réseau professionnel</span>

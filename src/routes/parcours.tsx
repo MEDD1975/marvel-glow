@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { AlertTriangle, ArrowRight, Clock, FileText, MapPin, PlayCircle, Printer, Stethoscope } from "lucide-react";
 import { MedicalDisclaimer } from "@/components/HomeBlocks";
+import { LocalCareTimeline } from "@/components/LocalCareTimeline";
 import { pathways, lineLabels, type CareLine } from "@/lib/pathways";
 import { conditions } from "@/lib/conditions";
 
@@ -36,6 +37,8 @@ function ParcoursPage() {
         <h1 className="mt-4 text-balance text-4xl font-semibold tracking-tight text-foreground md:text-6xl">Votre parcours de soin, enfin lisible.</h1>
         <p className="mt-5 text-pretty text-lg leading-8 text-muted-foreground">Une fois le diagnostic confirmé par votre professionnel, retrouvez qui consulter, dans quel ordre et à quel moment.</p>
       </section>
+
+      <LocalCareTimeline condition={condition} />
 
       {!condition || !carePathway ? (
         <div className="mt-10 rounded-2xl border border-border bg-card px-5 py-6">

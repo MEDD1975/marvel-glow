@@ -36,25 +36,25 @@ export function DoctorHome() {
         <div className="grid gap-4 md:grid-cols-3">
           <Link to="/annuaire" className="group flex min-h-52 flex-col rounded-3xl border border-care/30 bg-card p-6 shadow-sm transition hover:-translate-y-0.5 hover:border-care hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
             <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-care/10 text-care"><Users className="h-6 w-6" aria-hidden="true" /></span>
-            <p className="mt-5 text-xs font-semibold uppercase tracking-[0.12em] text-care">1 - Réseau professionnel</p>
+            <p className="mt-5 text-xs font-semibold uppercase tracking-[0.12em] text-care">1 - RÉSEAU PROFESSIONNEL</p>
             <h2 className="mt-2 text-xl font-semibold text-foreground">Gérer votre réseau</h2>
             <p className="mt-2 flex-1 text-sm leading-6 text-muted-foreground">Ajoutez et mettez à jour les professionnels que vos patients pourront retrouver.</p>
             <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-care">Ouvrir <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" /></span>
           </Link>
           <Link to="/cabinet" className="group flex min-h-52 flex-col rounded-3xl border border-care/30 bg-card p-6 shadow-sm transition hover:-translate-y-0.5 hover:border-care hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
             <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-care/10 text-care"><FileText className="h-6 w-6" aria-hidden="true" /></span>
-            <p className="mt-5 text-xs font-semibold uppercase tracking-[0.12em] text-care">2 - Bibliothèque de contenus</p>
+            <p className="mt-5 text-xs font-semibold uppercase tracking-[0.12em] text-care">BIBLIOTHÈQUE DE CONTENUS</p>
             <h2 className="mt-2 text-xl font-semibold text-foreground">Créer et partager des contenus</h2>
             <p className="mt-2 flex-1 text-sm leading-6 text-muted-foreground">Ajoutez les vidéos, fichiers et ressources destinés à vos patients.</p>
             <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-care">Ouvrir <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" /></span>
           </Link>
-          <div className="flex min-h-52 flex-col rounded-3xl border border-border bg-muted/30 p-6">
-            <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 text-primary"><FileText className="h-6 w-6" aria-hidden="true" /></span>
-            <p className="mt-5 text-xs font-semibold uppercase tracking-[0.12em] text-care">3 - Aperçu patient</p>
+          <Link to="/" className="group flex min-h-52 flex-col rounded-3xl border border-care/30 bg-card p-6 shadow-sm transition hover:-translate-y-0.5 hover:border-care hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+            <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-care/10 text-care"><FileText className="h-6 w-6" aria-hidden="true" /></span>
+            <p className="mt-5 text-xs font-semibold uppercase tracking-[0.12em] text-care">3 - APERÇU PATIENT</p>
             <h2 className="mt-2 text-xl font-semibold text-foreground">Voir l’expérience patient</h2>
             <p className="mt-2 flex-1 text-sm leading-6 text-muted-foreground">Prévisualisez les contenus et le parcours que votre patient découvrira après la consultation.</p>
-            <Link to="/" className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-care">Voir l’aperçu <ArrowRight className="h-4 w-4" aria-hidden="true" /></Link>
-          </div>
+            <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-care">Voir l’expérience patient <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" /></span>
+          </Link>
         </div>
       </section>
     </main>

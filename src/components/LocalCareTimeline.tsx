@@ -14,7 +14,6 @@ type TimelineEntry = {
   providerName?: string;
 };
 
-const entryTypes = ["Médecin traitant", "Spécialiste", "Imagerie / Examen", "Autre démarche"];
 const PROGRESS_STEP_ID = "observe";
 
 type Draft = { type: string; date: string; notes: string; pain: number | null; providerId: string; providerName: string };
@@ -50,7 +49,7 @@ function DraftForm({ draft, setDraft, onSave, onCancel, variant = "appointment" 
 }
 
 const defaultEntries = (condition?: Condition | null): TimelineEntry[] => [
-  { id: "diagnosis-understanding", type: "Comprendre mon diagnostic", date: "", notes: condition ? `Informations reçues concernant ${condition.name}.` : "", done: false },
+  { id: "diagnosis-understanding", type: "Comprendre mon diagnostic", date: "", notes: "", done: false },
   { id: "care-and-specialists", type: "Mes séances & mes rendez-vous", date: "", notes: "", done: false },
   { id: PROGRESS_STEP_ID, type: "Suivre mes progrès au quotidien", date: "", notes: "", done: false, pain: null },
   { id: "follow-up", type: "Préparer mon prochain échange", date: "", notes: "", done: false },
@@ -155,7 +154,7 @@ export function LocalCareTimeline({ condition }: { condition: Condition | null }
       <div className="p-5 md:p-7">
 
       <div className="flex flex-wrap items-center gap-3">
-        <button type="button" onClick={startAdding} className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-sm transition-transform hover:-translate-y-0.5 hover:bg-primary/90"><Plus className="size-4" aria-hidden="true" /> Ajouter un rendez-vous</button>
+        <button type="button" onClick={startAdding} className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-sm transition-transform hover:-translate-y-0.5 hover:bg-primary/90"><Plus className="size-4" aria-hidden="true" /> Ajouter une entrée</button>
         <button type="button" onClick={reset} className="rounded-xl px-3 py-2 text-sm font-medium text-muted-foreground underline-offset-4 transition-colors hover:bg-muted hover:text-foreground hover:underline">Recommencer</button>
       </div>
 

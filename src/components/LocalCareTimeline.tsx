@@ -1,6 +1,7 @@
-import { useEffect, useMemo, useState } from "react";
-import { BarChart3, CalendarDays, Check, MessageCircle, Pencil, Plus, ScanSearch, Sparkles, Trash2 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { ArrowDown, ArrowUp, BarChart3, CalendarDays, Check, MessageCircle, Pencil, Plus, ScanSearch, Sparkles, Trash2 } from "lucide-react";
 import type { Condition } from "@/lib/conditions";
+import { providers } from "@/lib/directory";
 
 type TimelineEntry = {
   id: string;
@@ -9,21 +10,23 @@ type TimelineEntry = {
   notes: string;
   done: boolean;
   pain?: number | null;
+  providerId?: string;
+  providerName?: string;
 };
 
 const entryTypes = ["Médecin traitant", "Spécialiste", "Imagerie / Examen", "Autre démarche"];
 const PROGRESS_STEP_ID = "observe";
 
-type Draft = { type: string; date: string; notes: string; pain: number | null };
+type Draft = { type: string; date: string; notes: string; pain: number | null; providerId: string; providerName: string };
 
 function DraftForm({ draft, setDraft, onSave, onCancel, variant = "appointment" }: { draft: Draft; setDraft: (draft: Draft) => void; onSave: () => void; onCancel: () => void; variant?: "appointment" | "progress" }) {
   const isProgress = variant === "progress";
   return (
     <div className="rounded-2xl border border-border bg-muted/20 p-4">
       <div className="grid gap-3 md:grid-cols-3">
-        <label className="text-sm font-medium text-foreground md:col-span-1">Titre de l’étape
-          <input type="text" list="kivoir-entry-types" value={draft.type} onChange={(event) => setDraft({ ...draft, type: event.target.value })} placeholder="Ex. Médecin, kiné, examen…" className="mt-1.5 h-11 w-full rounded-lg border border-input bg-background px-3 text-sm" />
-          <datalist id="kivoir-entry-types">{entryTypes.map((type) => <option key={type} value={type} />)}</datalist>
+        <label className="text-sm font-medium text-foreground md:col-span-1">Professionnel
+          <select value={draft.providerId} onChange={(event) => { const provider = providers.find((item) => item.id === event.target.value); setDraft({ ...draft, providerId: event.target.value, providerName: provider?.name ?? "", type: provider?.profession ?? draft.type }); }} className="mt-1.5 h-11 w-full rounded-lg border border-input bg-background px-3 text-sm"><option value="">Saisir librement ci-dessous</option>{providers.map((provider) => <option key={provider.id} value={provider.id}>{provider.name} — {provider.profession}</option>)}</select>
+          <input type="text" value={draft.providerName || draft.type} onChange={(event) => setDraft({ ...draft, providerId: "", providerName: event.target.value, type: event.target.value })} placeholder="Nom ou profession" className="mt-1.5 h-11 w-full rounded-lg border border-input bg-background px-3 text-sm" />
         </label>
         <label className="text-sm font-medium text-foreground">Date<input type="date" value={draft.date} onChange={(event) => setDraft({ ...draft, date: event.target.value })} className="mt-1.5 h-11 w-full rounded-lg border border-input bg-background px-3 text-sm" /></label>
         <label className="text-sm font-medium text-foreground md:col-span-1">Une note <textarea value={draft.notes} onChange={(event) => setDraft({ ...draft, notes: event.target.value })} maxLength={240} rows={2} placeholder={isProgress ? "Ce que j’observe aujourd’hui (gêne, mobilité, progrès…)" : "Question à poser au prochain rendez-vous"} className="mt-1.5 w-full resize-none rounded-lg border border-input bg-background px-3 py-2 text-sm" /></label>
@@ -72,7 +75,7 @@ export function LocalCareTimeline({ condition }: { condition: Condition | null }
   const [entries, setEntries] = useState<TimelineEntry[]>([]);
   const [isAdding, setIsAdding] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [draft, setDraft] = useState<Draft>({ type: "", date: "", notes: "", pain: null });
+  const [draft, setDraft] = useState<Draft>({ type: "", date: "", notes: "", pain: null, providerId: "", providerName: "" });
 
   useEffect(() => {
     try {
@@ -83,7 +86,7 @@ export function LocalCareTimeline({ condition }: { condition: Condition | null }
     }
   }, [key, condition]);
 
-  const sortedEntries = useMemo(() => [...entries].sort((a, b) => (a.date || "9999").localeCompare(b.date || "9999")), [entries]);
+  const sortedEntries = entries;
   const completedCount = entries.filter((entry) => entry.done).length;
   const progressPercent = entries.length ? Math.round((completedCount / entries.length) * 100) : 0;
   const persist = (next: TimelineEntry[]) => {
@@ -92,18 +95,18 @@ export function LocalCareTimeline({ condition }: { condition: Condition | null }
   };
   const startAdding = () => {
     setEditingId(null);
-    setDraft({ type: "", date: "", notes: "", pain: null });
+    setDraft({ type: "", date: "", notes: "", pain: null, providerId: "", providerName: "" });
     setIsAdding(true);
   };
   const startEditing = (entry: TimelineEntry) => {
     setIsAdding(false);
     setEditingId(entry.id);
-    setDraft({ type: entry.type, date: entry.date, notes: entry.notes, pain: entry.pain ?? null });
+    setDraft({ type: entry.type, date: entry.date, notes: entry.notes, pain: entry.pain ?? null, providerId: entry.providerId ?? "", providerName: entry.providerName ?? entry.type });
   };
   const cancelDraft = () => {
     setIsAdding(false);
     setEditingId(null);
-    setDraft({ type: "", date: "", notes: "", pain: null });
+    setDraft({ type: "", date: "", notes: "", pain: null, providerId: "", providerName: "" });
   };
   const saveDraft = () => {
     if (!draft.type.trim()) return;
@@ -111,11 +114,18 @@ export function LocalCareTimeline({ condition }: { condition: Condition | null }
       ? entries.map((entry) => entry.id === editingId ? { ...entry, ...draft } : entry)
       : [...entries, { id: crypto.randomUUID(), ...draft, done: false }];
     persist(next);
-    setDraft({ type: "", date: "", notes: "", pain: null });
+    setDraft({ type: "", date: "", notes: "", pain: null, providerId: "", providerName: "" });
     setEditingId(null);
     setIsAdding(false);
   };
   const remove = (id: string) => persist(entries.filter((entry) => entry.id !== id));
+  const moveEntry = (index: number, direction: -1 | 1) => {
+    const target = index + direction;
+    if (target < 0 || target >= entries.length) return;
+    const next = [...entries];
+    [next[index], next[target]] = [next[target], next[index]];
+    persist(next);
+  };
   const toggleDone = (id: string) => persist(entries.map((entry) => entry.id === id ? { ...entry, done: !entry.done } : entry));
   const reset = () => {
     const next = defaultEntries(condition);
@@ -161,8 +171,8 @@ export function LocalCareTimeline({ condition }: { condition: Condition | null }
             ) : (
               <div className="flex gap-3">
                 <button type="button" onClick={() => toggleDone(entry.id)} aria-label={entry.done ? "Marquer comme à revoir" : "Marquer comme fait"} aria-pressed={entry.done} className={`flex size-12 shrink-0 items-center justify-center rounded-2xl transition-all duration-300 ${entry.done ? "bg-care text-care-foreground shadow-sm" : "bg-muted text-muted-foreground group-hover:bg-care/10 group-hover:text-care"}`}><span className="text-sm font-bold">{entry.done ? <Check className="size-5" aria-hidden="true" /> : index + 1}</span></button>
-                <div className="min-w-0 flex-1"><div className="flex items-start gap-3"><span className={`mt-1 flex size-9 shrink-0 items-center justify-center rounded-xl ${entry.done ? "bg-care/15 text-care" : "bg-muted text-muted-foreground"}`}><StepIcon id={entry.id} /></span><div className="min-w-0 flex-1"><div className="flex flex-wrap items-center gap-x-3 gap-y-1"><h3 className="font-semibold text-foreground">{entry.type}</h3>{entry.date && <span className="inline-flex items-center gap-1 text-xs text-muted-foreground"><CalendarDays className="size-3.5" aria-hidden="true" />{formatDate(entry.date)}</span>}{entry.pain != null && <span className="inline-flex items-center rounded-full bg-care/10 px-2 py-0.5 text-xs font-semibold text-care">Douleur&nbsp;{entry.pain}/10</span>}</div>{entry.notes && <p className="mt-1 text-sm text-muted-foreground">{entry.notes}</p>}</div></div></div>
-                <div className="flex shrink-0 gap-1 opacity-70 transition-opacity group-hover:opacity-100"><button type="button" onClick={() => startEditing(entry)} aria-label={`Modifier ${entry.type}`} className="rounded-xl p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"><Pencil className="size-4" aria-hidden="true" /></button><button type="button" onClick={() => remove(entry.id)} aria-label={`Supprimer ${entry.type}`} className="rounded-xl p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-destructive"><Trash2 className="size-4" aria-hidden="true" /></button></div>
+                <div className="min-w-0 flex-1"><div className="flex items-start gap-3"><span className={`mt-1 flex size-9 shrink-0 items-center justify-center rounded-xl ${entry.done ? "bg-care/15 text-care" : "bg-muted text-muted-foreground"}`}><StepIcon id={entry.id} /></span><div className="min-w-0 flex-1"><div className="flex flex-wrap items-center gap-x-3 gap-y-1"><h3 className="font-semibold text-foreground">{entry.type}</h3>{entry.date && <span className="inline-flex items-center gap-1 text-xs text-muted-foreground"><CalendarDays className="size-3.5" aria-hidden="true" />{new Date(`${entry.date}T12:00:00`) < new Date() ? "Vu le" : "Prévu le"} {formatDate(entry.date)}</span>}{entry.pain != null && <span className="inline-flex items-center rounded-full bg-care/10 px-2 py-0.5 text-xs font-semibold text-care">Douleur&nbsp;{entry.pain}/10</span>}</div>{entry.notes && <p className="mt-1 text-sm text-muted-foreground">{entry.notes}</p>}</div></div></div>
+                <div className="flex shrink-0 gap-1 opacity-70 transition-opacity group-hover:opacity-100"><button type="button" onClick={() => moveEntry(index, -1)} disabled={index === 0} aria-label={`Monter ${entry.type}`} className="rounded-xl p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:opacity-30"><ArrowUp className="size-4" aria-hidden="true" /></button><button type="button" onClick={() => moveEntry(index, 1)} disabled={index === sortedEntries.length - 1} aria-label={`Descendre ${entry.type}`} className="rounded-xl p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:opacity-30"><ArrowDown className="size-4" aria-hidden="true" /></button><button type="button" onClick={() => startEditing(entry)} aria-label={`Modifier ${entry.type}`} className="rounded-xl p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"><Pencil className="size-4" aria-hidden="true" /></button><button type="button" onClick={() => remove(entry.id)} aria-label={`Supprimer ${entry.type}`} className="rounded-xl p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-destructive"><Trash2 className="size-4" aria-hidden="true" /></button></div>
               </div>
             )}
           </li>

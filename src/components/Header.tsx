@@ -10,7 +10,7 @@ const patientNavItems = [
 
 const doctorNavItems = [
   { to: "/cabinet/accueil", label: "Accueil", exact: true },
-  { to: "/cabinet", label: "Bibliothèque de contenus", exact: true },
+  { to: "/cabinet/", label: "Bibliothèque de contenus", exact: true },
   { to: "/annuaire", label: "Réseau professionnel", exact: false },
 ];
 
@@ -20,6 +20,10 @@ export function Header() {
   const isDoctorLogin = location.pathname.startsWith("/connexion-medecin");
   const isDoctorSpace = location.pathname.startsWith("/cabinet") || isDoctorLogin;
   const navItems = isDoctorSpace ? doctorNavItems : patientNavItems;
+  const isActive = (item: (typeof navItems)[number]) => {
+    const pathname = location.pathname === "/cabinet" ? "/cabinet/" : location.pathname;
+    return item.exact ? pathname === item.to : pathname.startsWith(item.to);
+  };
 
   return (
     <header className="sticky top-0 z-50 border-b border-border/70 bg-background/80 backdrop-blur-xl print:hidden">
@@ -45,9 +49,9 @@ export function Header() {
               key={item.label}
               to={item.to}
               activeOptions={{ exact: item.exact ?? false }}
-              aria-current={(item.exact ? location.pathname === item.to : location.pathname.startsWith(item.to)) ? "page" : undefined}
+              aria-current={isActive(item) ? "page" : undefined}
               className={
-                (item.exact ? location.pathname === item.to : location.pathname.startsWith(item.to))
+                isActive(item)
                   ? "rounded-full border-2 border-care bg-care/10 px-3 py-1.5 font-bold text-foreground shadow-sm"
                   : "rounded-full border border-transparent px-3 py-1.5 text-muted-foreground transition-colors hover:border-border hover:text-foreground"
               }
@@ -77,9 +81,9 @@ export function Header() {
               to={item.to}
               onClick={() => setOpen(false)}
               activeOptions={{ exact: item.exact ?? false }}
-              aria-current={(item.exact ? location.pathname === item.to : location.pathname.startsWith(item.to)) ? "page" : undefined}
+              aria-current={isActive(item) ? "page" : undefined}
               className={
-                (item.exact ? location.pathname === item.to : location.pathname.startsWith(item.to))
+                isActive(item)
                   ? "block rounded-lg border-2 border-care bg-care/10 px-3 py-3 text-base font-bold text-care"
                   : "block rounded-lg border border-transparent px-3 py-3 text-base text-foreground hover:bg-muted"
               }

@@ -149,8 +149,8 @@ export function DoctorOnboarding() {
     <section className="mt-10 rounded-3xl border border-care/25 bg-care/5 px-6 pt-6 pb-6 md:px-8 md:pt-8 md:pb-6 print:hidden" aria-labelledby="onboarding-title">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-wide text-care">Gestion du réseau professionnel</p>
-          <h2 id="onboarding-title" className="mt-2 text-2xl font-semibold text-foreground">Gérez votre réseau professionnel</h2>
+          <p className="text-xs font-semibold uppercase tracking-wide text-care">Réseau professionnel</p>
+          <h2 id="onboarding-title" className="mt-2 text-2xl font-semibold text-foreground">{network ? "Gérez votre réseau professionnel" : "Créez votre propre réseau professionnel"}</h2>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">Ajoutez, modifiez ou retirez les professionnels de votre réseau présenté aux patients, à titre informatif.</p>
         </div>
         {network && <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-800">Réseau publié</span>}

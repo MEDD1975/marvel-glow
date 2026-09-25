@@ -16,7 +16,9 @@ type Network = {
 export function DoctorOnboarding() {
   const [network, setNetwork] = useState<null | Network>(null);
   const [name, setName] = useState("");
-  const [address, setAddress] = useState("");
+  const [addressLine, setAddressLine] = useState("");
+  const [postalCode, setPostalCode] = useState("");
+  const [city, setCity] = useState("");
   const [phone, setPhone] = useState("");
   const [drafts, setDrafts] = useState<Practitioner[]>([]);
   const [notice, setNotice] = useState("");
@@ -35,7 +37,9 @@ export function DoctorOnboarding() {
       if (data) {
         setNetwork(data);
         setName(data.name);
-        setAddress(data.address);
+        setAddressLine(data.address ?? "");
+        setPostalCode("");
+        setCity("");
         setPhone(data.phone ?? "");
       }
     });
@@ -132,7 +136,7 @@ export function DoctorOnboarding() {
     const response = await fetch("/api/doctor-network", {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ name, address, phone, practitioners }),
+      body: JSON.stringify({ name, address: `${addressLine.trim()}, ${postalCode.trim()} ${city.trim()}`.trim(), phone, practitioners }),
     });
     const data = await response.json();
     setSaving(false);
@@ -156,12 +160,16 @@ export function DoctorOnboarding() {
         {network && <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-800">Réseau publié</span>}
       </div>
 
-      <form onSubmit={submit} className="mt-6 space-y-6">
+      <form onSubmit={submit} autoComplete="off" onSubmitCapture={(event) => { const form = event.currentTarget; form.querySelectorAll<HTMLInputElement>("input").forEach((input) => input.setAttribute("autocomplete", "off")); }} className="mt-6 space-y-6">
         <div className="grid gap-4 md:grid-cols-2">
           <label className="text-sm font-medium text-foreground">Nom du cabinet<input required value={name} onChange={(event) => setName(event.target.value)} className="mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 font-normal" placeholder="Cabinet du Dr A" /></label>
           <label className="text-sm font-medium text-foreground">Téléphone<input value={phone} onChange={(event) => setPhone(event.target.value)} className="mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 font-normal" placeholder="01 00 00 00 00" /></label>
         </div>
-        <label className="block text-sm font-medium text-foreground">Adresse<input required value={address} onChange={(event) => setAddress(event.target.value)} className="mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 font-normal" placeholder="Adresse du cabinet" /></label>
+        <div className="grid gap-4 md:grid-cols-[1.5fr_0.75fr_1fr]">
+          <label className="text-sm font-medium text-foreground">Numéro et rue<input required autoComplete="street-address" value={addressLine} onChange={(event) => setAddressLine(event.target.value)} className="mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 font-normal" placeholder="22 rue Saint Paulin" /></label>
+          <label className="text-sm font-medium text-foreground">Code postal<input required autoComplete="postal-code" inputMode="numeric" value={postalCode} onChange={(event) => setPostalCode(event.target.value)} className="mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 font-normal" placeholder="94100" /></label>
+          <label className="text-sm font-medium text-foreground">Ville<input required autoComplete="address-level2" value={city} onChange={(event) => setCity(event.target.value)} className="mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 font-normal" placeholder="Saint-Maur-des-Fossés" /></label>
+        </div>
 
         <div className="space-y-3">
           <h3 className="font-semibold text-foreground">Professionnels de votre réseau</h3>

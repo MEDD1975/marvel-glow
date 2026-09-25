@@ -251,6 +251,7 @@ export function DoctorOnboarding() {
                     <div className="min-w-0">
                       <p className="truncate font-semibold text-foreground">{practitioner.name}</p>
                       <p className="text-sm font-semibold" style={{ color: professionStyles[professionTone(practitioner.profession)].text }}>{practitioner.profession}</p>
+                      {(() => { const cabinet = splitAddress(network?.address ?? ""); const street = practitioner.address?.trim() || cabinet.street; const postal = practitioner.postalCode?.trim() || cabinet.postalCode; const town = practitioner.city?.trim() || cabinet.city; const formatted = [street, [postal, town].filter(Boolean).join(" ")].filter(Boolean).join(", "); return formatted ? <p className="mt-1 text-xs text-muted-foreground">{formatted}</p> : null; })()}
                       {(practitioner.phone || practitioner.email) && <p className="mt-1 truncate text-xs text-muted-foreground">{[practitioner.phone, practitioner.email].filter(Boolean).join(" · ")}</p>}
                     </div>
                     <div className="flex shrink-0 gap-2">

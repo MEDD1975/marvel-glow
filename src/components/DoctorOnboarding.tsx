@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Check, Pencil, Search, Trash2, Plus, X } from "lucide-react";
 
-const emptyPractitioner = { name: "", profession: "", phone: "", email: "" };
+const emptyPractitioner = { name: "", profession: "", phone: "", email: "", address: "", postalCode: "", city: "" };
 
 function splitAddress(value: string) {
   const match = value.trim().match(/^(.*?)(?:,\s*)?(\d{5})\s+(.+)$/);
@@ -82,7 +82,8 @@ export function DoctorOnboarding() {
 
   const startEditing = (practitioner: Practitioner) => {
     setEditingId(practitioner.id ?? null);
-    setEditingPractitioner({ ...practitioner, phone: practitioner.phone ?? "", email: practitioner.email ?? "" });
+    const fallback = splitAddress(network?.address ?? "");
+    setEditingPractitioner({ ...practitioner, phone: practitioner.phone ?? "", email: practitioner.email ?? "", address: practitioner.address ?? fallback.street, postalCode: practitioner.postalCode ?? fallback.postalCode, city: practitioner.city ?? fallback.city });
     setNotice("");
   };
 
@@ -236,6 +237,9 @@ export function DoctorOnboarding() {
                       <input required value={editingPractitioner.profession} onChange={(event) => setEditingPractitioner({ ...editingPractitioner, profession: event.target.value })} className="rounded-lg border border-input bg-background px-3 py-2" aria-label="Spécialité du professionnel" />
                       <input value={editingPractitioner.phone ?? ""} onChange={(event) => setEditingPractitioner({ ...editingPractitioner, phone: event.target.value })} className="rounded-lg border border-input bg-background px-3 py-2" placeholder="Téléphone (optionnel)" aria-label="Téléphone du professionnel" />
                       <input type="email" value={editingPractitioner.email ?? ""} onChange={(event) => setEditingPractitioner({ ...editingPractitioner, email: event.target.value })} className="rounded-lg border border-input bg-background px-3 py-2" placeholder="Email (optionnel)" aria-label="Email du professionnel" />
+                      <input value={editingPractitioner.address ?? ""} onChange={(event) => setEditingPractitioner({ ...editingPractitioner, address: event.target.value })} className="rounded-lg border border-input bg-background px-3 py-2" placeholder="Numéro et rue" aria-label="Numéro et rue du professionnel" />
+                      <input inputMode="numeric" pattern="[0-9]{5}" maxLength={5} value={editingPractitioner.postalCode ?? ""} onChange={(event) => setEditingPractitioner({ ...editingPractitioner, postalCode: event.target.value.replace(/\D/g, "").slice(0, 5) })} className="rounded-lg border border-input bg-background px-3 py-2" placeholder="Code postal" aria-label="Code postal du professionnel" />
+                      <input value={editingPractitioner.city ?? ""} onChange={(event) => setEditingPractitioner({ ...editingPractitioner, city: event.target.value })} className="rounded-lg border border-input bg-background px-3 py-2" placeholder="Ville" aria-label="Ville du professionnel" />
                     </div>
                     <div className="flex flex-wrap gap-2">
                       <button type="button" onClick={saveEdit} disabled={updatingId === practitioner.id} className="flex items-center gap-1.5 rounded-lg bg-care px-3 py-2 text-xs font-semibold text-primary-foreground disabled:opacity-50"><Check className="h-4 w-4" aria-hidden="true" />{updatingId === practitioner.id ? "Enregistrement…" : "Enregistrer"}</button>
@@ -279,13 +283,16 @@ export function DoctorOnboarding() {
                 <input required value={practitioner.profession} onChange={(event) => updateDraft(index, "profession", event.target.value)} className="rounded-lg border border-input bg-background px-3 py-2" placeholder="Métier, ex. Kinésithérapeute" />
                 <input value={practitioner.phone} onChange={(event) => updateDraft(index, "phone", event.target.value)} className="rounded-lg border border-input bg-background px-3 py-2" placeholder="Téléphone (optionnel)" />
                 <input type="email" value={practitioner.email} onChange={(event) => updateDraft(index, "email", event.target.value)} className="rounded-lg border border-input bg-background px-3 py-2" placeholder="Email (optionnel)" />
+                <input value={practitioner.address} onChange={(event) => updateDraft(index, "address", event.target.value)} className="rounded-lg border border-input bg-background px-3 py-2" placeholder="Numéro et rue (cabinet par défaut)" />
+                <input inputMode="numeric" pattern="[0-9]{5}" maxLength={5} value={practitioner.postalCode} onChange={(event) => updateDraft(index, "postalCode", event.target.value.replace(/\D/g, "").slice(0, 5))} className="rounded-lg border border-input bg-background px-3 py-2" placeholder="Code postal (cabinet par défaut)" />
+                <input value={practitioner.city} onChange={(event) => updateDraft(index, "city", event.target.value)} className="rounded-lg border border-input bg-background px-3 py-2" placeholder="Ville (cabinet par défaut)" />
               </div>
             </div>
           ))}
 
           <button
             type="button"
-            onClick={() => setDrafts((current) => [...current, { ...emptyPractitioner }])}
+            onClick={() => { const fallback = splitAddress(network?.address ?? ""); setDrafts((current) => [...current, { ...emptyPractitioner, address: fallback.street, postalCode: fallback.postalCode, city: fallback.city }]); }}
             className="flex w-full items-center justify-center gap-2 rounded-2xl border border-dashed border-care/40 bg-background px-4 py-3 text-sm font-semibold text-care transition-colors hover:bg-care/5"
           >
             <Plus className="h-4 w-4" aria-hidden="true" />

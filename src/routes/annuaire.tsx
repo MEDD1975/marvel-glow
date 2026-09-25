@@ -40,16 +40,18 @@ function normalizeProfession(value: string): Profession | null {
 
 function toCabinets(networks: PublicNetwork[]): Cabinet[] {
   return networks.map((network) => {
+    const cabinetAddress = parseNetworkAddress(network.address);
     const dynamicProviders = network.practitioners.flatMap((practitioner) => {
       const profession = normalizeProfession(practitioner.profession);
       if (!profession) return [];
+      const individualAddress = practitioner.address ? parseNetworkAddress(practitioner.address) : null;
       return [{
         id: practitioner.id,
         name: practitioner.name,
         profession,
-address: practitioner.address ?? parseNetworkAddress(network.address).address,
-          postalCode: practitioner.postalCode ?? parseNetworkAddress(network.address).postalCode,
-          city: practitioner.city ?? parseNetworkAddress(network.address).city,
+        address: individualAddress?.address || cabinetAddress.address,
+        postalCode: practitioner.postalCode || individualAddress?.postalCode || cabinetAddress.postalCode,
+        city: practitioner.city || individualAddress?.city || cabinetAddress.city,
         phone: practitioner.phone ?? undefined,
         formattedPhone: practitioner.phone ?? undefined,
         cabinetId: network.id,

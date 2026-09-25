@@ -3,6 +3,11 @@ import { Check, Pencil, Search, Trash2, Plus, X } from "lucide-react";
 
 const emptyPractitioner = { name: "", profession: "", phone: "", email: "" };
 
+function splitAddress(value: string) {
+  const match = value.trim().match(/^(.*?)(?:,\s*)?(\d{5})\s+(.+)$/);
+  return match ? { street: match[1].trim(), postalCode: match[2], city: match[3].trim() } : { street: value.trim(), postalCode: "", city: "" };
+}
+
 type Practitioner = typeof emptyPractitioner & { id?: string };
 
 type Network = {
@@ -37,9 +42,10 @@ export function DoctorOnboarding() {
       if (data) {
         setNetwork(data);
         setName(data.name);
-        setAddressLine(data.address ?? "");
-        setPostalCode("");
-        setCity("");
+        const address = splitAddress(data.address ?? "");
+        setAddressLine(address.street);
+        setPostalCode(address.postalCode);
+        setCity(address.city);
         setPhone(data.phone ?? "");
       }
     });
@@ -166,9 +172,9 @@ export function DoctorOnboarding() {
           <label className="text-sm font-medium text-foreground">Téléphone<input value={phone} onChange={(event) => setPhone(event.target.value)} className="mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 font-normal" placeholder="01 00 00 00 00" /></label>
         </div>
         <div className="grid gap-4 md:grid-cols-[1.5fr_0.75fr_1fr]">
-          <label className="text-sm font-medium text-foreground">Numéro et rue<input required autoComplete="street-address" value={addressLine} onChange={(event) => setAddressLine(event.target.value)} className="mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 font-normal" placeholder="22 rue Saint Paulin" /></label>
-          <label className="text-sm font-medium text-foreground">Code postal<input required autoComplete="postal-code" inputMode="numeric" value={postalCode} onChange={(event) => setPostalCode(event.target.value)} className="mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 font-normal" placeholder="94100" /></label>
-          <label className="text-sm font-medium text-foreground">Ville<input required autoComplete="address-level2" value={city} onChange={(event) => setCity(event.target.value)} className="mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 font-normal" placeholder="Saint-Maur-des-Fossés" /></label>
+          <label className="text-sm font-medium text-foreground">Numéro et rue<input required autoComplete="off" name="street_custom" id="street_custom" value={addressLine} onChange={(event) => setAddressLine(event.target.value.replace(/\s*,?\s*\d{5}\s+[^,]+$/, "").trim())} className="mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 font-normal" placeholder="22 rue Saint Paulin" /></label>
+          <label className="text-sm font-medium text-foreground">Code postal<input required autoComplete="off" name="zip_custom" id="zip_custom" inputMode="numeric" pattern="[0-9]{5}" maxLength={5} value={postalCode} onChange={(event) => setPostalCode(event.target.value.replace(/\D/g, "").slice(0, 5))} className="mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 font-normal" placeholder="94100" /></label>
+          <label className="text-sm font-medium text-foreground">Ville<input required autoComplete="off" name="city_custom" id="city_custom" value={city} onChange={(event) => setCity(event.target.value)} className="mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 font-normal" placeholder="Saint-Maur-des-Fossés" /></label>
         </div>
 
         <div className="space-y-3">

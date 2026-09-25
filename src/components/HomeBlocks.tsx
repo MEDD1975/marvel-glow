@@ -6,7 +6,6 @@ import {
   Bot,
   ArrowRight,
   BookOpen,
-  ListChecks,
   MapPin,
   PlayCircle,
 } from "lucide-react";
@@ -81,21 +80,6 @@ export function AssistantHome({ initialStarted = false, pathway }: { initialStar
         </p>
 
         <div className="mt-4 grid gap-3 md:mt-4 md:grid-cols-3 md:gap-3">
-          <Link
-            to="/parcours"
-            search={effectivePathway ? { pathway: effectivePathway } : undefined}
-            className="group flex min-h-48 flex-col rounded-3xl border border-border bg-card p-4 md:min-h-0 md:p-4 text-left shadow-sm transition-all hover:-translate-y-1 hover:border-care/40 hover:bg-muted/30 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-          >
-            <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-muted text-foreground shadow-sm">
-              <ListChecks className="h-6 w-6" aria-hidden="true" />
-            </span>
-            <span className="mt-5 text-xs font-semibold uppercase tracking-[0.12em] text-care">MON PARCOURS &amp; ÉTAPES</span>
-            <span className="mt-1.5 text-lg font-semibold text-foreground">Mes repères, à mon rythme</span>
-            <span className="mt-2 flex-1 text-sm leading-6 text-muted-foreground">Explorez une frise interactive et cochez les repères de votre parcours, selon votre situation.</span>
-            <span className="mt-2 text-xs leading-5 text-muted-foreground">Kivoir vous informe et vous aide à préparer la suite ; il ne remplace pas l&apos;avis médical.</span>
-            <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-primary">Ouvrir mon parcours <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" /></span>
-          </Link>
-
           <Link
             to="/conseils"
             search={effectivePathway ? { c: effectivePathway } : undefined}

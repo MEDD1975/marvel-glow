@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { readStoredPathway, writeStoredPathway } from "@/lib/patient-pathway";
+import { LocalCareTimeline } from "@/components/LocalCareTimeline";
 import {
   AlertTriangle,
   Bot,
@@ -80,6 +81,8 @@ export function AssistantHome({ initialStarted = false, pathway }: { initialStar
         </p>
 
         <div className="mt-4 grid gap-3 md:mt-4 md:grid-cols-3 md:gap-3">
+          <LocalCareTimeline />
+
           <Link
             to="/conseils"
             search={effectivePathway ? { c: effectivePathway } : undefined}

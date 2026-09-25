@@ -173,7 +173,7 @@ export function DoctorOnboarding() {
         </div>
         <div className="grid gap-4 md:grid-cols-[1.5fr_0.75fr_1fr]">
           <label className="text-sm font-medium text-foreground">Numéro et rue<input required autoComplete="off" name="street_custom" id="street_custom" value={addressLine} onChange={(event) => setAddressLine(event.target.value.replace(/\s*,?\s*\d{5}\s+[^,]+$/, "").trim())} className="mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 font-normal" placeholder="22 rue Saint Paulin" /></label>
-          <label className="text-sm font-medium text-foreground">Code postal<input required autoComplete="nope" name="xyz_cp_9988" id="xyz_cp_9988" data-form-type="other" inputMode="numeric" pattern="[0-9]{5}" maxLength={5} value={postalCode} onChange={(event) => setPostalCode(event.target.value.replace(/\D/g, "").slice(0, 5))} className="mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 font-normal" /></label>
+          <label className="text-sm font-medium text-foreground">Code postal<input required autoComplete="postal-code" name="xyz_cp_9988" id="xyz_cp_9988" inputMode="numeric" pattern="[0-9]{5}" maxLength={5} value={postalCode} onChange={(event) => setPostalCode(event.target.value.replace(/\D/g, "").slice(0, 5))} className="mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 font-normal" /></label>
           <label className="text-sm font-medium text-foreground">Ville<input required autoComplete="off" name="city_custom" id="city_custom" value={city} onChange={(event) => setCity(event.target.value)} className="mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 font-normal" placeholder="Saint-Maur-des-Fossés" /></label>
         </div>
 

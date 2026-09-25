@@ -24,8 +24,13 @@ type PublicNetwork = {
   address: string;
   phone: string | null;
   ownerName: string | null;
-  practitioners: Array<{ id: string; name: string; profession: string; phone: string | null; email: string | null }>;
+  practitioners: Array<{ id: string; name: string; profession: string; phone: string | null; email: string | null; address: string | null; postalCode: string | null; city: string | null }>;
 };
+
+function parseNetworkAddress(value: string) {
+  const match = value.match(/^(.*?),\s*(\d{5})\s+(.+)$/);
+  return { address: match?.[1]?.trim() ?? value, postalCode: match?.[2] ?? "", city: match?.[3]?.trim() ?? "" };
+}
 
 function normalizeProfession(value: string): Profession | null {
   const normalized = value.trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
@@ -42,9 +47,9 @@ function toCabinets(networks: PublicNetwork[]): Cabinet[] {
         id: practitioner.id,
         name: practitioner.name,
         profession,
-        address: network.address,
-        postalCode: "",
-        city: "",
+address: practitioner.address ?? parseNetworkAddress(network.address).address,
+          postalCode: practitioner.postalCode ?? parseNetworkAddress(network.address).postalCode,
+          city: practitioner.city ?? parseNetworkAddress(network.address).city,
         phone: practitioner.phone ?? undefined,
         formattedPhone: practitioner.phone ?? undefined,
         cabinetId: network.id,

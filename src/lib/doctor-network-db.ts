@@ -14,6 +14,9 @@ export type DoctorNetworkRecord = {
     profession: string;
     phone: string | null;
     email: string | null;
+    address: string | null;
+    postalCode: string | null;
+    city: string | null;
   }>;
 };
 
@@ -32,7 +35,7 @@ export async function getDoctorNetwork(userId: string) {
   if (!network) return null;
 
   const practitioners = await pool.query<DoctorNetworkRecord["practitioners"][number]>(
-    'SELECT "id", "name", "profession", "phone", "email" FROM "doctor_practitioner" WHERE "networkId" = $1 ORDER BY "createdAt" ASC',
+    'SELECT "id", "name", "profession", "phone", "email", "address", "postalCode", "city" FROM "doctor_practitioner" WHERE "networkId" = $1 ORDER BY "createdAt" ASC',
     [network.id],
   );
   return { ...network, practitioners: practitioners.rows } satisfies DoctorNetworkRecord;
@@ -50,7 +53,7 @@ export async function getPublicDoctorNetworks() {
   const networks = [];
   for (const network of networkResult.rows) {
     const practitioners = await pool.query<DoctorNetworkRecord["practitioners"][number]>(
-      'SELECT "id", "name", "profession", "phone", "email" FROM "doctor_practitioner" WHERE "networkId" = $1 ORDER BY "createdAt" ASC',
+      'SELECT "id", "name", "profession", "phone", "email", "address", "postalCode", "city" FROM "doctor_practitioner" WHERE "networkId" = $1 ORDER BY "createdAt" ASC',
       [network.id],
     );
     networks.push({ ...network, practitioners: practitioners.rows });
@@ -68,18 +71,18 @@ export async function deleteDoctorPractitioner(userId: string, practitionerId: s
 
 export async function updateDoctorPractitioner(
   userId: string,
-  practitioner: { id: string; name: string; profession: string; phone?: string; email?: string },
+  practitioner: { id: string; name: string; profession: string; phone?: string; email?: string; address?: string; postalCode?: string; city?: string },
 ) {
   await pool.query(
-    'UPDATE "doctor_practitioner" SET "name" = $1, "profession" = $2, "phone" = $3, "email" = $4 WHERE "id" = $5 AND "networkId" IN (SELECT "id" FROM "doctor_network" WHERE "ownerId" = $6)',
-    [practitioner.name, practitioner.profession, practitioner.phone || null, practitioner.email || null, practitioner.id, userId],
+    'UPDATE "doctor_practitioner" SET "name" = $1, "profession" = $2, "phone" = $3, "email" = $4, "address" = $5, "postalCode" = $6, "city" = $7 WHERE "id" = $5 AND "networkId" IN (SELECT "id" FROM "doctor_network" WHERE "ownerId" = $6)',
+    [practitioner.name, practitioner.profession, practitioner.phone || null, practitioner.email || null, practitioner.address || null, practitioner.postalCode || null, practitioner.city || null, practitioner.id, userId],
   );
   return getDoctorNetwork(userId);
 }
 
 export async function saveDoctorNetwork(
   userId: string,
-  input: { name: string; address: string; phone?: string; practitioners: Array<{ name: string; profession: string; phone?: string; email?: string }> },
+  input: { name: string; address: string; phone?: string; practitioners: Array<{ name: string; profession: string; phone?: string; email?: string; address?: string; postalCode?: string; city?: string }> },
 ) {
   const client = await pool.connect();
   try {
@@ -107,13 +110,13 @@ export async function saveDoctorNetwork(
       );
       if (existingPractitioner.rows[0]) {
         await client.query(
-          'UPDATE "doctor_practitioner" SET "profession" = $1, "phone" = $2, "email" = $3 WHERE "id" = $4 AND "networkId" = $5',
-          [practitioner.profession, practitioner.phone || null, practitioner.email || null, existingPractitioner.rows[0].id, networkId],
+          'UPDATE "doctor_practitioner" SET "profession" = $1, "phone" = $2, "email" = $3, "address" = $4, "postalCode" = $5, "city" = $6 WHERE "id" = $4 AND "networkId" = $5',
+          [practitioner.profession, practitioner.phone || null, practitioner.email || null, practitioner.address || null, practitioner.postalCode || null, practitioner.city || null, existingPractitioner.rows[0].id, networkId],
         );
       } else {
         await client.query(
-          'INSERT INTO "doctor_practitioner" ("id", "networkId", "name", "profession", "phone", "email") VALUES ($1, $2, $3, $4, $5, $6)',
-          [`practitioner_${crypto.randomUUID()}`, networkId, practitioner.name, practitioner.profession, practitioner.phone || null, practitioner.email || null],
+          'INSERT INTO "doctor_practitioner" ("id", "networkId", "name", "profession", "phone", "email", "address", "postalCode", "city") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)',
+          [`practitioner_${crypto.randomUUID()}`, networkId, practitioner.name, practitioner.profession, practitioner.phone || null, practitioner.email || null, practitioner.address || null, practitioner.postalCode || null, practitioner.city || null],
         );
       }
     }

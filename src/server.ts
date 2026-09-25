@@ -217,11 +217,11 @@ export default {
             name: payload.name.trim(),
             address: payload.address.trim(),
             phone: typeof payload.phone === "string" ? payload.phone.trim() : undefined,
-            practitioners: practitioners.map((item: { name: string; profession: string; phone?: string; email?: string }) => ({ name: item.name.trim(), profession: item.profession.trim(), phone: item.phone?.trim(), email: item.email?.trim() })),
+            practitioners: practitioners.map((item: { name: string; profession: string; phone?: string; email?: string; address?: string; postalCode?: string; city?: string }) => ({ name: item.name.trim(), profession: item.profession.trim(), phone: item.phone?.trim(), email: item.email?.trim(), address: item.address?.trim(), postalCode: item.postalCode?.trim(), city: item.city?.trim() })),
           }), { status: 201 });
         }
         if (request.method === "PATCH") {
-          const payload = await request.json() as { id?: string; name?: string; profession?: string; phone?: string; email?: string };
+          const payload = await request.json() as { id?: string; name?: string; profession?: string; phone?: string; email?: string; address?: string; postalCode?: string; city?: string };
           if (!payload.id || !payload.name?.trim() || !payload.profession?.trim()) {
             return Response.json({ error: "Le nom et la spécialité sont obligatoires." }, { status: 400 });
           }
@@ -231,6 +231,9 @@ export default {
             profession: payload.profession.trim(),
             phone: payload.phone?.trim(),
             email: payload.email?.trim(),
+            address: payload.address?.trim(),
+            postalCode: payload.postalCode?.trim(),
+            city: payload.city?.trim(),
           }));
         }
         if (request.method === "DELETE") {

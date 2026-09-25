@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { readStoredPathway, writeStoredPathway } from "@/lib/patient-pathway";
+import { LocalCareTimeline } from "@/components/LocalCareTimeline";
 import {
   AlertTriangle,
   Bot,
@@ -80,17 +81,7 @@ export function AssistantHome({ initialStarted = false, pathway }: { initialStar
         </p>
 
         <div className="mt-4 grid gap-3 md:mt-4 md:grid-cols-3 md:gap-3">
-          <Link
-            to="/parcours"
-            search={effectivePathway ? { pathway: effectivePathway } : undefined}
-            className="group flex min-h-48 flex-col rounded-3xl border border-border bg-card p-4 text-left shadow-sm transition-all hover:-translate-y-1 hover:border-care/40 hover:bg-muted/30 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-          >
-            <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-muted text-foreground shadow-sm"><ArrowRight className="h-6 w-6" aria-hidden="true" /></span>
-            <span className="mt-5 text-xs font-semibold uppercase tracking-[0.12em] text-care">MON PARCOURS &amp; ÉTAPES</span>
-            <span className="mt-1.5 text-lg font-semibold text-foreground">Mes repères, à mon rythme</span>
-            <span className="mt-2 flex-1 text-sm leading-6 text-muted-foreground">Explorez les étapes de votre parcours, dans l’ordre et selon votre situation.</span>
-            <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-primary">Ouvrir mon parcours <ArrowRight className="h-4 w-4" aria-hidden="true" /></span>
-          </Link>
+          <LocalCareTimeline />
 
           <Link
             to="/conseils"

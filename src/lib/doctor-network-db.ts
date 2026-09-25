@@ -74,7 +74,7 @@ export async function updateDoctorPractitioner(
   practitioner: { id: string; name: string; profession: string; phone?: string; email?: string; address?: string; postalCode?: string; city?: string },
 ) {
   await pool.query(
-    'UPDATE "doctor_practitioner" SET "name" = $1, "profession" = $2, "phone" = $3, "email" = $4, "address" = $5, "postalCode" = $6, "city" = $7 WHERE "id" = $5 AND "networkId" IN (SELECT "id" FROM "doctor_network" WHERE "ownerId" = $6)',
+    'UPDATE "doctor_practitioner" SET "name" = $1, "profession" = $2, "phone" = $3, "email" = $4, "address" = $5, "postalCode" = $6, "city" = $7 WHERE "id" = $8 AND "networkId" IN (SELECT "id" FROM "doctor_network" WHERE "ownerId" = $9)',
     [practitioner.name, practitioner.profession, practitioner.phone || null, practitioner.email || null, practitioner.address || null, practitioner.postalCode || null, practitioner.city || null, practitioner.id, userId],
   );
   return getDoctorNetwork(userId);
@@ -110,7 +110,7 @@ export async function saveDoctorNetwork(
       );
       if (existingPractitioner.rows[0]) {
         await client.query(
-          'UPDATE "doctor_practitioner" SET "profession" = $1, "phone" = $2, "email" = $3, "address" = $4, "postalCode" = $5, "city" = $6 WHERE "id" = $4 AND "networkId" = $5',
+          'UPDATE "doctor_practitioner" SET "profession" = $1, "phone" = $2, "email" = $3, "address" = $4, "postalCode" = $5, "city" = $6 WHERE "id" = $7 AND "networkId" = $8',
           [practitioner.profession, practitioner.phone || null, practitioner.email || null, practitioner.address || null, practitioner.postalCode || null, practitioner.city || null, existingPractitioner.rows[0].id, networkId],
         );
       } else {

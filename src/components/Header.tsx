@@ -23,10 +23,12 @@ export function Header() {
   const isActive = (item: (typeof navItems)[number]) => {
     const pathname = location.pathname === "/cabinet" ? "/cabinet/" : location.pathname;
     const [itemPath, itemQuery] = item.to.split("?");
-    if (itemPath === "/cabinet/" && itemQuery) {
-      return pathname === itemPath && new URLSearchParams(location.search).toString() === itemQuery;
+    const matchesPath = item.exact ? pathname === itemPath : pathname.startsWith(itemPath);
+    if (!matchesPath) return false;
+    if (itemQuery) {
+      return new URLSearchParams(location.search).toString() === itemQuery;
     }
-    return item.exact ? pathname === itemPath : pathname.startsWith(itemPath);
+    return !location.search;
   };
 
   return (

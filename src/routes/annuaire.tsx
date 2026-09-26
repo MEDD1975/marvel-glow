@@ -386,10 +386,10 @@ function CabinetChooser({ invalidId, profession, doctor }: { invalidId?: string;
                   )}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="group mt-4 block rounded-xl border border-care/25 bg-care/5 px-3 py-2 text-left outline-none transition-all hover:border-care/50 hover:bg-care/10 active:scale-[0.99] focus-visible:ring-2 focus-visible:ring-care"
+                  className="group mt-4 block rounded-xl border border-border bg-muted/30 px-3 py-2 text-left outline-none transition-all hover:border-foreground/40 hover:bg-muted/60 active:scale-[0.99] focus-visible:ring-2 focus-visible:ring-foreground"
                   aria-label={`Ouvrir l'adresse de ${provider.name} dans Maps`}
                 >
-                  <address className="not-italic text-sm font-semibold leading-6 text-care underline decoration-care/40 underline-offset-4 group-hover:decoration-care">
+                  <address className="not-italic text-sm font-semibold leading-6 text-foreground underline decoration-foreground/40 underline-offset-4 group-hover:decoration-foreground">
                     {provider.address}
                     <br />
                     {provider.postalCode} {provider.city}

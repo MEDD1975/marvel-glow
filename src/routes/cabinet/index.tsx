@@ -441,7 +441,7 @@ function CabinetPage() {
         <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_1.2fr]">
           <div className="space-y-4 rounded-2xl border border-border bg-card p-5">
             <label className="block text-sm font-medium text-foreground" htmlFor="video-condition">Trouble ou parcours</label>
-            <select id="video-condition" value={pathway} onChange={(event) => setPathway(event.target.value)} aria-describedby="video-condition-hint" className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground outline-none focus:ring-2 focus:ring-ring">
+            <select id="video-condition" value={pathway} onChange={(event) => { setPathway(event.target.value); setCardNote(""); }} aria-describedby="video-condition-hint" className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground outline-none focus:ring-2 focus:ring-ring">
               {conditions.map((condition) => <option key={condition.id} value={condition.id}>{condition.name}</option>)}
             </select>
             <p id="video-condition-hint" className="text-xs text-muted-foreground">Ce choix définit automatiquement le parcours ouvert par la carte patient.</p>

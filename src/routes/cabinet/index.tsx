@@ -403,12 +403,12 @@ function CabinetPage() {
               </label>
               <textarea
                 id="cardNote"
-  rows={4}
-> value={cardNote}
-  maxLength={180}
+rows={6}
+ value={cardNote}
+maxLength={300}
                 onChange={(e) => setCardNote(e.target.value)}
                 placeholder="Ex : Contrôle dans 3 semaines si la gêne persiste."
-                className="mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground outline-none focus:ring-2 focus:ring-ring"
+                className="mt-1 min-h-36 w-full resize-y rounded-lg border border-input bg-background px-3 py-2 text-sm leading-6 text-foreground outline-none focus:ring-2 focus:ring-ring"
               />
               <p className="mt-1 text-xs text-muted-foreground">Un mot manuscrit ou imprimé qui apparaît directement sur la carte.</p>
             </div>

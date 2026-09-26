@@ -403,9 +403,9 @@ function CabinetPage() {
               </label>
               <textarea
                 id="cardNote"
-                rows={2}
-                value={cardNote}
-                maxLength={90}
+rows={2}
+ value={cardNote}
+maxLength={300}
                 onChange={(e) => setCardNote(e.target.value)}
                 placeholder="Ex : Contrôle dans 3 semaines si la gêne persiste."
                 className="mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground outline-none focus:ring-2 focus:ring-ring"

@@ -380,11 +380,21 @@ function CabinetChooser({ invalidId, profession, doctor }: { invalidId?: string;
                   </div>
                 </div>
 
-                <address className="mt-4 not-italic text-sm leading-6 text-muted-foreground">
-                  {provider.address}
-                  <br />
-                  {provider.postalCode} {provider.city}
-                </address>
+                <a
+                  href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                    `${provider.name} ${provider.address} ${provider.postalCode} ${provider.city}`,
+                  )}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-4 block rounded-lg text-left outline-none transition-colors hover:text-care focus-visible:ring-2 focus-visible:ring-care"
+                  aria-label={`Ouvrir l'adresse de ${provider.name} dans Maps`}
+                >
+                  <address className="not-italic text-sm leading-6 text-muted-foreground">
+                    {provider.address}
+                    <br />
+                    {provider.postalCode} {provider.city}
+                  </address>
+                </a>
 
                 <div className="mt-auto flex flex-wrap items-center gap-2 pt-4">
                   {provider.phone && (
@@ -400,7 +410,7 @@ function CabinetChooser({ invalidId, profession, doctor }: { invalidId?: string;
                       `${provider.name} ${provider.address} ${provider.postalCode} ${provider.city}`,
                     )}`}
                     target="_blank"
-                    rel="noreferrer"
+                    rel="noopener noreferrer"
                     className="inline-flex items-center gap-1.5 rounded-full bg-care/10 px-2.5 py-1 text-xs font-semibold text-care"
                   >
                     <Navigation className="h-3.5 w-3.5" /> Itinéraire

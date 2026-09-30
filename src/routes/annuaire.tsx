@@ -440,9 +440,14 @@ function CabinetChooser({ invalidId, profession, doctor }: { invalidId?: string;
         </p>
       </section>
 
-      <div className="mt-6">
-        <MedicalDisclaimer />
-      </div>
+  <aside className="mt-6 rounded-xl border border-border/70 bg-muted/30 px-4 py-3 text-xs leading-5 text-muted-foreground" aria-label="Information sur les coordonnées du réseau professionnel">
+    <p>Les coordonnées affichées sont utilisées exclusivement pour l’orientation et la coordination des soins du patient.</p>
+    <p className="mt-1">Un professionnel référencé peut demander à tout moment la modification ou la suppression de ses données en écrivant à <a className="font-medium text-foreground underline underline-offset-2 hover:text-care" href="mailto:support@kivoir.fr">support@kivoir.fr</a>.</p>
+  </aside>
+
+  <div className="mt-6">
+  <MedicalDisclaimer />
+  </div>
     </main>
   );
 }

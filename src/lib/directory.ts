@@ -10,6 +10,7 @@ export type Profession =
   | "Rhumatologue"
   | "Chirurgien orthopédiste"
   | "Imagerie médicale"
+  | "Radiologue"
   | "Médecin du sport"
   | "Urgences";
 
@@ -52,6 +53,7 @@ export const professionOrder: Profession[] = [
   "Podologue",
   "Ostéopathe",
   "Imagerie médicale",
+  "Radiologue",
   "Rhumatologue",
   "Chirurgien orthopédiste",
   "Médecin du sport",
@@ -65,6 +67,7 @@ export const professionColor: Record<Profession, string> = {
   Podologue: "#7c3aed",
   Ostéopathe: "#9333ea",
   "Imagerie médicale": "#2563eb",
+  Radiologue: "#2563eb",
   Rhumatologue: "#dc2626",
   "Chirurgien orthopédiste": "#b91c1c",
   "Médecin du sport": "#15803d",
@@ -72,6 +75,12 @@ export const professionColor: Record<Profession, string> = {
 };
 
 const specialtyToProfession: Record<string, Profession> = {
+  Radiologue: "Radiologue",
+  Radiologie: "Radiologue",
+  "Centre de radiologie": "Radiologue",
+  "Chirurgien orthopédiste": "Chirurgien orthopédiste",
+  Orthopédiste: "Chirurgien orthopédiste",
+  "Chirurgie orthopédique": "Chirurgien orthopédiste",
   "Médecin généraliste": "Médecin généraliste",
   Kinésithérapeute: "Kinésithérapeute",
   Podologue: "Podologue",

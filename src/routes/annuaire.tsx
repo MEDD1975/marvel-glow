@@ -34,7 +34,16 @@ function parseNetworkAddress(value: string) {
 
 function normalizeProfession(value: string): Profession | null {
   const normalized = value.trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
-  return professionOrder.find((profession) => profession.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() === normalized)
+  const aliases: Record<string, Profession> = {
+    radiologue: "Imagerie médicale",
+    "centre de radiologie": "Imagerie médicale",
+    radiologie: "Imagerie médicale",
+    "chirurgien orthopediste": "Chirurgien orthopédiste",
+    orthopediste: "Chirurgien orthopédiste",
+    "chirurgie orthopedique": "Chirurgien orthopédiste",
+  };
+  return aliases[normalized]
+    ?? professionOrder.find((profession) => profession.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() === normalized)
     ?? (normalized ? "Médecin" : null);
 }
 

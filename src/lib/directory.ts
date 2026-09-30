@@ -72,6 +72,12 @@ export const professionColor: Record<Profession, string> = {
 };
 
 const specialtyToProfession: Record<string, Profession> = {
+  Radiologue: "Imagerie médicale",
+  Radiologie: "Imagerie médicale",
+  "Centre de radiologie": "Imagerie médicale",
+  "Chirurgien orthopédiste": "Chirurgien orthopédiste",
+  Orthopédiste: "Chirurgien orthopédiste",
+  "Chirurgie orthopédique": "Chirurgien orthopédiste",
   "Médecin généraliste": "Médecin généraliste",
   Kinésithérapeute: "Kinésithérapeute",
   Podologue: "Podologue",

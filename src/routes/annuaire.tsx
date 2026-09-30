@@ -35,9 +35,9 @@ function parseNetworkAddress(value: string) {
 function normalizeProfession(value: string): Profession | null {
   const normalized = value.trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
   const aliases: Record<string, Profession> = {
-    radiologue: "Imagerie médicale",
-    "centre de radiologie": "Imagerie médicale",
-    radiologie: "Imagerie médicale",
+    radiologue: "Radiologue",
+    "centre de radiologie": "Radiologue",
+    radiologie: "Radiologue",
     "chirurgien orthopediste": "Chirurgien orthopédiste",
     orthopediste: "Chirurgien orthopédiste",
     "chirurgie orthopedique": "Chirurgien orthopédiste",

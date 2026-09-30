@@ -25,7 +25,7 @@ export const generalRedFlags = [
 export const conditionAdvice: Record<string, Advice> = {
   "entorse-cheville": {
     tips: [
-      { title: "Glace les 48 premières heures", content: "Poche de glace enveloppée dans un linge, 15 à 20 min, 3 à 5 fois par jour, pour calmer la douleur et le gonflement." },
+      { title: "Froid si cela vous soulage", content: "Une poche froide enveloppée dans un linge peut aider à calmer temporairement la douleur et le gonflement. Appliquez-la 15 à 20 minutes, sans contact direct avec la peau, et arrêtez si la peau devient douloureuse ou insensible." },
       { title: "Surélever la cheville", content: "Dès que vous êtes assis ou allongé, placez le pied au-dessus du niveau du cœur avec un coussin sous le mollet." },
       { title: "Compression douce", content: "Bandage élastique ou chevillère la journée. Il doit être ferme mais ne jamais faire bleuir ou fourmiller les orteils." },
       { title: "Remarcher tôt", content: "Dès que l'appui devient supportable, reprenez la marche protégée : l'immobilisation prolongée retarde la récupération." },

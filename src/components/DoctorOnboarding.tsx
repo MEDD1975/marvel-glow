@@ -61,19 +61,29 @@ export function DoctorOnboarding() {
     return matchesProfession && matchesSearch;
   });
   const professionTone = (profession: string) => {
-    const normalized = profession
-      .trim()
-      .toLocaleLowerCase("fr")
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "");
-    if (normalized === "rhumatologue") return "red" as const;
-    if (normalized === "medecin du sport" || normalized.includes("sport")) return "green" as const;
-    return "default" as const;
+  const normalized = profession
+    .trim()
+    .toLocaleLowerCase("fr")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+  if (normalized.includes("rhumat")) return "red" as const;
+  if (normalized.includes("sport")) return "green" as const;
+  if (normalized.includes("kine") || normalized.includes("kiné")) return "teal" as const;
+  if (normalized.includes("generaliste") || normalized.includes("généraliste")) return "blue" as const;
+  if (normalized.includes("urgence")) return "orange" as const;
+  if (normalized.includes("chirurg")) return "purple" as const;
+  if (normalized.includes("pediatr") || normalized.includes("pédiatr")) return "pink" as const;
+  return "default" as const;
   };
   const professionStyles = {
-    red: { text: "#dc2626", border: "#fecaca", active: "#dc2626" },
-    green: { text: "#15803d", border: "#bbf7d0", active: "#15803d" },
-    default: { text: "var(--muted-foreground)", border: "var(--border)", active: "var(--care)" },
+  red: { text: "#dc2626", border: "#fecaca", active: "#dc2626" },
+  green: { text: "#15803d", border: "#bbf7d0", active: "#15803d" },
+  teal: { text: "#0f766e", border: "#99f6e4", active: "#0f766e" },
+  blue: { text: "#2563eb", border: "#bfdbfe", active: "#2563eb" },
+  orange: { text: "#c2410c", border: "#fed7aa", active: "#c2410c" },
+  purple: { text: "#7e22ce", border: "#e9d5ff", active: "#7e22ce" },
+  pink: { text: "#be185d", border: "#fbcfe8", active: "#be185d" },
+  default: { text: "var(--muted-foreground)", border: "var(--border)", active: "var(--care)" },
   };
 
   const updateDraft = (index: number, field: keyof typeof emptyPractitioner, value: string) => {

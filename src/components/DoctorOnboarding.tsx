@@ -80,7 +80,7 @@ export function DoctorOnboarding() {
   green: { text: "#15803d", border: "#bbf7d0", active: "#15803d" },
   teal: { text: "#0369a1", border: "#bae6fd", active: "#0369a1" },
   blue: { text: "#2563eb", border: "#bfdbfe", active: "#2563eb" },
-  orange: { text: "#c2410c", border: "#fed7aa", active: "#c2410c" },
+  orange: { text: "#a16207", border: "#fde68a", active: "#a16207" },
   purple: { text: "#7e22ce", border: "#e9d5ff", active: "#7e22ce" },
   pink: { text: "#be185d", border: "#fbcfe8", active: "#be185d" },
   default: { text: "var(--muted-foreground)", border: "var(--border)", active: "var(--care)" },

@@ -78,7 +78,7 @@ export function DoctorOnboarding() {
   const professionStyles = {
   red: { text: "#dc2626", border: "#fecaca", active: "#dc2626" },
   green: { text: "#15803d", border: "#bbf7d0", active: "#15803d" },
-  teal: { text: "#0f766e", border: "#99f6e4", active: "#0f766e" },
+  teal: { text: "#0369a1", border: "#bae6fd", active: "#0369a1" },
   blue: { text: "#2563eb", border: "#bfdbfe", active: "#2563eb" },
   orange: { text: "#c2410c", border: "#fed7aa", active: "#c2410c" },
   purple: { text: "#7e22ce", border: "#e9d5ff", active: "#7e22ce" },

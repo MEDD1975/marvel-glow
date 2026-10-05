@@ -14,6 +14,7 @@ import {
   Users,
   FileText,
   Video,
+  Eye,
   ExternalLink,
   Trash2,
 } from "lucide-react";
@@ -251,20 +252,20 @@ function CabinetPage() {
           Espace médecin
         </span>
         <h1 className="mt-4 text-3xl font-semibold tracking-tight text-foreground md:text-4xl text-balance">
-          Que souhaitez-vous faire&nbsp;?
+          Vos conseils. Votre réseau.
         </h1>
         <p className="mt-3 max-w-2xl text-lg text-muted-foreground text-pretty">
-          Trois accès rapides pour accompagner votre patient, sans créer de dossier ni saisir de données de santé.
+          Préparez vos documents et vidéos, partagez-les par QR code et gérez vos contacts de soins.
         </p>
 
         <div className="mt-8 grid gap-4 md:grid-cols-3">
           <button
             type="button"
             onClick={() => {
-              setShowResourceConfig(false);
-              setShowNetworkConfig(true);
+              setShowResourceConfig(true);
+              setShowNetworkConfig(false);
               requestAnimationFrame(() => {
-                const section = document.getElementById("onboarding-title");
+                const section = document.getElementById("follow-up");
                 if (!section) return;
                 const top = section.getBoundingClientRect().top + window.scrollY - 128;
                 window.scrollTo({ top, behavior: "smooth" });
@@ -273,19 +274,18 @@ function CabinetPage() {
             className="group flex flex-col rounded-3xl border border-care/20 bg-card p-6 text-left shadow-sm transition-all hover:-translate-y-1 hover:border-care/40 hover:shadow-lg hover:shadow-care/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-care/10 text-care ring-1 ring-care/15">
-              <Users className="h-7 w-7" aria-hidden="true" />
+              <Video className="h-7 w-7" aria-hidden="true" />
             </span>
-            <p className="mt-6 text-xs font-semibold uppercase tracking-[0.12em] text-care">1 · Réseau professionnel</p>
-            <h2 className="mt-1.5 text-xl font-semibold text-foreground">Gérer mon réseau professionnel</h2>
-            <p className="mt-2 flex-1 text-sm leading-6 text-muted-foreground">Ajoutez et mettez à jour les professionnels que vos patients pourront retrouver.</p>
-            <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-care">Ouvrir <span className="sr-only">la gestion du réseau professionnel</span> <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" /></span>
+            <h2 className="mt-6 text-xl font-semibold text-foreground">Conseiller mes patients</h2>
+            <p className="mt-2 flex-1 text-sm leading-6 text-muted-foreground">Partagez vos documents et vidéos par QR code.</p>
+            <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-care">Préparer mes conseils <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" /></span>
           </button>
 
           <button
             type="button"
             onClick={() => {
-              setShowNetworkConfig(false);
-              setShowResourceConfig(true);
+              setShowNetworkConfig(true);
+              setShowResourceConfig(false);
               requestAnimationFrame(() => {
                 const section = document.getElementById("follow-up");
                 if (!section) return;
@@ -296,12 +296,11 @@ function CabinetPage() {
             className="group flex flex-col rounded-3xl border border-care/20 bg-card p-6 text-left shadow-sm transition-all hover:-translate-y-1 hover:border-care/40 hover:shadow-lg hover:shadow-care/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-care/10 text-care ring-1 ring-care/15">
-              <Video className="h-7 w-7" aria-hidden="true" />
+              <Users className="h-7 w-7" aria-hidden="true" />
             </span>
-            <p className="mt-6 text-xs font-semibold uppercase tracking-[0.12em] text-care">2 · Bibliothèque de contenus</p>
-            <h2 className="mt-1.5 text-xl font-semibold text-foreground">Partager des contenus médicaux</h2>
-            <p className="mt-2 flex-1 text-sm leading-6 text-muted-foreground">Choisissez des vidéos ou des ressources validées à partager au patient.</p>
-            <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-care">Ouvrir <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" /></span>
+            <h2 className="mt-6 text-xl font-semibold text-foreground">Organiser mon réseau</h2>
+            <p className="mt-2 flex-1 text-sm leading-6 text-muted-foreground">Réunissez les professionnels à faire connaître à vos patients.</p>
+            <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-care">Gérer mon réseau <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" /></span>
           </button>
 
           <button
@@ -317,12 +316,11 @@ function CabinetPage() {
             className="group flex flex-col rounded-3xl border border-care/20 bg-card p-6 text-left shadow-sm transition-all hover:-translate-y-1 hover:border-care/40 hover:shadow-lg hover:shadow-care/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-care/10 text-care ring-1 ring-care/15">
-              <Users className="h-7 w-7" aria-hidden="true" />
+              <Eye className="h-7 w-7" aria-hidden="true" />
             </span>
-            <p className="mt-6 text-xs font-semibold uppercase tracking-[0.12em] text-care">3 · Aperçu patient</p>
-            <h2 className="mt-1.5 text-xl font-semibold text-foreground">Prévisualisez mon réseau</h2>
-            <p className="mt-2 flex-1 text-sm leading-6 text-muted-foreground">Vérifiez la page publique telle que vos patients la voient.</p>
-            <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-care">Prévisualisez mon réseau <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" /></span>
+            <h2 className="mt-6 text-xl font-semibold text-foreground">Voir côté patient</h2>
+            <p className="mt-2 flex-1 text-sm leading-6 text-muted-foreground">Découvrez votre réseau tel que vos patients le voient.</p>
+            <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-care">Voir mon annuaire <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" /></span>
           </button>
         </div>
 

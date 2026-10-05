@@ -147,7 +147,7 @@ export function DoctorOnboarding() {
     const practitioners = [...existing, ...drafts].filter((item) => item.name.trim() && item.profession.trim());
     if (!practitioners.length) {
       setSaving(false);
-      setNotice("Ajoutez au moins un professionnel à votre réseau.");
+      setNotice("Ajoutez au moins un professionnel à votre réseau pour enregistrer le cabinet et le réseau.");
       return;
     }
     const response = await fetch("/api/doctor-network", {
@@ -163,7 +163,7 @@ export function DoctorOnboarding() {
     }
     setNetwork(data);
     setDrafts([]);
-    setNotice("Votre réseau professionnel est enregistré et publié.");
+    setNotice("Les informations du cabinet et le réseau professionnel sont enregistrés et publiés.");
   };
 
   return (
@@ -312,7 +312,7 @@ export function DoctorOnboarding() {
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
-          <button disabled={saving} className="rounded-lg bg-care px-4 py-2 text-sm font-semibold text-primary-foreground disabled:opacity-60">{saving ? "Enregistrement…" : "Enregistrer mon réseau"}</button>
+          <button disabled={saving} className="rounded-lg bg-care px-4 py-2 text-sm font-semibold text-primary-foreground disabled:opacity-60">{saving ? "Enregistrement…" : "Enregistrer le cabinet et le réseau"}</button>
           {notice && <p className="text-sm text-muted-foreground" role="status">{notice}</p>}
         </div>
 

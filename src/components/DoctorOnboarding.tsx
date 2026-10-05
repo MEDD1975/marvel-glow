@@ -140,6 +140,24 @@ export function DoctorOnboarding() {
     setNotice("Professionnel retiré du réseau.");
   };
 
+  const saveCabinet = async () => {
+    setSaving(true);
+    setNotice("");
+    const response = await fetch("/api/doctor-network", {
+      method: "PUT",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ name, address: `${addressLine.trim()}, ${postalCode.trim()} ${city.trim()}`.trim(), phone }),
+    });
+    const data = await response.json();
+    setSaving(false);
+    if (!response.ok) {
+      setNotice(data.error ?? "Impossible d’enregistrer les informations du cabinet.");
+      return;
+    }
+    setNetwork(data);
+    setNotice("Les informations du cabinet sont enregistrées.");
+  };
+
   const submit = async (event: React.FormEvent) => {
     event.preventDefault();
     setSaving(true);
@@ -147,7 +165,7 @@ export function DoctorOnboarding() {
     const practitioners = [...existing, ...drafts].filter((item) => item.name.trim() && item.profession.trim());
     if (!practitioners.length) {
       setSaving(false);
-      setNotice("Ajoutez au moins un professionnel à votre réseau pour enregistrer le cabinet et le réseau.");
+      setNotice("Ajoutez au moins un professionnel à votre réseau pour l’enregistrer.");
       return;
     }
     const response = await fetch("/api/doctor-network", {
@@ -163,7 +181,7 @@ export function DoctorOnboarding() {
     }
     setNetwork(data);
     setDrafts([]);
-    setNotice("Les informations du cabinet et le réseau professionnel sont enregistrés et publiés.");
+    setNotice("Le réseau professionnel est enregistré et publié.");
   };
 
   return (
@@ -312,7 +330,10 @@ export function DoctorOnboarding() {
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
-          <button disabled={saving} className="rounded-lg bg-care px-4 py-2 text-sm font-semibold text-primary-foreground disabled:opacity-60">{saving ? "Enregistrement…" : "Enregistrer le cabinet et le réseau"}</button>
+          <div className="flex flex-wrap gap-3">
+          <button type="button" onClick={() => void saveCabinet()} disabled={saving} className="rounded-lg border border-care bg-background px-4 py-2 text-sm font-semibold text-care disabled:opacity-60">{saving ? "Enregistrement…" : "Enregistrer le cabinet"}</button>
+          <button type="submit" disabled={saving} className="rounded-lg bg-care px-4 py-2 text-sm font-semibold text-primary-foreground disabled:opacity-60">{saving ? "Enregistrement…" : "Enregistrer le réseau"}</button>
+        </div>
           {notice && <p className="text-sm text-muted-foreground" role="status">{notice}</p>}
         </div>
 

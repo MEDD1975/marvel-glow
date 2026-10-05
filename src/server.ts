@@ -206,6 +206,19 @@ export default {
         const session = await auth.api.getSession({ headers: request.headers });
         if (!session?.user) return Response.json({ error: "Unauthorized" }, { status: 401 });
         if (request.method === "GET") return Response.json(await getDoctorNetwork(session.user.id));
+        if (request.method === "PUT") {
+          const payload = await request.json() as { name?: string; address?: string; phone?: string };
+          if (!payload.name?.trim() || !payload.address?.trim()) {
+            return Response.json({ error: "Le nom et l’adresse du cabinet sont obligatoires." }, { status: 400 });
+          }
+          const current = await getDoctorNetwork(session.user.id);
+          return Response.json(await saveDoctorNetwork(session.user.id, {
+            name: payload.name.trim(),
+            address: payload.address.trim(),
+            phone: payload.phone?.trim(),
+            practitioners: current?.practitioners ?? [],
+          }));
+        }
         if (request.method === "POST") {
           const payload = await request.json();
           if (!payload || typeof payload.name !== "string" || typeof payload.address !== "string" || !Array.isArray(payload.practitioners)) {

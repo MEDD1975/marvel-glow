@@ -10,8 +10,8 @@ const patientNavItems = [
 
 const doctorNavItems = [
   { to: "/cabinet/", label: "Accueil", exact: true },
-  { to: "/cabinet/?view=resources", label: "Bibliothèque de contenus", exact: true },
-  { to: "/cabinet/?view=network", label: "Réseau professionnel", exact: true },
+  { to: "/cabinet/?view=resources", label: "Mes conseils", exact: true },
+  { to: "/cabinet/?view=network", label: "Mon réseau", exact: true },
 ];
 
 export function Header() {

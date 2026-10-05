@@ -206,8 +206,11 @@ export function DoctorOnboarding() {
           <label className="text-sm font-medium text-foreground">Ville<input required autoComplete="off" name="city_custom" id="city_custom" value={city} onChange={(event) => setCity(event.target.value)} className="mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 font-normal" placeholder="Saint-Maur-des-Fossés" /></label>
         </div>
 
-        <div className="space-y-3">
-          <h3 className="font-semibold text-foreground">Professionnels de votre réseau</h3>
+  <div className="space-y-3">
+  <div className="flex justify-end">
+  <button type="button" onClick={() => void saveCabinet()} disabled={saving} className="rounded-lg border border-care bg-background px-4 py-2 text-sm font-semibold text-care disabled:opacity-60">{saving ? "Enregistrement…" : "Enregistrer le cabinet"}</button>
+  </div>
+  <h3 className="font-semibold text-foreground">Professionnels de votre réseau</h3>
           {existing.length > 0 && (
             <label className="flex items-center gap-2 rounded-xl border border-border bg-background px-3 py-2 focus-within:border-care/60 focus-within:ring-2 focus-within:ring-care/10">
               <Search className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
@@ -330,9 +333,8 @@ export function DoctorOnboarding() {
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
-          <div className="flex flex-wrap gap-3">
-          <button type="button" onClick={() => void saveCabinet()} disabled={saving} className="rounded-lg border border-care bg-background px-4 py-2 text-sm font-semibold text-care disabled:opacity-60">{saving ? "Enregistrement…" : "Enregistrer le cabinet"}</button>
-          <button type="submit" disabled={saving} className="rounded-lg bg-care px-4 py-2 text-sm font-semibold text-primary-foreground disabled:opacity-60">{saving ? "Enregistrement…" : "Enregistrer le réseau"}</button>
+  <div className="flex flex-wrap gap-3">
+  <button type="submit" disabled={saving} className="rounded-lg bg-care px-4 py-2 text-sm font-semibold text-primary-foreground disabled:opacity-60">{saving ? "Enregistrement…" : "Enregistrer le réseau"}</button>
         </div>
           {notice && <p className="text-sm text-muted-foreground" role="status">{notice}</p>}
         </div>

@@ -252,7 +252,7 @@ function CabinetPage() {
           Espace médecin
         </span>
         <h1 className="mt-4 text-3xl font-semibold tracking-tight text-foreground md:text-4xl text-balance">
-          Vos conseils, votre réseau…
+          Vos conseils, votre réseau.
         </h1>
         <p className="mt-3 max-w-2xl text-lg text-muted-foreground text-pretty">
           Préparez vos documents et vidéos, partagez-les par QR code et gérez vos contacts de soins.

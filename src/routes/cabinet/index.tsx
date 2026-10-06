@@ -255,7 +255,7 @@ function CabinetPage() {
           Vos conseils, votre réseau.
         </h1>
         <p className="mt-3 max-w-2xl text-lg text-muted-foreground text-pretty">
-          Préparez vos documents et vidéos, partagez-les par QR code et gérez vos contacts de soins.
+          Partagez vos conseils, vos documents, vos vidéos juste à l&apos;aide d&apos;un QR code
         </p>
 
         <div className="mt-8 grid gap-4 md:grid-cols-3">

@@ -5,7 +5,7 @@ import { Logo } from "@/components/Logo";
 
 const patientNavItems = [
   { to: "/", label: "Accueil", exact: true },
-  { to: "/annuaire", label: "Réseau de votre médecin" },
+  { to: "/annuaire", label: "Réseau du professionnel de santé" },
 ];
 
 const doctorNavItems = [
@@ -75,7 +75,7 @@ export function Header() {
                 : "rounded-full border border-transparent px-3 py-1.5 text-xs font-semibold text-muted-foreground transition-colors hover:border-border hover:text-foreground"
             }
           >
-            {isDoctorSpace ? "Quitter l’espace médecin" : "Accéder à l’espace médecin"}
+            {isDoctorSpace ? "Quitter l’espace professionnel de santé" : "Accéder à l’espace professionnel de santé"}
           </Link>
         </div>
 
@@ -106,7 +106,7 @@ export function Header() {
                 : "mt-2 block rounded-lg border border-transparent px-3 py-3 text-base font-semibold text-muted-foreground hover:bg-muted"
             }
           >
-            {isDoctorSpace ? "Quitter l’espace médecin" : "Accéder à l’espace médecin"}
+            {isDoctorSpace ? "Quitter l’espace professionnel de santé" : "Accéder à l’espace professionnel de santé"}
           </Link>
         </nav>
         )}

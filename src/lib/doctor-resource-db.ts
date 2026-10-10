@@ -45,8 +45,8 @@ export async function deleteDoctorResource(ownerId: string, id: string) {
   await pool.query('DELETE FROM "doctor_resource" WHERE "id" = $1 AND "ownerId" = $2', [id, ownerId]);
 }
 
-export async function listAllActiveDoctorResources(conditionId?: string) {
-  return listDoctorResources(undefined, conditionId);
+export async function listAllActiveDoctorResources(conditionId?: string, ownerId?: string) {
+  return listDoctorResources(ownerId, conditionId);
 }
 
 export async function getDoctorResource(id: string) {

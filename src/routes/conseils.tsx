@@ -6,7 +6,7 @@ import { dailyTips } from "@/lib/care-data";
 import { conditions } from "@/lib/conditions";
 import { conditionAdvice, generalRedFlags } from "@/lib/condition-advice";
 import { conditionResources, generalLinks } from "@/lib/condition-resources";
-import { readStoredPathway, writeStoredPathway } from "@/lib/patient-pathway";
+import { claimPathway, readPathwayOwner, readStoredPathway, writeStoredPathway } from "@/lib/patient-pathway";
 import type { DoctorResourceRecord } from "@/lib/doctor-resource-db";
 
 function matchCondition(value: string | undefined) {
@@ -19,12 +19,13 @@ function matchCondition(value: string | undefined) {
   );
 }
 
-type ConseilsSearch = { c?: string | undefined; pathway?: string | undefined; note?: string | undefined };
+type ConseilsSearch = { c?: string | undefined; pathway?: string | undefined; doctor?: string | undefined; note?: string | undefined };
 
 export const Route = createFileRoute("/conseils")({
   validateSearch: (search: Record<string, unknown>): ConseilsSearch => ({
     c: typeof search["c"] === "string" ? search["c"] : undefined,
     pathway: typeof search["pathway"] === "string" ? search["pathway"] : undefined,
+    doctor: typeof search["doctor"] === "string" ? search["doctor"] : undefined,
     note: typeof search["note"] === "string" ? search["note"] : undefined,
   }),
   head: () => ({
@@ -49,10 +50,15 @@ export const Route = createFileRoute("/conseils")({
 });
 
 function ConseilsPage() {
-  const { c, pathway, note } = Route.useSearch();
+  const { c, pathway, doctor, note } = Route.useSearch();
   const navigate = useNavigate({ from: "/conseils" });
   const urlValue = c ?? pathway;
   const [activeId, setActiveId] = useState<string | undefined>(() => matchCondition(urlValue)?.id);
+  const [ownerId, setOwnerId] = useState<string | undefined>(() => readPathwayOwner(matchCondition(urlValue)?.id) ?? doctor);
+  useEffect(() => {
+    const matchedId = matchCondition(urlValue)?.id;
+    if (matchedId && doctor) setOwnerId(claimPathway(matchedId, doctor));
+  }, [doctor, urlValue]);
   const [hydrated, setHydrated] = useState(false);
   useEffect(() => {
     if (urlValue !== undefined) {
@@ -73,7 +79,7 @@ function ConseilsPage() {
       setDoctorResources([]);
       return;
     }
-    void fetch(`/api/doctor-resources?conditionId=${encodeURIComponent(selected.id)}`).then(async (response) => {
+    void fetch(`/api/doctor-resources?conditionId=${encodeURIComponent(selected.id)}${ownerId ? `&ownerId=${encodeURIComponent(ownerId)}` : ""}`).then(async (response) => {
       if (!response.ok) return [] as DoctorResourceRecord[];
       return response.json() as Promise<DoctorResourceRecord[]>;
     }).then(setDoctorResources);

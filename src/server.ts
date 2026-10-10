@@ -96,9 +96,10 @@ export default {
       }
       if (url.pathname === "/api/doctor-resources") {
         const conditionId = url.searchParams.get("conditionId") ?? undefined;
+        const ownerId = url.searchParams.get("ownerId") ?? undefined;
         const session = await auth.api.getSession({ headers: request.headers });
         if (request.method === "GET") {
-          return Response.json(session?.user ? await listDoctorResources(session.user.id, conditionId) : await listAllActiveDoctorResources(conditionId));
+          return Response.json(session?.user ? await listDoctorResources(session.user.id, conditionId) : await listAllActiveDoctorResources(conditionId, ownerId));
         }
         if (!session?.user) return Response.json({ error: "Unauthorized" }, { status: 401 });
         if (request.method === "POST") {

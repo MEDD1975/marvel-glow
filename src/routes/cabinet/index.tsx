@@ -88,7 +88,8 @@ function CabinetPage() {
   // Carte remise au patient → ouvre le parcours attribué (étapes, conseils, vidéos, professionnels).
   useEffect(() => {
     const noteParam = cardNote.trim() ? `&note=${encodeURIComponent(cardNote.trim())}` : "";
-    const cardTarget = `${window.location.origin}/conseils?c=${encodeURIComponent(pathway)}${noteParam}`;
+    const doctorParam = session?.user?.id ? `&doctor=${encodeURIComponent(session.user.id)}` : "";
+    const cardTarget = `${window.location.origin}/conseils?c=${encodeURIComponent(pathway)}${doctorParam}${noteParam}`;
     setCardQr({ url: cardTarget, qr: null });
     let cancelled = false;
     void import("qrcode").then(async (mod) => {
@@ -252,10 +253,10 @@ function CabinetPage() {
           Espace médecin
         </span>
         <h1 className="mt-4 text-3xl font-semibold tracking-tight text-foreground md:text-4xl text-balance">
-          Vos conseils. Votre réseau.
+          Vos conseils, votre réseau.
         </h1>
         <p className="mt-3 max-w-2xl text-lg text-muted-foreground text-pretty">
-          Préparez vos documents et vidéos, partagez-les par QR code et gérez vos contacts de soins.
+          Partagez vos conseils, vos documents, vos vidéos juste à l&apos;aide d&apos;un QR code
         </p>
 
         <div className="mt-8 grid gap-4 md:grid-cols-3">

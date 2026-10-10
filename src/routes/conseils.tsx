@@ -83,7 +83,7 @@ function ConseilsPage() {
       if (!response.ok) return [] as DoctorResourceRecord[];
       return response.json() as Promise<DoctorResourceRecord[]>;
     }).then(setDoctorResources);
-  }, [selected?.id]);
+  }, [ownerId, selected?.id]);
   const visibleConditions = selected ? [selected] : [];
   const advice = selected ? conditionAdvice[selected.id] : undefined;
   const resources = selected ? conditionResources[selected.id] : undefined;

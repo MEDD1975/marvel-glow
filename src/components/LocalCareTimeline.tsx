@@ -108,8 +108,14 @@ export function LocalCareTimeline({ conditionId, initialProviderName, initialPro
     setEditingId(null);
     setIsAdding(false);
   };
-  const remove = (id: string) => persist(entries.filter((entry) => entry.id !== id));
+  const isInitialEntry = (entry: TimelineEntry) => entry.id.startsWith("initial-");
+  const remove = (id: string) => {
+    const entry = entries.find((item) => item.id === id);
+    if (!entry || isInitialEntry(entry)) return;
+    persist(entries.filter((item) => item.id !== id));
+  };
   const moveEntry = (index: number, direction: -1 | 1) => {
+    if (isInitialEntry(entries[index])) return;
     const target = index + direction;
     if (target < 0 || target >= entries.length) return;
     const next = [...entries];
@@ -117,6 +123,11 @@ export function LocalCareTimeline({ conditionId, initialProviderName, initialPro
     persist(next);
   };
   const reset = () => {
+    const initialEntry = entries.find(isInitialEntry);
+    if (initialEntry) {
+      persist([initialEntry]);
+      return;
+    }
     window.localStorage.removeItem(key);
     setEntries([]);
   };
@@ -154,7 +165,7 @@ export function LocalCareTimeline({ conditionId, initialProviderName, initialPro
               <div className="flex gap-3">
                 <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-care/10 text-lg font-bold text-care">{index + 1}</div>
                 <div className="min-w-0 flex-1"><div className="flex items-start gap-3"><div className="min-w-0 flex-1"><div className="flex flex-wrap items-center gap-x-3 gap-y-1"><h3 className="font-semibold text-foreground">{entry.providerName || entry.type}{(entry.providerProfession || (entry.providerId && providers.find((provider) => provider.id === entry.providerId)?.profession)) && <span className="font-normal text-muted-foreground"> — {entry.providerProfession || providers.find((provider) => provider.id === entry.providerId)?.profession}</span>}</h3>{entry.date && <span className="inline-flex items-center gap-1 text-xs text-muted-foreground"><CalendarDays className="size-3.5" aria-hidden="true" />{new Date(`${entry.date}T12:00:00`) < new Date() ? "Vu le" : "Prévu le"} {formatDate(entry.date)}</span>}</div></div></div></div>
-                <div className="flex shrink-0 gap-1 opacity-70 transition-opacity group-hover:opacity-100"><button type="button" onClick={() => moveEntry(index, -1)} disabled={index === 0} aria-label={`Monter ${entry.type}`} className="rounded-xl p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:opacity-30"><ArrowUp className="size-4" aria-hidden="true" /></button><button type="button" onClick={() => moveEntry(index, 1)} disabled={index === sortedEntries.length - 1} aria-label={`Descendre ${entry.type}`} className="rounded-xl p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:opacity-30"><ArrowDown className="size-4" aria-hidden="true" /></button><button type="button" onClick={() => startEditing(entry)} aria-label={`Modifier ${entry.type}`} className="rounded-xl p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"><Pencil className="size-4" aria-hidden="true" /></button><button type="button" onClick={() => remove(entry.id)} aria-label={`Supprimer ${entry.type}`} className="rounded-xl p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-destructive"><Trash2 className="size-4" aria-hidden="true" /></button></div>
+                <div className="flex shrink-0 gap-1 opacity-70 transition-opacity group-hover:opacity-100">{!isInitialEntry(entry) && <><button type="button" onClick={() => moveEntry(index, -1)} disabled={index === 0} aria-label={`Monter ${entry.type}`} className="rounded-xl p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:opacity-30"><ArrowUp className="size-4" aria-hidden="true" /></button><button type="button" onClick={() => moveEntry(index, 1)} disabled={index === sortedEntries.length - 1} aria-label={`Descendre ${entry.type}`} className="rounded-xl p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:opacity-30"><ArrowDown className="size-4" aria-hidden="true" /></button><button type="button" onClick={() => startEditing(entry)} aria-label={`Modifier ${entry.type}`} className="rounded-xl p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"><Pencil className="size-4" aria-hidden="true" /></button><button type="button" onClick={() => remove(entry.id)} aria-label={`Supprimer ${entry.type}`} className="rounded-xl p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-destructive"><Trash2 className="size-4" aria-hidden="true" /></button></>}</div>
               </div>
             )}
           </li>

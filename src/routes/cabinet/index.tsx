@@ -89,7 +89,8 @@ function CabinetPage() {
   useEffect(() => {
     const noteParam = cardNote.trim() ? `&note=${encodeURIComponent(cardNote.trim())}` : "";
     const doctorParam = session?.user?.id ? `&doctor=${encodeURIComponent(session.user.id)}` : "";
-    const cardTarget = `${window.location.origin}/conseils?c=${encodeURIComponent(pathway)}${doctorParam}${noteParam}`;
+    const doctorNameParam = session?.user?.name ? `&doctorName=${encodeURIComponent(session.user.name)}` : "";
+    const cardTarget = `${window.location.origin}/conseils?c=${encodeURIComponent(pathway)}${doctorParam}${doctorNameParam}${noteParam}`;
     setCardQr({ url: cardTarget, qr: null });
     let cancelled = false;
     void import("qrcode").then(async (mod) => {

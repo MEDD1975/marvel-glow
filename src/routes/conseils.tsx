@@ -118,7 +118,7 @@ function ConseilsPage() {
       </div>
 
       <div className="text-center">
-        <h1 className="text-2xl font-semibold text-foreground">Bibliothèque de conseils</h1>
+        <h1 className="text-2xl font-semibold text-foreground">Bibliothèque de contenu de votre médecin</h1>
         <p className="mx-auto mt-2 max-w-2xl text-muted-foreground">
           Consultez ces repères pour préparer votre prochain échange. Ils ne remplacent pas les consignes de votre professionnel.
         </p>
@@ -148,9 +148,21 @@ function ConseilsPage() {
         ))}
       </div>
 
+      {selected && (
+        <div className="mt-6 rounded-2xl border border-border bg-card p-5 shadow-sm">
+          <h2 className="font-semibold text-card-foreground">{selected.name}</h2>
+          <p className="mt-1 text-sm text-muted-foreground">{selected.summary}</p>
+          {note ? (
+            <p className="mt-4 rounded-lg bg-care/10 px-3 py-2 text-sm font-medium text-care">
+              Consigne de votre médecin : {note}
+            </p>
+          ) : null}
+        </div>
+      )}
+
       {doctorResources.length > 0 && (
         <section className="mt-8 rounded-2xl border border-care/30 bg-care/5 p-5" aria-labelledby="doctor-library-title">
-          <div className="flex items-center gap-2 text-lg font-semibold text-foreground"><FileText className="h-5 w-5 text-care" /><h2 id="doctor-library-title">Bibliothèque de conseils de votre médecin</h2></div>
+          <div className="flex items-center gap-2 text-lg font-semibold text-foreground"><FileText className="h-5 w-5 text-care" /><h2 id="doctor-library-title">Bibliothèque de contenu de votre médecin</h2></div>
           <p className="mt-1 text-sm text-muted-foreground">Les vidéos, photos et documents partagés par votre médecin sont regroupés ici pour ce parcours.</p>
           <div className="mt-4 grid gap-3 sm:grid-cols-2">
             {doctorResources.map((resource) => {
@@ -163,18 +175,6 @@ function ConseilsPage() {
             })}
           </div>
         </section>
-      )}
-
-      {selected && (
-        <div className="mt-6 rounded-2xl border border-border bg-card p-5 shadow-sm">
-          <h2 className="font-semibold text-card-foreground">{selected.name}</h2>
-          <p className="mt-1 text-sm text-muted-foreground">{selected.summary}</p>
-          {note ? (
-            <p className="mt-4 rounded-lg bg-care/10 px-3 py-2 text-sm font-medium text-care">
-              Consigne de votre médecin : {note}
-            </p>
-          ) : null}
-        </div>
       )}
 
       <section className="mt-8 rounded-2xl border border-care/30 bg-care/5 p-5">

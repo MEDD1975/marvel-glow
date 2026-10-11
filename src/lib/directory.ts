@@ -69,7 +69,7 @@ export const professionColor: Record<Profession, string> = {
   "Imagerie médicale": "#2563eb",
   Radiologue: "#2563eb",
   Rhumatologue: "#dc2626",
-  "Chirurgien orthopédiste": "#b91c1c",
+  "Chirurgien orthopédiste": "#4f46e5",
   "Médecin du sport": "#15803d",
   Urgences: "#dc2626",
 };

@@ -273,7 +273,7 @@ function CabinetPage() {
                 window.scrollTo({ top, behavior: "smooth" });
               });
             }}
-            className="group flex flex-col rounded-3xl border border-care/20 bg-card p-6 text-left shadow-sm transition-all hover:-translate-y-1 hover:border-care/40 hover:shadow-lg hover:shadow-care/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className="doctor-card-advice group flex flex-col rounded-3xl border p-6 text-left shadow-sm transition-all hover:-translate-y-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-care/10 text-care ring-1 ring-care/15">
               <Video className="h-7 w-7" aria-hidden="true" />
@@ -295,7 +295,7 @@ function CabinetPage() {
                 window.scrollTo({ top, behavior: "smooth" });
               });
             }}
-            className="group flex flex-col rounded-3xl border border-care/20 bg-card p-6 text-left shadow-sm transition-all hover:-translate-y-1 hover:border-care/40 hover:shadow-lg hover:shadow-care/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className="doctor-card-network group flex flex-col rounded-3xl border p-6 text-left shadow-sm transition-all hover:-translate-y-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-care/10 text-care ring-1 ring-care/15">
               <Users className="h-7 w-7" aria-hidden="true" />
@@ -315,7 +315,7 @@ function CabinetPage() {
                 await navigate({ to: "/annuaire", search: { cabinet: network.id } });
               }
             }}
-            className="group flex flex-col rounded-3xl border border-care/20 bg-card p-6 text-left shadow-sm transition-all hover:-translate-y-1 hover:border-care/40 hover:shadow-lg hover:shadow-care/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className="doctor-card-patient group flex flex-col rounded-3xl border p-6 text-left shadow-sm transition-all hover:-translate-y-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-care/10 text-care ring-1 ring-care/15">
               <Eye className="h-7 w-7" aria-hidden="true" />

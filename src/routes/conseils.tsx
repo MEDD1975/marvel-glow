@@ -222,9 +222,9 @@ function ConseilsPage() {
       </section>
 
 
-      <section className="mt-10">
-        <div className="flex items-center gap-2 text-lg font-semibold text-foreground">
-          <Thermometer className="h-5 w-5 text-care" />
+<section className="mt-8 rounded-2xl border border-care/30 bg-care/5 p-5">
+  <div className="flex items-center gap-2 text-lg font-semibold text-foreground">
+  <Thermometer className="h-5 w-5 text-care" />
           {selected ? `Les bons réflexes — ${selected.name}` : "Les bons réflexes du quotidien"}
         </div>
         <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -286,15 +286,15 @@ function ConseilsPage() {
 
 
       {avoid.length > 0 && (
-<section className="caution-section mt-8">
+<section className="alert-section mt-8 rounded-2xl border p-5">
   <div className="flex items-center gap-2 text-lg font-semibold text-foreground">
-  <Ban className="h-5 w-5 text-caution-text" />
+  <Ban className="h-5 w-5 text-alert-text" />
   Les erreurs fréquentes à éviter
   </div>
   <ul className="mt-3 grid gap-2 sm:grid-cols-2">
   {avoid.map((item, i) => (
-  <li key={i} className="flex items-start gap-3 rounded-xl border border-caution-border bg-caution-bg p-4 text-sm text-caution-text">
-  <Ban className="mt-0.5 h-4 w-4 shrink-0 text-caution-text" />
+  <li key={i} className="flex items-start gap-3 rounded-xl border border-alert-border bg-alert-bg p-4 text-sm text-alert-text">
+  <Ban className="mt-0.5 h-4 w-4 shrink-0 text-alert-text" />
                 {item}
               </li>
             ))}

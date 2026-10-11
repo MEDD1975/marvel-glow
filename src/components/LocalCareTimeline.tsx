@@ -49,8 +49,8 @@ function daysBetween(first: string, second: string) {
   return Math.round(Math.abs(secondDate.getTime() - firstDate.getTime()) / 86400000);
 }
 
-export function LocalCareTimeline() {
-  const key = storageKey();
+export function LocalCareTimeline({ conditionId, initialProviderName, initialProviderProfession }: { conditionId?: string; initialProviderName?: string; initialProviderProfession?: string }) {
+  const key = storageKey(conditionId);
   const [entries, setEntries] = useState<TimelineEntry[]>([]);
   const [isAdding, setIsAdding] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -65,11 +65,17 @@ export function LocalCareTimeline() {
         if (cleaned.length) window.localStorage.setItem(key, JSON.stringify(cleaned));
         else window.localStorage.removeItem(key);
       }
-      setEntries(cleaned);
+      if (cleaned.length === 0 && initialProviderName?.trim()) {
+        const initialEntry: TimelineEntry = { id: `initial-${conditionId ?? "general"}`, type: initialProviderProfession ?? "Médecin", date: new Date().toISOString().slice(0, 10), providerName: initialProviderName.trim(), providerProfession: initialProviderProfession ?? "Médecin" };
+        window.localStorage.setItem(key, JSON.stringify([initialEntry]));
+        setEntries([initialEntry]);
+      } else {
+        setEntries(cleaned);
+      }
     } catch {
       setEntries([]);
     }
-  }, [key]);
+  }, [initialProviderName, initialProviderProfession, key]);
 
   const sortedEntries = entries;
 

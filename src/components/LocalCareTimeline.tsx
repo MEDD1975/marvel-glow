@@ -149,16 +149,8 @@ export function LocalCareTimeline({ conditionId, initialProviderName, initialPro
       </div>
       <div className="p-5 md:p-7">
 
-      <div className="flex flex-wrap items-center gap-3">
-        <button type="button" onClick={startAdding} className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-sm transition-transform hover:-translate-y-0.5 hover:bg-primary/90"><Plus className="size-4" aria-hidden="true" /> Ajouter une entrée</button>
-        <button type="button" onClick={reset} className="rounded-xl px-3 py-2 text-sm font-medium text-muted-foreground underline-offset-4 transition-colors hover:bg-muted hover:text-foreground hover:underline">Recommencer</button>
-      </div>
+      <ol className="space-y-3">
 
-      <div className={`grid transition-[grid-template-rows,opacity,margin] duration-300 ease-out ${isAdding ? "mt-4 grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"}`} aria-hidden={!isAdding}>
-        <div className="min-h-0 overflow-hidden"><DraftForm draft={draft} setDraft={setDraft} onSave={saveDraft} onCancel={cancelDraft} /></div>
-      </div>
-
-      <ol className="mt-6 space-y-3">
         {sortedEntries.map((entry, index) => (
           <Fragment key={entry.id}>
           {index > 0 && sortedEntries[index - 1].date && entry.date && <div className="flex items-center gap-3 px-5 py-1.5 text-xs font-semibold text-muted-foreground"><div className="h-5 w-px bg-care/30" aria-hidden="true" /><span className="rounded-full border border-care/20 bg-care/5 px-3 py-1 text-care">{daysBetween(sortedEntries[index - 1].date, entry.date)} {daysBetween(sortedEntries[index - 1].date, entry.date) === 1 ? "jour" : "jours"} se sont écoulés depuis le rendez-vous précédent</span></div>}
@@ -176,6 +168,16 @@ export function LocalCareTimeline({ conditionId, initialProviderName, initialPro
           </Fragment>
         ))}
       </ol>
+
+      <div className="mt-6 flex flex-wrap items-center gap-3 border-t border-border pt-5">
+        <button type="button" onClick={startAdding} className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-sm transition-transform hover:-translate-y-0.5 hover:bg-primary/90"><Plus className="size-4" aria-hidden="true" /> Ajouter une entrée</button>
+        <button type="button" onClick={reset} className="rounded-xl px-3 py-2 text-sm font-medium text-muted-foreground underline-offset-4 transition-colors hover:bg-muted hover:text-foreground hover:underline">Recommencer</button>
+      </div>
+
+      <div className={`grid transition-[grid-template-rows,opacity,margin] duration-300 ease-out ${isAdding ? "mt-4 grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"}`} aria-hidden={!isAdding}>
+        <div className="min-h-0 overflow-hidden"><DraftForm draft={draft} setDraft={setDraft} onSave={saveDraft} onCancel={cancelDraft} /></div>
+      </div>
+
       <p className="mt-4 text-xs text-muted-foreground">Vos données restent uniquement sur cet appareil.</p>
       </div>
     </section>

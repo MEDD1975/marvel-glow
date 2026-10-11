@@ -81,29 +81,15 @@ export function AssistantHome({ initialStarted = false, pathway }: { initialStar
 
         <div className="mt-4 grid gap-3 md:mt-4 md:grid-cols-3 md:gap-3">
           <Link
-            to="/parcours"
-            search={effectivePathway ? { pathway: effectivePathway } : undefined}
-            className="group flex min-h-48 flex-col rounded-3xl border border-border bg-card p-4 text-left shadow-sm transition-all hover:-translate-y-1 hover:border-care/40 hover:bg-muted/30 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-          >
-            <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-muted text-foreground shadow-sm"><ArrowRight className="h-6 w-6" aria-hidden="true" /></span>
-            <span className="mt-5 text-xs font-semibold uppercase tracking-[0.12em] text-care">VOTRE GUIDE DE SUIVI</span>
-            <span className="mt-1.5 text-lg font-semibold text-foreground">Je construis mon parcours au fil de mes rendez-vous</span>
-            <span className="mt-2 flex-1 text-sm leading-6 text-muted-foreground">Explorez les étapes de votre parcours, dans l’ordre et selon votre situation.</span>
-            <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-primary">Ouvrir mon parcours <ArrowRight className="h-4 w-4" aria-hidden="true" /></span>
-          </Link>
-
-          <Link
             to="/conseils"
             search={effectivePathway ? { c: effectivePathway } : undefined}
-            className="group flex min-h-48 flex-col rounded-3xl border border-border bg-card p-4 md:min-h-0 md:p-4 text-left shadow-sm transition-all hover:-translate-y-1 hover:border-care/40 hover:bg-muted/30 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className="group flex min-h-48 flex-col rounded-3xl border border-border bg-card p-4 text-left shadow-sm transition-all hover:-translate-y-1 hover:border-care/40 hover:bg-muted/30 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
-            <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-muted text-foreground shadow-sm">
-              <BookOpen className="h-6 w-6" aria-hidden="true" />
-            </span>
-            <span className="mt-5 text-xs font-semibold uppercase tracking-[0.12em] text-care">Ma bibliothèque de conseils</span>
+            <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-muted text-foreground shadow-sm"><BookOpen className="h-6 w-6" aria-hidden="true" /></span>
+            <span className="mt-5 text-xs font-semibold uppercase tracking-[0.12em] text-care">MA BIBLIOTHÈQUE DE CONSEILS</span>
             <span className="mt-1.5 text-lg font-semibold text-foreground">Fiches et vidéos utiles</span>
-            <span className="mt-2 flex-1 text-sm leading-6 text-muted-foreground">Retrouvez fiches, vidéos, bons réflexes, sources fiables et signes d’alerte, organisés par thème.</span>
-            <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-care">Consulter <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" /></span>
+            <span className="mt-2 flex-1 text-sm leading-6 text-muted-foreground">Retrouvez vos contenus, bons réflexes, sources fiables et signes d’alerte.</span>
+            <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-care">Consulter <ArrowRight className="h-4 w-4" aria-hidden="true" /></span>
           </Link>
 
           <Link
@@ -113,10 +99,22 @@ export function AssistantHome({ initialStarted = false, pathway }: { initialStar
             <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-muted text-foreground shadow-sm">
               <MapPin className="h-6 w-6" aria-hidden="true" />
             </span>
-            <span className="mt-5 text-xs font-semibold uppercase tracking-[0.12em] text-care">Réseau professionnel</span>
-            <span className="mt-1.5 text-lg font-semibold text-foreground">Consulter le réseau de votre médecin</span>
-            <span className="mt-2 flex-1 text-sm leading-6 text-muted-foreground">Retrouvez les professionnels du réseau de votre médecin.</span>
+            <span className="mt-5 text-xs font-semibold uppercase tracking-[0.12em] text-care">RÉSEAU PROFESSIONNEL</span>
+            <span className="mt-1.5 text-lg font-semibold text-foreground">Consulter le réseau professionnel</span>
+            <span className="mt-2 flex-1 text-sm leading-6 text-muted-foreground">Retrouvez les professionnels de santé de votre réseau.</span>
             <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-care">Voir l&apos;annuaire <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" /></span>
+          </Link>
+
+          <Link
+            to="/parcours"
+            search={effectivePathway ? { pathway: effectivePathway } : undefined}
+            className="group flex min-h-48 flex-col rounded-3xl border border-border bg-card p-4 md:min-h-0 md:p-4 text-left shadow-sm transition-all hover:-translate-y-1 hover:border-care/40 hover:bg-muted/30 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-muted text-foreground shadow-sm"><ArrowRight className="h-6 w-6" aria-hidden="true" /></span>
+            <span className="mt-5 text-xs font-semibold uppercase tracking-[0.12em] text-care">VOTRE GUIDE DE SUIVI</span>
+            <span className="mt-1.5 text-lg font-semibold text-foreground">Je construis mon parcours au fil de mes rendez-vous</span>
+            <span className="mt-2 flex-1 text-sm leading-6 text-muted-foreground">Explorez les étapes de votre parcours, dans l’ordre et selon votre situation.</span>
+            <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-primary">Ouvrir mon parcours <ArrowRight className="h-4 w-4" aria-hidden="true" /></span>
           </Link>
         </div>
 

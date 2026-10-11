@@ -50,44 +50,70 @@
 }
 
 :root {
-  --radius: 1.25rem;
+  --radius: 0.75rem;
 
-  /* Bleu Apple : blanc froid, bleu signature, bleu nuit et rouge réservé aux alertes. */
-  --background: oklch(0.985 0.006 235);
-  --foreground: oklch(0.19 0.035 250);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.19 0.035 250);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.19 0.035 250);
+  --bg-page: #F7FAFC;
+  --card-bg: #FFFFFF;
+  --card-border: #E2E8F0;
+  --text-primary: #0F172A;
+  --text-secondary: #475569;
+  --action: #0B63CE;
+  --action-hover: #0A52A8;
+  --doctor-bg: #ECF8F1;
+  --doctor-border: #2F9E6B;
+  --doctor-text: #1F6F4A;
+  --alert-bg: #FDECEC;
+  --alert-border: #E5484D;
+  --alert-text: #7A1F22;
+  --caution-bg: #FFF6E5;
+  --caution-border: #F0A92E;
+  --caution-text: #7A4B00;
 
-  --primary: oklch(0.52 0.19 255);
-  --primary-foreground: oklch(1 0 0);
+  --background: var(--bg-page);
+  --foreground: var(--text-primary);
+  --card: var(--card-bg);
+  --card-foreground: var(--text-primary);
+  --popover: var(--card-bg);
+  --popover-foreground: var(--text-primary);
+  --primary: var(--action);
+  --primary-foreground: #FFFFFF;
+  --secondary: #F1F5F9;
+  --secondary-foreground: var(--text-primary);
+  --muted: #F1F5F9;
+  --muted-foreground: var(--text-secondary);
+  --accent: #EAF2FB;
+  --accent-foreground: var(--text-primary);
+  --destructive: var(--alert-border);
+  --destructive-foreground: #FFFFFF;
+  --border: var(--card-border);
+  --input: var(--card-border);
+  --ring: var(--action);
+  --care: var(--action);
+  --care-foreground: #FFFFFF;
+  --care-muted: #EAF2FB;
+  --urgent: var(--alert-border);
+  --urgent-foreground: #FFFFFF;
+  --soothe: var(--caution-bg);
+  --soothe-foreground: var(--caution-text);
+}
 
-  --secondary: oklch(0.95 0.025 235);
-  --secondary-foreground: oklch(0.28 0.08 250);
-
-  --muted: oklch(0.955 0.012 235);
-  --muted-foreground: oklch(0.49 0.045 250);
-
-  --accent: oklch(0.94 0.035 235);
-  --accent-foreground: oklch(0.28 0.08 250);
-
-  --destructive: oklch(0.58 0.22 25);
-  --destructive-foreground: oklch(1 0 0);
-
-  --border: oklch(0.88 0.025 235);
-  --input: oklch(0.88 0.025 235);
-  --ring: oklch(0.52 0.19 255);
-
-  --care: oklch(0.52 0.19 255);
-  --care-foreground: oklch(1 0 0);
-  --care-muted: oklch(0.93 0.045 235);
-
-  --urgent: oklch(0.58 0.22 28);
-  --urgent-foreground: oklch(1 0 0);
-
-  --soothe: oklch(0.93 0.04 235);
-  --soothe-foreground: oklch(0.28 0.08 250);
+.dark {
+  --bg-page: #0F172A;
+  --card-bg: #172235;
+  --card-border: #334155;
+  --text-primary: #F8FAFC;
+  --text-secondary: #CBD5E1;
+  --action: #60A5FA;
+  --action-hover: #93C5FD;
+  --doctor-bg: #123525;
+  --doctor-border: #55B98A;
+  --doctor-text: #B9F0D2;
+  --alert-bg: #431D22;
+  --alert-border: #FF7B80;
+  --alert-text: #FFD1D3;
+  --caution-bg: #46351A;
+  --caution-border: #F6C35B;
+  --caution-text: #FFE6AD;
 }
 
 @layer base {
@@ -99,12 +125,65 @@
     border-color: var(--color-border);
   }
 
+  button,
+  a,
+  input,
+  select,
+  textarea {
+    transition: background-color 180ms ease-out, border-color 180ms ease-out, color 180ms ease-out, opacity 180ms ease-out, box-shadow 180ms ease-out;
+  }
+
+  :where(button, a, input, select, textarea):focus-visible {
+    outline: 2px solid var(--action);
+    outline-offset: 2px;
+  }
+
+  button:active,
+  a:active {
+    background-color: color-mix(in srgb, currentColor 8%, transparent);
+  }
+
   body {
     min-width: 320px;
     overflow-x: hidden;
     background-color: var(--color-background);
     color: var(--color-foreground);
   }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
+.alert-section {
+  background-color: var(--alert-bg);
+  border-color: var(--alert-border);
+  color: var(--alert-text);
+}
+
+.caution-section {
+  color: var(--caution-text);
+}
+
+.doctor-content {
+  background-color: var(--doctor-bg);
+  border-color: var(--doctor-border);
+  color: var(--doctor-text);
+}
+
+.doctor-content a {
+  border-color: var(--doctor-border);
+  background-color: var(--card-bg);
 }
 
 .prose-care h2 {

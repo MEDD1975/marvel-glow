@@ -162,7 +162,7 @@ function ConseilsPage() {
       )}
 
       {doctorResources.length > 0 && (
-        <section className="mt-8 rounded-2xl border border-care/30 bg-care/5 p-5" aria-labelledby="doctor-library-title">
+        <section className="doctor-content mt-8 rounded-xl border p-5" aria-labelledby="doctor-library-title">
           <div className="flex items-center gap-2 text-lg font-semibold text-foreground"><FileText className="h-5 w-5 text-care" /><h2 id="doctor-library-title">Bibliothèque de contenus de votre médecin</h2></div>
           <p className="mt-1 text-sm text-muted-foreground">Les vidéos, photos et documents partagés par votre médecin sont regroupés ici pour ce parcours.</p>
           <div className="mt-4 grid gap-3 sm:grid-cols-2">
@@ -286,15 +286,15 @@ function ConseilsPage() {
 
 
       {avoid.length > 0 && (
-        <section className="mt-12">
-          <div className="flex items-center gap-2 text-lg font-semibold text-foreground">
-            <Ban className="h-5 w-5 text-urgent" />
-            Les erreurs fréquentes à éviter
-          </div>
-          <ul className="mt-4 grid gap-3 sm:grid-cols-2">
-            {avoid.map((item, i) => (
-              <li key={i} className="flex items-start gap-3 rounded-2xl border border-border bg-card p-4 text-sm text-foreground shadow-sm">
-                <Ban className="mt-0.5 h-4 w-4 shrink-0 text-urgent" />
+<section className="caution-section mt-8">
+  <div className="flex items-center gap-2 text-lg font-semibold text-foreground">
+  <Ban className="h-5 w-5 text-caution-text" />
+  Les erreurs fréquentes à éviter
+  </div>
+  <ul className="mt-3 grid gap-2 sm:grid-cols-2">
+  {avoid.map((item, i) => (
+  <li key={i} className="flex items-start gap-3 rounded-xl border border-caution-border bg-caution-bg p-4 text-sm text-caution-text">
+  <Ban className="mt-0.5 h-4 w-4 shrink-0 text-caution-text" />
                 {item}
               </li>
             ))}
@@ -307,7 +307,7 @@ function ConseilsPage() {
           <AlertTriangle className="h-5 w-5 text-urgent" />
           Signes d'alerte : consultez rapidement
         </div>
-        <div className="mt-4 rounded-2xl border border-urgent/20 bg-urgent/5 p-6">
+        <div className="alert-section mt-4 rounded-xl border p-5">
           <ul className="grid gap-3 sm:grid-cols-2">
             {redFlags.map((flag, i) => (
               <li key={i} className="flex items-start gap-3 text-sm text-foreground">

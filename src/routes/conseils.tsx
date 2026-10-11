@@ -238,9 +238,9 @@ function ConseilsPage() {
       </section>
 
       {exercises.length > 0 && (
-        <section className="mt-12">
-          <div className="flex items-center gap-2 text-lg font-semibold text-foreground">
-            <Dumbbell className="h-5 w-5 text-care" />
+<section className="mt-8 rounded-2xl border border-care/30 bg-care/5 p-5">
+  <div className="flex items-center gap-2 text-lg font-semibold text-foreground">
+  <Dumbbell className="h-5 w-5 text-care" />
             Exercices qui soulagent — {selected?.name}
           </div>
           <p className="mt-2 text-sm text-muted-foreground">

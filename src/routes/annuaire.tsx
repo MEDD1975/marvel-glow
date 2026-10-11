@@ -52,8 +52,9 @@ function toCabinets(networks: PublicNetwork[]): Cabinet[] {
     const cabinetAddress = parseNetworkAddress(network.address);
     const dynamicProviders = network.practitioners.flatMap((practitioner) => {
       const practitionerName = practitioner.name.trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
-const profession = practitionerName.includes("orto") || practitionerName.includes("orthop")
-  ? "Chirurgien orthopédiste"
+      const isOrthopedicPractitioner = /(?:dr\.?\s*)?ortho\b/i.test(practitioner.name) || practitionerName.includes("orthop");
+      const profession = isOrthopedicPractitioner
+        ? "Chirurgien orthopédiste"
         : normalizeProfession(practitioner.profession);
       if (!profession) return [];
       const individualAddress = practitioner.address ? parseNetworkAddress(practitioner.address) : null;

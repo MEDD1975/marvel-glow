@@ -43,7 +43,7 @@ function KivoirCover({ onStart }: { onStart: () => void }) {
   );
 }
 
-export function AssistantHome({ initialStarted = false, pathway }: { initialStarted?: boolean; pathway?: string }) {
+export function AssistantHome({ initialStarted = false, pathway, doctorName }: { initialStarted?: boolean; pathway?: string; doctorName?: string }) {
   const [hasStarted, setHasStarted] = useState(initialStarted || Boolean(pathway));
   const [storedPathway, setStoredPathway] = useState<string | undefined>(undefined);
   useEffect(() => {
@@ -114,6 +114,7 @@ export function AssistantHome({ initialStarted = false, pathway }: { initialStar
             <span className="mt-5 text-xs font-semibold uppercase tracking-[0.12em] text-care">VOTRE GUIDE DE SUIVI</span>
             <span className="mt-1.5 text-lg font-semibold text-foreground">Je construis mon parcours au fil de mes rendez-vous</span>
             <span className="mt-2 flex-1 text-sm leading-6 text-muted-foreground">Explorez les étapes de votre parcours, dans l’ordre et selon votre situation.</span>
+            {doctorName ? <span className="mt-3 text-xs font-medium text-care">Proposé par {doctorName}</span> : null}
             <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-primary">Ouvrir mon parcours <ArrowRight className="h-4 w-4" aria-hidden="true" /></span>
           </Link>
         </div>

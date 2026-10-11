@@ -19,13 +19,14 @@ function matchCondition(value: string | undefined) {
   );
 }
 
-type ConseilsSearch = { c?: string | undefined; pathway?: string | undefined; doctor?: string | undefined; note?: string | undefined };
+type ConseilsSearch = { c?: string | undefined; pathway?: string | undefined; doctor?: string | undefined; doctorName?: string | undefined; note?: string | undefined };
 
 export const Route = createFileRoute("/conseils")({
   validateSearch: (search: Record<string, unknown>): ConseilsSearch => ({
     c: typeof search["c"] === "string" ? search["c"] : undefined,
     pathway: typeof search["pathway"] === "string" ? search["pathway"] : undefined,
     doctor: typeof search["doctor"] === "string" ? search["doctor"] : undefined,
+    doctorName: typeof search["doctorName"] === "string" ? search["doctorName"] : undefined,
     note: typeof search["note"] === "string" ? search["note"] : undefined,
   }),
   head: () => ({
@@ -50,7 +51,7 @@ export const Route = createFileRoute("/conseils")({
 });
 
 function ConseilsPage() {
-  const { c, pathway, doctor, note } = Route.useSearch();
+  const { c, pathway, doctor, doctorName, note } = Route.useSearch();
   const navigate = useNavigate({ from: "/conseils" });
   const urlValue = c ?? pathway;
   const [activeId, setActiveId] = useState<string | undefined>(() => matchCondition(urlValue)?.id);
@@ -108,7 +109,7 @@ function ConseilsPage() {
       <div className="mb-6">
         <Link
           to="/"
-          search={{ started: true, pathway: conditionId }}
+          search={{ started: true, pathway: conditionId, doctorName }}
           aria-label="Retourner à l’espace patient"
           className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
         >

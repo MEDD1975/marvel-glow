@@ -118,7 +118,7 @@ function ConseilsPage() {
       </div>
 
       <div className="text-center">
-        <h1 className="text-2xl font-semibold text-foreground">Bibliothèque de contenu de votre médecin</h1>
+        <h1 className="text-2xl font-semibold text-foreground">Bibliothèque de contenus de votre médecin</h1>
         <p className="mx-auto mt-2 max-w-2xl text-muted-foreground">
           Consultez ces repères pour préparer votre prochain échange. Ils ne remplacent pas les consignes de votre professionnel.
         </p>
@@ -162,7 +162,7 @@ function ConseilsPage() {
 
       {doctorResources.length > 0 && (
         <section className="mt-8 rounded-2xl border border-care/30 bg-care/5 p-5" aria-labelledby="doctor-library-title">
-          <div className="flex items-center gap-2 text-lg font-semibold text-foreground"><FileText className="h-5 w-5 text-care" /><h2 id="doctor-library-title">Bibliothèque de contenu de votre médecin</h2></div>
+          <div className="flex items-center gap-2 text-lg font-semibold text-foreground"><FileText className="h-5 w-5 text-care" /><h2 id="doctor-library-title">Bibliothèque de contenus de votre médecin</h2></div>
           <p className="mt-1 text-sm text-muted-foreground">Les vidéos, photos et documents partagés par votre médecin sont regroupés ici pour ce parcours.</p>
           <div className="mt-4 grid gap-3 sm:grid-cols-2">
             {doctorResources.map((resource) => {

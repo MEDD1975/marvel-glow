@@ -165,6 +165,40 @@
   }
 }
 
+.doctor-card-advice {
+  background-color: #EFF6FF;
+  border-color: #93C5FD;
+}
+
+.doctor-card-advice:hover {
+  background-color: #E0F2FE;
+  border-color: #3B82F6;
+}
+
+.doctor-card-network {
+  background-color: #F0FDF4;
+  border-color: #86EFAC;
+}
+
+.doctor-card-network:hover {
+  background-color: #DCFCE7;
+  border-color: #22C55E;
+}
+
+.doctor-card-patient {
+  background-color: #F5F3FF;
+  border-color: #C4B5FD;
+}
+
+.doctor-card-patient:hover {
+  background-color: #EDE9FE;
+  border-color: #8B5CF6;
+}
+
+.dark .doctor-card-advice { background-color: #172B4D; border-color: #3B82F6; }
+.dark .doctor-card-network { background-color: #153B2A; border-color: #22C55E; }
+.dark .doctor-card-patient { background-color: #2B234C; border-color: #8B5CF6; }
+
 .home-card-library {
   background-color: #EFF6FF;
   border-color: #93C5FD;

@@ -83,7 +83,7 @@ export function AssistantHome({ initialStarted = false, pathway, doctorName }: {
           <Link
             to="/conseils"
             search={effectivePathway ? { c: effectivePathway } : undefined}
-            className="group flex min-h-48 flex-col rounded-3xl border border-border bg-card p-4 text-left shadow-sm transition-all hover:-translate-y-1 hover:border-care/40 hover:bg-muted/30 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className="home-card-library group flex min-h-48 flex-col rounded-3xl border p-4 text-left shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-muted text-foreground shadow-sm"><BookOpen className="h-6 w-6" aria-hidden="true" /></span>
             <span className="mt-5 text-xs font-semibold uppercase tracking-[0.12em] text-care">MA BIBLIOTHÈQUE DE CONSEILS</span>
@@ -94,7 +94,7 @@ export function AssistantHome({ initialStarted = false, pathway, doctorName }: {
 
           <Link
             to="/annuaire"
-            className="group flex min-h-48 flex-col rounded-3xl border border-border bg-card p-4 md:min-h-0 md:p-4 text-left shadow-sm transition-all hover:-translate-y-1 hover:border-care/40 hover:bg-muted/30 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className="home-card-network group flex min-h-48 flex-col rounded-3xl border p-4 md:min-h-0 md:p-4 text-left shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-muted text-foreground shadow-sm">
               <MapPin className="h-6 w-6" aria-hidden="true" />
@@ -108,7 +108,7 @@ export function AssistantHome({ initialStarted = false, pathway, doctorName }: {
           <Link
             to="/parcours"
             search={effectivePathway ? { pathway: effectivePathway, doctorName } : undefined}
-            className="group flex min-h-48 flex-col rounded-3xl border border-border bg-card p-4 md:min-h-0 md:p-4 text-left shadow-sm transition-all hover:-translate-y-1 hover:border-care/40 hover:bg-muted/30 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className="home-card-followup group flex min-h-48 flex-col rounded-3xl border p-4 md:min-h-0 md:p-4 text-left shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-muted text-foreground shadow-sm"><ArrowRight className="h-6 w-6" aria-hidden="true" /></span>
             <span className="mt-5 text-xs font-semibold uppercase tracking-[0.12em] text-care">VOTRE GUIDE DE SUIVI</span>

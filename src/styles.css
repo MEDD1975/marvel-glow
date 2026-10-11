@@ -165,6 +165,40 @@
   }
 }
 
+.home-card-library {
+  background-color: #EFF6FF;
+  border-color: #93C5FD;
+}
+
+.home-card-library:hover {
+  border-color: #3B82F6;
+  background-color: #E0F2FE;
+}
+
+.home-card-network {
+  background-color: #F0FDF4;
+  border-color: #86EFAC;
+}
+
+.home-card-network:hover {
+  border-color: #22C55E;
+  background-color: #DCFCE7;
+}
+
+.home-card-followup {
+  background-color: #F5F3FF;
+  border-color: #C4B5FD;
+}
+
+.home-card-followup:hover {
+  border-color: #8B5CF6;
+  background-color: #EDE9FE;
+}
+
+.dark .home-card-library { background-color: #172B4D; border-color: #3B82F6; }
+.dark .home-card-network { background-color: #153B2A; border-color: #22C55E; }
+.dark .home-card-followup { background-color: #2B234C; border-color: #8B5CF6; }
+
 .alert-section {
   background-color: var(--alert-bg);
   border-color: var(--alert-border);

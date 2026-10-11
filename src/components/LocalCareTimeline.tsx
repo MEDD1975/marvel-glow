@@ -1,6 +1,6 @@
 import { Fragment, useEffect, useState } from "react";
 import { ArrowDown, ArrowUp, CalendarDays, Pencil, Plus, Trash2 } from "lucide-react";
-import { providers } from "@/lib/directory";
+import { professionOrder, providers } from "@/lib/directory";
 
 type TimelineEntry = {
   id: string;
@@ -17,11 +17,15 @@ function DraftForm({ draft, setDraft, onSave, onCancel }: { draft: Draft; setDra
   return (
     <div className="rounded-2xl border border-border bg-muted/20 p-4">
       <div className="grid gap-3 md:grid-cols-3">
-        <label className="text-sm font-medium text-foreground md:col-span-1">Professionnel
-          <select required aria-label="Professionnel de santé" value={draft.providerId} onChange={(event) => { const provider = providers.find((item) => item.id === event.target.value); setDraft({ ...draft, providerId: event.target.value, providerName: provider?.name ?? "", providerProfession: provider?.profession ?? "", type: provider?.profession ?? draft.type }); }} className="mt-1.5 h-11 w-full rounded-lg border border-input bg-background px-3 text-sm"><option value="">Saisir librement ci-dessous</option>{providers.map((provider) => <option key={provider.id} value={provider.id}>{provider.name} — {provider.profession}</option>)}</select>
-          <input type="text" value={draft.providerName} onChange={(event) => setDraft({ ...draft, providerId: "", providerName: event.target.value, type: event.target.value })} placeholder="Nom ou profession" className="mt-1.5 h-11 w-full rounded-lg border border-input bg-background px-3 text-sm" />
+        <label className="text-sm font-medium text-foreground">Spécialité
+          <select required aria-label="Spécialité du professionnel de santé" value={draft.providerProfession} onChange={(event) => setDraft({ ...draft, providerProfession: event.target.value, type: event.target.value })} className="mt-1.5 h-11 w-full rounded-lg border border-input bg-background px-3 text-sm"><option value="">Choisir une spécialité</option>{professionOrder.filter((profession) => profession !== "Médecin" && profession !== "Urgences").map((profession) => <option key={profession} value={profession}>{profession}</option>)}</select>
         </label>
-        <label className="text-sm font-medium text-foreground">Date<input required aria-label="Date du rendez-vous ou de la consultation" type="date" value={draft.date} onChange={(event) => setDraft({ ...draft, date: event.target.value })} className="mt-1.5 h-11 w-full rounded-lg border border-input bg-background px-3 text-sm" /></label>
+        <label className="text-sm font-medium text-foreground">Nom du professionnel
+          <input required type="text" value={draft.providerName} onChange={(event) => setDraft({ ...draft, providerName: event.target.value })} placeholder="Nom du professionnel" className="mt-1.5 h-11 w-full rounded-lg border border-input bg-background px-3 text-sm" />
+        </label>
+        <label className="text-sm font-medium text-foreground">Date
+          <span className="relative mt-1.5 block"><CalendarDays className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" /><input required aria-label="Date du rendez-vous ou de la consultation" type="date" value={draft.date} onChange={(event) => setDraft({ ...draft, date: event.target.value })} className="h-11 w-full rounded-lg border border-input bg-background pl-10 pr-3 text-sm" /></span>
+        </label>
       </div>
 
 

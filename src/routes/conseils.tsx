@@ -287,7 +287,10 @@ function ConseilsPage() {
 
 {avoid.length > 0 && (
   <section className="mt-8">
-  <h2 className="text-lg font-semibold text-foreground">Les erreurs fréquentes à éviter</h2>
+  <div className="flex items-center gap-2 text-lg font-semibold text-foreground">
+  <Ban className="h-5 w-5 text-alert-text" />
+  <h2>Les erreurs fréquentes à éviter</h2>
+  </div>
   <div className="alert-section mt-3 rounded-2xl border p-5">
   <ul className="grid gap-2 sm:grid-cols-2">
   {avoid.map((item, i) => (

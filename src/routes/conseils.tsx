@@ -285,22 +285,21 @@ function ConseilsPage() {
       </section>
 
 
-      {avoid.length > 0 && (
-<section className="alert-section mt-8 rounded-2xl border p-5">
-  <div className="flex items-center gap-2 text-lg font-semibold text-foreground">
-  <Ban className="h-5 w-5 text-alert-text" />
-  Les erreurs fréquentes à éviter
-  </div>
-  <ul className="mt-3 grid gap-2 sm:grid-cols-2">
+{avoid.length > 0 && (
+  <section className="mt-8">
+  <h2 className="text-lg font-semibold text-foreground">Les erreurs fréquentes à éviter</h2>
+  <div className="alert-section mt-3 rounded-2xl border p-5">
+  <ul className="grid gap-2 sm:grid-cols-2">
   {avoid.map((item, i) => (
   <li key={i} className="flex items-start gap-3 rounded-xl border border-alert-border bg-alert-bg p-4 text-sm text-alert-text">
   <Ban className="mt-0.5 h-4 w-4 shrink-0 text-alert-text" />
-                {item}
-              </li>
-            ))}
-          </ul>
-        </section>
-      )}
+  {item}
+  </li>
+  ))}
+  </ul>
+  </div>
+  </section>
+  )}
 
       <section className="mt-12">
         <div className="flex items-center gap-2 text-lg font-semibold text-foreground">

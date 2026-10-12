@@ -8,6 +8,7 @@ import { put } from "@vercel/blob";
 import { generateClientTokenFromReadWriteToken } from "@vercel/blob/client";
 import { createDoctorResource, deleteDoctorResource, listAllActiveDoctorResources, listDoctorResources } from "./lib/doctor-resource-db";
 import { createFollowUpStep, deleteFollowUpStep, listFollowUpSteps, reorderFollowUpSteps, updateFollowUpStep, type FollowUpAnswer, type FollowUpStepInput } from "./lib/follow-up-db";
+import { getScanStats, recordAnonymousScan } from "./lib/scan-db";
 
 type ServerEntry = {
   fetch: (request: Request, env: unknown, ctx: unknown) => Promise<Response> | Response;
@@ -197,6 +198,23 @@ export default {
           return Response.json({ ok: true });
         }
         return new Response("Method Not Allowed", { status: 405 });
+      }
+      if (url.pathname === "/api/scans" && request.method === "POST") {
+        const payload = await request.json() as { medecinId?: unknown; parcoursId?: unknown };
+        if (typeof payload.medecinId !== "string" || typeof payload.parcoursId !== "string" || !payload.medecinId.trim() || !payload.parcoursId.trim()) return Response.json({ error: "Paramètres invalides" }, { status: 400 });
+        await recordAnonymousScan(payload.medecinId.trim().slice(0, 160), payload.parcoursId.trim().slice(0, 160));
+        return Response.json({ ok: true }, { status: 201 });
+      }
+      if (url.pathname === "/api/doctor/scan-stats" && request.method === "GET") {
+        const session = await auth.api.getSession({ headers: request.headers });
+        if (!session?.user) return Response.json({ error: "Unauthorized" }, { status: 401 });
+        return Response.json(await getScanStats(session.user.id));
+      }
+      if (url.pathname === "/api/admin/scan-stats" && request.method === "GET") {
+        const session = await auth.api.getSession({ headers: request.headers });
+        const admins = (process.env.ADMIN_EMAILS ?? "").split(",").map((email) => email.trim().toLowerCase()).filter(Boolean);
+        if (!session?.user || !admins.includes(session.user.email.toLowerCase())) return Response.json({ error: "Forbidden" }, { status: 403 });
+        return Response.json(await getScanStats());
       }
       if (url.pathname === "/api/public-networks" && request.method === "GET") {
         const networks = await getPublicDoctorNetworks();

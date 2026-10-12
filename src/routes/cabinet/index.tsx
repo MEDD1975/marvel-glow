@@ -538,7 +538,6 @@ maxLength={300}
       </section>
 
   <MedicalDisclaimer />
-  </div>
   </> : null}
   <div style={{ display: showNetworkConfig ? "none" : undefined }} className="mt-8 print:hidden">
     <details className="group max-w-3xl rounded-xl border border-border/70 bg-card/60 px-4 py-3">

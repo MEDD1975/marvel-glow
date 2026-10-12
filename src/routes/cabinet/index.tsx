@@ -538,9 +538,9 @@ maxLength={300}
 
   </> : null}
 
-      <div className="mt-12">
-        <MedicalDisclaimer />
-      </div>
+  <div className="order-10 mt-12">
+  <MedicalDisclaimer />
+  </div>
     </main>
   );
 }

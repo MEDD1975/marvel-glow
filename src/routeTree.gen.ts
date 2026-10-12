@@ -17,8 +17,10 @@ import { Route as ConseilsRouteImport } from './routes/conseils'
 import { Route as OrientationRouteImport } from './routes/orientation'
 import { Route as ParcoursRouteImport } from './routes/parcours'
 import { Route as SuiviRouteImport } from './routes/suivi'
+import { Route as AdminStatsRouteImport } from './routes/admin/stats'
 import { Route as CabinetIndexRouteImport } from './routes/cabinet/index'
 import { Route as CabinetAccueilRouteImport } from './routes/cabinet/accueil'
+import { Route as PPathologieRouteImport } from './routes/p/$pathologie'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -60,6 +62,11 @@ const SuiviRoute = SuiviRouteImport.update({
   path: '/suivi',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminStatsRoute = AdminStatsRouteImport.update({
+  id: '/admin/stats',
+  path: '/admin/stats',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CabinetIndexRoute = CabinetIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -69,6 +76,11 @@ const CabinetAccueilRoute = CabinetAccueilRouteImport.update({
   id: '/accueil',
   path: '/accueil',
   getParentRoute: () => CabinetRouteRoute,
+} as any)
+const PPathologieRoute = PPathologieRouteImport.update({
+  id: '/p/$pathologie',
+  path: '/p/$pathologie',
+  getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
@@ -80,7 +92,9 @@ export interface FileRoutesByFullPath {
   '/orientation': typeof OrientationRoute
   '/parcours': typeof ParcoursRoute
   '/suivi': typeof SuiviRoute
+  '/admin/stats': typeof AdminStatsRoute
   '/cabinet/accueil': typeof CabinetAccueilRoute
+  '/p/$pathologie': typeof PPathologieRoute
   '/cabinet/': typeof CabinetIndexRoute
 }
 export interface FileRoutesByTo {
@@ -91,7 +105,9 @@ export interface FileRoutesByTo {
   '/orientation': typeof OrientationRoute
   '/parcours': typeof ParcoursRoute
   '/suivi': typeof SuiviRoute
+  '/admin/stats': typeof AdminStatsRoute
   '/cabinet/accueil': typeof CabinetAccueilRoute
+  '/p/$pathologie': typeof PPathologieRoute
   '/cabinet': typeof CabinetIndexRoute
 }
 export interface FileRoutesById {
@@ -104,7 +120,9 @@ export interface FileRoutesById {
   '/orientation': typeof OrientationRoute
   '/parcours': typeof ParcoursRoute
   '/suivi': typeof SuiviRoute
+  '/admin/stats': typeof AdminStatsRoute
   '/cabinet/accueil': typeof CabinetAccueilRoute
+  '/p/$pathologie': typeof PPathologieRoute
   '/cabinet/': typeof CabinetIndexRoute
 }
 export interface FileRouteTypes {
@@ -118,7 +136,9 @@ export interface FileRouteTypes {
     | '/orientation'
     | '/parcours'
     | '/suivi'
+    | '/admin/stats'
     | '/cabinet/accueil'
+    | '/p/$pathologie'
     | '/cabinet/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -129,7 +149,9 @@ export interface FileRouteTypes {
     | '/orientation'
     | '/parcours'
     | '/suivi'
+    | '/admin/stats'
     | '/cabinet/accueil'
+    | '/p/$pathologie'
     | '/cabinet'
   id:
     | '__root__'
@@ -141,7 +163,9 @@ export interface FileRouteTypes {
     | '/orientation'
     | '/parcours'
     | '/suivi'
+    | '/admin/stats'
     | '/cabinet/accueil'
+    | '/p/$pathologie'
     | '/cabinet/'
   fileRoutesById: FileRoutesById
 }
@@ -154,6 +178,8 @@ export interface RootRouteChildren {
   OrientationRoute: typeof OrientationRoute
   ParcoursRoute: typeof ParcoursRoute
   SuiviRoute: typeof SuiviRoute
+  AdminStatsRoute: typeof AdminStatsRoute
+  PPathologieRoute: typeof PPathologieRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -214,6 +240,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SuiviRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/stats': {
+      id: '/admin/stats'
+      path: '/admin/stats'
+      fullPath: '/admin/stats'
+      preLoaderRoute: typeof AdminStatsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/cabinet/': {
       id: '/cabinet/'
       path: '/'
@@ -227,6 +260,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/cabinet/accueil'
       preLoaderRoute: typeof CabinetAccueilRouteImport
       parentRoute: typeof CabinetRouteRoute
+    }
+    '/p/$pathologie': {
+      id: '/p/$pathologie'
+      path: '/p/$pathologie'
+      fullPath: '/p/$pathologie'
+      preLoaderRoute: typeof PPathologieRouteImport
+      parentRoute: typeof rootRouteImport
     }
   }
 }
@@ -254,6 +294,8 @@ const rootRouteChildren: RootRouteChildren = {
   OrientationRoute: OrientationRoute,
   ParcoursRoute: ParcoursRoute,
   SuiviRoute: SuiviRoute,
+  AdminStatsRoute: AdminStatsRoute,
+  PPathologieRoute: PPathologieRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

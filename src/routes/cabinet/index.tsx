@@ -536,9 +536,11 @@ maxLength={300}
         </div>
       </section>
 
-  <MedicalDisclaimer />
   </> : null}
 
+      <div className="mt-12">
+        <MedicalDisclaimer />
+      </div>
     </main>
   );
 }

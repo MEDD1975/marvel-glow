@@ -12,7 +12,7 @@ export const Route = createFileRoute("/")({
       { name: "twitter:card", content: "summary" },
     ],
   }),
-  validateSearch: (search: Record<string, unknown>) => ({
+  validateSearch: (search: Record<string, unknown>): { started: boolean; pathway?: string | undefined; doctorName?: string | undefined } => ({
     started: search["started"] === true || search["started"] === "1",
     pathway: typeof search["pathway"] === "string" ? search["pathway"] : undefined,
     doctorName: typeof search["doctorName"] === "string" ? search["doctorName"] : undefined,
@@ -25,7 +25,7 @@ function HomePage() {
 
   return (
     <main className="flex flex-col items-stretch justify-start px-4 pt-6 pb-12 md:px-8 lg:pt-8">
-      <AssistantHome initialStarted={started || Boolean(pathway)} pathway={pathway} doctorName={doctorName} />
+      <AssistantHome initialStarted={started || Boolean(pathway)} {...(pathway ? { pathway } : {})} {...(doctorName ? { doctorName } : {})} />
       <section className="mx-auto w-full max-w-6xl pb-8">
         <MedicalDisclaimer />
       </section>

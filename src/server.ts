@@ -201,14 +201,14 @@ export default {
       }
       if (url.pathname === "/api/scans" && request.method === "POST") {
         const payload = await request.json() as { medecinId?: unknown; medecin_id?: unknown; ref?: unknown; doctorName?: unknown; parcoursId?: unknown };
-        const medecinId = [payload.medecinId, payload.medecin_id, payload.ref, payload.doctorName].find((value): value is string => typeof value === "string" && value.trim());
+        const medecinId = [payload.medecinId, payload.medecin_id, payload.ref, payload.doctorName].find((value): value is string => typeof value === "string" && value.trim().length > 0);
         if (!medecinId || typeof payload.parcoursId !== "string" || !payload.parcoursId.trim()) return Response.json({ error: "Paramètres invalides" }, { status: 400 });
         await recordAnonymousScan(medecinId.trim().slice(0, 160), payload.parcoursId.trim().slice(0, 160));
         return Response.json({ ok: true }, { status: 201 });
       }
       if (url.pathname === "/api/admin/scan-stats" && request.method === "GET") {
         const session = await auth.api.getSession({ headers: request.headers });
-        const admins = (process.env.ADMIN_EMAILS ?? "").split(",").map((email) => email.trim().toLowerCase()).filter(Boolean);
+        const admins = (process.env["ADMIN_EMAILS"] ?? "").split(",").map((email) => email.trim().toLowerCase()).filter(Boolean);
         if (!session?.user || !admins.includes(session.user.email.toLowerCase())) return Response.json({ error: "Forbidden" }, { status: 403 });
         return Response.json(await getScanStats());
       }

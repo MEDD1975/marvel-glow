@@ -26,7 +26,7 @@ export function Header() {
     const matchesPath = item.exact ? pathname === itemPath : pathname.startsWith(itemPath);
     if (!matchesPath) return false;
     if (itemQuery) {
-      return new URLSearchParams(location.search).toString() === itemQuery;
+      return new URLSearchParams(location.search as Record<string, string>).toString() === itemQuery;
     }
     return !location.search;
   };

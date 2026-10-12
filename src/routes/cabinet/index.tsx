@@ -250,7 +250,7 @@ const doctorIdParam = session?.user?.id ? `?ref=${encodeURIComponent(session.use
     <main className={`mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 lg:px-8 print:py-0 ${showResourceConfig ? "flex flex-col" : ""}`}>
       {/* Hero + tableau de bord */}
       <section className={showNetworkConfig || showResourceConfig ? "hidden" : "print:hidden"}>
-  <div className="mb-10 max-w-md"><ScanStats /></div>
+  <div className="mb-6 max-w-5xl"><ScanStats /></div>
         <span className="inline-flex items-center gap-1.5 rounded-full border border-care/20 bg-care/5 px-3 py-1 text-xs font-medium text-care">
           <Stethoscope className="h-3.5 w-3.5" />
           Espace médecin

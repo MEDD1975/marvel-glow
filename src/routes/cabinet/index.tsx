@@ -537,14 +537,15 @@ maxLength={300}
         </div>
       </section>
 
-      <div style={{ display: showNetworkConfig ? "none" : undefined }} className={`${showResourceConfig ? "order-5" : ""} mt-8 print:hidden`}>
+  <MedicalDisclaimer />
+  </div>
+  </> : null}
+  <div style={{ display: showNetworkConfig ? "none" : undefined }} className="mt-8 print:hidden">
     <details className="group max-w-3xl rounded-xl border border-border/70 bg-card/60 px-4 py-3">
       <summary className="cursor-pointer list-none text-sm font-medium text-muted-foreground marker:hidden">Voir l’analyse anonyme des scans</summary>
       <div className="mt-3"><ScanStats /></div>
     </details>
-        <MedicalDisclaimer />
-      </div>
-      </> : null}
+  </div>
     </main>
   );
 }

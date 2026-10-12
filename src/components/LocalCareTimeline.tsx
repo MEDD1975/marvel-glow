@@ -119,11 +119,15 @@ export function LocalCareTimeline({ conditionId, initialProviderName, initialPro
     persist(entries.filter((item) => item.id !== id));
   };
   const moveEntry = (index: number, direction: -1 | 1) => {
-    if (isInitialEntry(entries[index])) return;
+    const current = entries[index];
+    if (!current || isInitialEntry(current)) return;
     const target = index + direction;
     if (target < 0 || target >= entries.length) return;
     const next = [...entries];
-    [next[index], next[target]] = [next[target], next[index]];
+    const targetEntry = next[target];
+    if (!targetEntry) return;
+    next[index] = targetEntry;
+    next[target] = current;
     persist(next);
   };
   const reset = () => {

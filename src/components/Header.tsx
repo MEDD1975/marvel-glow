@@ -22,7 +22,7 @@ export function Header() {
   const navItems = isDoctorSpace ? doctorNavItems : patientNavItems;
   const isActive = (item: (typeof navItems)[number]) => {
     const pathname = location.pathname === "/cabinet" ? "/cabinet/" : location.pathname;
-    const [itemPath, itemQuery] = item.to.split("?");
+    const [itemPath, itemQuery] = item.to.split("?") as [string, string | undefined];
     const matchesPath = item.exact ? pathname === itemPath : pathname.startsWith(itemPath);
     if (!matchesPath) return false;
     if (itemQuery) {

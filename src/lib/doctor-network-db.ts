@@ -71,7 +71,7 @@ export async function deleteDoctorPractitioner(userId: string, practitionerId: s
 
 export async function updateDoctorPractitioner(
   userId: string,
-  practitioner: { id: string; name: string; profession: string; phone?: string | null | undefined; email?: string | null | undefined; address?: string | null | undefined; postalCode?: string | null | undefined; city?: string },
+  practitioner: { id: string; name: string; profession: string; phone?: string | null | undefined; email?: string | null | undefined; address?: string | null | undefined; postalCode?: string | null | undefined; city?: string | null | undefined },
 ) {
   await pool.query(
     'UPDATE "doctor_practitioner" SET "name" = $1, "profession" = $2, "phone" = $3, "email" = $4, "address" = $5, "postalCode" = $6, "city" = $7 WHERE "id" = $8 AND "networkId" IN (SELECT "id" FROM "doctor_network" WHERE "ownerId" = $9)',
@@ -82,7 +82,7 @@ export async function updateDoctorPractitioner(
 
 export async function saveDoctorNetwork(
   userId: string,
-  input: { name: string; address: string; phone?: string | null | undefined; practitioners: Array<{ name: string; profession: string; phone?: string | null | undefined; email?: string | null | undefined; address?: string | null | undefined; postalCode?: string | null | undefined; city?: string }> },
+  input: { name: string; address: string; phone?: string | null | undefined; practitioners: Array<{ name: string; profession: string; phone?: string | null | undefined; email?: string | null | undefined; address?: string | null | undefined; postalCode?: string | null | undefined; city?: string | null | undefined }> },
 ) {
   const client = await pool.connect();
   try {

@@ -250,7 +250,6 @@ const doctorIdParam = session?.user?.id ? `?ref=${encodeURIComponent(session.use
     <main className={`mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 lg:px-8 print:py-0 ${showResourceConfig ? "flex flex-col" : ""}`}>
       {/* Hero + tableau de bord */}
       <section className={showNetworkConfig || showResourceConfig ? "hidden" : "print:hidden"}>
-  <div className="mb-6 max-w-5xl"><ScanStats /></div>
         <span className="inline-flex items-center gap-1.5 rounded-full border border-care/20 bg-care/5 px-3 py-1 text-xs font-medium text-care">
           <Stethoscope className="h-3.5 w-3.5" />
           Espace médecin
@@ -538,7 +537,11 @@ maxLength={300}
         </div>
       </section>
 
-      <div style={{ display: showNetworkConfig ? "none" : undefined }} className={`${showResourceConfig ? "order-5" : ""} mt-10 print:hidden`}>
+      <div style={{ display: showNetworkConfig ? "none" : undefined }} className={`${showResourceConfig ? "order-5" : ""} mt-8 print:hidden`}>
+    <details className="group max-w-3xl rounded-xl border border-border/70 bg-card/60 px-4 py-3">
+      <summary className="cursor-pointer list-none text-sm font-medium text-muted-foreground marker:hidden">Voir l’analyse anonyme des scans</summary>
+      <div className="mt-3"><ScanStats /></div>
+    </details>
         <MedicalDisclaimer />
       </div>
       </> : null}

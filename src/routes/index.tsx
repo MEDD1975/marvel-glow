@@ -13,9 +13,9 @@ export const Route = createFileRoute("/")({
     ],
   }),
   validateSearch: (search: Record<string, unknown>) => ({
-    started: search.started === true || search.started === "1",
-    pathway: typeof search.pathway === "string" ? search.pathway : undefined,
-    doctorName: typeof search.doctorName === "string" ? search.doctorName : undefined,
+    started: search["started"] === true || search["started"] === "1",
+    pathway: typeof search["pathway"] === "string" ? search["pathway"] : undefined,
+    doctorName: typeof search["doctorName"] === "string" ? search["doctorName"] : undefined,
   }),
   component: HomePage,
 });

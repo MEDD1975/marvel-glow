@@ -12,7 +12,7 @@ export const Route = createFileRoute("/")({
       { name: "twitter:card", content: "summary" },
     ],
   }),
-  validateSearch: (search: Record<string, unknown>) => ({
+  validateSearch: (search: Record<string, unknown>): { started: boolean; pathway?: string | undefined; doctorName?: string | undefined } => ({
     started: search["started"] === true || search["started"] === "1",
     pathway: typeof search["pathway"] === "string" ? search["pathway"] : undefined,
     doctorName: typeof search["doctorName"] === "string" ? search["doctorName"] : undefined,

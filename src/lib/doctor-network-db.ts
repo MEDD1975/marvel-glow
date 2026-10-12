@@ -1,6 +1,6 @@
 import { Pool } from "pg";
 
-const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+const pool = new Pool({ connectionString: process.env["DATABASE_URL"] });
 
 export type DoctorNetworkRecord = {
   id: string;
@@ -71,7 +71,7 @@ export async function deleteDoctorPractitioner(userId: string, practitionerId: s
 
 export async function updateDoctorPractitioner(
   userId: string,
-  practitioner: { id: string; name: string; profession: string; phone?: string; email?: string; address?: string; postalCode?: string; city?: string },
+  practitioner: { id: string; name: string; profession: string; phone?: string | undefined; email?: string | undefined; address?: string | undefined; postalCode?: string | undefined; city?: string },
 ) {
   await pool.query(
     'UPDATE "doctor_practitioner" SET "name" = $1, "profession" = $2, "phone" = $3, "email" = $4, "address" = $5, "postalCode" = $6, "city" = $7 WHERE "id" = $8 AND "networkId" IN (SELECT "id" FROM "doctor_network" WHERE "ownerId" = $9)',
@@ -82,7 +82,7 @@ export async function updateDoctorPractitioner(
 
 export async function saveDoctorNetwork(
   userId: string,
-  input: { name: string; address: string; phone?: string; practitioners: Array<{ name: string; profession: string; phone?: string; email?: string; address?: string; postalCode?: string; city?: string }> },
+  input: { name: string; address: string; phone?: string | undefined; practitioners: Array<{ name: string; profession: string; phone?: string | undefined; email?: string | undefined; address?: string | undefined; postalCode?: string | undefined; city?: string }> },
 ) {
   const client = await pool.connect();
   try {

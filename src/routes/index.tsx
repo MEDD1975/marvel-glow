@@ -25,7 +25,7 @@ function HomePage() {
 
   return (
     <main className="flex flex-col items-stretch justify-start px-4 pt-6 pb-12 md:px-8 lg:pt-8">
-      <AssistantHome initialStarted={started || Boolean(pathway)} pathway={pathway} doctorName={doctorName} />
+      <AssistantHome initialStarted={started || Boolean(pathway)} {...(pathway ? { pathway } : {})} {...(doctorName ? { doctorName } : {})} />
       <section className="mx-auto w-full max-w-6xl pb-8">
         <MedicalDisclaimer />
       </section>

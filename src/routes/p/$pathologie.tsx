@@ -9,18 +9,19 @@ export const Route = createFileRoute("/p/$pathologie")({
 
 function PublicPathwayPage() {
   const { pathologie } = Route.useParams();
-  const search = Route.useSearch() as { ref?: string };
+  const search = Route.useSearch() as { ref?: string; medecin_id?: string; doctorName?: string };
   const condition = conditions.find((item) => item.id === pathologie);
+  const medecinId = search.ref?.trim() || search.medecin_id?.trim() || search.doctorName?.trim();
 
   useEffect(() => {
-    if (!condition || !search.ref) return;
+    if (!condition || !medecinId) return;
     void fetch("/api/scans", {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ medecinId: search.ref, parcoursId: pathologie }),
+      body: JSON.stringify({ medecinId, parcoursId: pathologie }),
       keepalive: true,
     }).catch(() => undefined);
-  }, [condition, pathologie, search.ref]);
+  }, [condition, medecinId, pathologie]);
 
   return <ParcoursPageContent pathway={pathologie} />;
 }

@@ -35,7 +35,7 @@ function DoctorSignInPage() {
 
   return (
     <main className="mx-auto max-w-lg px-4 py-10 md:py-16">
-      <Link to="/" className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground">
+      <Link to="/" search={{ started: false }} className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground">
         <ArrowLeft className="h-4 w-4" aria-hidden="true" />
         Retour à l’accueil
       </Link>

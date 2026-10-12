@@ -447,9 +447,6 @@ maxLength={300}
               {conditions.map((condition) => <option key={condition.id} value={condition.id}>{condition.name}</option>)}
             </select>
             <p id="video-condition-hint" className="text-xs text-muted-foreground">Ce choix définit automatiquement le parcours ouvert par la carte patient.</p>
-<label className="block text-sm font-medium text-foreground" htmlFor="video-title">Titre du contenu médical <span className="font-normal text-muted-foreground">(obligatoire)</span></label>
-  <input id="video-title" required value={videoTitle} onChange={(event) => setVideoTitle(event.target.value)} placeholder="Ex. Les bons gestes après une entorse" className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground" />
-  <p className="text-xs text-muted-foreground">Ce titre sera affiché au patient à la place de « Ressource partagée ».</p>
             <label className="block text-sm font-medium text-foreground" htmlFor="doctor-file">Fichier à partager</label>
             <input
               id="doctor-file"
@@ -478,6 +475,9 @@ maxLength={300}
                 <p className="min-w-0 truncate text-sm font-medium text-foreground">{selectedFile.name}</p>
               </div>
             </div> : null}
+            <label className="block text-sm font-medium text-foreground" htmlFor="video-title">Titre du contenu médical <span className="font-normal text-muted-foreground">(obligatoire)</span></label>
+            <input id="video-title" required value={videoTitle} onChange={(event) => setVideoTitle(event.target.value)} placeholder="Ex. Les bons gestes après une entorse" className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground" />
+            <p className="text-xs text-muted-foreground">Ce titre sera affiché au patient à la place de « Ressource partagée ».</p>
             <label className="block text-sm font-medium text-foreground" htmlFor="video-url">Ou lien HTTPS</label>
             <input id="video-url" type="url" value={videoUrl} onChange={(event) => setVideoUrl(event.target.value)} placeholder="https://..." className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground" />
             <label className="block text-sm font-medium text-foreground" htmlFor="video-source">Source (optionnel)</label>

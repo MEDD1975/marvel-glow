@@ -119,11 +119,15 @@ export function LocalCareTimeline({ conditionId, initialProviderName, initialPro
     persist(entries.filter((item) => item.id !== id));
   };
   const moveEntry = (index: number, direction: -1 | 1) => {
-    if (isInitialEntry(entries[index])) return;
+    const current = entries[index];
+    if (!current || isInitialEntry(current)) return;
     const target = index + direction;
     if (target < 0 || target >= entries.length) return;
     const next = [...entries];
-    [next[index], next[target]] = [next[target], next[index]];
+    const targetEntry = next[target];
+    if (!targetEntry) return;
+    next[index] = targetEntry;
+    next[target] = current;
     persist(next);
   };
   const reset = () => {
@@ -153,7 +157,7 @@ export function LocalCareTimeline({ conditionId, initialProviderName, initialPro
 
         {sortedEntries.map((entry, index) => (
           <Fragment key={entry.id}>
-          {index > 0 && sortedEntries[index - 1].date && entry.date && <div className="flex items-center gap-3 px-5 py-1.5 text-xs font-semibold text-muted-foreground"><div className="h-5 w-px bg-care/30" aria-hidden="true" /><span className="rounded-full border border-care/20 bg-care/5 px-3 py-1 text-care">{daysBetween(sortedEntries[index - 1].date, entry.date)} {daysBetween(sortedEntries[index - 1].date, entry.date) === 1 ? "jour" : "jours"} se sont écoulés depuis le rendez-vous précédent</span></div>}
+          {index > 0 && sortedEntries[index - 1]?.date && entry.date && <div className="flex items-center gap-3 px-5 py-1.5 text-xs font-semibold text-muted-foreground"><div className="h-5 w-px bg-care/30" aria-hidden="true" /><span className="rounded-full border border-care/20 bg-care/5 px-3 py-1 text-care">{daysBetween(sortedEntries[index - 1]!.date!, entry.date)} {daysBetween(sortedEntries[index - 1]!.date!, entry.date) === 1 ? "jour" : "jours"} se sont écoulés depuis le rendez-vous précédent</span></div>}
           <li className={`group rounded-2xl border p-4 transition-all duration-300 md:p-5 ${editingId === entry.id ? "border-care/40 bg-care/[0.04] shadow-md" : "border-border bg-background hover:-translate-y-0.5 hover:border-care/30 hover:shadow-lg"}`}>
             {editingId === entry.id ? (
               <div className="animate-in fade-in slide-in-from-top-2 duration-300"><DraftForm draft={draft} setDraft={setDraft} onSave={saveDraft} onCancel={cancelDraft} /></div>

@@ -18,7 +18,8 @@ function DoctorSignInPage() {
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (event.nativeEvent.isComposing || (event as unknown as KeyboardEvent).keyCode === 229) return;
+    const nativeEvent = event.nativeEvent as KeyboardEvent;
+    if (nativeEvent.isComposing || nativeEvent.keyCode === 229) return;
     setError("");
     setPending(true);
     const result = mode === "sign-up"

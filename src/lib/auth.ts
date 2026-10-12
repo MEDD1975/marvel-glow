@@ -1,16 +1,16 @@
 import { betterAuth } from "better-auth";
 import { Pool } from "pg";
 
-const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+const pool = new Pool({ connectionString: process.env["DATABASE_URL"] });
 
 const originCandidates = [
-  process.env.BETTER_AUTH_URL,
-  process.env.VERCEL_PROJECT_PRODUCTION_URL && `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`,
-  process.env.VERCEL_URL && `https://${process.env.VERCEL_URL}`,
-  process.env.V0_RUNTIME_URL,
-  process.env.V0_DEV_APP_URL,
-  process.env.V0_BUILD_URL,
-  process.env.V0_SANDBOX_URL,
+  process.env["BETTER_AUTH_URL"],
+  process.env["VERCEL_PROJECT_PRODUCTION_URL"] && `https://${process.env["VERCEL_PROJECT_PRODUCTION_URL"]}`,
+  process.env["VERCEL_URL"] && `https://${process.env["VERCEL_URL"]}`,
+  process.env["V0_RUNTIME_URL"],
+  process.env["V0_DEV_APP_URL"],
+  process.env["V0_BUILD_URL"],
+  process.env["V0_SANDBOX_URL"],
   "http://localhost:3000",
 ].filter((value): value is string => Boolean(value));
 
@@ -19,7 +19,7 @@ export const auth = betterAuth({
   emailAndPassword: { enabled: true },
   baseURL: originCandidates[0],
   trustedOrigins: [...new Set(originCandidates)],
-  ...(process.env.NODE_ENV === "development"
+  ...(process.env["NODE_ENV"] === "development"
     ? {
         advanced: {
           defaultCookieAttributes: {

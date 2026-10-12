@@ -134,7 +134,7 @@ const doctorIdParam = session?.user?.id ? `?ref=${encodeURIComponent(session.use
           access: "public",
           token: tokenResult.token,
           multipart: true,
-          contentType: selectedFile.type || undefined,
+          contentType: selectedFile.type || "application/octet-stream",
         });
         const metadataResponse = await fetch("/api/doctor-resources", {
           method: "POST",

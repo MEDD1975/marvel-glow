@@ -86,7 +86,6 @@ const specialtyToProfession: Record<string, Profession> = {
   Podologue: "Podologue",
   Ostéopathe: "Ostéopathe",
   Rhumatologue: "Rhumatologue",
-  "Chirurgien orthopédiste": "Chirurgien orthopédiste",
   "Imagerie médicale": "Imagerie médicale",
   "Médecin du sport": "Médecin du sport",
   Urgences: "Urgences",

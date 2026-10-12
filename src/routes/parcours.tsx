@@ -4,10 +4,10 @@ import { MedicalDisclaimer } from "@/components/HomeBlocks";
 import { LocalCareTimeline } from "@/components/LocalCareTimeline";
 import { conditions } from "@/lib/conditions";
 
-type ParcoursSearch = { pathway?: string; doctorName?: string };
+type ParcoursSearch = { pathway?: string | undefined; doctorName?: string | undefined };
 
 export const Route = createFileRoute("/parcours")({
-  validateSearch: (search: Record<string, unknown>): ParcoursSearch => ({ pathway: typeof search.pathway === "string" ? search.pathway : undefined, doctorName: typeof search.doctorName === "string" ? search.doctorName : undefined }),
+  validateSearch: (search: Record<string, unknown>): ParcoursSearch => ({ pathway: typeof search["pathway"] === "string" ? search["pathway"] : undefined, doctorName: typeof search["doctorName"] === "string" ? search["doctorName"] : undefined }),
   head: () => ({ meta: [{ title: "Votre parcours de soin — Kivoir" }, { name: "description", content: "Notez les professionnels de votre parcours de soin et accédez aux conseils utiles." }] }),
   component: ParcoursPage,
 });

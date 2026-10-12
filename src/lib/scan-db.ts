@@ -1,6 +1,6 @@
 import { Pool } from "pg";
 
-const pool = new Pool({ connectionString: process.env.DATABASE_URL ?? process.env.POSTGRES_URL });
+const pool = new Pool({ connectionString: process.env["DATABASE_URL"] ?? process.env["POSTGRES_URL"] });
 
 export type ScanStats = {
   total: number;

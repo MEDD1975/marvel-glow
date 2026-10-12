@@ -5,7 +5,7 @@ const emptyPractitioner = { name: "", profession: "", phone: "", email: "", addr
 
 function splitAddress(value: string) {
   const match = value.trim().match(/^(.*?)(?:,\s*)?(\d{5})\s+(.+)$/);
-  return match ? { street: match[1].trim(), postalCode: match[2], city: match[3].trim() } : { street: value.trim(), postalCode: "", city: "" };
+  return match ? { street: match[1]?.trim() ?? "", postalCode: match[2] ?? "", city: match[3]?.trim() ?? "" } : { street: value.trim(), postalCode: "", city: "" };
 }
 
 type Practitioner = typeof emptyPractitioner & { id?: string };

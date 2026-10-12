@@ -14,7 +14,7 @@ export function DoctorHome() {
         <p className="mx-auto mt-5 max-w-md text-pretty text-lg leading-8 text-muted-foreground md:text-xl">Préparez simplement les contenus et les ressources à partager avec vos patients.</p>
         <button
           type="button"
-          onClick={() => navigate({ to: "/cabinet/" })}
+          onClick={() => navigate({ to: "/cabinet" })}
           className="mt-9 inline-flex min-h-12 items-center justify-center rounded-xl bg-primary px-8 py-3 text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/20 transition hover:-translate-y-0.5 hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
         >
           Commencer

@@ -206,11 +206,6 @@ export default {
         await recordAnonymousScan(medecinId.trim().slice(0, 160), payload.parcoursId.trim().slice(0, 160));
         return Response.json({ ok: true }, { status: 201 });
       }
-      if (url.pathname === "/api/doctor/scan-stats" && request.method === "GET") {
-        const session = await auth.api.getSession({ headers: request.headers });
-        if (!session?.user) return Response.json({ error: "Unauthorized" }, { status: 401 });
-        return Response.json(await getScanStats(session.user.id));
-      }
       if (url.pathname === "/api/admin/scan-stats" && request.method === "GET") {
         const session = await auth.api.getSession({ headers: request.headers });
         const admins = (process.env.ADMIN_EMAILS ?? "").split(",").map((email) => email.trim().toLowerCase()).filter(Boolean);

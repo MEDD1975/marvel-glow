@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { AssistantHome, MedicalDisclaimer } from "@/components/HomeBlocks";
+import { PatientLanding } from "@/components/PatientLanding";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -21,15 +21,11 @@ export const Route = createFileRoute("/")({
 });
 
 function HomePage() {
-  const { started, pathway, doctorName } = Route.useSearch();
+  const { pathway, doctorName } = Route.useSearch();
 
   return (
-    <main className="flex flex-col items-stretch justify-start px-4 pt-6 pb-12 md:px-8 lg:pt-8">
-      <AssistantHome initialStarted={started || Boolean(pathway)} {...(pathway ? { pathway } : {})} {...(doctorName ? { doctorName } : {})} />
-      <section className="mx-auto w-full max-w-6xl pb-8">
-        <MedicalDisclaimer />
-      </section>
+    <main className="mx-auto w-full max-w-md px-4 pt-6 pb-12 md:max-w-xl">
+      <PatientLanding {...(pathway ? { pathway } : {})} {...(doctorName ? { doctorName } : {})} />
     </main>
   );
 }
-

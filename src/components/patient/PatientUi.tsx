@@ -36,17 +36,20 @@ export function ActionCard({
   title,
   description,
   tone,
+  search,
 }: {
   to: string;
   icon: LucideIcon;
   title: string;
   description: string;
   tone: Tone;
+  search?: Record<string, string> | undefined;
 }) {
   const classes = toneClasses[tone];
   return (
     <Link
       to={to}
+      {...(search ? { search } : {})}
       className={`flex min-h-16 items-center gap-3.5 rounded-2xl border px-4 py-3 transition-colors hover:brightness-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${classes.card}`}
     >
       <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${classes.icon}`}>

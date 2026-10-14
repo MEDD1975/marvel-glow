@@ -21,13 +21,13 @@ function PatientHome() {
     );
   }
   return (
-    <div className="flex flex-col gap-6">
-      <section aria-labelledby="pathway-title" className="rounded-2xl border border-border bg-card p-5">
-        <p className="flex items-center gap-1.5 text-sm font-medium text-tone-green-text">
+    <div className="flex flex-col gap-9">
+      <section aria-labelledby="pathway-title" className="rounded-3xl border border-border/60 bg-card p-5">
+        <p className="flex items-center gap-1.5 text-[13px] font-medium text-tone-green-text">
           <ShieldCheck className="h-4 w-4" aria-hidden="true" />
           {senderLabel}
         </p>
-        <h1 id="pathway-title" className="mt-3 text-balance text-3xl font-semibold leading-tight tracking-tight text-foreground">
+        <h1 id="pathway-title" className="mt-2.5 text-balance text-[1.75rem] font-semibold leading-tight tracking-tight text-foreground">
           {guide.name}
         </h1>
         <p className="mt-2 text-base leading-relaxed text-muted-foreground">
@@ -47,7 +47,7 @@ function PatientHome() {
         </Link>
       </section>
 
-      <nav aria-label="Rubriques du parcours" className="flex flex-col gap-3">
+      <nav aria-label="Rubriques du parcours" className="flex flex-col gap-2.5">
         <ActionCard to="/patient/recommandations" icon={BookOpen} tone="blue" title="Ce que je peux faire" description="Les recommandations de votre parcours" />
         <ActionCard to="/patient/surveiller" icon={AlertTriangle} tone="orange" title="Quand consulter rapidement" description="Les signes qui doivent vous alerter" />
         <ActionCard to="/patient/ressources" icon={FolderOpen} tone="violet" title="Mes ressources" description="Documents, vidéos et exercices" />

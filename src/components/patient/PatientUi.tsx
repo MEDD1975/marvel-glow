@@ -5,27 +5,27 @@ import { AlertTriangle, ArrowLeft, ChevronRight, Info, Loader2, RefreshCw, Searc
 export type Tone = "blue" | "green" | "orange" | "red" | "violet";
 
 const toneClasses: Record<Tone, { card: string; icon: string }> = {
-  blue: { card: "border-care/25 bg-tone-blue", icon: "bg-card text-care" },
-  green: { card: "border-tone-green-border/40 bg-tone-green", icon: "bg-card text-tone-green-text" },
-  orange: { card: "border-tone-orange-border/50 bg-tone-orange", icon: "bg-card text-tone-orange-text" },
-  red: { card: "border-tone-red-border/40 bg-tone-red", icon: "bg-card text-tone-red-text" },
-  violet: { card: "border-tone-violet-border/40 bg-tone-violet", icon: "bg-card text-tone-violet-text" },
+  blue: { card: "border-care/10 bg-tone-blue/70", icon: "bg-card/80 text-care" },
+  green: { card: "border-tone-green-border/20 bg-tone-green/70", icon: "bg-card/80 text-tone-green-text" },
+  orange: { card: "border-tone-orange-border/25 bg-tone-orange/70", icon: "bg-card/80 text-tone-orange-text" },
+  red: { card: "border-tone-red-border/30 bg-tone-red", icon: "bg-card/80 text-tone-red-text" },
+  violet: { card: "border-tone-violet-border/20 bg-tone-violet/70", icon: "bg-card/80 text-tone-violet-text" },
 };
 
 export function PageHeading({ title, description, back }: { title: string; description?: string | undefined; back?: { to: string; label: string } | undefined }) {
   return (
-    <div className="mb-5">
+    <div className="mb-7">
       {back ? (
         <Link
           to={back.to}
-          className="-ml-2 mb-3 inline-flex min-h-11 items-center gap-1.5 rounded-lg px-2 text-sm font-medium text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          className="-ml-2 mb-2 inline-flex min-h-11 items-center gap-1.5 rounded-lg px-2 text-sm font-medium text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
           <ArrowLeft className="h-4 w-4" aria-hidden="true" />
           {back.label}
         </Link>
       ) : null}
-      <h1 className="text-balance text-2xl font-semibold leading-tight tracking-tight text-foreground">{title}</h1>
-      {description ? <p className="mt-2 text-pretty text-base leading-relaxed text-muted-foreground">{description}</p> : null}
+      <h1 className="text-balance text-[1.625rem] font-semibold leading-tight tracking-tight text-foreground">{title}</h1>
+      {description ? <p className="mt-2 line-clamp-4 text-pretty text-[0.9375rem] leading-relaxed text-muted-foreground">{description}</p> : null}
     </div>
   );
 }
@@ -47,16 +47,16 @@ export function ActionCard({
   return (
     <Link
       to={to}
-      className={`flex min-h-20 items-center gap-4 rounded-2xl border p-4 transition-shadow hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${classes.card}`}
+      className={`flex min-h-16 items-center gap-3.5 rounded-2xl border px-4 py-3 transition-colors hover:brightness-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${classes.card}`}
     >
-      <span className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${classes.icon}`}>
+      <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${classes.icon}`}>
         <Icon className="h-5 w-5" aria-hidden="true" />
       </span>
       <span className="min-w-0 flex-1">
-        <span className="block text-base font-semibold text-foreground">{title}</span>
-        <span className="mt-0.5 block text-sm leading-snug text-muted-foreground">{description}</span>
+        <span className="block text-[0.9375rem] font-semibold leading-snug text-foreground">{title}</span>
+        <span className="mt-0.5 line-clamp-2 block text-sm leading-snug text-muted-foreground">{description}</span>
       </span>
-      <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground" aria-hidden="true" />
+      <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground/70" aria-hidden="true" />
     </Link>
   );
 }
@@ -71,16 +71,16 @@ export function ListRow({ to, params, title, description, leading }: { to: strin
       {leading}
       <span className="min-w-0 flex-1">
         <span className="block font-medium text-foreground">{title}</span>
-        {description ? <span className="mt-0.5 block text-sm leading-snug text-muted-foreground">{description}</span> : null}
+        {description ? <span className="mt-0.5 line-clamp-2 block text-sm leading-snug text-muted-foreground">{description}</span> : null}
       </span>
-      <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground" aria-hidden="true" />
+      <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground/70" aria-hidden="true" />
     </Link>
   );
 }
 
 export function ListGroup({ children, label }: { children: ReactNode; label?: string }) {
   return (
-    <ul aria-label={label} className="divide-y divide-border overflow-hidden rounded-2xl border border-border bg-card">
+    <ul aria-label={label} className="divide-y divide-border/70 overflow-hidden rounded-2xl border border-border/70 bg-card">
       {children}
     </ul>
   );
@@ -164,5 +164,5 @@ export function FreeChoiceNotice() {
 }
 
 export function SectionTitle({ children }: { children: ReactNode }) {
-  return <h2 className="mb-3 mt-8 text-sm font-semibold uppercase tracking-wide text-muted-foreground">{children}</h2>;
+  return <h2 className="mb-3 mt-10 text-xs font-semibold uppercase tracking-wider text-muted-foreground">{children}</h2>;
 }

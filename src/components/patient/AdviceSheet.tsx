@@ -10,7 +10,7 @@ export function AdviceSheet() {
   const cabinetHref = phoneHref(cabinetPhone);
   return (
     <Sheet>
-      <SheetTrigger className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border border-border bg-card px-4 text-base font-semibold text-foreground hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+      <SheetTrigger className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border border-border/70 bg-card px-4 text-[0.9375rem] font-semibold text-foreground hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
         <MessageCircleQuestion className="h-5 w-5 text-care" aria-hidden="true" />
         Demander un avis
       </SheetTrigger>

@@ -49,7 +49,7 @@ function ProfessionalsPage() {
             aria-pressed={category === item}
             onClick={() => setCategory(item)}
             className={`min-h-10 shrink-0 rounded-full border px-4 text-sm font-medium transition-colors ${
-              category === item ? "border-primary bg-primary text-primary-foreground" : "border-border bg-card text-foreground hover:bg-accent"
+              category === item ? "border-care/30 bg-tone-blue text-care" : "border-border/70 bg-card text-foreground hover:bg-accent"
             }`}
           >
             {item}

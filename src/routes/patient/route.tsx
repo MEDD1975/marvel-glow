@@ -18,7 +18,7 @@ function PatientLayout() {
     <PatientProvider search={search}>
       <div className="min-h-dvh bg-background">
         <KivoirHeader />
-        <main className="mx-auto max-w-2xl px-4 pb-[calc(env(safe-area-inset-bottom)+6rem)] pt-5">
+        <main className="mx-auto max-w-2xl pb-[calc(env(safe-area-inset-bottom)+6.5rem)] pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))] pt-6">
           <Outlet />
         </main>
         <BottomNavigation />

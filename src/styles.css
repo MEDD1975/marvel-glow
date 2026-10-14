@@ -47,6 +47,20 @@
   --color-urgent-foreground: var(--urgent-foreground);
   --color-soothe: var(--soothe);
   --color-soothe-foreground: var(--soothe-foreground);
+
+  --color-tone-green: var(--doctor-bg);
+  --color-tone-green-border: var(--doctor-border);
+  --color-tone-green-text: var(--doctor-text);
+  --color-tone-orange: var(--caution-bg);
+  --color-tone-orange-border: var(--caution-border);
+  --color-tone-orange-text: var(--caution-text);
+  --color-tone-red: var(--alert-bg);
+  --color-tone-red-border: var(--alert-border);
+  --color-tone-red-text: var(--alert-text);
+  --color-tone-violet: var(--violet-bg);
+  --color-tone-violet-border: var(--violet-border);
+  --color-tone-violet-text: var(--violet-text);
+  --color-tone-blue: var(--care-muted);
 }
 
 :root {
@@ -68,6 +82,9 @@
   --caution-bg: #FFF6E5;
   --caution-border: #F0A92E;
   --caution-text: #7A4B00;
+  --violet-bg: #F3F0FF;
+  --violet-border: #8B7CF6;
+  --violet-text: #4C3A9E;
 
   --background: var(--bg-page);
   --foreground: var(--text-primary);
@@ -114,6 +131,9 @@
   --caution-bg: #46351A;
   --caution-border: #F6C35B;
   --caution-text: #FFE6AD;
+  --violet-bg: #272046;
+  --violet-border: #A79BFA;
+  --violet-text: #DCD6FF;
 }
 
 @layer base {

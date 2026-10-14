@@ -16,11 +16,25 @@ import { Route as ConnexionMedecinRouteImport } from './routes/connexion-medecin
 import { Route as ConseilsRouteImport } from './routes/conseils'
 import { Route as OrientationRouteImport } from './routes/orientation'
 import { Route as ParcoursRouteImport } from './routes/parcours'
+import { Route as PatientRouteRouteImport } from './routes/patient/route'
 import { Route as SuiviRouteImport } from './routes/suivi'
 import { Route as AdminStatsRouteImport } from './routes/admin/stats'
 import { Route as CabinetIndexRouteImport } from './routes/cabinet/index'
 import { Route as CabinetAccueilRouteImport } from './routes/cabinet/accueil'
 import { Route as PPathologieRouteImport } from './routes/p/$pathologie'
+import { Route as PatientIndexRouteImport } from './routes/patient/index'
+import { Route as PatientFaqRouteImport } from './routes/patient/faq'
+import { Route as PatientParcoursRouteImport } from './routes/patient/parcours'
+import { Route as PatientSurveillerRouteImport } from './routes/patient/surveiller'
+import { Route as PatientInfosPageRouteImport } from './routes/patient/infos/$page'
+import { Route as PatientProfessionnelsIndexRouteImport } from './routes/patient/professionnels/index'
+import { Route as PatientProfessionnelsProIdRouteImport } from './routes/patient/professionnels/$proId'
+import { Route as PatientRecommandationsIndexRouteImport } from './routes/patient/recommandations/index'
+import { Route as PatientRecommandationsRecoIdRouteImport } from './routes/patient/recommandations/$recoId'
+import { Route as PatientRessourcesIndexRouteImport } from './routes/patient/ressources/index'
+import { Route as PatientRessourcesDocumentsRouteImport } from './routes/patient/ressources/documents'
+import { Route as PatientRessourcesExercicesRouteImport } from './routes/patient/ressources/exercices'
+import { Route as PatientRessourcesVideosRouteImport } from './routes/patient/ressources/videos'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -57,6 +71,11 @@ const ParcoursRoute = ParcoursRouteImport.update({
   path: '/parcours',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PatientRouteRoute = PatientRouteRouteImport.update({
+  id: '/patient',
+  path: '/patient',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SuiviRoute = SuiviRouteImport.update({
   id: '/suivi',
   path: '/suivi',
@@ -82,10 +101,82 @@ const PPathologieRoute = PPathologieRouteImport.update({
   path: '/p/$pathologie',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PatientIndexRoute = PatientIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => PatientRouteRoute,
+} as any)
+const PatientFaqRoute = PatientFaqRouteImport.update({
+  id: '/faq',
+  path: '/faq',
+  getParentRoute: () => PatientRouteRoute,
+} as any)
+const PatientParcoursRoute = PatientParcoursRouteImport.update({
+  id: '/parcours',
+  path: '/parcours',
+  getParentRoute: () => PatientRouteRoute,
+} as any)
+const PatientSurveillerRoute = PatientSurveillerRouteImport.update({
+  id: '/surveiller',
+  path: '/surveiller',
+  getParentRoute: () => PatientRouteRoute,
+} as any)
+const PatientInfosPageRoute = PatientInfosPageRouteImport.update({
+  id: '/infos/$page',
+  path: '/infos/$page',
+  getParentRoute: () => PatientRouteRoute,
+} as any)
+const PatientProfessionnelsIndexRoute =
+  PatientProfessionnelsIndexRouteImport.update({
+    id: '/professionnels/',
+    path: '/professionnels/',
+    getParentRoute: () => PatientRouteRoute,
+  } as any)
+const PatientProfessionnelsProIdRoute =
+  PatientProfessionnelsProIdRouteImport.update({
+    id: '/professionnels/$proId',
+    path: '/professionnels/$proId',
+    getParentRoute: () => PatientRouteRoute,
+  } as any)
+const PatientRecommandationsIndexRoute =
+  PatientRecommandationsIndexRouteImport.update({
+    id: '/recommandations/',
+    path: '/recommandations/',
+    getParentRoute: () => PatientRouteRoute,
+  } as any)
+const PatientRecommandationsRecoIdRoute =
+  PatientRecommandationsRecoIdRouteImport.update({
+    id: '/recommandations/$recoId',
+    path: '/recommandations/$recoId',
+    getParentRoute: () => PatientRouteRoute,
+  } as any)
+const PatientRessourcesIndexRoute = PatientRessourcesIndexRouteImport.update({
+  id: '/ressources/',
+  path: '/ressources/',
+  getParentRoute: () => PatientRouteRoute,
+} as any)
+const PatientRessourcesDocumentsRoute =
+  PatientRessourcesDocumentsRouteImport.update({
+    id: '/ressources/documents',
+    path: '/ressources/documents',
+    getParentRoute: () => PatientRouteRoute,
+  } as any)
+const PatientRessourcesExercicesRoute =
+  PatientRessourcesExercicesRouteImport.update({
+    id: '/ressources/exercices',
+    path: '/ressources/exercices',
+    getParentRoute: () => PatientRouteRoute,
+  } as any)
+const PatientRessourcesVideosRoute = PatientRessourcesVideosRouteImport.update({
+  id: '/ressources/videos',
+  path: '/ressources/videos',
+  getParentRoute: () => PatientRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/cabinet': typeof CabinetRouteRouteWithChildren
+  '/patient': typeof PatientRouteRouteWithChildren
   '/annuaire': typeof AnnuaireRoute
   '/connexion-medecin': typeof ConnexionMedecinRoute
   '/conseils': typeof ConseilsRoute
@@ -95,7 +186,20 @@ export interface FileRoutesByFullPath {
   '/admin/stats': typeof AdminStatsRoute
   '/cabinet/accueil': typeof CabinetAccueilRoute
   '/p/$pathologie': typeof PPathologieRoute
+  '/patient/faq': typeof PatientFaqRoute
+  '/patient/parcours': typeof PatientParcoursRoute
+  '/patient/surveiller': typeof PatientSurveillerRoute
   '/cabinet/': typeof CabinetIndexRoute
+  '/patient/': typeof PatientIndexRoute
+  '/patient/infos/$page': typeof PatientInfosPageRoute
+  '/patient/professionnels/$proId': typeof PatientProfessionnelsProIdRoute
+  '/patient/recommandations/$recoId': typeof PatientRecommandationsRecoIdRoute
+  '/patient/ressources/documents': typeof PatientRessourcesDocumentsRoute
+  '/patient/ressources/exercices': typeof PatientRessourcesExercicesRoute
+  '/patient/ressources/videos': typeof PatientRessourcesVideosRoute
+  '/patient/professionnels/': typeof PatientProfessionnelsIndexRoute
+  '/patient/recommandations/': typeof PatientRecommandationsIndexRoute
+  '/patient/ressources/': typeof PatientRessourcesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -108,12 +212,26 @@ export interface FileRoutesByTo {
   '/admin/stats': typeof AdminStatsRoute
   '/cabinet/accueil': typeof CabinetAccueilRoute
   '/p/$pathologie': typeof PPathologieRoute
+  '/patient/faq': typeof PatientFaqRoute
+  '/patient/parcours': typeof PatientParcoursRoute
+  '/patient/surveiller': typeof PatientSurveillerRoute
   '/cabinet': typeof CabinetIndexRoute
+  '/patient': typeof PatientIndexRoute
+  '/patient/infos/$page': typeof PatientInfosPageRoute
+  '/patient/professionnels/$proId': typeof PatientProfessionnelsProIdRoute
+  '/patient/recommandations/$recoId': typeof PatientRecommandationsRecoIdRoute
+  '/patient/ressources/documents': typeof PatientRessourcesDocumentsRoute
+  '/patient/ressources/exercices': typeof PatientRessourcesExercicesRoute
+  '/patient/ressources/videos': typeof PatientRessourcesVideosRoute
+  '/patient/professionnels': typeof PatientProfessionnelsIndexRoute
+  '/patient/recommandations': typeof PatientRecommandationsIndexRoute
+  '/patient/ressources': typeof PatientRessourcesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/cabinet': typeof CabinetRouteRouteWithChildren
+  '/patient': typeof PatientRouteRouteWithChildren
   '/annuaire': typeof AnnuaireRoute
   '/connexion-medecin': typeof ConnexionMedecinRoute
   '/conseils': typeof ConseilsRoute
@@ -123,13 +241,27 @@ export interface FileRoutesById {
   '/admin/stats': typeof AdminStatsRoute
   '/cabinet/accueil': typeof CabinetAccueilRoute
   '/p/$pathologie': typeof PPathologieRoute
+  '/patient/faq': typeof PatientFaqRoute
+  '/patient/parcours': typeof PatientParcoursRoute
+  '/patient/surveiller': typeof PatientSurveillerRoute
   '/cabinet/': typeof CabinetIndexRoute
+  '/patient/': typeof PatientIndexRoute
+  '/patient/infos/$page': typeof PatientInfosPageRoute
+  '/patient/professionnels/$proId': typeof PatientProfessionnelsProIdRoute
+  '/patient/recommandations/$recoId': typeof PatientRecommandationsRecoIdRoute
+  '/patient/ressources/documents': typeof PatientRessourcesDocumentsRoute
+  '/patient/ressources/exercices': typeof PatientRessourcesExercicesRoute
+  '/patient/ressources/videos': typeof PatientRessourcesVideosRoute
+  '/patient/professionnels/': typeof PatientProfessionnelsIndexRoute
+  '/patient/recommandations/': typeof PatientRecommandationsIndexRoute
+  '/patient/ressources/': typeof PatientRessourcesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/cabinet'
+    | '/patient'
     | '/annuaire'
     | '/connexion-medecin'
     | '/conseils'
@@ -139,7 +271,20 @@ export interface FileRouteTypes {
     | '/admin/stats'
     | '/cabinet/accueil'
     | '/p/$pathologie'
+    | '/patient/faq'
+    | '/patient/parcours'
+    | '/patient/surveiller'
     | '/cabinet/'
+    | '/patient/'
+    | '/patient/infos/$page'
+    | '/patient/professionnels/$proId'
+    | '/patient/recommandations/$recoId'
+    | '/patient/ressources/documents'
+    | '/patient/ressources/exercices'
+    | '/patient/ressources/videos'
+    | '/patient/professionnels/'
+    | '/patient/recommandations/'
+    | '/patient/ressources/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -152,11 +297,25 @@ export interface FileRouteTypes {
     | '/admin/stats'
     | '/cabinet/accueil'
     | '/p/$pathologie'
+    | '/patient/faq'
+    | '/patient/parcours'
+    | '/patient/surveiller'
     | '/cabinet'
+    | '/patient'
+    | '/patient/infos/$page'
+    | '/patient/professionnels/$proId'
+    | '/patient/recommandations/$recoId'
+    | '/patient/ressources/documents'
+    | '/patient/ressources/exercices'
+    | '/patient/ressources/videos'
+    | '/patient/professionnels'
+    | '/patient/recommandations'
+    | '/patient/ressources'
   id:
     | '__root__'
     | '/'
     | '/cabinet'
+    | '/patient'
     | '/annuaire'
     | '/connexion-medecin'
     | '/conseils'
@@ -166,12 +325,26 @@ export interface FileRouteTypes {
     | '/admin/stats'
     | '/cabinet/accueil'
     | '/p/$pathologie'
+    | '/patient/faq'
+    | '/patient/parcours'
+    | '/patient/surveiller'
     | '/cabinet/'
+    | '/patient/'
+    | '/patient/infos/$page'
+    | '/patient/professionnels/$proId'
+    | '/patient/recommandations/$recoId'
+    | '/patient/ressources/documents'
+    | '/patient/ressources/exercices'
+    | '/patient/ressources/videos'
+    | '/patient/professionnels/'
+    | '/patient/recommandations/'
+    | '/patient/ressources/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CabinetRouteRoute: typeof CabinetRouteRouteWithChildren
+  PatientRouteRoute: typeof PatientRouteRouteWithChildren
   AnnuaireRoute: typeof AnnuaireRoute
   ConnexionMedecinRoute: typeof ConnexionMedecinRoute
   ConseilsRoute: typeof ConseilsRoute
@@ -233,6 +406,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ParcoursRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/patient': {
+      id: '/patient'
+      path: '/patient'
+      fullPath: '/patient'
+      preLoaderRoute: typeof PatientRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/suivi': {
       id: '/suivi'
       path: '/suivi'
@@ -268,6 +448,97 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PPathologieRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/patient/': {
+      id: '/patient/'
+      path: '/'
+      fullPath: '/patient/'
+      preLoaderRoute: typeof PatientIndexRouteImport
+      parentRoute: typeof PatientRouteRoute
+    }
+    '/patient/faq': {
+      id: '/patient/faq'
+      path: '/faq'
+      fullPath: '/patient/faq'
+      preLoaderRoute: typeof PatientFaqRouteImport
+      parentRoute: typeof PatientRouteRoute
+    }
+    '/patient/parcours': {
+      id: '/patient/parcours'
+      path: '/parcours'
+      fullPath: '/patient/parcours'
+      preLoaderRoute: typeof PatientParcoursRouteImport
+      parentRoute: typeof PatientRouteRoute
+    }
+    '/patient/surveiller': {
+      id: '/patient/surveiller'
+      path: '/surveiller'
+      fullPath: '/patient/surveiller'
+      preLoaderRoute: typeof PatientSurveillerRouteImport
+      parentRoute: typeof PatientRouteRoute
+    }
+    '/patient/infos/$page': {
+      id: '/patient/infos/$page'
+      path: '/infos/$page'
+      fullPath: '/patient/infos/$page'
+      preLoaderRoute: typeof PatientInfosPageRouteImport
+      parentRoute: typeof PatientRouteRoute
+    }
+    '/patient/professionnels/': {
+      id: '/patient/professionnels/'
+      path: '/professionnels'
+      fullPath: '/patient/professionnels/'
+      preLoaderRoute: typeof PatientProfessionnelsIndexRouteImport
+      parentRoute: typeof PatientRouteRoute
+    }
+    '/patient/professionnels/$proId': {
+      id: '/patient/professionnels/$proId'
+      path: '/professionnels/$proId'
+      fullPath: '/patient/professionnels/$proId'
+      preLoaderRoute: typeof PatientProfessionnelsProIdRouteImport
+      parentRoute: typeof PatientRouteRoute
+    }
+    '/patient/recommandations/': {
+      id: '/patient/recommandations/'
+      path: '/recommandations'
+      fullPath: '/patient/recommandations/'
+      preLoaderRoute: typeof PatientRecommandationsIndexRouteImport
+      parentRoute: typeof PatientRouteRoute
+    }
+    '/patient/recommandations/$recoId': {
+      id: '/patient/recommandations/$recoId'
+      path: '/recommandations/$recoId'
+      fullPath: '/patient/recommandations/$recoId'
+      preLoaderRoute: typeof PatientRecommandationsRecoIdRouteImport
+      parentRoute: typeof PatientRouteRoute
+    }
+    '/patient/ressources/': {
+      id: '/patient/ressources/'
+      path: '/ressources'
+      fullPath: '/patient/ressources/'
+      preLoaderRoute: typeof PatientRessourcesIndexRouteImport
+      parentRoute: typeof PatientRouteRoute
+    }
+    '/patient/ressources/documents': {
+      id: '/patient/ressources/documents'
+      path: '/ressources/documents'
+      fullPath: '/patient/ressources/documents'
+      preLoaderRoute: typeof PatientRessourcesDocumentsRouteImport
+      parentRoute: typeof PatientRouteRoute
+    }
+    '/patient/ressources/exercices': {
+      id: '/patient/ressources/exercices'
+      path: '/ressources/exercices'
+      fullPath: '/patient/ressources/exercices'
+      preLoaderRoute: typeof PatientRessourcesExercicesRouteImport
+      parentRoute: typeof PatientRouteRoute
+    }
+    '/patient/ressources/videos': {
+      id: '/patient/ressources/videos'
+      path: '/ressources/videos'
+      fullPath: '/patient/ressources/videos'
+      preLoaderRoute: typeof PatientRessourcesVideosRouteImport
+      parentRoute: typeof PatientRouteRoute
+    }
   }
 }
 
@@ -285,9 +556,46 @@ const CabinetRouteRouteWithChildren = CabinetRouteRoute._addFileChildren(
   CabinetRouteRouteChildren,
 )
 
+interface PatientRouteRouteChildren {
+  PatientFaqRoute: typeof PatientFaqRoute
+  PatientParcoursRoute: typeof PatientParcoursRoute
+  PatientSurveillerRoute: typeof PatientSurveillerRoute
+  PatientIndexRoute: typeof PatientIndexRoute
+  PatientInfosPageRoute: typeof PatientInfosPageRoute
+  PatientProfessionnelsProIdRoute: typeof PatientProfessionnelsProIdRoute
+  PatientRecommandationsRecoIdRoute: typeof PatientRecommandationsRecoIdRoute
+  PatientRessourcesDocumentsRoute: typeof PatientRessourcesDocumentsRoute
+  PatientRessourcesExercicesRoute: typeof PatientRessourcesExercicesRoute
+  PatientRessourcesVideosRoute: typeof PatientRessourcesVideosRoute
+  PatientProfessionnelsIndexRoute: typeof PatientProfessionnelsIndexRoute
+  PatientRecommandationsIndexRoute: typeof PatientRecommandationsIndexRoute
+  PatientRessourcesIndexRoute: typeof PatientRessourcesIndexRoute
+}
+
+const PatientRouteRouteChildren: PatientRouteRouteChildren = {
+  PatientFaqRoute: PatientFaqRoute,
+  PatientParcoursRoute: PatientParcoursRoute,
+  PatientSurveillerRoute: PatientSurveillerRoute,
+  PatientIndexRoute: PatientIndexRoute,
+  PatientInfosPageRoute: PatientInfosPageRoute,
+  PatientProfessionnelsProIdRoute: PatientProfessionnelsProIdRoute,
+  PatientRecommandationsRecoIdRoute: PatientRecommandationsRecoIdRoute,
+  PatientRessourcesDocumentsRoute: PatientRessourcesDocumentsRoute,
+  PatientRessourcesExercicesRoute: PatientRessourcesExercicesRoute,
+  PatientRessourcesVideosRoute: PatientRessourcesVideosRoute,
+  PatientProfessionnelsIndexRoute: PatientProfessionnelsIndexRoute,
+  PatientRecommandationsIndexRoute: PatientRecommandationsIndexRoute,
+  PatientRessourcesIndexRoute: PatientRessourcesIndexRoute,
+}
+
+const PatientRouteRouteWithChildren = PatientRouteRoute._addFileChildren(
+  PatientRouteRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CabinetRouteRoute: CabinetRouteRouteWithChildren,
+  PatientRouteRoute: PatientRouteRouteWithChildren,
   AnnuaireRoute: AnnuaireRoute,
   ConnexionMedecinRoute: ConnexionMedecinRoute,
   ConseilsRoute: ConseilsRoute,

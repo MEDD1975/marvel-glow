@@ -213,7 +213,7 @@ export default {
         return Response.json(await getScanStats());
       }
       if (url.pathname === "/api/public-networks" && request.method === "GET") {
-        const networks = await getPublicDoctorNetworks();
+        const networks = await getPublicDoctorNetworks(url.searchParams.get("owner")?.trim().slice(0, 160) || undefined);
         const requestedId = url.searchParams.get("id");
         return Response.json(requestedId ? networks.filter((network) => network.id === requestedId) : networks);
       }

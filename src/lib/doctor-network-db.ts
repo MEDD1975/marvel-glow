@@ -41,14 +41,15 @@ export async function getDoctorNetwork(userId: string) {
   return { ...network, practitioners: practitioners.rows } satisfies DoctorNetworkRecord;
 }
 
-export async function getPublicDoctorNetworks() {
+export async function getPublicDoctorNetworks(ownerId?: string) {
+  const ownerFilter = ownerId ? ' AND n."ownerId" = $2' : "";
   const networkResult = await pool.query<{
     id: string;
     name: string;
     address: string;
     phone: string | null;
     ownerName: string | null;
-  }>('SELECT n."id", n."name", n."address", n."phone", u."name" AS "ownerName" FROM "doctor_network" n LEFT JOIN "user" u ON u."id" = n."ownerId" WHERE n."status" NOT IN ($1) ORDER BY n."createdAt" DESC', ["archived"]);
+  }>(`SELECT n."id", n."name", n."address", n."phone", u."name" AS "ownerName" FROM "doctor_network" n LEFT JOIN "user" u ON u."id" = n."ownerId" WHERE n."status" NOT IN ($1)${ownerFilter} ORDER BY n."createdAt" DESC`, ownerId ? ["archived", ownerId] : ["archived"]);
 
   const networks = [];
   for (const network of networkResult.rows) {

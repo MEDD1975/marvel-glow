@@ -4,6 +4,7 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
+  useLocation,
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
@@ -78,7 +79,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   head: () => ({
     meta: [
       { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1" },
+      { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
       { title: "Kivoir" },
       { name: "description", content: "Kivoir aide les patients à comprendre leur parcours de soin, préparer leurs échanges et retrouver la prochaine étape avec leur professionnel." },
       { name: "author", content: "Kivoir" },
@@ -122,9 +123,10 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const isPatientSpace = useLocation().pathname.startsWith("/patient");
   return (
     <QueryClientProvider client={queryClient}>
-      <Header />
+      {isPatientSpace ? null : <Header />}
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <Outlet />
     </QueryClientProvider>

@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Navigate } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { conditions } from "@/lib/conditions";
 import { ParcoursPageContent } from "@/components/ParcoursPageContent";
@@ -23,5 +23,12 @@ function PublicPathwayPage() {
     }).catch(() => undefined);
   }, [condition, medecinId, pathologie]);
 
-  return <ParcoursPageContent pathway={pathologie} />;
+  if (!condition) return <ParcoursPageContent pathway={pathologie} />;
+  return (
+    <Navigate
+      to="/patient"
+      replace
+      search={{ pathway: pathologie, ...(medecinId ? { ref: medecinId } : {}), ...(search.doctorName ? { doctorName: search.doctorName } : {}) } as never}
+    />
+  );
 }

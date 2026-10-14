@@ -73,7 +73,7 @@ function toCabinets(networks: PublicNetwork[]): Cabinet[] {
     });
     return {
       id: network.id,
-      name: network.ownerName ? `Réseau du ${network.ownerName}` : (network.name || "Réseau professionnel"),
+      name: network.ownerName ? `Professionnels recommandés par le ${network.ownerName}` : (network.name || "Professionnels recommandés"),
       searchNames: [network.ownerName, network.name].filter((value): value is string => Boolean(value)),
       providers: dynamicProviders,
     };
@@ -204,15 +204,15 @@ function CabinetChooser({ invalidId, profession, doctor }: { invalidId?: string;
       </Link>
       <div className="rounded-2xl border border-border bg-card p-6 shadow-sm md:p-8">
         <span className="inline-flex rounded-full bg-care/10 px-3 py-1 text-xs font-semibold text-care">
-          Réseau professionnel
+          Professionnels recommandés
         </span>
         <h1 className="mt-4 text-2xl font-semibold text-balance text-foreground md:text-3xl">
-          {invalidId ? "Ce cabinet n’est pas disponible" : "Retrouvez le réseau de votre médecin"}
+          {invalidId ? "Ce cabinet n’est pas disponible" : "Retrouvez les professionnels recommandés par votre médecin"}
         </h1>
         <p className="mt-2 max-w-xl leading-6 text-muted-foreground">
           {invalidId
-            ? `L’identifiant « ${invalidId} » ne correspond à aucun cabinet. Saisissez le nom de votre médecin pour retrouver son réseau professionnel.`
-            : "Entrez le nom de votre médecin pour afficher son réseau professionnel et les professionnels qui y sont présentés."}
+            ? `L’identifiant « ${invalidId} » ne correspond à aucun cabinet. Saisissez le nom de votre médecin pour retrouver les professionnels qu’il recommande.`
+            : "Entrez le nom de votre médecin pour afficher les professionnels qu’il recommande."}
         </p>
 
         <form className="mt-6" onSubmit={handleSubmit}>
@@ -342,7 +342,7 @@ function CabinetChooser({ invalidId, profession, doctor }: { invalidId?: string;
       </p>
 
       <section className="mt-6">
-        <h2 className="text-lg font-semibold text-foreground">Réseau professionnel</h2>
+        <h2 className="text-lg font-semibold text-foreground">Professionnels recommandés</h2>
         <div className="mt-3 flex flex-wrap gap-2">
           <button
             onClick={() => setProfessionFilter(null)}

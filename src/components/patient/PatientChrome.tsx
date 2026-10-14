@@ -25,6 +25,10 @@ const menuGroups: Array<{ label: string; items: Array<{ to: string; label: strin
       { to: "/patient/infos/accessibilite", label: "Accessibilité" },
     ],
   },
+  {
+    label: "Professionnels de santé",
+    items: [{ to: "/cabinet", label: "Espace professionnel de santé" }],
+  },
 ];
 
 export function KivoirHeader() {

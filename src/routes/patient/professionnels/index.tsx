@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { Search } from "lucide-react";
 import { useProfessionals } from "@/components/patient/PatientProvider";
-import { EmptyState, ListGroup, ListRow, LoadingState, PageHeading } from "@/components/patient/PatientUi";
+import { EmptyState, ErrorState, FreeChoiceNotice, ListGroup, ListRow, LoadingState, PageHeading } from "@/components/patient/PatientUi";
 
 export const Route = createFileRoute("/patient/professionnels/")({
   component: ProfessionalsPage,
@@ -13,7 +13,7 @@ function normalize(value: string) {
 }
 
 function ProfessionalsPage() {
-  const { isLoading, fromCabinet, professionals } = useProfessionals();
+  const { isLoading, isError, retry, fromCabinet, professionals } = useProfessionals();
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<string>("Tous");
 
@@ -57,6 +57,11 @@ function ProfessionalsPage() {
         ))}
       </div>
       <div className="mt-4">
+        {isError ? (
+          <div className="mb-4">
+            <ErrorState message="Les professionnels de votre cabinet n'ont pas pu être chargés. L'annuaire de démonstration est affiché." onRetry={retry} />
+          </div>
+        ) : null}
         {isLoading ? (
           <LoadingState label="Chargement des professionnels…" />
         ) : filtered.length ? (
@@ -81,7 +86,8 @@ function ProfessionalsPage() {
           <EmptyState title="Aucun professionnel trouvé" description="Modifiez votre recherche ou le filtre." />
         )}
       </div>
-      <p className="mt-6 text-sm text-muted-foreground">Kivoir ne prend pas de rendez-vous : contactez directement le professionnel.</p>
+      <FreeChoiceNotice />
+      <p className="mt-3 text-sm text-muted-foreground">Kivoir ne prend pas de rendez-vous : contactez directement le professionnel.</p>
     </div>
   );
 }

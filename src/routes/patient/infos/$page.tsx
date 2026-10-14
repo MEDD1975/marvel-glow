@@ -19,14 +19,14 @@ const pages: Record<string, { title: string; paragraphs: string[] }> = {
   confidentialite: {
     title: "Confidentialité",
     paragraphs: [
-      "Kivoir ne collecte ni votre nom, ni vos coordonnées, ni vos symptômes.",
-      "Le parcours ouvert est mémorisé uniquement sur votre appareil. Un comptage anonyme des scans de QR code permet d'améliorer le service.",
+      "L'espace patient ne vous demande ni votre nom, ni vos coordonnées, ni vos symptômes.",
+      "Le parcours ouvert est mémorisé sur votre appareil. Chaque scan de QR code est comptabilisé (cabinet et parcours concernés, sans information sur le patient).",
     ],
   },
   accessibilite: {
     title: "Accessibilité",
     paragraphs: [
-      "L'espace patient est conçu pour être lisible sur mobile, utilisable au clavier et compatible avec les lecteurs d'écran.",
+      "L'espace patient a été pensé pour être lisible sur mobile et utilisable au clavier. Aucun audit d'accessibilité officiel n'a encore été réalisé.",
       "Vous pouvez agrandir le texte depuis les réglages de votre téléphone ou de votre navigateur.",
     ],
   },

@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Mail, MapPin, Phone } from "lucide-react";
 import { useProfessionals } from "@/components/patient/PatientProvider";
-import { EmptyState, LoadingState, PageHeading } from "@/components/patient/PatientUi";
+import { EmptyState, FreeChoiceNotice, LoadingState, PageHeading } from "@/components/patient/PatientUi";
 import { formatPhone, mapsHref, phoneHref } from "@/lib/typography";
 
 export const Route = createFileRoute("/patient/professionnels/$proId")({
@@ -70,6 +70,7 @@ function ProfessionalDetail() {
           </a>
         ) : null}
       </div>
+      <FreeChoiceNotice />
     </article>
   );
 }

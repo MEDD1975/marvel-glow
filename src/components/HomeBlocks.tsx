@@ -69,7 +69,7 @@ export function AssistantHome({ initialStarted = false, pathway, doctorName }: {
             Accès transmis par votre médecin
           </span>
           <span className="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-primary/5 px-3 py-1.5 text-xs font-semibold text-primary">
-            Réseau professionnel
+            Professionnels recommandés
           </span>
         </div>
         <h1 className="mt-2 text-balance text-2xl font-semibold tracking-[-0.02em] text-foreground md:text-3xl lg:text-4xl">
@@ -99,9 +99,9 @@ export function AssistantHome({ initialStarted = false, pathway, doctorName }: {
             <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-muted text-foreground shadow-sm">
               <MapPin className="h-6 w-6" aria-hidden="true" />
             </span>
-            <span className="mt-5 text-xs font-semibold uppercase tracking-[0.12em] text-care">RÉSEAU PROFESSIONNEL</span>
-            <span className="mt-1.5 text-lg font-semibold text-foreground">Consulter le réseau professionnel</span>
-            <span className="mt-2 flex-1 text-sm leading-6 text-muted-foreground">Retrouvez les professionnels de santé de votre réseau.</span>
+            <span className="mt-5 text-xs font-semibold uppercase tracking-[0.12em] text-care">PROFESSIONNELS RECOMMANDÉS</span>
+            <span className="mt-1.5 text-lg font-semibold text-foreground">Consulter les professionnels recommandés</span>
+            <span className="mt-2 flex-1 text-sm leading-6 text-muted-foreground">Retrouvez les professionnels de santé recommandés par votre cabinet.</span>
             <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-care">Voir l&apos;annuaire <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" /></span>
           </Link>
 

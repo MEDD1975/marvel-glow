@@ -139,9 +139,10 @@ export function categoryOf(specialty: string): string {
 }
 
 /** Professionnels communiqués par le cabinet, ou à défaut l'annuaire local de démonstration. */
-export function useProfessionals(): { isLoading: boolean; isError: boolean; fromCabinet: boolean; professionals: PatientProfessional[] } {
+export function useProfessionals(): { isLoading: boolean; isError: boolean; retry: () => void; fromCabinet: boolean; professionals: PatientProfessional[] } {
   const { context, ready } = usePatient();
   const network = usePublicNetwork(context.doctorId);
+  const retry = () => void network.refetch();
   const cabinetPros: PatientProfessional[] = (network.data?.practitioners ?? []).map((item) => ({
     id: item.id,
     name: item.name.trim(),
@@ -152,7 +153,7 @@ export function useProfessionals(): { isLoading: boolean; isError: boolean; from
     email: item.email ?? undefined,
   }));
   if (cabinetPros.length) {
-    return { isLoading: false, isError: false, fromCabinet: true, professionals: cabinetPros };
+    return { isLoading: false, isError: false, retry, fromCabinet: true, professionals: cabinetPros };
   }
   const local: PatientProfessional[] = cabinets.flatMap((cabinet) =>
     cabinet.providers.map((provider) => ({
@@ -167,7 +168,8 @@ export function useProfessionals(): { isLoading: boolean; isError: boolean; from
   );
   return {
     isLoading: !ready || network.isLoading,
-    isError: false,
+    isError: network.isError,
+    retry,
     fromCabinet: false,
     professionals: local,
   };

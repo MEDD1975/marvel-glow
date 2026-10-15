@@ -28,7 +28,7 @@ const menuGroups: Array<{ label: string; items: Array<{ to: string; hash?: strin
   },
   {
     label: "Professionnels de santé",
-    items: [{ to: "/cabinet", label: "Espace professionnel de santé" }],
+    items: [{ to: "/connexion-medecin", label: "Espace professionnel de santé" }],
   },
 ];
 

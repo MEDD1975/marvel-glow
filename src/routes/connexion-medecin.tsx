@@ -16,6 +16,8 @@ function DoctorSignInPage() {
   const [error, setError] = useState("");
   const [pending, setPending] = useState(false);
   const [cookieBlocked, setCookieBlocked] = useState(false);
+  const { data: session } = authClient.useSession();
+  const currentUser = session?.user;
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -53,6 +55,21 @@ function DoctorSignInPage() {
         <p className="mt-6 text-xs font-semibold uppercase tracking-wide text-care">Espace médecin</p>
         <h1 className="mt-2 text-3xl font-semibold text-foreground">{mode === "sign-up" ? "Créer votre compte" : "Se connecter"}</h1>
         <p className="mt-3 text-sm leading-6 text-muted-foreground">Accédez à vos cartes patient et à vos ressources validées.</p>
+        {currentUser && mode === "sign-in" ? (
+          <div className="mt-6 rounded-2xl border border-care/20 bg-care/5 p-4">
+            <p className="text-sm text-muted-foreground">Session déjà ouverte sur cet appareil :</p>
+            <p className="mt-1 truncate font-semibold text-foreground">{currentUser.email}</p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              <button type="button" onClick={() => void navigate({ to: "/cabinet" })} className="min-h-11 rounded-xl bg-care px-4 text-sm font-semibold text-primary-foreground">
+                Continuer avec ce compte
+              </button>
+              <button type="button" onClick={() => void authClient.signOut()} className="min-h-11 rounded-xl border border-border bg-background px-4 text-sm font-semibold text-foreground">
+                Se déconnecter
+              </button>
+            </div>
+            <p className="mt-3 text-xs text-muted-foreground">Ou connectez-vous avec un autre compte ci-dessous.</p>
+          </div>
+        ) : null}
         <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
           {mode === "sign-up" ? (
             <label className="block text-sm font-medium text-foreground">

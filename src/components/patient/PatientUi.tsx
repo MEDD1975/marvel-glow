@@ -5,12 +5,14 @@ import { AlertTriangle, ArrowLeft, ChevronRight, Info, Loader2, RefreshCw, Searc
 export type Tone = "blue" | "green" | "orange" | "red" | "violet";
 
 const toneClasses: Record<Tone, { card: string; icon: string }> = {
-  blue: { card: "border-care/10 bg-tone-blue/70", icon: "bg-card/80 text-care" },
-  green: { card: "border-tone-green-border/20 bg-tone-green/70", icon: "bg-card/80 text-tone-green-text" },
-  orange: { card: "border-tone-orange-border/25 bg-tone-orange/70", icon: "bg-card/80 text-tone-orange-text" },
-  red: { card: "border-tone-red-border/30 bg-tone-red", icon: "bg-card/80 text-tone-red-text" },
-  violet: { card: "border-tone-violet-border/20 bg-tone-violet/70", icon: "bg-card/80 text-tone-violet-text" },
+  blue: { card: "border-[#D5E3F5] bg-[#F2F6FB]", icon: "bg-white text-[#0B63CE]" },
+  green: { card: "border-[#CDE8DA] bg-[#F1F8F5]", icon: "bg-white text-[#17855B]" },
+  orange: { card: "border-[#F0DBAE] bg-[#FFF9ED]", icon: "bg-white text-[#9A6100]" },
+  red: { card: "border-[#F0DBAE] bg-[#FFF9ED]", icon: "bg-white text-[#9A6100]" },
+  violet: { card: "border-[#D5E3F5] bg-[#F2F6FB]", icon: "bg-white text-[#0B63CE]" },
 };
+
+const stepLabels = ["Maintenant", "À surveiller", "Ensuite"] as const;
 
 export function PageHeading({ title, description, back }: { title: string; description?: string | undefined; back?: { to: string; label: string } | undefined }) {
   return (
@@ -91,19 +93,19 @@ export function DecisionCard({
     <Link
       to={to}
       {...(hash ? { hash } : {})}
-      className={`group flex flex-col gap-3 rounded-2xl border p-4 transition-colors md:flex-row md:items-center md:justify-between md:gap-6 hover:brightness-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${classes.card}`}
+      className={`group flex flex-col gap-3 rounded-[18px] border p-4 shadow-[0_1px_3px_rgba(16,28,51,0.04)] transition-colors md:flex-row md:items-center md:justify-between md:gap-6 hover:brightness-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${classes.card}`}
     >
       <span className="flex items-start gap-3.5">
         <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${classes.icon}`}>
           <Icon className="h-5 w-5" aria-hidden="true" />
         </span>
         <span className="min-w-0 flex-1">
-          <span className="block text-xs font-medium text-muted-foreground">{`Étape ${step}`}</span>
+          <span className="block text-xs font-medium text-muted-foreground">{stepLabels[step - 1] ?? `Étape ${step}`}</span>
           <span className="block text-base font-semibold leading-snug text-foreground">{title}</span>
           <span className="mt-1 block text-sm leading-snug text-muted-foreground">{description}</span>
         </span>
       </span>
-      <span className="inline-flex min-h-11 shrink-0 items-center justify-between gap-2 rounded-xl bg-card/90 px-4 text-sm font-semibold text-care">
+      <span className="inline-flex min-h-12 shrink-0 items-center justify-between gap-2 rounded-[14px] border border-[#DCE5F0] bg-white px-4 text-sm font-semibold text-[#0B63CE] shadow-[0_1px_3px_rgba(16,28,51,0.04)] transition-colors group-hover:border-[#0B63CE] group-hover:bg-[#F2F6FB]">
         {action}
         <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
       </span>

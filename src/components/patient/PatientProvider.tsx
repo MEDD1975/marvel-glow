@@ -94,6 +94,8 @@ export function PatientProvider({
     const next: PatientContextValue = switchedPathway
       ? { ...emptyPatientContext, ...fromUrl }
       : { ...stored, ...fromUrl };
+    // Un nouveau QR fait foi : sans consigne, l'ancienne consigne est retirée.
+    if (fromUrl.pathwayId) next.note = fromUrl.note;
     if (Object.keys(fromUrl).length) writePatientContext(next);
     if (next.pathwayId && fromUrl.doctorId) claimPathway(next.pathwayId, fromUrl.doctorId);
     setStoredOwner(readPathwayOwner(next.pathwayId));

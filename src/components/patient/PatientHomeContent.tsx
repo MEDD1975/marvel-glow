@@ -7,17 +7,15 @@ export function PatientHomeContent() {
   if (!ready) return <LoadingState />;
 
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-6">
       <section aria-labelledby="home-title">
         {hasContext ? (
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
-            <p className="flex items-center gap-1.5 text-[13px] font-medium text-tone-green-text">
-              <ShieldCheck className="h-4 w-4" aria-hidden="true" />
+          <div className="rounded-[14px] border border-[#DCE5F0] border-l-4 border-l-[#0B63CE] bg-white px-4 py-3">
+            <p className="flex items-center gap-1.5 text-[13px] font-medium text-[#526176]">
+              <ShieldCheck className="h-4 w-4 text-[#0B63CE]" aria-hidden="true" />
               {senderLabel}
             </p>
-            {guide ? (
-              <p className="rounded-full bg-tone-blue px-2.5 py-0.5 text-[13px] font-medium text-care">{`Parcours : ${guide.name}`}</p>
-            ) : null}
+            {guide ? <p className="mt-1 text-sm font-semibold text-[#101C33]">{`Parcours : ${guide.name}`}</p> : null}
           </div>
         ) : null}
         <h1 id="home-title" className="mt-3 text-balance text-[1.75rem] font-semibold leading-tight tracking-tight text-foreground md:text-3xl">
@@ -70,8 +68,8 @@ export function PatientHomeContent() {
           Pour aller plus loin
         </h2>
         <div className="grid gap-2.5 md:grid-cols-2">
-          <ActionCard to="/conseils" hash="ressources" icon={FolderOpen} tone="blue" title="Mes ressources" description="Contenus de votre médecin, vidéos et sources fiables" />
-          <ActionCard to="/parcours" icon={RouteIcon} tone="violet" title="La suite de mon parcours" description="Les prochaines étapes et repères transmis" />
+          <ActionCard to="/conseils" hash="ressources" icon={FolderOpen} tone="blue" title="Mes ressources" description="Conseils, documents et vidéos sélectionnés pour votre parcours" />
+          <ActionCard to="/parcours" icon={RouteIcon} tone="blue" title="La suite de mon parcours" description="Les prochaines étapes et repères transmis" />
         </div>
       </section>
 

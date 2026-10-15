@@ -3,10 +3,18 @@ import "./lib/error-capture";
 import { consumeLastCapturedError } from "./lib/error-capture";
 import { renderErrorPage } from "./lib/error-page";
 import { auth } from "./lib/auth";
-import { deleteDoctorPractitioner, getDoctorNetwork, getPublicDoctorNetworks, saveDoctorNetwork, updateDoctorPractitioner } from "./lib/doctor-network-db";
+import { deleteDoctorPractitioner, getDoctorNetwork, getPublicDoctorNetworks, saveDoctorNetwork, setDoctorPractitionerHidden, updateDoctorPractitioner } from "./lib/doctor-network-db";
 import { put } from "@vercel/blob";
 import { generateClientTokenFromReadWriteToken } from "@vercel/blob/client";
-import { createDoctorResource, deleteDoctorResource, listAllActiveDoctorResources, listDoctorResources } from "./lib/doctor-resource-db";
+import { createDoctorResource, deleteDoctorResource, listAllActiveDoctorResources, listDoctorResources, listPathwaySettings, setPathwayHidden, updateDoctorResource } from "./lib/doctor-resource-db";
+
+function optionalText(value: unknown, max = 500): string | null {
+  return typeof value === "string" && value.trim() ? value.trim().slice(0, max) : null;
+}
+
+function optionalDate(value: unknown): string | null {
+  return typeof value === "string" && /^\d{4}-\d{2}-\d{2}$/.test(value) ? value : null;
+}
 import { createFollowUpStep, deleteFollowUpStep, listFollowUpSteps, reorderFollowUpSteps, updateFollowUpStep, type FollowUpAnswer, type FollowUpStepInput } from "./lib/follow-up-db";
 import { getScanStats, recordAnonymousScan } from "./lib/scan-db";
 
@@ -100,13 +108,30 @@ export default {
         const ownerId = url.searchParams.get("ownerId") ?? undefined;
         const session = await auth.api.getSession({ headers: request.headers });
         if (request.method === "GET") {
-          return Response.json(session?.user ? await listDoctorResources(session.user.id, conditionId) : await listAllActiveDoctorResources(conditionId, ownerId));
+          const manage = url.searchParams.get("scope") === "manage";
+          return Response.json(session?.user ? await listDoctorResources(session.user.id, conditionId, manage) : await listAllActiveDoctorResources(conditionId, ownerId));
         }
         if (!session?.user) return Response.json({ error: "Unauthorized" }, { status: 401 });
         if (request.method === "POST") {
           const payload = await request.json();
           if (!payload || typeof payload.title !== "string" || typeof payload.conditionId !== "string" || typeof payload.url !== "string") return Response.json({ error: "Informations invalides" }, { status: 400 });
-          return Response.json(await createDoctorResource(session.user.id, { title: payload.title.trim(), conditionId: payload.conditionId, url: payload.url, filename: typeof payload.filename === "string" ? payload.filename : undefined, contentType: typeof payload.contentType === "string" ? payload.contentType : undefined, source: typeof payload.source === "string" ? payload.source.trim() : undefined }), { status: 201 });
+          return Response.json(await createDoctorResource(session.user.id, { title: payload.title.trim(), conditionId: payload.conditionId, url: payload.url, filename: typeof payload.filename === "string" ? payload.filename : undefined, contentType: typeof payload.contentType === "string" ? payload.contentType : undefined, source: typeof payload.source === "string" ? payload.source.trim() : undefined, description: optionalText(payload.description), validatedAt: optionalDate(payload.validatedAt), status: payload.status === "hidden" ? "hidden" : "active", kind: typeof payload.kind === "string" ? payload.kind : null }), { status: 201 });
+        }
+        if (request.method === "PATCH") {
+          const payload = await request.json() as Record<string, unknown>;
+          const title = optionalText(payload["title"], 200);
+          if (typeof payload["id"] !== "string" || !title || typeof payload["conditionId"] !== "string") return Response.json({ error: "Le titre affiché au patient est obligatoire." }, { status: 400 });
+          const updated = await updateDoctorResource(session.user.id, payload["id"], {
+            title,
+            conditionId: payload["conditionId"],
+            source: optionalText(payload["source"], 200),
+            description: optionalText(payload["description"]),
+            validatedAt: optionalDate(payload["validatedAt"]),
+            status: payload["status"] === "hidden" ? "hidden" : "active",
+            kind: typeof payload["kind"] === "string" ? payload["kind"] : null,
+          });
+          if (!updated) return Response.json({ error: "Ressource introuvable." }, { status: 404 });
+          return Response.json(updated);
         }
         if (request.method === "DELETE") {
           const payload = await request.json() as { id?: string };
@@ -156,7 +181,7 @@ export default {
           if (!conditionId) return Response.json({ error: "Choisissez un trouble ou parcours." }, { status: 400 });
           const source = String(formData.get("source") ?? "Fichier partagé par le médecin").trim();
           const blob = await put(`doctor-resources/${session.user.id}/${Date.now()}-${uploadedFile.name.replace(/[^a-zA-Z0-9._-]/g, "-")}`, uploadedFile, { access: "public", addRandomSuffix: true });
-          const resource = await createDoctorResource(session.user.id, { title, conditionId, url: blob.url, filename: uploadedFile.name, contentType: resolvedType || "application/octet-stream", source });
+          const resource = await createDoctorResource(session.user.id, { title, conditionId, url: blob.url, filename: uploadedFile.name, contentType: resolvedType || "application/octet-stream", source, description: optionalText(formData.get("description")), validatedAt: optionalDate(formData.get("validatedAt")), status: formData.get("status") === "hidden" ? "hidden" : "active", kind: typeof formData.get("kind") === "string" ? String(formData.get("kind")) : null });
           return Response.json(resource, { status: 201 });
         } catch (error) {
           console.error("[v0] doctor file upload failed", error);
@@ -218,6 +243,17 @@ export default {
         const requestedId = url.searchParams.get("id");
         return Response.json(requestedId ? networks.filter((network) => network.id === requestedId) : networks);
       }
+      if (url.pathname === "/api/doctor-pathways") {
+        const session = await auth.api.getSession({ headers: request.headers });
+        if (!session?.user) return Response.json({ error: "Unauthorized" }, { status: 401 });
+        if (request.method === "GET") return Response.json(await listPathwaySettings(session.user.id));
+        if (request.method === "PUT") {
+          const payload = await request.json() as { conditionId?: unknown; hidden?: unknown };
+          if (typeof payload.conditionId !== "string" || typeof payload.hidden !== "boolean") return Response.json({ error: "Informations invalides" }, { status: 400 });
+          return Response.json(await setPathwayHidden(session.user.id, payload.conditionId.slice(0, 120), payload.hidden));
+        }
+        return new Response("Method Not Allowed", { status: 405 });
+      }
       if (url.pathname === "/api/doctor-network") {
         const session = await auth.api.getSession({ headers: request.headers });
         if (!session?.user) return Response.json({ error: "Unauthorized" }, { status: 401 });
@@ -250,7 +286,10 @@ export default {
           }), { status: 201 });
         }
         if (request.method === "PATCH") {
-          const payload = await request.json() as { id?: string; name?: string; profession?: string; phone?: string; email?: string; address?: string; postalCode?: string; city?: string };
+          const payload = await request.json() as { id?: string; name?: string; profession?: string; phone?: string; email?: string; address?: string; postalCode?: string; city?: string; hidden?: unknown };
+          if (payload.id && typeof payload.hidden === "boolean" && payload.name === undefined) {
+            return Response.json(await setDoctorPractitionerHidden(session.user.id, payload.id, payload.hidden));
+          }
           if (!payload.id || !payload.name?.trim() || !payload.profession?.trim()) {
             return Response.json({ error: "Le nom et la spécialité sont obligatoires." }, { status: 400 });
           }

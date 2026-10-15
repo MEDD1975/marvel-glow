@@ -92,7 +92,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     links: [
       {
         rel: "stylesheet",
-        href: appCss,
+        // In dev, Vite negotiates /src/styles.css by Accept header (CSS vs JS module) with only
+        // `Vary: Origin`; a proxy/cache can then serve the JS variant to the <link>, which the
+        // browser rejects. `?direct` always returns text/css.
+        href: import.meta.env.DEV ? `${appCss}?direct` : appCss,
       },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
@@ -125,7 +128,9 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const pathname = useLocation().pathname;
   const isPatientSpace =
-    pathname === "/" || /^\/(patient|conseils|annuaire|parcours)(\/|$)/.test(pathname);
+    pathname === "/" ||
+    /^\/(patient|conseils|annuaire|parcours)(\/|$)/.test(pathname) ||
+    (/^\/cabinet(\/|$)/.test(pathname) && !pathname.startsWith("/cabinet/accueil"));
   return (
     <QueryClientProvider client={queryClient}>
       {isPatientSpace ? null : <Header />}

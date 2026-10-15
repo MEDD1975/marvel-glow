@@ -21,6 +21,11 @@ import { Route as SuiviRouteImport } from './routes/suivi'
 import { Route as AdminStatsRouteImport } from './routes/admin/stats'
 import { Route as CabinetIndexRouteImport } from './routes/cabinet/index'
 import { Route as CabinetAccueilRouteImport } from './routes/cabinet/accueil'
+import { Route as CabinetAideRouteImport } from './routes/cabinet/aide'
+import { Route as CabinetMonCabinetRouteImport } from './routes/cabinet/mon-cabinet'
+import { Route as CabinetParcoursRouteImport } from './routes/cabinet/parcours'
+import { Route as CabinetProfessionnelsRouteImport } from './routes/cabinet/professionnels'
+import { Route as CabinetRessourcesRouteImport } from './routes/cabinet/ressources'
 import { Route as PPathologieRouteImport } from './routes/p/$pathologie'
 import { Route as PatientIndexRouteImport } from './routes/patient/index'
 import { Route as PatientFaqRouteImport } from './routes/patient/faq'
@@ -94,6 +99,31 @@ const CabinetIndexRoute = CabinetIndexRouteImport.update({
 const CabinetAccueilRoute = CabinetAccueilRouteImport.update({
   id: '/accueil',
   path: '/accueil',
+  getParentRoute: () => CabinetRouteRoute,
+} as any)
+const CabinetAideRoute = CabinetAideRouteImport.update({
+  id: '/aide',
+  path: '/aide',
+  getParentRoute: () => CabinetRouteRoute,
+} as any)
+const CabinetMonCabinetRoute = CabinetMonCabinetRouteImport.update({
+  id: '/mon-cabinet',
+  path: '/mon-cabinet',
+  getParentRoute: () => CabinetRouteRoute,
+} as any)
+const CabinetParcoursRoute = CabinetParcoursRouteImport.update({
+  id: '/parcours',
+  path: '/parcours',
+  getParentRoute: () => CabinetRouteRoute,
+} as any)
+const CabinetProfessionnelsRoute = CabinetProfessionnelsRouteImport.update({
+  id: '/professionnels',
+  path: '/professionnels',
+  getParentRoute: () => CabinetRouteRoute,
+} as any)
+const CabinetRessourcesRoute = CabinetRessourcesRouteImport.update({
+  id: '/ressources',
+  path: '/ressources',
   getParentRoute: () => CabinetRouteRoute,
 } as any)
 const PPathologieRoute = PPathologieRouteImport.update({
@@ -185,6 +215,11 @@ export interface FileRoutesByFullPath {
   '/suivi': typeof SuiviRoute
   '/admin/stats': typeof AdminStatsRoute
   '/cabinet/accueil': typeof CabinetAccueilRoute
+  '/cabinet/aide': typeof CabinetAideRoute
+  '/cabinet/mon-cabinet': typeof CabinetMonCabinetRoute
+  '/cabinet/parcours': typeof CabinetParcoursRoute
+  '/cabinet/professionnels': typeof CabinetProfessionnelsRoute
+  '/cabinet/ressources': typeof CabinetRessourcesRoute
   '/p/$pathologie': typeof PPathologieRoute
   '/patient/faq': typeof PatientFaqRoute
   '/patient/parcours': typeof PatientParcoursRoute
@@ -211,6 +246,11 @@ export interface FileRoutesByTo {
   '/suivi': typeof SuiviRoute
   '/admin/stats': typeof AdminStatsRoute
   '/cabinet/accueil': typeof CabinetAccueilRoute
+  '/cabinet/aide': typeof CabinetAideRoute
+  '/cabinet/mon-cabinet': typeof CabinetMonCabinetRoute
+  '/cabinet/parcours': typeof CabinetParcoursRoute
+  '/cabinet/professionnels': typeof CabinetProfessionnelsRoute
+  '/cabinet/ressources': typeof CabinetRessourcesRoute
   '/p/$pathologie': typeof PPathologieRoute
   '/patient/faq': typeof PatientFaqRoute
   '/patient/parcours': typeof PatientParcoursRoute
@@ -240,6 +280,11 @@ export interface FileRoutesById {
   '/suivi': typeof SuiviRoute
   '/admin/stats': typeof AdminStatsRoute
   '/cabinet/accueil': typeof CabinetAccueilRoute
+  '/cabinet/aide': typeof CabinetAideRoute
+  '/cabinet/mon-cabinet': typeof CabinetMonCabinetRoute
+  '/cabinet/parcours': typeof CabinetParcoursRoute
+  '/cabinet/professionnels': typeof CabinetProfessionnelsRoute
+  '/cabinet/ressources': typeof CabinetRessourcesRoute
   '/p/$pathologie': typeof PPathologieRoute
   '/patient/faq': typeof PatientFaqRoute
   '/patient/parcours': typeof PatientParcoursRoute
@@ -270,6 +315,11 @@ export interface FileRouteTypes {
     | '/suivi'
     | '/admin/stats'
     | '/cabinet/accueil'
+    | '/cabinet/aide'
+    | '/cabinet/mon-cabinet'
+    | '/cabinet/parcours'
+    | '/cabinet/professionnels'
+    | '/cabinet/ressources'
     | '/p/$pathologie'
     | '/patient/faq'
     | '/patient/parcours'
@@ -296,6 +346,11 @@ export interface FileRouteTypes {
     | '/suivi'
     | '/admin/stats'
     | '/cabinet/accueil'
+    | '/cabinet/aide'
+    | '/cabinet/mon-cabinet'
+    | '/cabinet/parcours'
+    | '/cabinet/professionnels'
+    | '/cabinet/ressources'
     | '/p/$pathologie'
     | '/patient/faq'
     | '/patient/parcours'
@@ -324,6 +379,11 @@ export interface FileRouteTypes {
     | '/suivi'
     | '/admin/stats'
     | '/cabinet/accueil'
+    | '/cabinet/aide'
+    | '/cabinet/mon-cabinet'
+    | '/cabinet/parcours'
+    | '/cabinet/professionnels'
+    | '/cabinet/ressources'
     | '/p/$pathologie'
     | '/patient/faq'
     | '/patient/parcours'
@@ -441,6 +501,41 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CabinetAccueilRouteImport
       parentRoute: typeof CabinetRouteRoute
     }
+    '/cabinet/aide': {
+      id: '/cabinet/aide'
+      path: '/aide'
+      fullPath: '/cabinet/aide'
+      preLoaderRoute: typeof CabinetAideRouteImport
+      parentRoute: typeof CabinetRouteRoute
+    }
+    '/cabinet/mon-cabinet': {
+      id: '/cabinet/mon-cabinet'
+      path: '/mon-cabinet'
+      fullPath: '/cabinet/mon-cabinet'
+      preLoaderRoute: typeof CabinetMonCabinetRouteImport
+      parentRoute: typeof CabinetRouteRoute
+    }
+    '/cabinet/parcours': {
+      id: '/cabinet/parcours'
+      path: '/parcours'
+      fullPath: '/cabinet/parcours'
+      preLoaderRoute: typeof CabinetParcoursRouteImport
+      parentRoute: typeof CabinetRouteRoute
+    }
+    '/cabinet/professionnels': {
+      id: '/cabinet/professionnels'
+      path: '/professionnels'
+      fullPath: '/cabinet/professionnels'
+      preLoaderRoute: typeof CabinetProfessionnelsRouteImport
+      parentRoute: typeof CabinetRouteRoute
+    }
+    '/cabinet/ressources': {
+      id: '/cabinet/ressources'
+      path: '/ressources'
+      fullPath: '/cabinet/ressources'
+      preLoaderRoute: typeof CabinetRessourcesRouteImport
+      parentRoute: typeof CabinetRouteRoute
+    }
     '/p/$pathologie': {
       id: '/p/$pathologie'
       path: '/p/$pathologie'
@@ -544,11 +639,21 @@ declare module '@tanstack/react-router' {
 
 interface CabinetRouteRouteChildren {
   CabinetAccueilRoute: typeof CabinetAccueilRoute
+  CabinetAideRoute: typeof CabinetAideRoute
+  CabinetMonCabinetRoute: typeof CabinetMonCabinetRoute
+  CabinetParcoursRoute: typeof CabinetParcoursRoute
+  CabinetProfessionnelsRoute: typeof CabinetProfessionnelsRoute
+  CabinetRessourcesRoute: typeof CabinetRessourcesRoute
   CabinetIndexRoute: typeof CabinetIndexRoute
 }
 
 const CabinetRouteRouteChildren: CabinetRouteRouteChildren = {
   CabinetAccueilRoute: CabinetAccueilRoute,
+  CabinetAideRoute: CabinetAideRoute,
+  CabinetMonCabinetRoute: CabinetMonCabinetRoute,
+  CabinetParcoursRoute: CabinetParcoursRoute,
+  CabinetProfessionnelsRoute: CabinetProfessionnelsRoute,
+  CabinetRessourcesRoute: CabinetRessourcesRoute,
   CabinetIndexRoute: CabinetIndexRoute,
 }
 

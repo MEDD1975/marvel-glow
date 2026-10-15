@@ -34,8 +34,8 @@ export async function getDoctorNetwork(userId: string) {
   const network = networkResult.rows[0];
   if (!network) return null;
 
-  const practitioners = await pool.query<DoctorNetworkRecord["practitioners"][number]>(
-    'SELECT "id", "name", "profession", "phone", "email", "address", "postalCode", "city" FROM "doctor_practitioner" WHERE "networkId" = $1 ORDER BY "createdAt" ASC',
+  const practitioners = await pool.query<DoctorNetworkRecord["practitioners"][number] & { hidden: boolean }>(
+    'SELECT "id", "name", "profession", "phone", "email", "address", "postalCode", "city", "hidden" FROM "doctor_practitioner" WHERE "networkId" = $1 ORDER BY "createdAt" ASC',
     [network.id],
   );
   return { ...network, practitioners: practitioners.rows } satisfies DoctorNetworkRecord;
@@ -54,7 +54,7 @@ export async function getPublicDoctorNetworks(ownerId?: string) {
   const networks = [];
   for (const network of networkResult.rows) {
     const practitioners = await pool.query<DoctorNetworkRecord["practitioners"][number]>(
-      'SELECT "id", "name", "profession", "phone", "email", "address", "postalCode", "city" FROM "doctor_practitioner" WHERE "networkId" = $1 ORDER BY "createdAt" ASC',
+      'SELECT "id", "name", "profession", "phone", "email", "address", "postalCode", "city" FROM "doctor_practitioner" WHERE "networkId" = $1 AND "hidden" = false ORDER BY "createdAt" ASC',
       [network.id],
     );
     networks.push({ ...network, practitioners: practitioners.rows });
@@ -66,6 +66,14 @@ export async function deleteDoctorPractitioner(userId: string, practitionerId: s
   await pool.query(
     'DELETE FROM "doctor_practitioner" WHERE "id" = $1 AND "networkId" IN (SELECT "id" FROM "doctor_network" WHERE "ownerId" = $2)',
     [practitionerId, userId],
+  );
+  return getDoctorNetwork(userId);
+}
+
+export async function setDoctorPractitionerHidden(userId: string, practitionerId: string, hidden: boolean) {
+  await pool.query(
+    'UPDATE "doctor_practitioner" SET "hidden" = $1 WHERE "id" = $2 AND "networkId" IN (SELECT "id" FROM "doctor_network" WHERE "ownerId" = $3)',
+    [hidden, practitionerId, userId],
   );
   return getDoctorNetwork(userId);
 }

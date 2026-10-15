@@ -3,12 +3,13 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { authClient } from "@/lib/auth-client";
 import { conditions } from "@/lib/conditions";
 import { PatientCard } from "@/components/PatientCard";
-import { DoctorHeader, DoctorPage } from "@/components/doctor/DoctorLayout";
+import { DoctorPage } from "@/components/doctor/DoctorLayout";
 import { PathwaySelector } from "@/components/doctor/PathwaySelector";
 import { QRTransmissionCard } from "@/components/doctor/QRTransmissionCard";
 import { QRFullscreenModal } from "@/components/doctor/QRFullscreenModal";
 import { PathwaySummary } from "@/components/doctor/PathwaySummary";
 import { OptionalInstruction } from "@/components/doctor/OptionalInstruction";
+import { TransmitActionBar } from "@/components/doctor/TransmitActionBar";
 import { useDoctorResources, usePathwaySettings } from "@/components/doctor/use-doctor-data";
 import { buildPatientLink, doctorGreetingName, findCondition, getPathwayStats, openPatientPreview } from "@/lib/doctor-pathway-info";
 
@@ -65,9 +66,6 @@ function TransmitPage() {
   const selectPathway = (id: string) => {
     if (id !== pathway) setNote("");
     setPathway(id);
-    if (window.matchMedia("(max-width: 1023px)").matches) {
-      requestAnimationFrame(() => qrCardRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }));
-    }
   };
 
   const print = () => {
@@ -114,14 +112,14 @@ function TransmitPage() {
 
   return (
     <DoctorPage>
-      <DoctorHeader
-        eyebrow={greeting ? `Bonjour ${greeting}` : "Bonjour"}
-        title="Transmettre un parcours"
-        description="Sélectionnez une atteinte, puis présentez le QR code au patient."
-      />
+      <header className="-mt-2 print:hidden md:mt-0">
+        <p className="text-sm font-medium text-care">{greeting ? `Bonjour ${greeting}` : "Bonjour"}</p>
+        <h1 className="mt-0.5 text-balance text-xl font-semibold tracking-tight text-foreground md:text-3xl">Transmettre un parcours</h1>
+        <p className="mt-1 text-pretty text-sm text-muted-foreground md:text-base">Sélectionnez l’atteinte diagnostiquée pour afficher son QR code.</p>
+      </header>
 
-      <div className="mt-6 grid gap-5 print:hidden lg:grid-cols-[minmax(0,1fr)_360px] lg:items-start">
-        <div className="flex flex-col gap-3">
+      <div className={`mt-4 grid gap-5 print:hidden lg:grid-cols-[minmax(0,1fr)_340px] lg:items-start xl:grid-cols-[minmax(0,1fr)_360px] ${condition ? "pb-24 lg:pb-0" : ""}`}>
+        <div className="flex min-w-0 flex-col gap-3">
           <PathwaySelector conditions={visibleConditions} selectedId={pathway} onSelect={selectPathway} />
           {hiddenIds.size ? (
             <p className="text-xs text-muted-foreground">
@@ -134,6 +132,8 @@ function TransmitPage() {
         <div ref={qrCardRef} className="flex scroll-mt-20 flex-col gap-3 lg:sticky lg:top-6">
           <QRTransmissionCard
             pathwayName={condition?.name ?? null}
+            zone={condition?.zone ?? null}
+            stats={stats}
             qr={qr.image}
             url={qr.url}
             onFullscreen={() => setFullscreen(true)}
@@ -153,6 +153,15 @@ function TransmitPage() {
 
       {condition ? (
         <>
+          <TransmitActionBar
+            pathwayName={condition.name}
+            url={qr.url}
+            qrReady={Boolean(qr.image)}
+            onFullscreen={() => setFullscreen(true)}
+            onPrint={print}
+            onShare={share}
+            onPreview={() => openPatientPreview(condition.id, user)}
+          />
           <QRFullscreenModal open={fullscreen} onOpenChange={setFullscreen} qr={qr.image} pathwayName={condition.name} />
           <div className="card-section hidden">
             <div className="card-sheet hidden print:flex">

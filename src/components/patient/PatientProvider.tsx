@@ -61,7 +61,19 @@ type PatientState = {
 
 const PatientStateContext = createContext<PatientState | null>(null);
 
-export function PatientProvider({ search, children }: { search: Record<string, unknown>; children: ReactNode }) {
+// Reset on every full page load: true only once a patient page has been opened
+// during this load, so in-app navigation keeps the QR context but a direct load does not.
+let contextOpenedThisLoad = false;
+
+export function PatientProvider({
+  search,
+  requireFreshContext = false,
+  children,
+}: {
+  search: Record<string, unknown>;
+  requireFreshContext?: boolean | undefined;
+  children: ReactNode;
+}) {
   const [ready, setReady] = useState(false);
   const [context, setContext] = useState<PatientContextValue>(emptyPatientContext);
   const [storedOwner, setStoredOwner] = useState<string | undefined>(undefined);
@@ -69,6 +81,14 @@ export function PatientProvider({ search, children }: { search: Record<string, u
 
   useEffect(() => {
     const fromUrl = JSON.parse(searchKey) as Partial<PatientContextValue>;
+    const hasUrlContext = Object.keys(fromUrl).length > 0;
+    if (requireFreshContext && !hasUrlContext && !contextOpenedThisLoad) {
+      setStoredOwner(undefined);
+      setContext(emptyPatientContext);
+      setReady(true);
+      return;
+    }
+    contextOpenedThisLoad = true;
     const stored = readPatientContext();
     const switchedPathway = fromUrl.pathwayId && fromUrl.pathwayId !== stored.pathwayId;
     const next: PatientContextValue = switchedPathway

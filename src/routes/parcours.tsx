@@ -24,7 +24,7 @@ export const Route = createFileRoute("/parcours")({
 function ParcoursRoute() {
   const search = Route.useSearch();
   return (
-    <PatientShell search={search}>
+    <PatientShell search={search} requireFreshContext>
       <ParcoursPage />
     </PatientShell>
   );

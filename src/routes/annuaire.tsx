@@ -6,7 +6,7 @@ import { categoryOf, usePatient } from "@/components/patient/PatientProvider";
 import { EmptyState, LoadingState } from "@/components/patient/PatientUi";
 import { professionOrder, isProfession, type Profession, type Cabinet } from "@/lib/directory";
 import { formatDoctorName } from "@/lib/patient-context";
-import { formatPhone, phoneHref } from "@/lib/typography";
+import { formatCity, formatPhone, formatProviderName, formatStreet, phoneHref } from "@/lib/typography";
 
 type PublicNetwork = {
   id: string;
@@ -50,13 +50,14 @@ function toCabinets(networks: PublicNetwork[]): Cabinet[] {
         : normalizeProfession(practitioner.profession);
       if (!profession) return [];
       const individualAddress = practitioner.address ? parseNetworkAddress(practitioner.address) : null;
+      const rawCity = practitioner.city || individualAddress?.city || cabinetAddress.city;
       return [{
         id: practitioner.id,
-        name: practitioner.name,
+        name: formatProviderName(practitioner.name),
         profession,
-        address: individualAddress?.address || cabinetAddress.address,
+        address: formatStreet(individualAddress?.address || cabinetAddress.address, rawCity),
         postalCode: practitioner.postalCode || individualAddress?.postalCode || cabinetAddress.postalCode,
-        city: practitioner.city || individualAddress?.city || cabinetAddress.city,
+        city: formatCity(rawCity),
         phone: practitioner.phone ?? undefined,
         formattedPhone: practitioner.phone ?? undefined,
         cabinetId: network.id,
@@ -161,7 +162,7 @@ function AnnuaireRoute() {
 }
 
 const DISCLAIMER =
-  "Les coordonnées sont communiquées à titre informatif. Kivoir ne prend pas de rendez-vous et ne garantit pas la disponibilité des professionnels.";
+  "Ces coordonnées sont communiquées à titre informatif. Vous restez libre de choisir votre professionnel de santé. Kivoir ne prend pas de rendez-vous et ne garantit pas la disponibilité des professionnels.";
 
 function specialtyLabel(provider: Provider) {
   const category = categoryOf(provider.profession);
@@ -277,7 +278,7 @@ function ProviderList({ providers, initialProfession }: { providers: Provider[];
   );
 
   const chip = (active: boolean) =>
-    `inline-flex min-h-10 shrink-0 items-center rounded-full border px-4 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
+    `inline-flex min-h-11 shrink-0 items-center whitespace-nowrap rounded-full border px-4 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
       active ? "border-care bg-care text-care-foreground" : "border-border bg-card text-foreground hover:bg-accent"
     }`;
 

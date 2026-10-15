@@ -46,6 +46,26 @@ function ParcoursPage() {
   }));
   const steps: TimelineStep[] = doctorSteps.length ? doctorSteps : guide?.careSteps ?? [];
 
+  if (!guide) {
+    return (
+      <div className="flex flex-col gap-8">
+        <EmptyState
+          title="Aucun parcours ouvert"
+          description="Scannez le QR code remis par votre professionnel de santé pour retrouver les prochaines étapes de votre parcours."
+          action={
+            <Link
+              to="/annuaire"
+              className="inline-flex min-h-11 items-center justify-center rounded-xl border border-border bg-card px-4 text-sm font-medium text-foreground hover:bg-accent"
+            >
+              Rechercher un cabinet
+            </Link>
+          }
+        />
+        <PersonalNotes conditionId={context.pathwayId} doctorName={context.doctorName} />
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col gap-8">
       <div>
@@ -104,26 +124,32 @@ function ParcoursPage() {
         />
       )}
 
-      <details className="group rounded-2xl border border-border bg-card">
-        <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-3 px-4">
-          <span className="flex items-center gap-2 font-medium text-foreground">
-            <NotebookPen className="h-5 w-5 text-muted-foreground" aria-hidden="true" />
-            Mes notes personnelles
-          </span>
-          <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform group-open:rotate-180" aria-hidden="true" />
-        </summary>
-        <div className="px-4 pb-4">
-          <p className="text-sm text-muted-foreground">Notez les professionnels vus ou prévus. Ces notes restent sur cet appareil.</p>
-          <LocalCareTimeline
-            {...(context.pathwayId ? { conditionId: context.pathwayId } : {})}
-            {...(context.doctorName ? { initialProviderName: context.doctorName } : {})}
-            initialProviderProfession="Médecin"
-          />
-        </div>
-      </details>
+      <PersonalNotes conditionId={context.pathwayId} doctorName={context.doctorName} />
 
       <SafetyNotice>Ces étapes sont indicatives. Les décisions médicales restent prises avec votre professionnel de santé.</SafetyNotice>
     </div>
+  );
+}
+
+function PersonalNotes({ conditionId, doctorName }: { conditionId: string | undefined; doctorName: string | undefined }) {
+  return (
+    <details className="group rounded-2xl border border-border bg-card">
+      <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-3 px-4">
+        <span className="flex items-center gap-2 font-medium text-foreground">
+          <NotebookPen className="h-5 w-5 text-muted-foreground" aria-hidden="true" />
+          Mes notes personnelles
+        </span>
+        <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform group-open:rotate-180" aria-hidden="true" />
+      </summary>
+      <div className="px-4 pb-4">
+        <p className="text-sm text-muted-foreground">Notez les professionnels vus ou prévus. Ces notes restent sur cet appareil.</p>
+        <LocalCareTimeline
+          {...(conditionId ? { conditionId } : {})}
+          {...(doctorName ? { initialProviderName: doctorName } : {})}
+          initialProviderProfession="Médecin"
+        />
+      </div>
+    </details>
   );
 }
 

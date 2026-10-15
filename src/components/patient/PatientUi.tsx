@@ -208,7 +208,7 @@ export function FreeChoiceNotice() {
   return (
     <p className="mt-6 flex items-start gap-2.5 rounded-xl bg-muted px-4 py-3 text-sm leading-relaxed text-muted-foreground">
       <Info className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
-      <span>Vous restez libre de choisir le professionnel de santé de votre choix. Cette liste est fournie à titre indicatif.</span>
+      <span>Ces coordonnées sont communiquées à titre informatif. Vous restez libre de choisir votre professionnel de santé. Kivoir ne prend pas de rendez-vous et ne garantit pas la disponibilité des professionnels.</span>
     </p>
   );
 }

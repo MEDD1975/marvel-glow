@@ -23,7 +23,7 @@ import { conditionAdvice } from "@/lib/condition-advice";
 import { generalLinks, type ResourceLink } from "@/lib/condition-resources";
 import { emergencyNumbers, type PathwayGuide, type Recommendation } from "@/lib/patient-guides";
 import type { DoctorResourceRecord } from "@/lib/doctor-resource-db";
-import { formatPhone, phoneHref } from "@/lib/typography";
+import { contactCabinetLabel, formatPhone, phoneHref, resourceDisplayTitle } from "@/lib/typography";
 
 type ConseilsSearch = {
   c?: string | undefined;
@@ -299,7 +299,7 @@ function WarningSection({ guide }: { guide: PathwayGuide }) {
             <a href={cabinetHref} className="flex min-h-14 items-center gap-3 rounded-xl border border-border bg-card px-4 hover:bg-accent">
               <Phone className="h-5 w-5 shrink-0 text-care" aria-hidden="true" />
               <span>
-                <span className="block font-semibold text-foreground">{`Contacter ${cabinetName ?? "mon cabinet"}`}</span>
+                <span className="block font-semibold text-foreground">{contactCabinetLabel(cabinetName)}</span>
                 <span className="block text-sm text-muted-foreground">{formatPhone(cabinetPhone)}</span>
               </span>
             </a>
@@ -315,8 +315,8 @@ function WarningSection({ guide }: { guide: PathwayGuide }) {
             </p>
           ) : null}
           <div className="rounded-2xl border border-tone-red-border/40 bg-tone-red p-4 text-tone-red-text">
-            <p className="font-semibold">En cas d&apos;urgence vitale</p>
-            <p className="mt-1 text-sm">Appelez immédiatement les secours.</p>
+            <p className="font-semibold">En cas d&apos;urgence ou de situation qui vous paraît grave</p>
+            <p className="mt-1 text-sm">Contactez les services d&apos;urgence : 15 ou 112.</p>
             <div className="mt-3 grid grid-cols-2 gap-2">
               {emergencyNumbers.map((item) => (
                 <a key={item.id} href={`tel:${item.number}`} className="flex min-h-14 flex-col items-center justify-center rounded-xl bg-card text-foreground">
@@ -430,7 +430,7 @@ function DoctorResourceRow({ resource }: { resource: DoctorResourceRecord }) {
         <Icon className="h-5 w-5" aria-hidden="true" />
       </span>
       <span className="min-w-0 flex-1">
-        <span className="block font-medium text-foreground">{resource.title}</span>
+        <span className="block font-medium text-foreground">{resourceDisplayTitle(resource.title)}</span>
         <span className="mt-0.5 block truncate text-xs text-muted-foreground">
           {[format.label, "Partagé par votre médecin", resource.source].filter(Boolean).join(" · ")}
         </span>

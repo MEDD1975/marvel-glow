@@ -13,7 +13,7 @@ import { getPathwayGuide, type PathwayGuide } from "@/lib/patient-guides";
 import type { DoctorResourceRecord } from "@/lib/doctor-resource-db";
 import type { FollowUpStepRecord } from "@/lib/follow-up-db";
 import { cabinets, type Profession } from "@/lib/directory";
-import { formatAddress } from "@/lib/typography";
+import { formatAddress, formatCity, formatProfession, formatProviderName, formatStreet, isPlaceholderPhone } from "@/lib/typography";
 
 export type PatientProfessional = {
   id: string;
@@ -103,7 +103,7 @@ export function PatientProvider({ search, children }: { search: Record<string, u
       doctorLabel,
       ownerId,
       cabinetName,
-      cabinetPhone: network.data?.phone ?? undefined,
+      cabinetPhone: isPlaceholderPhone(network.data?.phone) ? undefined : network.data?.phone ?? undefined,
     }),
     [ready, context, guide, hasContext, senderLabel, doctorLabel, ownerId, cabinetName, network.data?.phone],
   );
@@ -183,10 +183,10 @@ export function useProfessionals(): { isLoading: boolean; isError: boolean; retr
   const retry = () => void network.refetch();
   const cabinetPros: PatientProfessional[] = (network.data?.practitioners ?? []).map((item) => ({
     id: item.id,
-    name: item.name.trim(),
-    specialty: item.profession.trim(),
-    category: categoryOf(item.profession.trim()),
-    address: formatAddress([item.address, [item.postalCode, item.city].filter(Boolean).join(" ")]),
+    name: formatProviderName(item.name),
+    specialty: formatProfession(item.profession),
+    category: formatProfession(categoryOf(item.profession.trim())),
+    address: formatAddress([formatStreet(item.address, item.city), [item.postalCode, formatCity(item.city)].filter(Boolean).join(" ")]),
     phone: item.phone ?? undefined,
     email: item.email ?? undefined,
   }));

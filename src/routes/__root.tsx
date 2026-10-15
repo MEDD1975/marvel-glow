@@ -125,7 +125,9 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const pathname = useLocation().pathname;
   const isPatientSpace =
-    pathname === "/" || /^\/(patient|conseils|annuaire|parcours)(\/|$)/.test(pathname);
+    pathname === "/" ||
+    /^\/(patient|conseils|annuaire|parcours)(\/|$)/.test(pathname) ||
+    (/^\/cabinet(\/|$)/.test(pathname) && !pathname.startsWith("/cabinet/accueil"));
   return (
     <QueryClientProvider client={queryClient}>
       {isPatientSpace ? null : <Header />}

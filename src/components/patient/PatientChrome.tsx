@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useLocation } from "@tanstack/react-router";
 import { BookOpen, ChevronRight, Home, Menu, Users } from "lucide-react";
 import { Logo } from "@/components/Logo";
+import { contextLinkSearch, usePatient } from "@/components/patient/PatientProvider";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 
 const menuGroups: Array<{ label: string; items: Array<{ to: string; hash?: string; label: string }> }> = [
@@ -48,13 +49,19 @@ const desktopLinks = [
   { to: "/parcours", label: "La suite de mon parcours", icon: BookOpen, match: isPathway },
 ];
 
+function useLinkSearch() {
+  const { context } = usePatient();
+  return contextLinkSearch(context) as never;
+}
+
 export function KivoirHeader() {
   const [open, setOpen] = useState(false);
   const { pathname } = useLocation();
+  const linkSearch = useLinkSearch();
   return (
     <header className="sticky top-0 z-30 border-b border-border/60 bg-background/90 pt-[env(safe-area-inset-top)] backdrop-blur supports-[backdrop-filter]:bg-background/75">
       <div className="mx-auto flex h-12 max-w-3xl items-center justify-between gap-4 pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))] md:h-14">
-        <Link to="/patient" aria-label="Kivoir, retour à l'accueil" className="rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+        <Link to="/patient" search={linkSearch} aria-label="Kivoir, retour à l'accueil" className="rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
           <Logo size="sm" />
         </Link>
         <nav aria-label="Navigation principale" className="hidden md:block">
@@ -65,6 +72,7 @@ export function KivoirHeader() {
                 <li key={link.to}>
                   <Link
                     to={link.to}
+                    search={linkSearch}
                     aria-current={active ? "page" : undefined}
                     className={`inline-flex min-h-10 items-center rounded-lg px-3 text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
                       active ? "bg-tone-blue text-care" : "text-muted-foreground hover:bg-accent hover:text-foreground"
@@ -98,6 +106,7 @@ export function KivoirHeader() {
                       <li key={`${item.to}#${item.hash ?? ""}`}>
                         <Link
                           to={item.to}
+                          search={linkSearch}
                           {...(item.hash ? { hash: item.hash } : {})}
                           onClick={() => setOpen(false)}
                           className="flex min-h-12 items-center justify-between px-3 text-sm font-medium text-foreground hover:bg-accent"
@@ -112,6 +121,7 @@ export function KivoirHeader() {
               ))}
               <Link
                 to="/patient"
+                search={linkSearch}
                 onClick={() => setOpen(false)}
                 className="inline-flex min-h-12 items-center justify-center rounded-xl bg-tone-blue px-4 text-sm font-semibold text-care hover:bg-tone-blue/70"
               >
@@ -127,6 +137,7 @@ export function KivoirHeader() {
 
 export function BottomNavigation() {
   const { pathname } = useLocation();
+  const linkSearch = useLinkSearch();
   return (
     <nav aria-label="Navigation mobile" className="fixed inset-x-0 bottom-0 z-30 border-t border-border/60 bg-card/90 pb-[env(safe-area-inset-bottom)] backdrop-blur supports-[backdrop-filter]:bg-card/80 md:hidden print:hidden">
       <ul className="mx-auto grid max-w-2xl grid-cols-3">
@@ -137,6 +148,7 @@ export function BottomNavigation() {
             <li key={tab.to}>
               <Link
                 to={tab.to}
+                search={linkSearch}
                 aria-current={active ? "page" : undefined}
                 className={`flex min-h-14 flex-col items-center justify-center gap-0.5 text-[11px] font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring ${
                   active ? "text-care" : "text-muted-foreground hover:text-foreground"

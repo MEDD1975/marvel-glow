@@ -57,9 +57,25 @@ type PatientState = {
 
 const PatientStateContext = createContext<PatientState | null>(null);
 
-// Reset on every full page load: true only once a patient page has been opened
-// during this load, so in-app navigation keeps the QR context but a direct load does not.
-let contextOpenedThisLoad = false;
+// In-memory only (reset on every full page load): keeps the QR context while the
+// patient navigates between pages whose links do not carry the URL parameters.
+let rememberedContext: PatientContextValue = emptyPatientContext;
+
+function resolveContext(search: Record<string, unknown>): PatientContextValue {
+  const fromSearch = contextFromSearch(search);
+  if (fromSearch.pathwayId || fromSearch.doctorId) {
+    rememberedContext = { ...emptyPatientContext, ...fromSearch };
+  }
+  return rememberedContext;
+}
+
+/** Paramètres d'URL à transmettre aux liens internes pour conserver le parcours. */
+export function contextLinkSearch(context: PatientContextValue): Record<string, string> {
+  return {
+    ...(context.pathwayId ? { pathway: context.pathwayId } : {}),
+    ...(context.doctorId ? { ref: context.doctorId } : {}),
+  };
+}
 
 export function PatientProvider({
   search,
@@ -69,7 +85,7 @@ export function PatientProvider({
   requireFreshContext?: boolean | undefined;
   children: ReactNode;
 }) {
-  const context = useMemo<PatientContextValue>(() => ({ ...emptyPatientContext, ...contextFromSearch(search) }), [search]);
+  const context = useMemo<PatientContextValue>(() => resolveContext(search), [search]);
   const ready = true;
   const ownerId = context.doctorId;
   const network = usePublicNetwork(ownerId);

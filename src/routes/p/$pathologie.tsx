@@ -9,9 +9,9 @@ export const Route = createFileRoute("/p/$pathologie")({
 
 function PublicPathwayPage() {
   const { pathologie } = Route.useParams();
-  const search = Route.useSearch() as { ref?: string; medecin_id?: string; doctorName?: string; note?: string };
+  const search = Route.useSearch() as { ref?: string; medecin_id?: string };
   const condition = conditions.find((item) => item.id === pathologie);
-  const medecinId = search.ref?.trim() || search.medecin_id?.trim() || search.doctorName?.trim();
+  const medecinId = search.ref?.trim() || search.medecin_id?.trim();
 
   useEffect(() => {
     if (!condition || !medecinId) return;
@@ -28,7 +28,7 @@ function PublicPathwayPage() {
     <Navigate
       to="/patient"
       replace
-      search={{ pathway: pathologie, ...(medecinId ? { ref: medecinId } : {}), ...(search.doctorName ? { doctorName: search.doctorName } : {}), ...(search.note ? { note: search.note } : {}) } as never}
+      search={{ pathway: pathologie, ...(medecinId ? { ref: medecinId } : {}) } as never}
     />
   );
 }

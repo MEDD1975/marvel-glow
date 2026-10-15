@@ -1,18 +1,16 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, ChevronDown, CircleAlert, CircleCheck, Clock3, NotebookPen, Phone, Users } from "lucide-react";
-import { useEffect, useState } from "react";
+import { ArrowLeft, ChevronDown, CircleAlert, CircleCheck, Clock3, Phone, Users } from "lucide-react";
+import { useState } from "react";
 import { PatientShell } from "@/components/patient/PatientShell";
 import { useFollowUpSteps, usePatient, useProfessionals } from "@/components/patient/PatientProvider";
 import { EmptyState, LoadingState, SafetyNotice } from "@/components/patient/PatientUi";
-import { LocalCareTimeline } from "@/components/LocalCareTimeline";
 
-type ParcoursSearch = { pathway?: string | undefined; doctorName?: string | undefined };
+type ParcoursSearch = { pathway?: string | undefined };
 
 export const Route = createFileRoute("/parcours")({
   validateSearch: (search: Record<string, unknown>): ParcoursSearch => ({
     pathway: typeof search["pathway"] === "string" ? search["pathway"] : undefined,
-    doctorName: typeof search["doctorName"] === "string" ? search["doctorName"] : undefined,
-  }),
+    }),
   head: () => ({
     meta: [
       { title: "La suite de mon parcours — Kivoir" },
@@ -40,14 +38,8 @@ function ParcoursPage() {
   const [openStep, setOpenStep] = useState(2);
   const [checkIn, setCheckIn] = useState<CheckIn | null>(null);
 
-  useEffect(() => {
-    const saved = sessionStorage.getItem("kivoir-parcours-check-in");
-    if (saved === "improves" || saved === "persists" || saved === "concerned") setCheckIn(saved);
-  }, []);
-
   const chooseCheckIn = (value: CheckIn) => {
     setCheckIn(value);
-    sessionStorage.setItem("kivoir-parcours-check-in", value);
     setOpenStep(3);
   };
 
@@ -57,7 +49,6 @@ function ParcoursPage() {
     return (
       <div className="flex flex-col gap-8">
         <EmptyState title="Aucun parcours ouvert" description="Scannez le QR code remis par votre professionnel de santé pour retrouver les prochaines étapes de votre parcours." action={<Link to="/annuaire" className="inline-flex min-h-11 items-center justify-center rounded-xl border border-border bg-card px-4 text-sm font-medium text-foreground hover:bg-accent">Rechercher un cabinet</Link>} />
-        <PersonalNotes conditionId={context.pathwayId} doctorName={context.doctorName} />
       </div>
     );
   }
@@ -76,7 +67,7 @@ function ParcoursPage() {
         <Link to="/patient" className="-ml-2 mb-2 inline-flex min-h-11 items-center gap-1.5 rounded-lg px-2 text-sm font-medium text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"><ArrowLeft className="h-4 w-4" aria-hidden="true" />Retour à mon espace patient</Link>
         <h1 className="text-balance text-[1.625rem] font-semibold leading-tight tracking-tight text-foreground md:text-3xl">La suite de mon parcours</h1>
         <p className="mt-2 max-w-2xl text-pretty text-base leading-relaxed text-muted-foreground">Un fil conducteur après votre diagnostic : où vous en êtes, quoi faire maintenant et quelle action envisager si la gêne persiste.</p>
-        <div className="mt-4 rounded-xl border border-care/20 bg-tone-blue px-3 py-2 text-sm text-care"><strong>Parcours : {guide.name}</strong>{context.doctorName ? <span className="ml-2 text-muted-foreground">Transmis par le cabinet du {context.doctorName}</span> : null}</div>
+        <div className="mt-4 rounded-xl border border-care/20 bg-tone-blue px-3 py-2 text-sm text-care"><strong>Parcours : {guide.name}</strong></div>
       </div>
 
       <section aria-labelledby="etapes-title"><h2 id="etapes-title" className="sr-only">Fil conducteur du parcours</h2><ol className="flex flex-col gap-3">
@@ -86,7 +77,6 @@ function ParcoursPage() {
         </li>; })}
       </ol></section>
 
-      <PersonalNotes conditionId={context.pathwayId} doctorName={context.doctorName} />
       <SafetyNotice>Cette chronologie fournit des repères généraux à partir du parcours transmis. Elle ne remplace pas les décisions prises avec votre professionnel de santé. En cas de doute, d’évolution défavorable ou de situation préoccupante, demandez un avis professionnel.</SafetyNotice>
     </div>
   );
@@ -120,28 +110,6 @@ function NextStep({ checkIn, cabinetPhone, professionalCount }: { checkIn: Check
   if (checkIn === "persists") return <div><p className="text-sm leading-relaxed text-muted-foreground">{nextStepText(checkIn)}</p><div className="mt-3 flex flex-wrap gap-2">{cabinetPhone ? <a href={`tel:${cabinetPhone}`} className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-care px-4 py-2.5 text-sm font-semibold text-primary-foreground"><Phone className="size-4" aria-hidden="true" />Contacter mon cabinet</a> : null}<Link to="/patient/professionnels" className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-border bg-card px-4 py-2.5 text-sm font-semibold text-foreground"><Users className="size-4" aria-hidden="true" />Voir les professionnels utiles{professionalCount ? ` (${professionalCount})` : ""}</Link></div>{!cabinetPhone ? <p className="mt-3 text-xs text-muted-foreground">Aucun numéro de cabinet n’est disponible dans ce parcours.</p> : null}</div>;
   if (checkIn === "concerned") return <div><p className="text-sm leading-relaxed text-muted-foreground">{nextStepText(checkIn)}</p><div className="mt-3 flex flex-wrap gap-2"><Link to="/patient/surveiller" className="min-h-11 rounded-xl bg-tone-red px-4 py-2.5 text-sm font-semibold text-tone-red-text">Voir les points à surveiller</Link><Link to="/patient/professionnels" className="min-h-11 rounded-xl border border-border bg-card px-4 py-2.5 text-sm font-semibold text-foreground">Demander un avis</Link></div></div>;
   return <p className="text-sm leading-relaxed text-muted-foreground">{nextStepText(checkIn)}</p>;
-}
-
-function PersonalNotes({ conditionId, doctorName }: { conditionId: string | undefined; doctorName: string | undefined }) {
-  return (
-    <details className="group rounded-2xl border border-border bg-card">
-      <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-3 px-4">
-        <span className="flex items-center gap-2 font-medium text-foreground">
-          <NotebookPen className="h-5 w-5 text-muted-foreground" aria-hidden="true" />
-          Mes notes personnelles
-        </span>
-        <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform group-open:rotate-180" aria-hidden="true" />
-      </summary>
-      <div className="px-4 pb-4">
-        <p className="text-sm text-muted-foreground">Notez une question ou un point à évoquer lors de votre prochain rendez-vous.</p><p className="mt-2 text-xs text-muted-foreground">Ces notes ne sont pas transmises automatiquement à un professionnel de santé.</p>
-        <LocalCareTimeline
-          {...(conditionId ? { conditionId } : {})}
-          {...(doctorName ? { initialProviderName: doctorName } : {})}
-          initialProviderProfession="Médecin"
-        />
-      </div>
-    </details>
-  );
 }
 
 export default Route;

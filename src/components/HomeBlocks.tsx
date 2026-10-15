@@ -1,6 +1,5 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { readStoredPathway, writeStoredPathway } from "@/lib/patient-pathway";
 import {
   AlertTriangle,
   Bot,
@@ -45,16 +44,7 @@ function KivoirCover({ onStart }: { onStart: () => void }) {
 
 export function AssistantHome({ initialStarted = false, pathway, doctorName }: { initialStarted?: boolean; pathway?: string; doctorName?: string }) {
   const [hasStarted, setHasStarted] = useState(initialStarted || Boolean(pathway));
-  const [storedPathway, setStoredPathway] = useState<string | undefined>(undefined);
-  useEffect(() => {
-    if (pathway) {
-      writeStoredPathway(pathway);
-      setStoredPathway(pathway);
-    } else {
-      setStoredPathway(readStoredPathway() ?? undefined);
-    }
-  }, [pathway]);
-  const effectivePathway = pathway ?? storedPathway;
+  const effectivePathway = pathway;
 
   if (!hasStarted) {
     return <KivoirCover onStart={() => setHasStarted(true)} />;
@@ -107,7 +97,7 @@ export function AssistantHome({ initialStarted = false, pathway, doctorName }: {
 
           <Link
             to="/parcours"
-            search={effectivePathway ? { pathway: effectivePathway, doctorName } : {}}
+            search={effectivePathway ? { pathway: effectivePathway } : {}}
             className="home-card-followup group flex min-h-48 flex-col rounded-3xl border p-4 md:min-h-0 md:p-4 text-left shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-muted text-foreground shadow-sm"><ArrowRight className="h-6 w-6" aria-hidden="true" /></span>

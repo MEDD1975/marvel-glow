@@ -62,49 +62,20 @@ export function findCondition(id: string | undefined): Condition | undefined {
 
 type DoctorIdentity = { id?: string | undefined; name?: string | undefined } | null | undefined;
 
-/** Lien encodé dans le QR : mécanisme historique /p/[parcours]?ref=…&doctorName=…&note=… conservé tel quel. */
-export function buildPatientLink(origin: string, pathway: string, doctor: DoctorIdentity, note: string) {
-  const noteParam = note.trim() ? `&note=${encodeURIComponent(note.trim())}` : "";
-  const doctorIdParam = doctor?.id ? `?ref=${encodeURIComponent(doctor.id)}` : "";
-  const doctorNameParam = doctor?.name ? `${doctorIdParam ? "&" : "?"}doctorName=${encodeURIComponent(doctor.name)}` : "";
-  return `${origin}/p/${encodeURIComponent(pathway)}${doctorIdParam}${doctorNameParam}${noteParam}`;
+/** QR public générique : uniquement l'identifiant public du cabinet et le parcours. */
+export function buildPatientLink(origin: string, pathway: string, doctor: DoctorIdentity) {
+  const params = new URLSearchParams({ pathway });
+  if (doctor?.id) params.set("ref", doctor.id);
+  return `${origin}/p/${encodeURIComponent(pathway)}?${params.toString()}`;
 }
 
-export const PREVIEW_STORAGE_KEY = "kivoir-doctor-preview";
-
-export type DoctorPreview = { pathway: string; pathwayName: string; patientLink: string };
-
-/**
- * Ouvre l'espace patient en mode prévisualisation, sans passer par /p/ pour ne pas
- * comptabiliser de scan anonyme.
- */
+/** Ouvre l'espace patient en mode prévisualisation sans stockage navigateur. */
 export function openPatientPreview(pathway: string, doctor: DoctorIdentity, section = "") {
   const condition = findCondition(pathway);
   if (!condition) return;
   const params = new URLSearchParams({ pathway });
   if (doctor?.id) params.set("ref", doctor.id);
-  if (doctor?.name) params.set("doctorName", doctor.name);
-  const preview: DoctorPreview = {
-    pathway,
-    pathwayName: condition.name,
-    patientLink: `/patient?${params.toString()}`,
-  };
-  window.sessionStorage.setItem(PREVIEW_STORAGE_KEY, JSON.stringify(preview));
   window.location.assign(`/patient${section}?${params.toString()}`);
-}
-
-export function readDoctorPreview(): DoctorPreview | null {
-  if (typeof window === "undefined") return null;
-  try {
-    const raw = window.sessionStorage.getItem(PREVIEW_STORAGE_KEY);
-    return raw ? (JSON.parse(raw) as DoctorPreview) : null;
-  } catch {
-    return null;
-  }
-}
-
-export function clearDoctorPreview() {
-  window.sessionStorage.removeItem(PREVIEW_STORAGE_KEY);
 }
 
 export function doctorGreetingName(name: string | undefined) {

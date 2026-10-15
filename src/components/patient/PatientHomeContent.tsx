@@ -3,7 +3,7 @@ import { usePatient } from "@/components/patient/PatientProvider";
 import { ActionCard, DecisionCard, LoadingState, SafetyNotice } from "@/components/patient/PatientUi";
 
 export function PatientHomeContent() {
-  const { ready, guide, hasContext, senderLabel, context } = usePatient();
+  const { ready, guide, hasContext, senderLabel } = usePatient();
   if (!ready) return <LoadingState />;
 
   return (
@@ -24,12 +24,9 @@ export function PatientHomeContent() {
         <p className="mt-2 text-pretty text-base leading-relaxed text-muted-foreground">
           Retrouvez les conseils utiles, les points à surveiller et les professionnels pouvant intervenir dans la suite de votre parcours.
         </p>
-        {context.note ? (
-          <p className="mt-4 rounded-xl bg-tone-blue px-4 py-3 text-sm text-foreground">
-            <span className="font-semibold">Consigne de votre médecin : </span>
-            {context.note}
-          </p>
-        ) : null}
+        <p className="mt-4 rounded-xl border border-border bg-card px-4 py-3 text-sm leading-relaxed text-muted-foreground">
+          Kivoir affiche un parcours d’information sélectionné par votre professionnel de santé. Aucun compte patient n’est nécessaire. Ne saisissez aucune information personnelle ou médicale.
+        </p>
       </section>
 
       <nav aria-label="L'essentiel" className="grid gap-3">

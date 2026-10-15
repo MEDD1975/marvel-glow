@@ -20,7 +20,7 @@ const pages: Record<string, { title: string; paragraphs: string[] }> = {
     title: "Confidentialité",
     paragraphs: [
       "L'espace patient ne vous demande ni votre nom, ni vos coordonnées, ni vos symptômes.",
-      "Le parcours ouvert est mémorisé sur votre appareil. Chaque scan de QR code est comptabilisé (cabinet et parcours concernés, sans information sur le patient).",
+      "Le parcours est transmis par l’URL du QR code et n’est pas mémorisé dans le navigateur. Chaque scan peut être comptabilisé uniquement pour le cabinet et le parcours concernés, sans information sur le patient.",
     ],
   },
   accessibilite: {

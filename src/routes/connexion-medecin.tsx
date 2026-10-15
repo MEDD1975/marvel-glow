@@ -15,12 +15,14 @@ function DoctorSignInPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [pending, setPending] = useState(false);
+  const [cookieBlocked, setCookieBlocked] = useState(false);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const nativeEvent = event.nativeEvent as KeyboardEvent;
     if (nativeEvent.isComposing || nativeEvent.keyCode === 229) return;
     setError("");
+    setCookieBlocked(false);
     setPending(true);
     const result = mode === "sign-up"
       ? await authClient.signUp.email({ name, email, password })
@@ -28,6 +30,11 @@ function DoctorSignInPage() {
     setPending(false);
     if (result.error) {
       setError(mode === "sign-up" ? "Impossible de créer ce compte. Vérifiez vos informations." : "Email ou mot de passe incorrect.");
+      return;
+    }
+    const { data: confirmedSession } = await authClient.getSession();
+    if (!confirmedSession?.user) {
+      setCookieBlocked(true);
       return;
     }
     await navigate({ to: "/cabinet/accueil" });
@@ -62,6 +69,17 @@ function DoctorSignInPage() {
             <input className="mt-2 w-full rounded-xl border border-border bg-background px-3 py-2.5 text-foreground outline-none focus:border-care" type="password" autoComplete="current-password" required value={password} onChange={(event) => setPassword(event.target.value)} />
           </label>
           {error ? <p role="alert" className="text-sm text-destructive">{error}</p> : null}
+          {cookieBlocked ? (
+            <div role="alert" className="rounded-xl border border-border bg-muted p-3 text-sm text-foreground">
+              <p className="font-semibold">Identifiants acceptés, mais la session n&apos;a pas pu être conservée.</p>
+              <p className="mt-1 text-muted-foreground">
+                Votre navigateur bloque les cookies dans l&apos;aperçu intégré. Ouvrez cette page dans un nouvel onglet puis reconnectez-vous.
+              </p>
+              <a href="/connexion-medecin" target="_blank" rel="noopener" className="mt-2 inline-block font-semibold text-care hover:underline">
+                Ouvrir dans un nouvel onglet
+              </a>
+            </div>
+          ) : null}
           <button className="w-full rounded-xl bg-care px-4 py-3 font-semibold text-primary-foreground disabled:opacity-60" type="submit" disabled={pending}>
             {pending ? "Patientez…" : mode === "sign-up" ? "Créer mon compte" : "Se connecter"}
           </button>

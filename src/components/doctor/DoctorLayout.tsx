@@ -18,6 +18,27 @@ function useIsActive() {
   return (to: string, exact?: boolean) => (exact ? pathname === to : pathname === to || pathname.startsWith(`${to}/`));
 }
 
+function ConnectedAccount({ compact = false }: { compact?: boolean }) {
+  const { data: session } = authClient.useSession();
+  const user = session?.user;
+  if (!user) return null;
+  if (compact) {
+    return (
+      <p className="min-w-0 truncate text-xs text-muted-foreground">
+        <span className="sr-only">Connecté en tant que </span>
+        {user.email}
+      </p>
+    );
+  }
+  return (
+    <div className="min-w-0 rounded-xl bg-muted/60 px-3 py-2">
+      <p className="text-xs text-muted-foreground">Connecté en tant que</p>
+      <p className="truncate text-sm font-medium text-foreground">{user.name || user.email}</p>
+      {user.name ? <p className="truncate text-xs text-muted-foreground">{user.email}</p> : null}
+    </div>
+  );
+}
+
 function useSignOut() {
   const navigate = useNavigate();
   return async () => {
@@ -56,6 +77,7 @@ export function DoctorSidebar() {
         })}
       </nav>
       <div className="flex flex-col gap-1 border-t border-border p-3">
+        <ConnectedAccount />
         <Link
           to="/cabinet/aide"
           aria-current={isActive("/cabinet/aide") ? "page" : undefined}
@@ -79,8 +101,11 @@ function DoctorMobileBar() {
   return (
     <>
       <header className="sticky top-0 z-40 flex items-center justify-between gap-2 border-b border-border bg-card/95 px-4 pb-2 pt-[max(0.5rem,env(safe-area-inset-top))] backdrop-blur print:hidden md:hidden">
-        <Link to="/cabinet" className="text-foreground"><Logo size="sm" /></Link>
-        <div className="flex items-center gap-1">
+        <div className="flex min-w-0 flex-col">
+          <Link to="/cabinet" className="text-foreground"><Logo size="sm" /></Link>
+          <ConnectedAccount compact />
+        </div>
+        <div className="flex shrink-0 items-center gap-1">
           <Link to="/cabinet/aide" aria-label="Aide" className={cn("flex h-11 w-11 items-center justify-center rounded-xl", isActive("/cabinet/aide") ? "bg-care/10 text-care" : "text-muted-foreground")}>
             <HelpCircle className="h-5 w-5" aria-hidden="true" />
           </Link>

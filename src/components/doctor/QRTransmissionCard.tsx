@@ -48,10 +48,13 @@ export function QRTransmissionCard({ pathwayName, zone, stats, qr, url, onFullsc
 
   const counts = stats
     ? [
-        { label: "Recommandations", value: stats.recommendations },
-        { label: "Ressources", value: stats.documents + stats.videos + stats.exercises },
-        { label: "Vidéos / exercices", value: stats.videos + stats.exercises },
+        { value: stats.recommendations, one: "recommandation", many: "recommandations" },
+        { value: stats.documents, one: "document", many: "documents" },
+        { value: stats.videos, one: "vidéo", many: "vidéos" },
+        { value: stats.exercises, one: "exercice", many: "exercices" },
       ]
+        .filter((item) => item.value > 0)
+        .map((item) => ({ label: item.value > 1 ? item.many : item.one, value: item.value }))
     : [];
 
   const secondary = "flex min-h-11 items-center justify-center gap-2 rounded-xl border border-border bg-card px-3 text-sm font-medium text-foreground transition-colors hover:bg-muted disabled:opacity-50";
@@ -81,7 +84,7 @@ export function QRTransmissionCard({ pathwayName, zone, stats, qr, url, onFullsc
         </p>
 
         {counts.length ? (
-          <dl className="mt-3 grid grid-cols-3 gap-2">
+          <dl className="mt-3 grid grid-cols-2 gap-2">
             {counts.map((item) => (
               <div key={item.label} className="rounded-xl bg-muted/60 px-2 py-2 text-center">
                 <dd className="text-lg font-semibold tabular-nums text-foreground">{item.value}</dd>

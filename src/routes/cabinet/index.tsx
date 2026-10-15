@@ -115,7 +115,7 @@ function TransmitPage() {
       <header className="-mt-2 print:hidden md:mt-0">
         <p className="text-sm font-medium text-care">{greeting ? `Bonjour ${greeting}` : "Bonjour"}</p>
         <h1 className="mt-0.5 text-balance text-xl font-semibold tracking-tight text-foreground md:text-3xl">Transmettre un parcours</h1>
-        <p className="mt-1 text-pretty text-sm text-muted-foreground md:text-base">Sélectionnez l’atteinte diagnostiquée pour afficher son QR code.</p>
+        <p className="mt-1 text-pretty text-sm text-muted-foreground md:text-base">Sélectionnez l’atteinte diagnostiquée pour transmettre le parcours correspondant.</p>
       </header>
 
       <div className={`mt-4 grid gap-5 print:hidden lg:grid-cols-[minmax(0,1fr)_340px] lg:items-start xl:grid-cols-[minmax(0,1fr)_360px] ${condition ? "pb-24 lg:pb-0" : ""}`}>

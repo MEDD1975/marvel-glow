@@ -6,7 +6,6 @@ export interface PatientCardData {
   url: string;
   qr: string | null;
   pathwayLabel?: string;
-  note?: string;
 }
 
 export interface PatientCardProps {
@@ -19,7 +18,7 @@ export interface PatientCardProps {
  * pour retrouver la prochaine étape et les consignes du professionnel.
  */
 export function PatientCard({ data, className }: PatientCardProps) {
-  const { cabinetName, doctorName, url, qr, pathwayLabel, note } = data;
+  const { cabinetName, doctorName, url, qr, pathwayLabel } = data;
 
   return (
     <div
@@ -46,9 +45,6 @@ export function PatientCard({ data, className }: PatientCardProps) {
           <li>• La suite de votre parcours</li>
           <li>• Les professionnels à consulter</li>
         </ul>
-        {note ? (
-          <p className="mt-1.5 rounded bg-care/10 px-1.5 py-1 text-[9px] font-medium leading-snug text-care">{note}</p>
-        ) : null}
         <p className="mt-1.5 truncate text-[8px] text-muted-foreground">{url}</p>
         <p className="mt-1 truncate text-[9px] font-medium text-foreground">
           {cabinetName || "Cabinet médical"}

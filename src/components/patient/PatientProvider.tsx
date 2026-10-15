@@ -1,19 +1,16 @@
-import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import { createContext, useContext, useMemo, type ReactNode } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
   contextFromSearch,
   emptyPatientContext,
-  formatDoctorName,
-  readPatientContext,
-  writePatientContext,
   type PatientContextValue,
 } from "@/lib/patient-context";
-import { claimPathway, readPathwayOwner } from "@/lib/patient-pathway";
 import { getPathwayGuide, type PathwayGuide } from "@/lib/patient-guides";
 import type { DoctorResourceRecord } from "@/lib/doctor-resource-db";
 import type { FollowUpStepRecord } from "@/lib/follow-up-db";
 import { cabinets, type Profession } from "@/lib/directory";
 import { formatAddress, formatCity, formatProfession, formatProviderName, formatStreet, isPlaceholderPhone } from "@/lib/typography";
+import { formatDoctorName } from "@/lib/patient-context";
 
 export type PatientProfessional = {
   id: string;
@@ -51,10 +48,9 @@ type PatientState = {
   hasContext: boolean;
   /** Libellé « Espace transmis par … ». */
   senderLabel: string;
-  /** Nom du médecin (« Dr X ») lorsqu'il est réellement connu. */
-  doctorLabel: string | undefined;
-  /** Identifiant du médecin : QR code, ou à défaut médecin mémorisé pour ce parcours. */
+  /** Identifiant public du cabinet transmis par le QR. */
   ownerId: string | undefined;
+  doctorLabel: string | undefined;
   cabinetName: string | undefined;
   cabinetPhone: string | undefined;
 };
@@ -67,52 +63,20 @@ let contextOpenedThisLoad = false;
 
 export function PatientProvider({
   search,
-  requireFreshContext = false,
   children,
 }: {
   search: Record<string, unknown>;
   requireFreshContext?: boolean | undefined;
   children: ReactNode;
 }) {
-  const [ready, setReady] = useState(false);
-  const [context, setContext] = useState<PatientContextValue>(emptyPatientContext);
-  const [storedOwner, setStoredOwner] = useState<string | undefined>(undefined);
-  const searchKey = JSON.stringify(contextFromSearch(search));
-
-  useEffect(() => {
-    const fromUrl = JSON.parse(searchKey) as Partial<PatientContextValue>;
-    const hasUrlContext = Object.keys(fromUrl).length > 0;
-    if (requireFreshContext && !hasUrlContext && !contextOpenedThisLoad) {
-      setStoredOwner(undefined);
-      setContext(emptyPatientContext);
-      setReady(true);
-      return;
-    }
-    contextOpenedThisLoad = true;
-    const stored = readPatientContext();
-    const switchedPathway = fromUrl.pathwayId && fromUrl.pathwayId !== stored.pathwayId;
-    const next: PatientContextValue = switchedPathway
-      ? { ...emptyPatientContext, ...fromUrl }
-      : { ...stored, ...fromUrl };
-    // Un nouveau QR fait foi : sans consigne, l'ancienne consigne est retirée.
-    if (fromUrl.pathwayId) next.note = fromUrl.note;
-    if (Object.keys(fromUrl).length) writePatientContext(next);
-    if (next.pathwayId && fromUrl.doctorId) claimPathway(next.pathwayId, fromUrl.doctorId);
-    setStoredOwner(readPathwayOwner(next.pathwayId));
-    setContext(next);
-    setReady(true);
-  }, [searchKey]);
-
-  const ownerId = context.doctorId ?? storedOwner;
+  const context = useMemo<PatientContextValue>(() => ({ ...emptyPatientContext, ...contextFromSearch(search) }), [search]);
+  const ready = true;
+  const ownerId = context.doctorId;
   const network = usePublicNetwork(ownerId);
   const guide = useMemo(() => getPathwayGuide(context.pathwayId), [context.pathwayId]);
-  const doctorLabel = formatDoctorName(context.doctorName ?? network.data?.ownerName ?? undefined);
   const cabinetName = network.data?.name;
-  const senderLabel = doctorLabel
-    ? `Espace transmis par le cabinet du ${doctorLabel}`
-    : cabinetName
-      ? `Espace transmis par ${cabinetName}`
-      : "Espace transmis par votre cabinet";
+  const doctorLabel = formatDoctorName(network.data?.ownerName ?? undefined);
+  const senderLabel = cabinetName ? `Parcours transmis par ${cabinetName}` : "Parcours transmis par votre cabinet";
   const hasContext = Boolean(context.pathwayId || ownerId);
 
   const value = useMemo<PatientState>(
@@ -122,8 +86,8 @@ export function PatientProvider({
       guide,
       hasContext,
       senderLabel,
-      doctorLabel,
       ownerId,
+      doctorLabel,
       cabinetName,
       cabinetPhone: isPlaceholderPhone(network.data?.phone) ? undefined : network.data?.phone ?? undefined,
     }),

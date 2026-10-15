@@ -30,7 +30,6 @@ type ConseilsSearch = {
   pathway?: string | undefined;
   doctor?: string | undefined;
   doctorName?: string | undefined;
-  note?: string | undefined;
   reco?: string | undefined;
 };
 
@@ -42,7 +41,6 @@ export const Route = createFileRoute("/conseils")({
     pathway: str(search["pathway"]),
     doctor: str(search["doctor"]),
     doctorName: str(search["doctorName"]),
-    note: str(search["note"]),
     reco: str(search["reco"]),
   }),
   head: () => ({
@@ -72,7 +70,7 @@ function ConseilsRoute() {
 const sectionHeading = "text-xl font-semibold tracking-tight text-foreground";
 
 function ConseilsPage({ reco }: { reco: string | undefined }) {
-  const { ready, guide, context } = usePatient();
+  const { ready, guide } = usePatient();
   const { hash } = useLocation();
 
   useEffect(() => {
@@ -118,12 +116,6 @@ function ConseilsPage({ reco }: { reco: string | undefined }) {
           Retrouvez les conseils transmis pour cette étape de votre parcours.
         </p>
         <p className="mt-3 inline-flex rounded-full bg-tone-blue px-2.5 py-0.5 text-[13px] font-medium text-care">{`Parcours : ${guide.name}`}</p>
-        {context.note ? (
-          <p className="mt-4 rounded-xl bg-tone-blue px-4 py-3 text-sm text-foreground">
-            <span className="font-semibold">Consigne de votre médecin : </span>
-            {context.note}
-          </p>
-        ) : null}
       </div>
 
       <EssentialGestures guide={guide} />
@@ -308,12 +300,7 @@ function WarningSection({ guide }: { guide: PathwayGuide }) {
               Aucun numéro de cabinet n&apos;a été transmis avec ce parcours. Contactez le professionnel de santé qui vous suit.
             </p>
           )}
-          {context.note ? (
-            <p className="rounded-xl bg-tone-blue px-4 py-3 text-sm text-foreground">
-              <span className="font-semibold">Instructions de votre médecin : </span>
-              {context.note}
-            </p>
-          ) : null}
+
           <div className="rounded-2xl border border-tone-red-border/40 bg-tone-red p-4 text-tone-red-text">
             <p className="font-semibold">En cas d&apos;urgence ou de situation qui vous paraît grave</p>
             <p className="mt-1 text-sm">Contactez les services d&apos;urgence : 15 ou 112.</p>

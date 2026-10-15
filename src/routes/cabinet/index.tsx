@@ -8,7 +8,6 @@ import { PathwaySelector } from "@/components/doctor/PathwaySelector";
 import { QRTransmissionCard } from "@/components/doctor/QRTransmissionCard";
 import { QRFullscreenModal } from "@/components/doctor/QRFullscreenModal";
 import { PathwaySummary } from "@/components/doctor/PathwaySummary";
-import { OptionalInstruction } from "@/components/doctor/OptionalInstruction";
 import { TransmitActionBar } from "@/components/doctor/TransmitActionBar";
 import { useDoctorResources, usePathwaySettings } from "@/components/doctor/use-doctor-data";
 import { buildPatientLink, doctorGreetingName, findCondition, getPathwayStats, openPatientPreview } from "@/lib/doctor-pathway-info";
@@ -33,7 +32,6 @@ function TransmitPage() {
   const settings = usePathwaySettings();
 
   const [pathway, setPathway] = useState<string | null>(() => (findCondition(search.pathway) ? search.pathway ?? null : null));
-  const [note, setNote] = useState("");
   const [qr, setQr] = useState<{ url: string; image: string | null }>({ url: "", image: null });
   const [fullscreen, setFullscreen] = useState(false);
   const qrCardRef = useRef<HTMLDivElement>(null);
@@ -51,7 +49,7 @@ function TransmitPage() {
 
   useEffect(() => {
     if (!pathway) return;
-    const target = buildPatientLink(window.location.origin, pathway, user, note);
+    const target = buildPatientLink(window.location.origin, pathway, user);
     setQr({ url: target, image: null });
     let cancelled = false;
     void import("qrcode").then(async (mod) => {
@@ -61,10 +59,9 @@ function TransmitPage() {
     return () => {
       cancelled = true;
     };
-  }, [note, pathway, user]);
+  }, [pathway, user]);
 
   const selectPathway = (id: string) => {
-    if (id !== pathway) setNote("");
     setPathway(id);
   };
 
@@ -145,7 +142,6 @@ function TransmitPage() {
           {condition && stats ? (
             <>
               <PathwaySummary stats={stats} />
-              <OptionalInstruction value={note} onChange={setNote} />
             </>
           ) : null}
         </div>
@@ -165,7 +161,7 @@ function TransmitPage() {
           <QRFullscreenModal open={fullscreen} onOpenChange={setFullscreen} qr={qr.image} pathwayName={condition.name} />
           <div className="card-section hidden">
             <div className="card-sheet hidden print:flex">
-              <PatientCard data={{ url: qr.url, qr: qr.image, cabinetName: "Cabinet médical", doctorName: "", pathwayLabel: condition.name, note }} />
+              <PatientCard data={{ url: qr.url, qr: qr.image, cabinetName: "Cabinet médical", doctorName: "", pathwayLabel: condition.name }} />
             </div>
           </div>
         </>

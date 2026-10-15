@@ -226,8 +226,8 @@ export default {
         return new Response("Method Not Allowed", { status: 405 });
       }
       if (url.pathname === "/api/scans" && request.method === "POST") {
-        const payload = await request.json() as { medecinId?: unknown; medecin_id?: unknown; ref?: unknown; doctorName?: unknown; parcoursId?: unknown };
-        const medecinId = [payload.medecinId, payload.medecin_id, payload.ref, payload.doctorName].find((value): value is string => typeof value === "string" && value.trim().length > 0);
+        const payload = await request.json() as { medecinId?: unknown; medecin_id?: unknown; ref?: unknown; parcoursId?: unknown };
+        const medecinId = [payload.medecinId, payload.medecin_id, payload.ref].find((value): value is string => typeof value === "string" && value.trim().length > 0);
         if (!medecinId || typeof payload.parcoursId !== "string" || !payload.parcoursId.trim()) return Response.json({ error: "Paramètres invalides" }, { status: 400 });
         await recordAnonymousScan(medecinId.trim().slice(0, 160), payload.parcoursId.trim().slice(0, 160));
         return Response.json({ ok: true }, { status: 201 });

@@ -21,6 +21,7 @@ function ProfessionalsPage() {
   const [form, setForm] = useState<{ open: boolean; item: Practitioner | null; key: number }>({ open: false, item: null, key: 0 });
   const [toDelete, setToDelete] = useState<Practitioner | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [selectedProfession, setSelectedProfession] = useState("Toutes les spécialités");
 
   const refresh = () => cache.invalidateQueries({ queryKey: doctorKeys.network });
   const openForm = (item: Practitioner | null) => setForm((current) => ({ open: true, item, key: current.key + 1 }));
@@ -36,6 +37,10 @@ function ProfessionalsPage() {
   };
 
   const practitioners = network.data?.practitioners ?? [];
+  const professions = Array.from(new Set(practitioners.map((item) => item.profession.trim()).filter(Boolean))).sort((a, b) => a.localeCompare(b, "fr"));
+  const filteredPractitioners = selectedProfession === "Toutes les spécialités"
+    ? practitioners
+    : practitioners.filter((item) => item.profession === selectedProfession);
   const canAdd = Boolean(network.data);
 
   return (
@@ -47,6 +52,25 @@ function ProfessionalsPage() {
       />
       <div className="mt-6 flex flex-col gap-3">
         {error ? <ErrorState message={error} /> : null}
+        {network.data && practitioners.length > 0 ? (
+          <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
+            <label htmlFor="profession-filter" className="text-sm font-semibold text-foreground">Rechercher par spécialité</label>
+            <div className="mt-2 flex flex-col gap-3 sm:flex-row sm:items-center">
+              <select
+                id="profession-filter"
+                value={selectedProfession}
+                onChange={(event) => setSelectedProfession(event.target.value)}
+                className="min-h-11 w-full rounded-xl border border-input bg-background px-3 text-sm font-medium text-foreground outline-none focus:ring-2 focus:ring-ring sm:max-w-sm"
+              >
+                <option>Toutes les spécialités</option>
+                {professions.map((profession) => <option key={profession}>{profession}</option>)}
+              </select>
+              <p className="text-sm text-muted-foreground" aria-live="polite">
+                {filteredPractitioners.length} professionnel{filteredPractitioners.length > 1 ? "s" : ""} affiché{filteredPractitioners.length > 1 ? "s" : ""}
+              </p>
+            </div>
+          </div>
+        ) : null}
         {network.isPending ? (
           <LoadingState label="Chargement de vos professionnels…" />
         ) : network.isError ? (
@@ -56,8 +80,13 @@ function ProfessionalsPage() {
         ) : !practitioners.length ? (
           <EmptyState title="Aucun professionnel recommandé" description="Ajoutez un kinésithérapeute, un podologue ou tout autre confrère." action={<button type="button" onClick={() => openForm(null)} className="min-h-11 rounded-xl bg-care px-4 text-sm font-semibold text-care-foreground">Ajouter un professionnel</button>} />
         ) : (
-          <ul className="grid gap-3 md:grid-cols-2">
-            {practitioners.map((item) => (
+          <ul className="flex max-w-3xl flex-col gap-3">
+            {filteredPractitioners.length === 0 ? (
+              <li className="rounded-2xl border border-dashed border-border bg-card p-5 text-sm text-muted-foreground">
+                Aucun professionnel n&apos;est enregistré pour cette spécialité.
+              </li>
+            ) : null}
+            {filteredPractitioners.map((item) => (
               <li key={item.id} className={`flex flex-col gap-3 rounded-2xl border bg-card p-4 shadow-sm ${item.hidden ? "border-dashed opacity-75" : "border-border"}`}>
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">

@@ -3,8 +3,6 @@ import { useEffect, useMemo, useState } from "react";
 import { ArrowLeft, ArrowRight, CheckCircle2, Circle, Clock, ListChecks, MapPin } from "lucide-react";
 import { MedicalDisclaimer } from "@/components/HomeBlocks";
 import { conditions } from "@/lib/conditions";
-import { readStoredPathway, writeStoredPathway } from "@/lib/patient-pathway";
-import { readFollowUpProgress, writeFollowUpProgress } from "@/lib/follow-up-progress";
 import type { FollowUpAnswer, FollowUpStepRecord } from "@/lib/follow-up-db";
 
 type SuiviSearch = { c?: string | undefined; pathway?: string | undefined; src?: string | undefined };
@@ -38,19 +36,9 @@ function SuiviPage() {
   const { c, pathway, src } = Route.useSearch();
   const urlValue = c ?? pathway;
   const [conditionId, setConditionId] = useState<string | undefined>(() => matchConditionId(urlValue));
-  const [hydrated, setHydrated] = useState(false);
-
   useEffect(() => {
-    if (urlValue !== undefined) {
-      const matched = matchConditionId(urlValue);
-      setConditionId(matched);
-      writeStoredPathway(matched);
-      setHydrated(true);
-    } else if (!hydrated) {
-      setConditionId(readStoredPathway() ?? undefined);
-      setHydrated(true);
-    }
-  }, [urlValue, hydrated]);
+    setConditionId(matchConditionId(urlValue));
+  }, [urlValue]);
 
   const condition = conditionId ? conditions.find((item) => item.id === conditionId) ?? null : null;
 
@@ -68,7 +56,7 @@ function SuiviPage() {
     let cancelled = false;
     setLoading(true);
     // A freshly scanned doctor card starts a new consultation follow-up.
-    setCompletedStepIds(src === "carte" ? [] : readFollowUpProgress(conditionId).completedStepIds);
+    setCompletedStepIds([]);
     void fetch(`/api/follow-up-steps?conditionId=${encodeURIComponent(conditionId)}`)
       .then(async (response) => (response.ok ? ((await response.json()) as FollowUpStepRecord[]) : []))
       .then((rows) => {
@@ -84,7 +72,6 @@ function SuiviPage() {
 
   const persist = (nextCompleted: string[]) => {
     setCompletedStepIds(nextCompleted);
-    if (conditionId) writeFollowUpProgress(conditionId, { completedStepIds: nextCompleted });
   };
 
   const completedSet = useMemo(() => new Set(completedStepIds.filter((id) => steps.some((step) => step.id === id))), [completedStepIds, steps]);

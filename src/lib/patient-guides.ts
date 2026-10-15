@@ -35,7 +35,7 @@ export type Exercise = Editorial & {
 
 export type RehabPhase = { id: string; label: string; description: string };
 
-export type CareStep = { id: string; title: string; description: string };
+export type CareStep = { id: string; title: string; description: string; status?: string };
 
 export type PathwayGuide = {
   id: string;
@@ -171,10 +171,10 @@ const entorseExercises: Exercise[] = [
 ];
 
 const careSteps: CareStep[] = [
-  { id: "consultation", title: "Consultation initiale", description: "Votre professionnel a évalué votre situation et vous a remis ce parcours." },
-  { id: "conseils", title: "Premiers conseils", description: "Suivez les recommandations et surveillez l'évolution de vos symptômes." },
-  { id: "reeducation", title: "Rééducation éventuelle", description: "Si elle vous a été prescrite, réalisez-la avec un professionnel recommandé." },
-  { id: "suivi", title: "Suivi selon l'évolution", description: "Recontactez votre cabinet si l'évolution n'est pas celle attendue." },
+  { id: "consultation", title: "Consultation initiale", description: "Votre professionnel a évalué votre situation et vous a remis ce parcours.", status: "Réalisée" },
+  { id: "recuperation", title: "Phase de récupération", description: "Suivez les recommandations et les consignes reçues." },
+  { id: "suivi", title: "Suivi professionnel", description: "À adapter selon votre évolution et les recommandations reçues." },
+  { id: "reprise", title: "Reprise des activités", description: "Progressive et selon les consignes de votre professionnel de santé." },
 ];
 
 function slug(value: string) {

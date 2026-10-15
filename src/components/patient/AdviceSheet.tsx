@@ -2,7 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { BookOpen, MessageCircleQuestion, Phone, Siren } from "lucide-react";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { emergencyNumbers } from "@/lib/patient-guides";
-import { formatPhone, phoneHref } from "@/lib/typography";
+import { contactCabinetLabel, formatPhone, phoneHref } from "@/lib/typography";
 import { usePatient } from "@/components/patient/PatientProvider";
 
 export function AdviceSheet() {
@@ -24,7 +24,7 @@ export function AdviceSheet() {
             <a href={cabinetHref} className="flex min-h-14 items-center gap-3 rounded-xl border border-border p-3 hover:bg-accent">
               <Phone className="h-5 w-5 text-care" aria-hidden="true" />
               <span>
-                <span className="block font-semibold text-foreground">{`Contacter ${cabinetName ?? "mon cabinet"}`}</span>
+                <span className="block font-semibold text-foreground">{contactCabinetLabel(cabinetName)}</span>
                 <span className="block text-sm text-muted-foreground">{formatPhone(cabinetPhone)}</span>
               </span>
             </a>
@@ -39,8 +39,9 @@ export function AdviceSheet() {
           <div className="rounded-xl border border-tone-red-border/40 bg-tone-red p-3 text-tone-red-text">
             <p className="flex items-center gap-2 font-semibold">
               <Siren className="h-5 w-5" aria-hidden="true" />
-              En cas d&apos;urgence vitale
+              En cas d&apos;urgence ou de situation qui vous paraît grave
             </p>
+            <p className="mt-1 text-sm">Contactez les services d&apos;urgence : 15 ou 112.</p>
             <div className="mt-3 grid grid-cols-2 gap-2">
               {emergencyNumbers.map((item) => (
                 <a

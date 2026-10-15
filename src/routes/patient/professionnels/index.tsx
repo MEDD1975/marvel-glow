@@ -48,7 +48,7 @@ function ProfessionalsPage() {
             type="button"
             aria-pressed={category === item}
             onClick={() => setCategory(item)}
-            className={`min-h-10 shrink-0 rounded-full border px-4 text-sm font-medium transition-colors ${
+            className={`min-h-11 shrink-0 whitespace-nowrap rounded-full border px-4 text-sm font-medium transition-colors ${
               category === item ? "border-care/30 bg-tone-blue text-care" : "border-border/70 bg-card text-foreground hover:bg-accent"
             }`}
           >
@@ -87,7 +87,6 @@ function ProfessionalsPage() {
         )}
       </div>
       <FreeChoiceNotice />
-      <p className="mt-3 text-sm text-muted-foreground">Kivoir ne prend pas de rendez-vous : contactez directement le professionnel.</p>
     </div>
   );
 }

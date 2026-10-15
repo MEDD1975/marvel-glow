@@ -8,10 +8,12 @@ import {
   writePatientContext,
   type PatientContextValue,
 } from "@/lib/patient-context";
+import { claimPathway, readPathwayOwner } from "@/lib/patient-pathway";
 import { getPathwayGuide, type PathwayGuide } from "@/lib/patient-guides";
 import type { DoctorResourceRecord } from "@/lib/doctor-resource-db";
+import type { FollowUpStepRecord } from "@/lib/follow-up-db";
 import { cabinets, type Profession } from "@/lib/directory";
-import { formatAddress } from "@/lib/typography";
+import { formatAddress, formatCity, formatProfession, formatProviderName, formatStreet, isPlaceholderPhone } from "@/lib/typography";
 
 export type PatientProfessional = {
   id: string;
@@ -23,11 +25,12 @@ export type PatientProfessional = {
   email: string | undefined;
 };
 
-type PublicNetwork = {
+export type PublicNetwork = {
   id: string;
   name: string;
   address: string;
   phone: string | null;
+  ownerName?: string | null;
   practitioners: Array<{
     id: string;
     name: string;
@@ -44,44 +47,85 @@ type PatientState = {
   ready: boolean;
   context: PatientContextValue;
   guide: PathwayGuide | null;
+  /** Vrai lorsqu'un parcours ou un cabinet a été transmis (QR code ou lien). */
+  hasContext: boolean;
   /** Libellé « Espace transmis par … ». */
   senderLabel: string;
+  /** Nom du médecin (« Dr X ») lorsqu'il est réellement connu. */
+  doctorLabel: string | undefined;
+  /** Identifiant du médecin : QR code, ou à défaut médecin mémorisé pour ce parcours. */
+  ownerId: string | undefined;
   cabinetName: string | undefined;
   cabinetPhone: string | undefined;
 };
 
 const PatientStateContext = createContext<PatientState | null>(null);
 
-export function PatientProvider({ search, children }: { search: Record<string, unknown>; children: ReactNode }) {
+// Reset on every full page load: true only once a patient page has been opened
+// during this load, so in-app navigation keeps the QR context but a direct load does not.
+let contextOpenedThisLoad = false;
+
+export function PatientProvider({
+  search,
+  requireFreshContext = false,
+  children,
+}: {
+  search: Record<string, unknown>;
+  requireFreshContext?: boolean | undefined;
+  children: ReactNode;
+}) {
   const [ready, setReady] = useState(false);
   const [context, setContext] = useState<PatientContextValue>(emptyPatientContext);
+  const [storedOwner, setStoredOwner] = useState<string | undefined>(undefined);
   const searchKey = JSON.stringify(contextFromSearch(search));
 
   useEffect(() => {
     const fromUrl = JSON.parse(searchKey) as Partial<PatientContextValue>;
+    const hasUrlContext = Object.keys(fromUrl).length > 0;
+    if (requireFreshContext && !hasUrlContext && !contextOpenedThisLoad) {
+      setStoredOwner(undefined);
+      setContext(emptyPatientContext);
+      setReady(true);
+      return;
+    }
+    contextOpenedThisLoad = true;
     const stored = readPatientContext();
     const switchedPathway = fromUrl.pathwayId && fromUrl.pathwayId !== stored.pathwayId;
     const next: PatientContextValue = switchedPathway
       ? { ...emptyPatientContext, ...fromUrl }
       : { ...stored, ...fromUrl };
     if (Object.keys(fromUrl).length) writePatientContext(next);
+    if (next.pathwayId && fromUrl.doctorId) claimPathway(next.pathwayId, fromUrl.doctorId);
+    setStoredOwner(readPathwayOwner(next.pathwayId));
     setContext(next);
     setReady(true);
   }, [searchKey]);
 
-  const network = usePublicNetwork(context.doctorId);
+  const ownerId = context.doctorId ?? storedOwner;
+  const network = usePublicNetwork(ownerId);
   const guide = useMemo(() => getPathwayGuide(context.pathwayId), [context.pathwayId]);
-  const doctorLabel = formatDoctorName(context.doctorName);
+  const doctorLabel = formatDoctorName(context.doctorName ?? network.data?.ownerName ?? undefined);
   const cabinetName = network.data?.name;
   const senderLabel = doctorLabel
     ? `Espace transmis par le cabinet du ${doctorLabel}`
     : cabinetName
       ? `Espace transmis par ${cabinetName}`
       : "Espace transmis par votre cabinet";
+  const hasContext = Boolean(context.pathwayId || ownerId);
 
   const value = useMemo<PatientState>(
-    () => ({ ready, context, guide, senderLabel, cabinetName, cabinetPhone: network.data?.phone ?? undefined }),
-    [ready, context, guide, senderLabel, cabinetName, network.data?.phone],
+    () => ({
+      ready,
+      context,
+      guide,
+      hasContext,
+      senderLabel,
+      doctorLabel,
+      ownerId,
+      cabinetName,
+      cabinetPhone: isPlaceholderPhone(network.data?.phone) ? undefined : network.data?.phone ?? undefined,
+    }),
+    [ready, context, guide, hasContext, senderLabel, doctorLabel, ownerId, cabinetName, network.data?.phone],
   );
   return <PatientStateContext.Provider value={value}>{children}</PatientStateContext.Provider>;
 }
@@ -111,16 +155,30 @@ export function usePublicNetwork(doctorId: string | undefined) {
 }
 
 export function useDoctorResources() {
-  const { context, ready } = usePatient();
+  const { context, ready, ownerId } = usePatient();
   return useQuery({
-    queryKey: ["patient-resources", context.pathwayId, context.doctorId],
+    queryKey: ["patient-resources", context.pathwayId, ownerId],
     enabled: ready && Boolean(context.pathwayId),
     staleTime: 60_000,
     queryFn: () =>
       getJson<DoctorResourceRecord[]>(
         `/api/doctor-resources?conditionId=${encodeURIComponent(context.pathwayId ?? "")}${
-          context.doctorId ? `&ownerId=${encodeURIComponent(context.doctorId)}` : ""
+          ownerId ? `&ownerId=${encodeURIComponent(ownerId)}` : ""
         }`,
+      ),
+  });
+}
+
+/** Étapes de suivi configurées par le médecin dans son espace professionnel. */
+export function useFollowUpSteps() {
+  const { context, ready, ownerId } = usePatient();
+  return useQuery({
+    queryKey: ["patient-follow-up", context.pathwayId, ownerId],
+    enabled: ready && Boolean(context.pathwayId && ownerId),
+    staleTime: 60_000,
+    queryFn: () =>
+      getJson<FollowUpStepRecord[]>(
+        `/api/follow-up-steps?conditionId=${encodeURIComponent(context.pathwayId ?? "")}&ownerId=${encodeURIComponent(ownerId ?? "")}`,
       ),
   });
 }
@@ -140,15 +198,15 @@ export function categoryOf(specialty: string): string {
 
 /** Professionnels communiqués par le cabinet, ou à défaut l'annuaire local de démonstration. */
 export function useProfessionals(): { isLoading: boolean; isError: boolean; retry: () => void; fromCabinet: boolean; professionals: PatientProfessional[] } {
-  const { context, ready } = usePatient();
-  const network = usePublicNetwork(context.doctorId);
+  const { ready, ownerId } = usePatient();
+  const network = usePublicNetwork(ownerId);
   const retry = () => void network.refetch();
   const cabinetPros: PatientProfessional[] = (network.data?.practitioners ?? []).map((item) => ({
     id: item.id,
-    name: item.name.trim(),
-    specialty: item.profession.trim(),
-    category: categoryOf(item.profession.trim()),
-    address: formatAddress([item.address, [item.postalCode, item.city].filter(Boolean).join(" ")]),
+    name: formatProviderName(item.name),
+    specialty: formatProfession(item.profession),
+    category: formatProfession(categoryOf(item.profession.trim())),
+    address: formatAddress([formatStreet(item.address, item.city), [item.postalCode, formatCity(item.city)].filter(Boolean).join(" ")]),
     phone: item.phone ?? undefined,
     email: item.email ?? undefined,
   }));

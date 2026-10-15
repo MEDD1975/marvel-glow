@@ -37,6 +37,7 @@ export function ActionCard({
   description,
   tone,
   search,
+  hash,
 }: {
   to: string;
   icon: LucideIcon;
@@ -44,12 +45,14 @@ export function ActionCard({
   description: string;
   tone: Tone;
   search?: Record<string, string> | undefined;
+  hash?: string;
 }) {
   const classes = toneClasses[tone];
   return (
     <Link
       to={to}
       {...(search ? { search } : {})}
+      {...(hash ? { hash } : {})}
       className={`flex min-h-16 items-center gap-3.5 rounded-2xl border px-4 py-3 transition-colors hover:brightness-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${classes.card}`}
     >
       <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${classes.icon}`}>
@@ -60,6 +63,50 @@ export function ActionCard({
         <span className="mt-0.5 line-clamp-2 block text-sm leading-snug text-muted-foreground">{description}</span>
       </span>
       <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground/70" aria-hidden="true" />
+    </Link>
+  );
+}
+
+export function DecisionCard({
+  to,
+  hash,
+  icon: Icon,
+  step,
+  title,
+  description,
+  action,
+  tone,
+}: {
+  to: string;
+  hash?: string;
+  icon: LucideIcon;
+  step: number;
+  title: string;
+  description: string;
+  action: string;
+  tone: Tone;
+}) {
+  const classes = toneClasses[tone];
+  return (
+    <Link
+      to={to}
+      {...(hash ? { hash } : {})}
+      className={`group flex flex-col gap-3 rounded-2xl border p-4 transition-colors md:flex-row md:items-center md:justify-between md:gap-6 hover:brightness-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${classes.card}`}
+    >
+      <span className="flex items-start gap-3.5">
+        <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${classes.icon}`}>
+          <Icon className="h-5 w-5" aria-hidden="true" />
+        </span>
+        <span className="min-w-0 flex-1">
+          <span className="block text-xs font-medium text-muted-foreground">{`Étape ${step}`}</span>
+          <span className="block text-base font-semibold leading-snug text-foreground">{title}</span>
+          <span className="mt-1 block text-sm leading-snug text-muted-foreground">{description}</span>
+        </span>
+      </span>
+      <span className="inline-flex min-h-11 shrink-0 items-center justify-between gap-2 rounded-xl bg-card/90 px-4 text-sm font-semibold text-care">
+        {action}
+        <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
+      </span>
     </Link>
   );
 }
@@ -161,7 +208,7 @@ export function FreeChoiceNotice() {
   return (
     <p className="mt-6 flex items-start gap-2.5 rounded-xl bg-muted px-4 py-3 text-sm leading-relaxed text-muted-foreground">
       <Info className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
-      <span>Vous restez libre de choisir le professionnel de santé de votre choix. Cette liste est fournie à titre indicatif.</span>
+      <span>Ces coordonnées sont communiquées à titre informatif. Vous restez libre de choisir votre professionnel de santé. Kivoir ne prend pas de rendez-vous et ne garantit pas la disponibilité des professionnels.</span>
     </p>
   );
 }

@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { ExternalLink, FileText, Globe } from "lucide-react";
 import { useDoctorResources, usePatient } from "@/components/patient/PatientProvider";
 import { EmptyState, ErrorState, LoadingState, NoPathwayState, PageHeading, SectionTitle } from "@/components/patient/PatientUi";
-import { formatDate, formatTitle } from "@/lib/typography";
+import { formatDate, formatTitle, resourceDisplayTitle } from "@/lib/typography";
 
 export const Route = createFileRoute("/patient/ressources/documents")({
   component: DocumentsPage,
@@ -49,7 +49,7 @@ function DocumentsPage() {
             <ExternalRow
               key={item.id}
               href={item.url}
-              title={formatTitle(item.title)}
+              title={resourceDisplayTitle(item.title)}
               meta={[item.contentType === "application/pdf" ? "PDF" : "Document", formatDate(item.createdAt)].filter(Boolean).join(" · ")}
               icon={<FileText className="h-5 w-5" aria-hidden="true" />}
             />

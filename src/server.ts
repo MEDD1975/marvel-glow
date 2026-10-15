@@ -167,7 +167,8 @@ export default {
         const conditionId = url.searchParams.get("conditionId") ?? undefined;
         const session = await auth.api.getSession({ headers: request.headers });
         if (request.method === "GET") {
-          return Response.json(session?.user ? await listFollowUpSteps(session.user.id, conditionId) : await listFollowUpSteps(undefined, conditionId));
+          const requestedOwner = url.searchParams.get("ownerId")?.trim().slice(0, 160) || undefined;
+          return Response.json(await listFollowUpSteps(requestedOwner ?? session?.user?.id, conditionId));
         }
         if (!session?.user) return Response.json({ error: "Votre session médecin a expiré. Reconnectez-vous." }, { status: 401 });
         if (request.method === "POST") {

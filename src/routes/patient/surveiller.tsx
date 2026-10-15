@@ -3,7 +3,7 @@ import { AlertTriangle, Phone } from "lucide-react";
 import { usePatient } from "@/components/patient/PatientProvider";
 import { LoadingState, NoPathwayState, PageHeading } from "@/components/patient/PatientUi";
 import { emergencyNumbers } from "@/lib/patient-guides";
-import { formatPhone, phoneHref } from "@/lib/typography";
+import { contactCabinetLabel, formatPhone, phoneHref } from "@/lib/typography";
 
 export const Route = createFileRoute("/patient/surveiller")({
   component: WarningPage,
@@ -30,9 +30,19 @@ function WarningPage() {
         ))}
       </ul>
 
+      {cabinetHref ? (
+        <a
+          href={cabinetHref}
+          className="mt-6 flex min-h-12 items-center justify-center gap-2 rounded-xl border border-border bg-card px-4 font-semibold text-foreground hover:bg-accent"
+        >
+          <Phone className="h-5 w-5 text-care" aria-hidden="true" />
+          {`${contactCabinetLabel(cabinetName)} · ${formatPhone(cabinetPhone) ?? ""}`}
+        </a>
+      ) : null}
+
       <section aria-labelledby="urgence-title" className="mt-6 rounded-2xl border border-tone-red-border/40 bg-tone-red p-4 text-tone-red-text">
-        <h2 id="urgence-title" className="font-semibold">En cas d&apos;urgence vitale</h2>
-        <p className="mt-1 text-sm">Appelez immédiatement les secours.</p>
+        <h2 id="urgence-title" className="font-semibold">En cas d&apos;urgence ou de situation qui vous paraît grave</h2>
+        <p className="mt-1 text-sm">Contactez les services d&apos;urgence : 15 ou 112.</p>
         <div className="mt-3 grid grid-cols-2 gap-2">
           {emergencyNumbers.map((item) => (
             <a key={item.id} href={`tel:${item.number}`} className="flex min-h-14 flex-col items-center justify-center rounded-xl bg-card text-foreground">
@@ -42,16 +52,6 @@ function WarningPage() {
           ))}
         </div>
       </section>
-
-      {cabinetHref ? (
-        <a
-          href={cabinetHref}
-          className="mt-4 flex min-h-12 items-center justify-center gap-2 rounded-xl border border-border bg-card px-4 font-semibold text-foreground hover:bg-accent"
-        >
-          <Phone className="h-5 w-5 text-care" aria-hidden="true" />
-          {`Appeler ${cabinetName ?? "mon cabinet"} · ${formatPhone(cabinetPhone) ?? ""}`}
-        </a>
-      ) : null}
     </div>
   );
 }

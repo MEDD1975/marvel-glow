@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { ExternalLink } from "lucide-react";
 import { useDoctorResources, usePatient } from "@/components/patient/PatientProvider";
 import { EmptyState, ErrorState, LoadingState, NoPathwayState, PageHeading, SectionTitle } from "@/components/patient/PatientUi";
-import { formatTitle } from "@/lib/typography";
+import { formatTitle, resourceDisplayTitle } from "@/lib/typography";
 
 export const Route = createFileRoute("/patient/ressources/videos")({
   component: VideosPage,
@@ -29,7 +29,7 @@ function VideosPage() {
               <video src={item.url} controls preload="metadata" playsInline className="aspect-video w-full bg-foreground">
                 <track kind="captions" />
               </video>
-              <p className="px-4 py-3 font-medium text-foreground">{formatTitle(item.title)}</p>
+              <p className="px-4 py-3 font-medium text-foreground">{resourceDisplayTitle(item.title)}</p>
             </li>
           ))}
         </ul>

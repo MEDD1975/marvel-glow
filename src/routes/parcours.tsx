@@ -14,8 +14,8 @@ export const Route = createFileRoute("/parcours")({
   }),
   head: () => ({
     meta: [
-      { title: "La suite de mon parcours — Kivoir" },
-      { name: "description", content: "Les prochaines étapes de votre parcours de soins et vos notes personnelles." },
+      { title: "Mes prochaines étapes — Kivoir" },
+      { name: "description", content: "Des repères dans le temps pour savoir quoi faire maintenant et quelle est la prochaine étape de votre parcours de soins." },
     ],
   }),
   component: ParcoursRoute,
@@ -76,11 +76,12 @@ function ParcoursPage() {
           <ArrowLeft className="h-4 w-4" aria-hidden="true" />
           Retour à mon espace patient
         </Link>
-        <h1 className="text-balance text-[1.625rem] font-semibold leading-tight tracking-tight text-foreground md:text-3xl">La suite de mon parcours</h1>
-        <p className="mt-2 text-pretty text-base leading-relaxed text-muted-foreground">
-          Retrouvez les grandes étapes prévues après votre consultation.
+        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-care">Le quand</p>
+        <h1 className="mt-1 text-balance text-[1.625rem] font-semibold leading-tight tracking-tight text-foreground md:text-3xl">Mes prochaines étapes</h1>
+        <p className="mt-2 max-w-2xl text-pretty text-base leading-relaxed text-muted-foreground">
+          Après votre diagnostic, retrouvez les repères dans le temps de votre parcours : quoi faire maintenant, quoi surveiller et quand revoir un professionnel.
         </p>
-        {guide ? <p className="mt-3 inline-flex rounded-full bg-tone-violet px-2.5 py-0.5 text-[13px] font-medium text-tone-violet-text">{`Parcours : ${guide.name}`}</p> : null}
+        {guide ? <p className="mt-3 inline-flex rounded-full border border-care/20 bg-tone-blue px-2.5 py-0.5 text-[13px] font-medium text-care">{`Parcours : ${guide.name}`}</p> : null}
       </div>
 
       {steps.length ? (
@@ -92,29 +93,29 @@ function ParcoursPage() {
               const last = index === steps.length - 1;
               return (
                 <li key={step.id} className="relative flex gap-4 pb-6 last:pb-0">
-                  {!last ? <span aria-hidden="true" className="absolute left-[15px] top-9 h-[calc(100%-2.25rem)] w-0.5 rounded-full bg-tone-violet-border/40" /> : null}
+                  {!last ? <span aria-hidden="true" className="absolute left-[15px] top-9 h-[calc(100%-2.25rem)] w-0.5 rounded-full bg-care/20" /> : null}
                   <span
                     className={`relative z-10 flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-semibold ${
-                      done ? "bg-tone-violet-text text-card" : "border-2 border-tone-violet-border/60 bg-card text-tone-violet-text"
+                      done ? "bg-care text-primary-foreground" : "border-2 border-care/40 bg-card text-care"
                     }`}
                     aria-hidden="true"
                   >
                     {done ? <Check className="h-4 w-4" /> : index + 1}
                   </span>
-                  <div className="min-w-0 flex-1 rounded-2xl border border-tone-violet-border/30 bg-tone-violet/50 p-4">
+                  <div className={`min-w-0 flex-1 rounded-2xl border p-4 shadow-[0_1px_3px_rgba(16,28,51,0.04)] ${index === 0 ? "border-care/30 bg-tone-blue/50" : "border-border bg-card"}`}>
                     <div className="flex flex-wrap items-center gap-2">
                       <h3 className="text-base font-semibold leading-snug text-foreground">{step.title}</h3>
-                      {step.status ? <span className="rounded-full bg-card px-2 py-0.5 text-xs font-medium text-tone-violet-text">{step.status}</span> : null}
+                      {step.status ? <span className="rounded-full bg-care/10 px-2 py-0.5 text-xs font-medium text-care">{step.status}</span> : null}
                     </div>
                     <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{step.description}</p>
-                    {step.delay ? <p className="mt-1.5 text-xs font-medium text-tone-violet-text">{step.delay}</p> : null}
+                    {step.delay ? <p className="mt-2 text-xs font-semibold text-care">{step.delay}</p> : null}
                   </div>
                 </li>
               );
             })}
           </ol>
           <p className="mt-3 text-xs text-muted-foreground">
-            {doctorSteps.length ? "Étapes définies par votre médecin." : "Étapes indicatives, en attente de personnalisation par votre cabinet."}
+            {doctorSteps.length ? "Repères transmis par votre médecin." : "Repères indicatifs selon votre atteinte, à confirmer avec votre professionnel de santé."}
           </p>
         </section>
       ) : (

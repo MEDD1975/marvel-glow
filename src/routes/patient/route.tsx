@@ -1,6 +1,5 @@
 import { createFileRoute, Outlet } from "@tanstack/react-router";
-import { PatientProvider } from "@/components/patient/PatientProvider";
-import { BottomNavigation, KivoirHeader } from "@/components/patient/PatientChrome";
+import { PatientShell } from "@/components/patient/PatientShell";
 
 export const Route = createFileRoute("/patient")({
   head: () => ({
@@ -15,14 +14,8 @@ export const Route = createFileRoute("/patient")({
 function PatientLayout() {
   const search = Route.useSearch() as Record<string, unknown>;
   return (
-    <PatientProvider search={search}>
-      <div className="min-h-dvh bg-background">
-        <KivoirHeader />
-        <main className="mx-auto max-w-2xl pb-[calc(env(safe-area-inset-bottom)+6.5rem)] pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))] pt-6">
-          <Outlet />
-        </main>
-        <BottomNavigation />
-      </div>
-    </PatientProvider>
+    <PatientShell search={search}>
+      <Outlet />
+    </PatientShell>
   );
 }

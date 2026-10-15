@@ -21,11 +21,6 @@ export const Route = createFileRoute("/")({
 });
 
 function HomePage() {
-  const { pathway, doctorName } = Route.useSearch();
-
-  return (
-    <main className="mx-auto w-full max-w-md px-4 pt-6 pb-12 md:max-w-xl">
-      <PatientLanding {...(pathway ? { pathway } : {})} {...(doctorName ? { doctorName } : {})} />
-    </main>
-  );
+  const search = Route.useSearch();
+  return <PatientLanding search={search} />;
 }

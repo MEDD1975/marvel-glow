@@ -1,22 +1,12 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import {
-  ArrowLeft,
-  ArrowRight,
-  MapPin,
-  Navigation,
-  Phone,
-  Search,
-  Stethoscope,
-} from "lucide-react";
-import { MedicalDisclaimer } from "@/components/HomeBlocks";
-import {
-  professionColor,
-  professionOrder,
-  isProfession,
-  type Profession,
-  type Cabinet,
-} from "@/lib/directory";
+import { ArrowLeft, ArrowRight, ChevronRight, MapPin, Navigation, Phone, Search, ShieldCheck, Users } from "lucide-react";
+import { PatientShell } from "@/components/patient/PatientShell";
+import { categoryOf, usePatient } from "@/components/patient/PatientProvider";
+import { EmptyState, LoadingState } from "@/components/patient/PatientUi";
+import { professionOrder, isProfession, type Profession, type Cabinet } from "@/lib/directory";
+import { formatDoctorName } from "@/lib/patient-context";
+import { formatPhone, phoneHref } from "@/lib/typography";
 
 type PublicNetwork = {
   id: string;
@@ -26,6 +16,8 @@ type PublicNetwork = {
   ownerName: string | null;
   practitioners: Array<{ id: string; name: string; profession: string; phone: string | null; email: string | null; address: string | null; postalCode: string | null; city: string | null }>;
 };
+
+type Provider = Cabinet["providers"][number];
 
 function parseNetworkAddress(value: string) {
   const match = value.match(/^(.*?),\s*(\d{5})\s+(.+)$/);
@@ -84,6 +76,7 @@ type Search = {
   cabinet?: string | undefined;
   profession?: Profession | undefined;
   doctor?: string | undefined;
+  pro?: string | undefined;
 };
 
 function normalizeSearchValue(value: string): string {
@@ -103,23 +96,33 @@ function cabinetMatchesQuery(cabinet: Cabinet, query: string): boolean {
   return matchesCabinet || matchesOwner || matchesPractitioner;
 }
 
-function usePublicCabinets(previewCabinetId?: string) {
+/** Charge un cabinet par identifiant, les cabinets d'un médecin, ou tous les cabinets publics. */
+function usePublicCabinets(options: { id?: string | undefined; owner?: string | undefined; enabled?: boolean }) {
+  const { id, owner, enabled = true } = options;
   const [publicCabinets, setPublicCabinets] = useState<Cabinet[] | null>(null);
   useEffect(() => {
+    if (!enabled) return;
     let active = true;
-    const endpoint = previewCabinetId
-      ? `/api/public-networks?id=${encodeURIComponent(previewCabinetId)}`
-      : "/api/public-networks";
+    setPublicCabinets(null);
+    const endpoint = id
+      ? `/api/public-networks?id=${encodeURIComponent(id)}`
+      : owner
+        ? `/api/public-networks?owner=${encodeURIComponent(owner)}`
+        : "/api/public-networks";
     void fetch(endpoint)
-      .then((response) => response.ok ? response.json() : null)
+      .then((response) => (response.ok ? response.json() : null))
       .then((data: PublicNetwork | PublicNetwork[] | null) => {
         if (!active) return;
         const networks = Array.isArray(data) ? data : data ? [data] : [];
         setPublicCabinets(toCabinets(networks));
       })
-      .catch(() => { if (active) setPublicCabinets([]); });
-    return () => { active = false; };
-  }, [previewCabinetId]);
+      .catch(() => {
+        if (active) setPublicCabinets([]);
+      });
+    return () => {
+      active = false;
+    };
+  }, [id, owner, enabled]);
   return publicCabinets;
 }
 
@@ -131,42 +134,300 @@ export const Route = createFileRoute("/annuaire")({
         ? search["profession"]
         : undefined,
     doctor: typeof search["doctor"] === "string" ? search["doctor"] : undefined,
+    pro: typeof search["pro"] === "string" ? search["pro"] : undefined,
   }),
   head: () => ({
     meta: [
-      { title: "Réseau professionnel à Saint-Maur-des-Fossés — Kivoir" },
+      { title: "Professionnels recommandés — Kivoir" },
       {
         name: "description",
-        content:
-          "Dites où vous en êtes de votre parcours : Kivoir affiche les professionnels partenaires disponibles à Saint-Maur-des-Fossés.",
+        content: "Les professionnels de santé communiqués par votre cabinet pour la suite de votre parcours, avec leurs coordonnées.",
       },
-      {
-        property: "og:title",
-        content: "Prochaine étape et professionnels à Saint-Maur-des-Fossés — Kivoir",
-      },
-      {
-        property: "og:description",
-        content:
-          "Kiné, podologue, imagerie, rhumatologue, chirurgien : qui voir ensuite et où, près de chez vous à Saint-Maur-des-Fossés.",
-      },
+      { property: "og:title", content: "Professionnels recommandés — Kivoir" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
   }),
-  component: AnnuairePage,
+  component: AnnuaireRoute,
 });
 
-function CabinetChooser({ invalidId, profession, doctor }: { invalidId?: string; profession?: Profession; doctor?: string }) {
+function AnnuaireRoute() {
+  const search = Route.useSearch();
+  return (
+    <PatientShell search={search as Record<string, unknown>}>
+      <AnnuairePage />
+    </PatientShell>
+  );
+}
+
+const DISCLAIMER =
+  "Les coordonnées sont communiquées à titre informatif. Kivoir ne prend pas de rendez-vous et ne garantit pas la disponibilité des professionnels.";
+
+function specialtyLabel(provider: Provider) {
+  const category = categoryOf(provider.profession);
+  if (category === "Imagerie médicale" && /centre|imagerie|radiolog/i.test(provider.name)) return "Imagerie médicale";
+  return provider.profession;
+}
+
+function directionsUrl(provider: Provider) {
+  return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(
+    `${provider.name} ${provider.address} ${provider.postalCode} ${provider.city}`,
+  )}`;
+}
+
+function BackToHome() {
+  return (
+    <Link
+      to="/patient"
+      className="-ml-2 mb-2 inline-flex min-h-11 items-center gap-1.5 rounded-lg px-2 text-sm font-medium text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+    >
+      <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+      Retour à mon espace patient
+    </Link>
+  );
+}
+
+function AnnuairePage() {
+  const { cabinet: cabinetId, profession, doctor, pro } = Route.useSearch();
+  const { ready, ownerId, doctorLabel } = usePatient();
+  const [searchOpen, setSearchOpen] = useState(Boolean(doctor));
+  const hasSource = Boolean(cabinetId || ownerId);
+  const cabinets = usePublicCabinets({ id: cabinetId, owner: cabinetId ? undefined : ownerId, enabled: ready && hasSource });
+  const selected = cabinetId ? cabinets?.find((item) => item.id === cabinetId) ?? null : cabinets?.[0] ?? null;
+
+  if (!ready || (hasSource && cabinets === null)) return <LoadingState />;
+
+  if (!selected || !selected.providers.length) {
+    return (
+      <div className="flex flex-col gap-6">
+        <div>
+          <BackToHome />
+          <h1 className="text-balance text-[1.625rem] font-semibold leading-tight tracking-tight text-foreground md:text-3xl">
+            Aucun cabinet n&apos;est associé à votre parcours
+          </h1>
+          <p className="mt-2 text-pretty text-base leading-relaxed text-muted-foreground">
+            {cabinetId
+              ? "Ce lien ne correspond à aucun cabinet disponible. Recherchez votre médecin pour afficher les professionnels qu'il recommande."
+              : "Pour afficher les professionnels recommandés, utilisez le QR code remis par votre cabinet ou recherchez votre médecin."}
+          </p>
+        </div>
+        <CabinetSearch profession={profession} doctor={doctor} />
+      </div>
+    );
+  }
+
+  const ownerName = formatDoctorName(selected.searchNames?.[0]) ?? doctorLabel;
+  const provider = pro ? selected.providers.find((item) => item.id === pro) : undefined;
+  if (provider) return <ProviderDetail provider={provider} />;
+
+  return (
+    <div className="flex flex-col gap-6">
+      <div>
+        <BackToHome />
+        <h1 className="text-balance text-[1.625rem] font-semibold leading-tight tracking-tight text-foreground md:text-3xl">Professionnels recommandés</h1>
+        <p className="mt-2 text-pretty text-base leading-relaxed text-muted-foreground">
+          Retrouvez les professionnels pouvant intervenir dans la suite de votre parcours.
+        </p>
+        {ownerName ? (
+          <p className="mt-3 flex items-center gap-1.5 text-[13px] font-medium text-tone-green-text">
+            <ShieldCheck className="h-4 w-4" aria-hidden="true" />
+            {`Coordonnées communiquées par le cabinet du ${ownerName}`}
+          </p>
+        ) : null}
+      </div>
+
+      <ProviderList providers={selected.providers} initialProfession={profession} />
+
+      <p className="rounded-xl bg-muted px-4 py-3 text-xs leading-relaxed text-muted-foreground">{DISCLAIMER}</p>
+      <aside className="text-xs leading-5 text-muted-foreground" aria-label="Information sur les coordonnées du réseau professionnel">
+        Un professionnel référencé peut demander à tout moment la modification ou la suppression de ses données en écrivant à{" "}
+        <a className="font-medium text-foreground underline underline-offset-2 hover:text-care" href="mailto:support@kivoir.fr">support@kivoir.fr</a>.
+      </aside>
+
+      {searchOpen ? (
+        <CabinetSearch profession={profession} doctor={doctor} />
+      ) : (
+        <button
+          type="button"
+          onClick={() => setSearchOpen(true)}
+          className="inline-flex min-h-11 items-center justify-center gap-2 self-start rounded-xl border border-border bg-card px-4 text-sm font-medium text-foreground hover:bg-accent"
+        >
+          <Search className="h-4 w-4" aria-hidden="true" />
+          Retrouver un autre cabinet
+        </button>
+      )}
+    </div>
+  );
+}
+
+function ProviderList({ providers, initialProfession }: { providers: Provider[]; initialProfession: Profession | undefined }) {
+  const [filter, setFilter] = useState<string | null>(initialProfession ? categoryOf(initialProfession) : null);
+  const categories = useMemo(() => {
+    const ordered = professionOrder
+      .filter((item) => providers.some((provider) => provider.profession === item))
+      .map((item) => categoryOf(item));
+    return Array.from(new Set(ordered));
+  }, [providers]);
+  const list = useMemo(
+    () =>
+      providers
+        .filter((provider) => !filter || categoryOf(provider.profession) === filter)
+        .sort((a, b) => a.name.localeCompare(b.name, "fr")),
+    [providers, filter],
+  );
+
+  const chip = (active: boolean) =>
+    `inline-flex min-h-10 shrink-0 items-center rounded-full border px-4 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
+      active ? "border-care bg-care text-care-foreground" : "border-border bg-card text-foreground hover:bg-accent"
+    }`;
+
+  return (
+    <section aria-label="Liste des professionnels">
+      {categories.length > 1 ? (
+        <div role="group" aria-label="Filtrer par spécialité" className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 [scrollbar-width:none]">
+          <button type="button" aria-pressed={filter === null} onClick={() => setFilter(null)} className={chip(filter === null)}>
+            Tous
+          </button>
+          {categories.map((category) => (
+            <button key={category} type="button" aria-pressed={filter === category} onClick={() => setFilter(filter === category ? null : category)} className={chip(filter === category)}>
+              {category}
+            </button>
+          ))}
+        </div>
+      ) : null}
+
+      {list.length ? (
+        <ul className="mt-4 grid gap-3 md:grid-cols-2">
+          {list.map((provider) => (
+            <li key={provider.id}>
+              <ProviderCard provider={provider} />
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <div className="mt-4">
+          <EmptyState title="Aucun professionnel pour ce filtre" description="Choisissez une autre spécialité ou affichez tous les professionnels." />
+        </div>
+      )}
+    </section>
+  );
+}
+
+function ProviderCard({ provider }: { provider: Provider }) {
+  const tel = phoneHref(provider.phone);
+  return (
+    <article className="flex h-full flex-col rounded-2xl border border-border bg-card p-4">
+      <p className="text-xs font-semibold uppercase tracking-wide text-care">{specialtyLabel(provider)}</p>
+      <h2 className="mt-1 text-base font-semibold leading-snug text-foreground">{provider.name}</h2>
+      {provider.city ? (
+        <p className="mt-1 flex items-center gap-1.5 text-sm text-muted-foreground">
+          <MapPin className="h-4 w-4 shrink-0" aria-hidden="true" />
+          {provider.city}
+        </p>
+      ) : null}
+      <div className="mt-4 grid grid-cols-2 gap-2">
+        {tel ? (
+          <a href={tel} className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-xl bg-primary px-3 text-sm font-semibold text-primary-foreground hover:bg-primary/90">
+            <Phone className="h-4 w-4" aria-hidden="true" />
+            Appeler
+          </a>
+        ) : null}
+        <a
+          href={directionsUrl(provider)}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={`inline-flex min-h-11 items-center justify-center gap-1.5 rounded-xl border border-border bg-card px-3 text-sm font-semibold text-foreground hover:bg-accent ${tel ? "" : "col-span-2"}`}
+        >
+          <Navigation className="h-4 w-4" aria-hidden="true" />
+          Itinéraire
+        </a>
+      </div>
+      <Link
+        to="/annuaire"
+        search={(prev: Search) => ({ ...prev, pro: provider.id })}
+        className="mt-2 inline-flex min-h-11 items-center justify-center gap-1 rounded-xl text-sm font-medium text-care hover:bg-tone-blue"
+      >
+        Voir la fiche
+        <ChevronRight className="h-4 w-4" aria-hidden="true" />
+      </Link>
+    </article>
+  );
+}
+
+function ProviderDetail({ provider }: { provider: Provider }) {
+  const tel = phoneHref(provider.phone);
+  return (
+    <article className="flex flex-col gap-6">
+      <div>
+        <Link
+          to="/annuaire"
+          search={(prev: Search) => ({ ...prev, pro: undefined })}
+          className="-ml-2 mb-2 inline-flex min-h-11 items-center gap-1.5 rounded-lg px-2 text-sm font-medium text-muted-foreground hover:text-foreground"
+        >
+          <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+          Retour aux professionnels
+        </Link>
+        <p className="text-xs font-semibold uppercase tracking-wide text-care">{specialtyLabel(provider)}</p>
+        <h1 className="mt-1 text-balance text-[1.625rem] font-semibold leading-tight tracking-tight text-foreground">{provider.name}</h1>
+      </div>
+
+      <dl className="flex flex-col gap-4 rounded-2xl border border-border bg-card p-4">
+        {provider.cabinetName ? (
+          <div>
+            <dt className="text-xs font-medium text-muted-foreground">Établissement</dt>
+            <dd className="mt-0.5 text-base text-foreground">{provider.cabinetName}</dd>
+          </div>
+        ) : null}
+        <div>
+          <dt className="text-xs font-medium text-muted-foreground">Adresse</dt>
+          <dd className="mt-0.5 text-base text-foreground">
+            <address className="not-italic">
+              {provider.address}
+              <br />
+              {[provider.postalCode, provider.city].filter(Boolean).join(" ")}
+            </address>
+          </dd>
+        </div>
+        {tel ? (
+          <div>
+            <dt className="text-xs font-medium text-muted-foreground">Téléphone</dt>
+            <dd className="mt-0.5 text-base text-foreground">{formatPhone(provider.phone)}</dd>
+          </div>
+        ) : null}
+      </dl>
+
+      <div className="grid gap-2 sm:grid-cols-2">
+        {tel ? (
+          <a href={tel} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-primary px-4 font-semibold text-primary-foreground hover:bg-primary/90">
+            <Phone className="h-5 w-5" aria-hidden="true" />
+            Appeler
+          </a>
+        ) : null}
+        <a
+          href={directionsUrl(provider)}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-border bg-card px-4 font-semibold text-foreground hover:bg-accent"
+        >
+          <Navigation className="h-5 w-5" aria-hidden="true" />
+          Itinéraire
+        </a>
+      </div>
+
+      <p className="rounded-xl bg-muted px-4 py-3 text-xs leading-relaxed text-muted-foreground">{DISCLAIMER}</p>
+    </article>
+  );
+}
+
+function CabinetSearch({ profession, doctor }: { profession: Profession | undefined; doctor: string | undefined }) {
   const navigate = useNavigate({ from: "/annuaire" });
-  const publicCabinets = usePublicCabinets();
+  const publicCabinets = usePublicCabinets({});
   const sourceCabinets = publicCabinets ?? [];
   const [query, setQuery] = useState(doctor ?? "");
   const [submittedQuery, setSubmittedQuery] = useState(doctor ?? "");
   const trimmed = query.trim();
   const matches = useMemo(
-    () => (submittedQuery.length >= 2
-      ? sourceCabinets.filter((cabinet) => cabinetMatchesQuery(cabinet, submittedQuery))
-      : []),
+    () => (submittedQuery.length >= 2 ? sourceCabinets.filter((cabinet) => cabinetMatchesQuery(cabinet, submittedQuery)) : []),
     [sourceCabinets, submittedQuery],
   );
   const doctorSuggestions = useMemo(
@@ -181,286 +442,73 @@ function CabinetChooser({ invalidId, profession, doctor }: { invalidId?: string;
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const found = sourceCabinets.filter((cabinet) => cabinetMatchesQuery(cabinet, trimmed));
-
     if (found.length === 1) {
       navigate({ search: { cabinet: found[0]!.id, profession } as Search, resetScroll: false });
       return;
     }
-
     setSubmittedQuery(trimmed);
     navigate({ search: { doctor: trimmed, profession } as Search, resetScroll: false });
   }
 
   return (
-    <main className="mx-auto max-w-3xl px-4 py-10 md:py-16">
-      <Link
-        to="/"
-        search={{ started: true }}
-        aria-label="Retourner à l’espace patient"
-        className="mb-6 inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-      >
-        <ArrowLeft className="h-4 w-4" aria-hidden="true" />
-        Retour à mon espace patient
-      </Link>
-      <div className="rounded-2xl border border-border bg-card p-6 shadow-sm md:p-8">
-        <span className="inline-flex rounded-full bg-care/10 px-3 py-1 text-xs font-semibold text-care">
-          Professionnels recommandés
-        </span>
-        <h1 className="mt-4 text-2xl font-semibold text-balance text-foreground md:text-3xl">
-          {invalidId ? "Ce cabinet n’est pas disponible" : "Retrouvez les professionnels recommandés par votre médecin"}
-        </h1>
-        <p className="mt-2 max-w-xl leading-6 text-muted-foreground">
-          {invalidId
-            ? `L’identifiant « ${invalidId} » ne correspond à aucun cabinet. Saisissez le nom de votre médecin pour retrouver les professionnels qu’il recommande.`
-            : "Entrez le nom de votre médecin pour afficher les professionnels qu’il recommande."}
-        </p>
-
-        <form className="mt-6" onSubmit={handleSubmit}>
-          <div className="flex items-center gap-2 rounded-xl border border-border bg-background px-3 py-2 focus-within:border-care/60">
-            <Search className="h-4 w-4 shrink-0 text-muted-foreground" />
-            <input
-              id="doctor-search"
-              type="text"
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-              list="doctor-name-suggestions"
-              autoComplete="off"
-              className="w-full bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground"
-            />
-            <datalist id="doctor-name-suggestions">
-              {doctorSuggestions.map((name) => (
-                <option key={name} value={name} />
-              ))}
-            </datalist>
-          </div>
-          <p className="mt-2 text-xs leading-5 text-muted-foreground">
-            Saisissez le nom de votre médecin, par exemple Dr A ou Dr B, puis cliquez sur Valider pour retrouver son réseau.
-          </p>
+    <section aria-labelledby="cabinet-search-title" className="rounded-2xl border border-border bg-card p-4">
+      <h2 id="cabinet-search-title" className="flex items-center gap-2 text-base font-semibold text-foreground">
+        <Users className="h-5 w-5 text-care" aria-hidden="true" />
+        Rechercher un cabinet
+      </h2>
+      <form className="mt-3" onSubmit={handleSubmit}>
+        <label htmlFor="doctor-search" className="text-sm text-muted-foreground">
+          Nom de votre médecin
+        </label>
+        <div className="mt-1.5 flex gap-2">
+          <input
+            id="doctor-search"
+            type="text"
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            list="doctor-name-suggestions"
+            autoComplete="off"
+            placeholder="Ex. Dr Martin"
+            className="min-h-11 w-full min-w-0 rounded-xl border border-border bg-background px-3 text-base text-foreground outline-none placeholder:text-muted-foreground focus:border-care/60 focus:ring-2 focus:ring-ring/30"
+          />
           <button
             type="submit"
             disabled={trimmed.length < 2}
-            className="mt-3 inline-flex items-center justify-center rounded-xl bg-care px-4 py-2.5 text-sm font-semibold text-care-foreground transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+            className="inline-flex min-h-11 shrink-0 items-center justify-center rounded-xl bg-primary px-4 text-sm font-semibold text-primary-foreground hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            Valider
+            Rechercher
           </button>
-        </form>
-
-        <div className="mt-6 flex flex-col gap-3">
-          {hasSearched && matches.length === 0 ? (
-            <p className="rounded-xl border border-dashed border-border bg-background p-4 text-sm text-muted-foreground">
-              Aucun médecin ne correspond à « {trimmed} » dans nos réseaux. Vérifiez l’orthographe ou essayez seulement le nom de famille.
-            </p>
-          ) : null}
-          {matches.map((cabinet) => {
-            const match = cabinet.providers.find((provider) =>
-              provider.profession === "Médecin généraliste" || provider.profession === "Médecin du sport",
-            ) ?? cabinet.providers[0];
-            return (
-              <Link
-                key={cabinet.id}
-                to="/annuaire"
-                search={{ cabinet: cabinet.id, profession }}
-                className="flex items-center justify-between gap-4 rounded-xl border border-border bg-background p-4 transition-colors hover:border-care/50"
-              >
-                <div>
-                  <p className="font-semibold text-foreground">{cabinet.name}</p>
-                  {match ? <p className="mt-1 text-sm text-care">{match.name}</p> : null}
-                  <p className="mt-1 text-sm text-muted-foreground">
-                    {cabinet.providers.length} professionnel{cabinet.providers.length > 1 ? "s" : ""} dans ce réseau
-                  </p>
-                </div>
-                <ArrowRight className="h-5 w-5 shrink-0 text-care" />
-              </Link>
-            );
-          })}
         </div>
-      </div>
-    </main>
-  );
-}
+        <datalist id="doctor-name-suggestions">
+          {doctorSuggestions.map((name) => (
+            <option key={name} value={name} />
+          ))}
+        </datalist>
+      </form>
 
-  function AnnuairePage() {
-    const { cabinet: cabinetId, profession, doctor } = Route.useSearch();
-    const navigate = useNavigate();
-    const publicCabinets = usePublicCabinets(cabinetId);
-  const sourceCabinets = publicCabinets ?? [];
-  const [professionFilter, setProfessionFilter] = useState<Profession | null>(profession ?? null);
-
-  const selectedCabinet = sourceCabinets.find((cabinet) => cabinet.id === cabinetId) ?? null;
-  const cabinetProviders = selectedCabinet?.providers ?? [];
-
-  const availableProfessions = professionOrder.filter((profession) =>
-    cabinetProviders.some((provider) => provider.profession === profession),
-  );
-
-  const list = useMemo(() => {
-    const base = cabinetProviders.filter((provider) => {
-      if (professionFilter) return provider.profession === professionFilter;
-      return true;
-    });
-    return [...base].sort((a, b) => {
-      return a.name.localeCompare(b.name, "fr");
-    });
-  }, [cabinetProviders, professionFilter]);
-
-  if (cabinetId && publicCabinets === null) {
-    return null;
-  }
-
-  if (!selectedCabinet) {
-    return <CabinetChooser {...(cabinetId ? { invalidId: cabinetId } : {})} {...(profession ? { profession } : {})} {...(doctor ? { doctor } : {})} />;
-  }
-
-  return (
-    <main className="mx-auto max-w-5xl px-4 py-10">
-      {cabinetId && (
-        <Link
-          to="/cabinet"
-          className="mb-6 inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-        >
-          <ArrowLeft className="h-4 w-4" aria-hidden="true" />
-          Retour à mon espace professionnel de santé
-        </Link>
-      )}
-      <div className="flex flex-wrap items-center gap-2">
-        <p className="inline-flex items-center gap-1.5 rounded-full bg-care/10 px-3 py-1 text-xs font-medium text-care">
-          <MapPin className="h-3.5 w-3.5" /> Saint-Maur-des-Fossés (94)
-        </p>
-        <Link
-          to="/annuaire"
-          search={{}}
-          className="rounded-full border border-border bg-card px-3 py-1 text-xs font-medium text-muted-foreground hover:text-foreground"
-        >
-          Changer de cabinet
-        </Link>
-      </div>
-      <h1 className="mt-3 text-2xl font-semibold text-balance text-foreground md:text-3xl">
-        {selectedCabinet.name}
-      </h1>
-      <p className="mt-2 max-w-2xl text-muted-foreground">
-        Retrouvez les professionnels du réseau de soins proposé par ce cabinet à Saint-Maur.
-      </p>
-
-      <section className="mt-6">
-        <h2 className="text-lg font-semibold text-foreground">Professionnels recommandés</h2>
-        <div className="mt-3 flex flex-wrap gap-2">
-          <button
-            onClick={() => setProfessionFilter(null)}
-            className={`rounded-full border px-3 py-1.5 text-xs transition-colors ${
-              professionFilter === null ? "border-foreground bg-foreground text-background" : "border-border bg-card text-muted-foreground hover:text-foreground"
-            }`}
+      <div className="mt-4 flex flex-col gap-2">
+        {hasSearched && matches.length === 0 ? (
+          <p className="rounded-xl bg-muted px-4 py-3 text-sm text-muted-foreground">
+            {`Aucun médecin ne correspond à « ${submittedQuery} ». Vérifiez l'orthographe ou essayez seulement le nom de famille.`}
+          </p>
+        ) : null}
+        {matches.map((cabinet) => (
+          <Link
+            key={cabinet.id}
+            to="/annuaire"
+            search={{ cabinet: cabinet.id, profession }}
+            className="flex min-h-14 items-center justify-between gap-3 rounded-xl border border-border bg-background px-4 py-3 hover:bg-accent"
           >
-            Tous les professionnels
-          </button>
-          {availableProfessions.map((profession) => {
-            const active = professionFilter === profession;
-            return (
-              <button
-                key={profession}
-                onClick={() => setProfessionFilter(active ? null : profession)}
-                className="rounded-full border px-3 py-1.5 text-xs transition-colors"
-                style={active ? { backgroundColor: professionColor[profession], color: "#fff", borderColor: professionColor[profession] } : { borderColor: "var(--border)", color: professionColor[profession] }}
-              >
-                {profession}
-              </button>
-            );
-          })}
-        </div>
-      </section>
-
-      <section className="mt-8">
-
-        {list.length > 0 ? (
-          <ul className="mt-4 grid gap-4 md:grid-cols-2">
-            {list.map((provider) => (
-              <li
-                key={provider.id}
-                className="flex min-w-0 flex-col rounded-2xl border border-border bg-card p-5 shadow-sm"
-              >
-                <div className="flex items-start gap-3">
-                  <span
-                    className="mt-1.5 h-3 w-3 shrink-0 rounded-full"
-                    style={{ backgroundColor: professionColor[provider.profession] }}
-                  />
-                  <div className="min-w-0">
-                    <h3 className="font-semibold text-balance text-foreground">{provider.name}</h3>
-                    <p
-                      className="mt-1 text-xs font-semibold"
-                      style={{ color: professionColor[provider.profession] }}
-                    >
-                      {provider.profession}
-                    </p>
-                  </div>
-                </div>
-
-                <a
-                  href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-                    `${provider.name} ${provider.address} ${provider.postalCode} ${provider.city}`,
-                  )}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-4 block rounded-lg text-left outline-none transition-colors hover:text-muted-foreground focus-visible:ring-2 focus-visible:ring-foreground"
-                  aria-label={`Ouvrir l'adresse de ${provider.name} dans Maps`}
-                >
-                  <address className="not-italic text-sm leading-6 text-muted-foreground">
-                    {provider.address}
-                    <br />
-                    {provider.postalCode} {provider.city}
-                  </address>
-                </a>
-
-                <div className="mt-auto flex flex-wrap items-center gap-2 pt-4">
-                  {provider.phone && (
-                    <a
-                      href={`tel:${provider.phone}`}
-                      className="inline-flex items-center gap-1.5 rounded-full bg-urgent/10 px-2.5 py-1 text-xs font-semibold text-urgent"
-                    >
-                      <Phone className="h-3.5 w-3.5" /> {provider.formattedPhone}
-                    </a>
-                  )}
-                  <a
-                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-                      `${provider.name} ${provider.address} ${provider.postalCode} ${provider.city}`,
-                    )}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 rounded-full bg-care/10 px-2.5 py-1 text-xs font-semibold text-care"
-                  >
-                    <Navigation className="h-3.5 w-3.5" /> Itinéraire
-                  </a>
-                </div>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <div className="mt-4 rounded-2xl border border-dashed border-border bg-muted/30 p-8 text-center">
-            <Stethoscope className="mx-auto h-6 w-6 text-care" />
-            <h3 className="mt-3 font-semibold text-foreground">Aucun professionnel pour ce filtre</h3>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Choisissez une autre spécialité ou affichez tous les professionnels.
-            </p>
-          </div>
-        )}
-      </section>
-
-      <section className="mt-8 rounded-2xl border border-border bg-muted/40 p-4 text-sm text-muted-foreground">
-        <p className="flex items-start gap-2">
-          <Stethoscope className="mt-0.5 h-4 w-4 shrink-0 text-care" />
-          <span>
-            Cet annuaire local est alimenté par le fichier de praticiens Kivoir. Vérifiez toujours
-            les coordonnées et les disponibilités auprès du professionnel avant de vous déplacer.
-          </span>
-        </p>
-      </section>
-
-  <aside className="mt-6 rounded-xl border border-border/70 bg-muted/30 px-4 py-3 text-xs leading-5 text-muted-foreground" aria-label="Information sur les coordonnées du réseau professionnel">
-    <p>Les coordonnées affichées sont utilisées exclusivement pour l’orientation et la coordination des soins du patient.</p>
-    <p className="mt-1">Un professionnel référencé peut demander à tout moment la modification ou la suppression de ses données en écrivant à <a className="font-medium text-foreground underline underline-offset-2 hover:text-care" href="mailto:support@kivoir.fr">support@kivoir.fr</a>.</p>
-  </aside>
-
-  <div className="mt-6">
-  <MedicalDisclaimer />
-  </div>
-    </main>
+            <span className="min-w-0">
+              <span className="block font-medium text-foreground">{cabinet.name}</span>
+              <span className="block text-sm text-muted-foreground">
+                {`${cabinet.providers.length} professionnel${cabinet.providers.length > 1 ? "s" : ""}`}
+              </span>
+            </span>
+            <ArrowRight className="h-5 w-5 shrink-0 text-care" aria-hidden="true" />
+          </Link>
+        ))}
+      </div>
+    </section>
   );
 }

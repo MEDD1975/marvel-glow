@@ -123,7 +123,9 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
-  const isPatientSpace = useLocation().pathname.startsWith("/patient");
+  const pathname = useLocation().pathname;
+  const isPatientSpace =
+    pathname === "/" || /^\/(patient|conseils|annuaire|parcours)(\/|$)/.test(pathname);
   return (
     <QueryClientProvider client={queryClient}>
       {isPatientSpace ? null : <Header />}

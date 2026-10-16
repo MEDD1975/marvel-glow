@@ -1,4 +1,6 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { ChevronRight } from "lucide-react";
+import { countLearningContent, totalLearningContent } from "@/lib/learning-content";
 import { useDoctorResources, usePatient } from "@/components/patient/PatientProvider";
 import { DoctorResourceRow, ExerciseList, PatientPageHeader, SourcesList, VideoCard } from "@/components/patient/PatientBlocks";
 import { LoadingState, NoPathwayState, SafetyNotice } from "@/components/patient/PatientUi";
@@ -23,6 +25,26 @@ function ResourcesPage() {
   const files = resources.data ?? [];
   const documents = files.filter((item) => !item.contentType?.startsWith("video/"));
   const videoFiles = files.filter((item) => item.contentType?.startsWith("video/"));
+
+  if (!resources.isLoading && totalLearningContent(countLearningContent(guide, files)) === 0) {
+    return (
+      <div className="flex flex-col gap-6">
+        <PatientPageHeader title="Mes ressources" intro="Contenus pédagogiques de votre parcours." pathwayName={guide.name} />
+        <section className="rounded-2xl border border-[#E4EAF2] bg-[#FAFBFD] p-5" aria-labelledby="empty-resources-title">
+          <h2 id="empty-resources-title" className="text-base font-semibold text-foreground">Aucun contenu complémentaire pour le moment</h2>
+          <p className="mt-1 text-sm leading-relaxed text-muted-foreground">Les conseils transmis restent disponibles dans “À faire maintenant”.</p>
+          <Link
+            to="/conseils"
+            className="mt-4 inline-flex min-h-12 w-full items-center justify-between gap-2 rounded-[14px] border border-[#DCE5F0] bg-white px-4 text-sm font-semibold text-[#0B63CE] transition-colors hover:border-[#0B63CE] hover:bg-[#F2F6FB] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring md:w-auto"
+          >
+            Voir mes recommandations
+            <ChevronRight className="h-4 w-4" aria-hidden="true" />
+          </Link>
+        </section>
+        <SafetyNotice />
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col gap-8">

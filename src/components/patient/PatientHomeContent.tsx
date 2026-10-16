@@ -88,7 +88,7 @@ function SectionLink({ to, children }: { to: string; children: ReactNode }) {
 }
 
 export function PatientHomeContent() {
-  const { ready, guide, hasContext, senderLabel } = usePatient();
+  const { ready, guide, hasContext, cabinetName } = usePatient();
   if (!ready) return <LoadingState />;
 
   const recommendationCount = guide?.recommendations.length ?? 0;
@@ -98,24 +98,31 @@ export function PatientHomeContent() {
   return (
     <div className="flex flex-col gap-4">
       <section aria-labelledby="home-title" className="mb-2">
-        <h1 id="home-title" className="text-balance text-[1.75rem] font-semibold leading-tight tracking-tight text-foreground md:text-3xl">
-          Vos repères après la consultation
+        <h1 id="home-title" className="text-balance text-[clamp(1.875rem,8.5vw,2.125rem)] font-bold leading-[1.15] tracking-tight text-[#101C33] md:text-4xl">
+          Gardez les conseils de votre médecin à portée de main
         </h1>
-        <p className="mt-2 text-pretty text-base leading-relaxed text-muted-foreground">
-          Je fais, j’observe, je demande un avis si nécessaire, je réagis en cas d’alerte.
+        <p className="mt-3 max-w-prose text-pretty text-base leading-relaxed text-[#526176] md:text-lg">
+          Retrouvez quoi faire maintenant, les points à surveiller et quand demander un nouvel avis.
         </p>
       </section>
 
-      {hasContext ? (
-        <section aria-labelledby="diagnostic-title" className="rounded-[14px] border border-[#DCE5F0] border-l-4 border-l-[#0B63CE] bg-white px-4 py-3">
-          <h2 id="diagnostic-title" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-            Votre diagnostic
-          </h2>
-          {guide ? <p className="mt-1 text-base font-semibold text-[#101C33]">{guide.name}</p> : null}
-          <p className="mt-1 flex items-center gap-1.5 text-[13px] font-medium text-[#526176]">
-            <ShieldCheck className="h-4 w-4 text-[#0B63CE]" aria-hidden="true" />
-            {senderLabel}
+      {hasContext && guide ? (
+        <section
+          aria-labelledby="diagnostic-title"
+          className="rounded-2xl border border-[#D6E4F5] border-l-4 border-l-[#0B63CE] bg-[#F1F6FD] px-5 py-4"
+        >
+          <p className="text-xs font-semibold uppercase tracking-[0.08em] text-[#0B63CE] md:text-[13px]">
+            Parcours transmis par votre médecin
           </p>
+          <h2 id="diagnostic-title" className="mt-1.5 text-pretty break-words text-2xl font-bold leading-tight text-[#101C33] md:text-[1.75rem]">
+            {guide.name}
+          </h2>
+          {cabinetName ? (
+            <p className="mt-2 flex items-start gap-1.5 text-sm leading-snug text-[#526176] md:text-[15px]">
+              <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-[#0B63CE]" aria-hidden="true" />
+              <span className="break-words">{cabinetName}</span>
+            </p>
+          ) : null}
         </section>
       ) : null}
 

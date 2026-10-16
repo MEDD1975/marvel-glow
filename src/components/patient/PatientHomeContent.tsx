@@ -1,15 +1,26 @@
 import { Link } from "@tanstack/react-router";
 import type { ReactNode } from "react";
-import { AlertTriangle, CheckCircle2, ChevronRight, FolderOpen, ShieldCheck, Signpost, type LucideIcon } from "lucide-react";
+import { AlertTriangle, CheckCircle2, ChevronRight, GraduationCap, ShieldCheck, Signpost, type LucideIcon } from "lucide-react";
 import { usePatient } from "@/components/patient/PatientProvider";
-import { ActionCard, LoadingState, SafetyNotice } from "@/components/patient/PatientUi";
+import { LoadingState, SafetyNotice } from "@/components/patient/PatientUi";
 
 const sectionTones = {
   green: { icon: "bg-[#F1F8F5] text-[#17855B]", border: "border-[#DCE5F0]" },
   blue: { icon: "bg-[#F2F6FB] text-[#0B63CE]", border: "border-[#DCE5F0]" },
   orange: { icon: "bg-white text-[#9A6100]", border: "border-[#F0DBAE] bg-[#FFF9ED]" },
   neutral: { icon: "bg-[#FDECEC] text-[#B4232A]", border: "border-[#DCE5F0]" },
+  learn: { icon: "bg-[#0B63CE] text-white", border: "border-[#C9DCF3]" },
 } as const;
+
+const linkCardSurfaces: Partial<Record<keyof typeof sectionTones, string>> = {
+  learn: "bg-[#F5F9FE]",
+};
+
+function lowercaseFirst(name: string) {
+  const second = name.charAt(1);
+  if (second && second === second.toUpperCase() && second !== second.toLowerCase()) return name;
+  return name.charAt(0).toLowerCase() + name.slice(1);
+}
 
 function HomeSection({
   id,
@@ -50,7 +61,7 @@ function HomeLinkCard({ to, icon: Icon, tone, title, intro }: { to: string; icon
   return (
     <Link
       to={to}
-      className={`flex items-center gap-3 rounded-[18px] border bg-white p-4 shadow-[0_1px_3px_rgba(16,28,51,0.04)] transition-colors hover:border-[#0B63CE] hover:bg-[#F7FAFE] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${classes.border}`}
+      className={`flex items-center gap-3 rounded-[18px] border p-4 shadow-[0_1px_3px_rgba(16,28,51,0.04)] transition-colors hover:border-[#0B63CE] hover:bg-[#F2F6FB] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${linkCardSurfaces[tone] ?? "bg-white"} ${classes.border}`}
     >
       <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${classes.icon}`}>
         <Icon className="h-5 w-5" aria-hidden="true" />
@@ -116,6 +127,14 @@ export function PatientHomeContent() {
         intro={recommendationCount ? `${recommendationCount} conseils à appliquer après la consultation` : "Les conseils à appliquer après la consultation"}
       />
 
+      <HomeLinkCard
+        to="/patient/ressources"
+        icon={GraduationCap}
+        tone="learn"
+        title={guide ? `Mieux comprendre votre ${lowercaseFirst(guide.name)}` : "Mieux comprendre votre atteinte"}
+        intro="Vidéos et documents sélectionnés pour votre parcours"
+      />
+
       <HomeLinkCard to="/parcours" icon={Signpost} tone="blue" title="Comment évolue votre situation ?" intro="Choisissez votre situation pour savoir quoi faire." />
 
       <HomeSection id="surveiller-title" icon={AlertTriangle} tone="neutral" title="Points à surveiller" intro="Ces signes nécessitent une réaction plus rapide : contactez sans attendre un professionnel de santé.">
@@ -131,13 +150,6 @@ export function PatientHomeContent() {
         ) : null}
         <SectionLink to="/patient/surveiller">{warnings.length > visibleWarnings.length ? "Voir tous les signes à surveiller" : "Voir les signes à surveiller"}</SectionLink>
       </HomeSection>
-
-      <section aria-labelledby="secondary-title" className="mt-2">
-        <h2 id="secondary-title" className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-          Pour aller plus loin
-        </h2>
-        <ActionCard to="/patient/ressources" icon={FolderOpen} tone="blue" title="Mes ressources" description="Conseils, documents et vidéos sélectionnés pour votre parcours" />
-      </section>
 
       <p className="rounded-xl border border-border bg-card px-4 py-3 text-sm leading-relaxed text-muted-foreground">
         Kivoir affiche un parcours d’information sélectionné par votre professionnel de santé. Aucun compte patient n’est nécessaire. Ne saisissez aucune information personnelle ou médicale.

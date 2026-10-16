@@ -14,7 +14,7 @@ const menuGroups: Array<{ label: string; items: Array<{ to: string; hash?: strin
       { to: "/patient/surveiller", label: "Ce que je dois surveiller" },
       { to: "/patient/ressources", label: "Mes ressources" },
       { to: "/annuaire", label: "Professionnels" },
-      { to: "/parcours", label: "La suite de mon parcours" },
+      { to: "/parcours", label: "Ma situation" },
     ],
   },
   {
@@ -46,7 +46,7 @@ const tabs = [
 
 const desktopLinks = [
   ...tabs,
-  { to: "/parcours", label: "La suite de mon parcours", icon: BookOpen, match: isPathway },
+  { to: "/parcours", label: "Ma situation", icon: BookOpen, match: isPathway },
 ];
 
 function useLinkSearch() {

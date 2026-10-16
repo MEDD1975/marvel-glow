@@ -1,33 +1,8 @@
 import { Link } from "@tanstack/react-router";
 import type { ReactNode } from "react";
-import { AlertTriangle, CheckCircle2, ChevronDown, ChevronRight, FolderOpen, MessageCircleQuestion, ShieldCheck, TrendingUp, type LucideIcon } from "lucide-react";
+import { AlertTriangle, CheckCircle2, ChevronRight, FolderOpen, ShieldCheck, Signpost, type LucideIcon } from "lucide-react";
 import { usePatient } from "@/components/patient/PatientProvider";
 import { ActionCard, LoadingState, SafetyNotice } from "@/components/patient/PatientUi";
-import { conditions } from "@/lib/conditions";
-
-type AdviceContact = { id: string; who: string; when: string };
-
-function adviceContactsFor(pathwayId: string | undefined): AdviceContact[] {
-  const whoToSee = conditions.find((item) => item.id === pathwayId)?.whoToSee.toLowerCase() ?? "";
-  const careProviders = [
-    whoToSee.includes("kinésithérapeute") ? "kinésithérapeute" : null,
-    whoToSee.includes("podologue") ? "podologue" : null,
-  ].filter((item): item is string => Boolean(item));
-
-  const careLabel = careProviders.length
-    ? careProviders.map((item, index) => (index === 0 ? item.charAt(0).toUpperCase() + item.slice(1) : item)).join(" ou ")
-    : "Professionnel indiqué";
-
-  return [
-    { id: "medecin", who: "Votre médecin", when: "Vous avez un doute ou votre état ne s’améliore pas comme prévu : contactez votre médecin." },
-    { id: "soin", who: careLabel, when: "Une prise en charge vous a été prescrite ou conseillée : prenez rendez-vous avec le professionnel indiqué." },
-    {
-      id: "pharmacien",
-      who: "Votre pharmacien",
-      when: "Vous avez besoin d’aide pour comprendre ou utiliser un traitement déjà conseillé ou prescrit : demandez conseil à votre pharmacien.",
-    },
-  ];
-}
 
 const sectionTones = {
   green: { icon: "bg-[#F1F8F5] text-[#17855B]", border: "border-[#DCE5F0]" },
@@ -108,7 +83,6 @@ export function PatientHomeContent() {
   const recommendationCount = guide?.recommendations.length ?? 0;
   const warnings = guide?.warnings ?? [];
   const visibleWarnings = warnings.slice(0, 4);
-  const contacts = adviceContactsFor(guide?.id);
 
   return (
     <div className="flex flex-col gap-4">
@@ -142,36 +116,9 @@ export function PatientHomeContent() {
         intro={recommendationCount ? `${recommendationCount} conseils à appliquer après la consultation` : "Les conseils à appliquer après la consultation"}
       />
 
-      <HomeLinkCard to="/parcours" icon={TrendingUp} tone="blue" title="Suivre votre évolution" intro="Les repères pour adapter vos activités" />
+      <HomeLinkCard to="/parcours" icon={Signpost} tone="blue" title="Comment évolue votre situation ?" intro="Choisissez votre situation pour savoir quoi faire." />
 
-      <HomeSection
-        id="avis-title"
-        icon={MessageCircleQuestion}
-        tone="orange"
-        title="Quand demander un avis ?"
-        intro="En cas de doute, si l’évolution est plus lente que prévu ou si vous avez besoin d’aide. Vous n’avez pas à consulter tous ces professionnels."
-      >
-        <details className="group">
-          <summary className={`${buttonClasses} cursor-pointer list-none [&::-webkit-details-marker]:hidden`}>
-            Voir quand demander un avis
-            <ChevronDown className="h-4 w-4 transition-transform group-open:rotate-180" aria-hidden="true" />
-          </summary>
-          <ul className="mt-3 flex flex-col divide-y divide-[#F0DBAE] rounded-[14px] border border-[#F0DBAE] bg-white">
-            {contacts.map((contact) => (
-              <li key={contact.id} className="px-4 py-3">
-                <p className="text-sm font-semibold text-foreground">{contact.who}</p>
-                <p className="mt-0.5 text-sm leading-relaxed text-muted-foreground">{contact.when}</p>
-              </li>
-            ))}
-          </ul>
-          <Link to="/annuaire" className="mt-3 inline-flex min-h-11 items-center gap-1 text-sm font-medium text-[#0B63CE] hover:underline">
-            Trouver un professionnel
-            <ChevronRight className="h-4 w-4" aria-hidden="true" />
-          </Link>
-        </details>
-      </HomeSection>
-
-      <HomeSection id="surveiller-title" icon={AlertTriangle} tone="neutral" title="À surveiller" intro="Ces signes nécessitent une réaction plus rapide : contactez sans attendre un professionnel de santé.">
+      <HomeSection id="surveiller-title" icon={AlertTriangle} tone="neutral" title="Points à surveiller" intro="Ces signes nécessitent une réaction plus rapide : contactez sans attendre un professionnel de santé.">
         {visibleWarnings.length ? (
           <ul className="mb-3 flex flex-col gap-2">
             {visibleWarnings.map((warning) => (

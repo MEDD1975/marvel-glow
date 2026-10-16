@@ -1,20 +1,21 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, ChevronDown, CircleAlert, CircleCheck, Clock3, Phone, Users } from "lucide-react";
-import { useState } from "react";
+import { AlertTriangle, ArrowLeft, ChevronDown, ChevronRight, MessageCircleQuestion, Phone, ThumbsUp } from "lucide-react";
+import { useState, type ReactNode } from "react";
 import { PatientShell } from "@/components/patient/PatientShell";
-import { useFollowUpSteps, usePatient, useProfessionals } from "@/components/patient/PatientProvider";
+import { usePatient } from "@/components/patient/PatientProvider";
 import { EmptyState, LoadingState, SafetyNotice } from "@/components/patient/PatientUi";
+import { adviceContactsFor } from "@/lib/advice-contacts";
 
 type ParcoursSearch = { pathway?: string | undefined };
 
 export const Route = createFileRoute("/parcours")({
   validateSearch: (search: Record<string, unknown>): ParcoursSearch => ({
     pathway: typeof search["pathway"] === "string" ? search["pathway"] : undefined,
-    }),
+  }),
   head: () => ({
     meta: [
-      { title: "La suite de mon parcours — Kivoir" },
-      { name: "description", content: "Des repères simples dans le temps pour suivre le parcours transmis par votre professionnel de santé." },
+      { title: "Comment évolue votre situation ? — Kivoir" },
+      { name: "description", content: "Choisissez la situation qui vous correspond pour savoir quoi faire." },
     ],
   }),
   component: ParcoursRoute,
@@ -29,87 +30,142 @@ function ParcoursRoute() {
   );
 }
 
-type CheckIn = "improves" | "persists" | "concerned";
+type Situation = "improves" | "no-change" | "worse";
+
+const choices: Array<{ id: Situation; label: string; idle: string; active: string }> = [
+  { id: "improves", label: "Ça s’améliore", idle: "border-[#DCE5F0] bg-white text-foreground", active: "border-[#0B63CE] bg-[#F2F6FB] text-[#0B63CE]" },
+  { id: "no-change", label: "Ça ne s’améliore pas", idle: "border-[#DCE5F0] bg-white text-foreground", active: "border-[#C98A1B] bg-[#FFF9ED] text-[#8A5600]" },
+  { id: "worse", label: "Ça s’aggrave", idle: "border-[#DCE5F0] bg-white text-foreground", active: "border-[#D9534F] bg-[#FDF2F2] text-[#9F1F25]" },
+];
+
+const primaryButton = "inline-flex min-h-12 w-full items-center justify-between gap-2 rounded-[14px] px-4 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
+const secondaryButton = `${primaryButton} border border-[#DCE5F0] bg-white text-[#0B63CE] hover:border-[#0B63CE] hover:bg-[#F7FAFE]`;
 
 function ParcoursPage() {
-  const { ready, guide, context, cabinetPhone } = usePatient();
-  const followUp = useFollowUpSteps();
-  const professionals = useProfessionals();
-  const [openStep, setOpenStep] = useState(2);
-  const [checkIn, setCheckIn] = useState<CheckIn | null>(null);
+  const { ready, guide } = usePatient();
+  const [situation, setSituation] = useState<Situation | null>(null);
 
-  const chooseCheckIn = (value: CheckIn) => {
-    setCheckIn(value);
-    setOpenStep(3);
-  };
-
-  if (!ready || followUp.isLoading) return <LoadingState />;
+  if (!ready) return <LoadingState />;
 
   if (!guide) {
     return (
-      <div className="flex flex-col gap-8">
-        <EmptyState title="Aucun parcours ouvert" description="Scannez le QR code remis par votre professionnel de santé pour retrouver les prochaines étapes de votre parcours." action={<Link to="/annuaire" className="inline-flex min-h-11 items-center justify-center rounded-xl border border-border bg-card px-4 text-sm font-medium text-foreground hover:bg-accent">Rechercher un cabinet</Link>} />
-      </div>
+      <EmptyState
+        title="Aucun parcours ouvert"
+        description="Scannez le QR code remis par votre professionnel de santé pour retrouver votre parcours."
+        action={<Link to="/annuaire" className="inline-flex min-h-11 items-center justify-center rounded-xl border border-border bg-card px-4 text-sm font-medium text-foreground hover:bg-accent">Rechercher un cabinet</Link>}
+      />
     );
   }
 
-  const resourcesHref = "/patient/ressources" as const;
-  const steps = [
-    { id: 0, label: "Point de départ", title: "Votre situation a été évaluée", text: "Retrouvez les informations et les premiers repères transmis après votre consultation.", icon: CircleCheck },
-    { id: 1, label: "Maintenant", title: "Suivre les recommandations transmises", text: "Consultez les conseils, précautions et ressources sélectionnés pour votre parcours.", icon: Clock3 },
-    { id: 2, label: "Faire le point", title: "Comment évolue votre situation ?", text: "Choisissez simplement la situation qui se rapproche le plus de votre évolution.", icon: CircleAlert },
-    { id: 3, label: "Prochaine étape", title: nextStepTitle(checkIn), text: nextStepText(checkIn), icon: Users },
-  ];
-
   return (
-    <div className="mx-auto flex w-full max-w-3xl flex-col gap-6">
+    <div className="mx-auto flex w-full max-w-3xl flex-col gap-5">
       <div>
-        <Link to="/patient" className="-ml-2 mb-2 inline-flex min-h-11 items-center gap-1.5 rounded-lg px-2 text-sm font-medium text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"><ArrowLeft className="h-4 w-4" aria-hidden="true" />Retour à mon espace patient</Link>
-        <h1 className="text-balance text-[1.625rem] font-semibold leading-tight tracking-tight text-foreground md:text-3xl">La suite de mon parcours</h1>
-        <p className="mt-2 max-w-2xl text-pretty text-base leading-relaxed text-muted-foreground">Un fil conducteur après votre diagnostic : où vous en êtes, quoi faire maintenant et quelle action envisager si la gêne persiste.</p>
-        <div className="mt-4 rounded-xl border border-care/20 bg-tone-blue px-3 py-2 text-sm text-care"><strong>Parcours : {guide.name}</strong></div>
+        <Link to="/patient" className="-ml-2 mb-2 inline-flex min-h-11 items-center gap-1.5 rounded-lg px-2 text-sm font-medium text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+          <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+          Retour à mon espace patient
+        </Link>
+        <h1 className="text-balance text-[1.625rem] font-semibold leading-tight tracking-tight text-foreground md:text-3xl">Comment évolue votre situation ?</h1>
+        <p className="mt-2 text-pretty text-base leading-relaxed text-muted-foreground">Choisissez la situation qui vous correspond pour savoir quoi faire.</p>
+        <p className="mt-4 inline-flex rounded-xl bg-[#EAF2FC] px-3 py-2 text-sm font-semibold text-[#0B63CE]">Parcours : {guide.name}</p>
       </div>
 
-      <section aria-labelledby="etapes-title"><h2 id="etapes-title" className="sr-only">Fil conducteur du parcours</h2><ol className="flex flex-col gap-3">
-        {steps.map((step) => { const Icon = step.icon; const isOpen = openStep === step.id; return <li key={step.id} className={`rounded-2xl border transition-colors ${isOpen ? "border-care/30 bg-tone-blue/30" : "border-border bg-card"}`}>
-          <button type="button" aria-expanded={isOpen} aria-controls={`parcours-step-${step.id}`} onClick={() => setOpenStep(isOpen ? -1 : step.id)} className="flex min-h-16 w-full items-center gap-3 px-4 py-3 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"><span className={`flex size-9 shrink-0 items-center justify-center rounded-full ${isOpen ? "bg-care text-primary-foreground" : "bg-muted text-care"}`}><Icon className="size-5" aria-hidden="true" /></span><span className="min-w-0 flex-1"><span className="block text-xs font-semibold uppercase tracking-wide text-care">{step.label}</span><span className="mt-0.5 block font-semibold text-foreground">{step.title}</span></span><ChevronDown className={`size-5 shrink-0 text-muted-foreground transition-transform ${isOpen ? "rotate-180" : ""}`} aria-hidden="true" /></button>
-          {isOpen ? <div id={`parcours-step-${step.id}`} className="border-t border-border/70 px-4 pb-4 pt-3 md:pl-16">{step.id === 0 ? <><p className="text-sm leading-relaxed text-muted-foreground">{step.text}</p><div className="mt-3 flex flex-wrap gap-2"><Link to="/conseils" className="min-h-11 rounded-xl bg-care px-4 py-2.5 text-sm font-semibold text-primary-foreground">Comprendre mon atteinte</Link><Link to="/patient/surveiller" className="min-h-11 rounded-xl border border-border bg-card px-4 py-2.5 text-sm font-semibold text-foreground">Voir les points à surveiller</Link></div></> : step.id === 1 ? <><p className="text-sm leading-relaxed text-muted-foreground">{step.text}</p><div className="mt-3 flex flex-wrap gap-2"><Link to="/conseils" className="min-h-11 rounded-xl bg-care px-4 py-2.5 text-sm font-semibold text-primary-foreground">Voir mes recommandations</Link><Link to={resourcesHref} className="min-h-11 rounded-xl border border-border bg-card px-4 py-2.5 text-sm font-semibold text-foreground">Voir mes ressources</Link></div></> : step.id === 2 ? <CheckInChoices selected={checkIn} onChoose={chooseCheckIn} /> : <NextStep checkIn={checkIn} cabinetPhone={cabinetPhone} professionalCount={professionals.professionals.length} />}</div> : null}
-        </li>; })}
-      </ol></section>
+      <fieldset>
+        <legend className="sr-only">Votre situation</legend>
+        <div className="flex flex-col gap-2 sm:flex-row">
+          {choices.map((choice) => {
+            const selected = situation === choice.id;
+            return (
+              <button
+                key={choice.id}
+                type="button"
+                aria-pressed={selected}
+                onClick={() => setSituation(choice.id)}
+                className={`min-h-14 flex-1 rounded-[14px] border-2 px-4 text-left text-base font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${selected ? choice.active : choice.idle}`}
+              >
+                {choice.label}
+              </button>
+            );
+          })}
+        </div>
+      </fieldset>
 
-      <SafetyNotice>Cette chronologie fournit des repères généraux à partir du parcours transmis. Elle ne remplace pas les décisions prises avec votre professionnel de santé. En cas de doute, d’évolution défavorable ou de situation préoccupante, demandez un avis professionnel.</SafetyNotice>
+      <div aria-live="polite">{situation ? <SituationResult situation={situation} /> : null}</div>
+
+      <SafetyNotice>Votre choix n’est ni enregistré ni transmis. Ces repères ne remplacent pas l’avis de votre professionnel de santé.</SafetyNotice>
     </div>
   );
 }
 
-function nextStepTitle(checkIn: CheckIn | null) {
-  if (checkIn === "improves") return "Poursuivez selon les recommandations reçues";
-  if (checkIn === "persists") return "Un nouvel avis peut être utile";
-  if (checkIn === "concerned") return "Consultez les points à surveiller";
-  return "Choisissez votre situation pour voir la prochaine action";
+function ResultCard({ tone, icon, title, text, children }: { tone: "blue" | "orange" | "red"; icon: ReactNode; title: string; text: string; children: ReactNode }) {
+  const tones = {
+    blue: "border-[#DCE5F0] bg-white [--icon-bg:#F2F6FB] [--icon-fg:#0B63CE]",
+    orange: "border-[#F0DBAE] bg-[#FFF9ED] [--icon-bg:#FFFFFF] [--icon-fg:#9A6100]",
+    red: "border-[#F3C9C9] bg-white [--icon-bg:#FDECEC] [--icon-fg:#B4232A]",
+  } as const;
+  return (
+    <section aria-labelledby="result-title" className={`rounded-[18px] border p-4 shadow-[0_1px_3px_rgba(16,28,51,0.04)] ${tones[tone]}`}>
+      <div className="flex items-start gap-3">
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--icon-bg)] text-[var(--icon-fg)]">{icon}</span>
+        <div className="min-w-0 flex-1">
+          <h2 id="result-title" className="text-base font-semibold leading-snug text-foreground">{title}</h2>
+          <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{text}</p>
+        </div>
+      </div>
+      <div className="mt-4 flex flex-col gap-2">{children}</div>
+    </section>
+  );
 }
 
-function nextStepText(checkIn: CheckIn | null) {
-  if (checkIn === "improves") return "Continuez à suivre les conseils et la prise en charge indiqués par votre professionnel de santé.";
-  if (checkIn === "persists") return "Si la gêne persiste, limite vos activités ou ne correspond pas à l’évolution attendue, un professionnel pourra réévaluer votre situation.";
-  if (checkIn === "concerned") return "Retrouvez les situations pour lesquelles un avis professionnel doit être demandé.";
-  return "Ce choix est facultatif et ne constitue pas une évaluation médicale.";
+function SituationResult({ situation }: { situation: Situation }) {
+  if (situation === "improves") {
+    return (
+      <ResultCard tone="blue" icon={<ThumbsUp className="h-5 w-5" aria-hidden="true" />} title="Continuez progressivement" text="Poursuivez les recommandations de votre parcours et reprenez progressivement vos activités selon votre ressenti.">
+        <Link to="/conseils" className={secondaryButton}>Voir mes recommandations<ChevronRight className="h-4 w-4" aria-hidden="true" /></Link>
+        <Link to="/patient/ressources" className={secondaryButton}>Voir mes ressources<ChevronRight className="h-4 w-4" aria-hidden="true" /></Link>
+      </ResultCard>
+    );
+  }
+  if (situation === "no-change") return <AdviceResult />;
+  return (
+    <ResultCard tone="red" icon={<AlertTriangle className="h-5 w-5" aria-hidden="true" />} title="Vérifiez les points à surveiller" text="Consultez les points à surveiller de votre parcours et suivez la conduite indiquée si l’un de ces signes apparaît.">
+      <Link to="/patient/surveiller" className={`${primaryButton} bg-[#B4232A] text-white hover:bg-[#9F1F25]`}>Voir les points à surveiller<ChevronRight className="h-4 w-4" aria-hidden="true" /></Link>
+    </ResultCard>
+  );
 }
 
-function CheckInChoices({ selected, onChoose }: { selected: CheckIn | null; onChoose: (value: CheckIn) => void }) {
-  const choices: Array<{ id: CheckIn; label: string; className: string }> = [
-    { id: "improves", label: "Ça s’améliore", className: "border-tone-green-border/50 bg-tone-green/60 text-tone-green-text" },
-    { id: "persists", label: "La gêne persiste", className: "border-tone-orange-border/50 bg-tone-orange/60 text-tone-orange-text" },
-    { id: "concerned", label: "Un signe m’inquiète", className: "border-tone-red-border/50 bg-tone-red text-tone-red-text" },
-  ];
-  return <div><p className="text-sm leading-relaxed text-muted-foreground">Choisissez simplement la situation qui se rapproche le plus de votre évolution.</p><div className="mt-3 grid gap-2 sm:grid-cols-3">{choices.map((choice) => <button key={choice.id} type="button" aria-pressed={selected === choice.id} onClick={() => onChoose(choice.id)} className={`min-h-12 rounded-xl border px-3 py-2 text-left text-sm font-semibold transition-shadow hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${choice.className} ${selected === choice.id ? "ring-2 ring-care ring-offset-1" : ""}`}>{choice.label}</button>)}</div>{selected ? <button type="button" onClick={() => onChoose(selected)} className="mt-3 inline-flex min-h-10 items-center gap-1 text-sm font-medium text-muted-foreground underline underline-offset-4">Modifier mon choix</button> : null}</div>;
-}
+function AdviceResult() {
+  const { guide, cabinetPhone } = usePatient();
+  const [open, setOpen] = useState(false);
+  const contacts = adviceContactsFor(guide?.id);
 
-function NextStep({ checkIn, cabinetPhone, professionalCount }: { checkIn: CheckIn | null; cabinetPhone: string | undefined; professionalCount: number }) {
-  if (checkIn === "improves") return <div><p className="text-sm leading-relaxed text-muted-foreground">{nextStepText(checkIn)}</p><div className="mt-3 flex flex-wrap gap-2"><Link to="/conseils" className="min-h-11 rounded-xl bg-care px-4 py-2.5 text-sm font-semibold text-primary-foreground">Voir mes recommandations</Link><Link to="/patient/ressources" className="min-h-11 rounded-xl border border-border bg-card px-4 py-2.5 text-sm font-semibold text-foreground">Voir mes ressources</Link></div></div>;
-  if (checkIn === "persists") return <div><p className="text-sm leading-relaxed text-muted-foreground">{nextStepText(checkIn)}</p><div className="mt-3 flex flex-wrap gap-2">{cabinetPhone ? <a href={`tel:${cabinetPhone}`} className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-care px-4 py-2.5 text-sm font-semibold text-primary-foreground"><Phone className="size-4" aria-hidden="true" />Contacter mon cabinet</a> : null}<Link to="/patient/professionnels" className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-border bg-card px-4 py-2.5 text-sm font-semibold text-foreground"><Users className="size-4" aria-hidden="true" />Voir les professionnels utiles{professionalCount ? ` (${professionalCount})` : ""}</Link></div>{!cabinetPhone ? <p className="mt-3 text-xs text-muted-foreground">Aucun numéro de cabinet n’est disponible dans ce parcours.</p> : null}</div>;
-  if (checkIn === "concerned") return <div><p className="text-sm leading-relaxed text-muted-foreground">{nextStepText(checkIn)}</p><div className="mt-3 flex flex-wrap gap-2"><Link to="/patient/surveiller" className="min-h-11 rounded-xl bg-tone-red px-4 py-2.5 text-sm font-semibold text-tone-red-text">Voir les points à surveiller</Link><Link to="/patient/professionnels" className="min-h-11 rounded-xl border border-border bg-card px-4 py-2.5 text-sm font-semibold text-foreground">Demander un avis</Link></div></div>;
-  return <p className="text-sm leading-relaxed text-muted-foreground">{nextStepText(checkIn)}</p>;
+  return (
+    <ResultCard tone="orange" icon={<MessageCircleQuestion className="h-5 w-5" aria-hidden="true" />} title="Il peut être utile de demander un avis" text="Si la gêne persiste ou si vous avez un doute, consultez les repères de votre parcours pour savoir vers quel professionnel vous tourner.">
+      <button type="button" aria-expanded={open} aria-controls="avis-list" onClick={() => setOpen((value) => !value)} className={`${primaryButton} border border-[#F0DBAE] bg-white text-[#8A5600] hover:border-[#C98A1B]`}>
+        Voir quand demander un avis
+        <ChevronDown className={`h-4 w-4 transition-transform ${open ? "rotate-180" : ""}`} aria-hidden="true" />
+      </button>
+      {open ? (
+        <div id="avis-list" className="flex flex-col gap-2">
+          <h3 className="mt-1 text-sm font-semibold text-foreground">Quand demander un avis ?</h3>
+          <ul className="flex flex-col divide-y divide-[#F0DBAE] rounded-[14px] border border-[#F0DBAE] bg-white">
+            {contacts.map((contact) => (
+              <li key={contact.id} className="px-4 py-3">
+                <p className="text-sm font-semibold text-foreground">{contact.who}</p>
+                <p className="mt-0.5 text-sm leading-relaxed text-muted-foreground">{contact.when}</p>
+              </li>
+            ))}
+          </ul>
+          {cabinetPhone ? (
+            <a href={`tel:${cabinetPhone}`} className={`${primaryButton} bg-[#0B63CE] text-white hover:bg-[#0A56B3]`}>
+              <span className="inline-flex items-center gap-2"><Phone className="h-4 w-4" aria-hidden="true" />Contacter mon cabinet</span>
+              <ChevronRight className="h-4 w-4" aria-hidden="true" />
+            </a>
+          ) : null}
+          <Link to="/annuaire" className={secondaryButton}>Trouver un professionnel<ChevronRight className="h-4 w-4" aria-hidden="true" /></Link>
+        </div>
+      ) : null}
+    </ResultCard>
+  );
 }
 
 export default Route;

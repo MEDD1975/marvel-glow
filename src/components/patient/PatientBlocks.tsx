@@ -13,6 +13,7 @@ import {
 import { ValidationNote } from "@/components/patient/PatientUi";
 import type { ResourceLink } from "@/lib/condition-resources";
 import type { DoctorResourceRecord } from "@/lib/doctor-resource-db";
+import { isPlayableVideo, youtubeThumbnail } from "@/lib/learning-content";
 import type { PathwayGuide } from "@/lib/patient-guides";
 import { formatTitle, resourceDisplayTitle } from "@/lib/typography";
 
@@ -85,11 +86,12 @@ export function CompactLinks({
 
 function resourceFormat(resource: DoctorResourceRecord) {
   const type = resource.contentType ?? "";
-  if (type.startsWith("video/")) return { label: "Vidéo", icon: Play };
+  if (isPlayableVideo(resource)) return { label: "Vidéo", icon: Play };
   if (type.startsWith("image/")) return { label: "Image", icon: ImageIcon };
   if (type === "application/pdf" || resource.filename?.toLowerCase().endsWith(".pdf"))
     return { label: "PDF", icon: FileText };
-  if (!type && resource.url) return { label: "Lien", icon: ExternalLink };
+  if ((!type || type === "video/*" || resource.kind === "link") && resource.url)
+    return { label: "Lien", icon: ExternalLink };
   return { label: "Document", icon: FileText };
 }
 
@@ -145,6 +147,7 @@ export function videoFromResource(resource: DoctorResourceRecord): PatientVideo 
     key: resource.id,
     title: resourceDisplayTitle(resource.title),
     url: resource.url,
+    thumbnailUrl: youtubeThumbnail(resource.url),
     source: resource.source,
   };
 }

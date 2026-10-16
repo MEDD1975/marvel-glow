@@ -1,6 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ChevronRight } from "lucide-react";
-import { countLearningContent, totalLearningContent } from "@/lib/learning-content";
+import {
+  countLearningContent,
+  isPlayableVideo,
+  totalLearningContent,
+} from "@/lib/learning-content";
 import { useDoctorResources, usePatient } from "@/components/patient/PatientProvider";
 import {
   DoctorResourceRow,
@@ -35,9 +39,9 @@ function ResourcesPage() {
   if (!ready) return <LoadingState />;
   if (!guide) return <NoPathwayState />;
   const files = resources.data ?? [];
-  const documents = files.filter((item) => !item.contentType?.startsWith("video/"));
+  const documents = files.filter((item) => !isPlayableVideo(item));
   const videos = [
-    ...files.filter((item) => item.contentType?.startsWith("video/")).map(videoFromResource),
+    ...files.filter(isPlayableVideo).map(videoFromResource),
     ...guide.videos.map(videoFromLink),
   ];
 

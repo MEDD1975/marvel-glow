@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { conditions } from "@/lib/conditions";
-import { resourceKind, resourceKindLabels, type ResourceKind } from "@/lib/doctor-pathway-info";
+import { resourceKind, resourceKindLabels, selectableResourceKinds, type ResourceKind } from "@/lib/doctor-pathway-info";
 import type { DoctorResourceRecord } from "@/lib/doctor-resource-db";
 import { SaveStatus, type SaveState } from "@/components/doctor/states";
 import { sendJson } from "@/components/doctor/use-doctor-data";
@@ -71,7 +71,8 @@ export function ResourceFormDialog({ open, onOpenChange, resource, onSaved }: { 
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="text-sm font-medium">Type
               <select value={kind} onChange={(event) => setKind(event.target.value as ResourceKind)} className={field}>
-                {(Object.keys(resourceKindLabels) as ResourceKind[]).map((key) => <option key={key} value={key}>{resourceKindLabels[key]}</option>)}
+                {kind === "exercise" ? <option value="exercise">{resourceKindLabels.exercise}</option> : null}
+                {selectableResourceKinds.map((key) => <option key={key} value={key}>{resourceKindLabels[key]}</option>)}
               </select>
             </label>
             <label className="text-sm font-medium">Parcours

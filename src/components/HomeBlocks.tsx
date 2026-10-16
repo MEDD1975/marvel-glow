@@ -78,7 +78,7 @@ export function AssistantHome({ initialStarted = false, pathway, doctorName }: {
             <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-muted text-foreground shadow-sm"><BookOpen className="h-6 w-6" aria-hidden="true" /></span>
             <span className="mt-5 text-xs font-semibold uppercase tracking-[0.12em] text-care">MA BIBLIOTHÈQUE DE CONSEILS</span>
             <span className="mt-1.5 text-lg font-semibold text-foreground">Fiches et vidéos utiles</span>
-            <span className="mt-2 flex-1 text-sm leading-6 text-muted-foreground">Retrouvez vos contenus, bons réflexes, sources fiables et signes d’alerte.</span>
+            <span className="mt-2 flex-1 text-sm leading-6 text-muted-foreground">Retrouvez vos contenus, bons réflexes, sources complémentaires et signes d’alerte.</span>
             <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-care">Consulter <ArrowRight className="h-4 w-4" aria-hidden="true" /></span>
           </Link>
 

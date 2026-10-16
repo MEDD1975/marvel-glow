@@ -109,7 +109,7 @@ export default {
         const session = await auth.api.getSession({ headers: request.headers });
         if (request.method === "GET") {
           const manage = url.searchParams.get("scope") === "manage";
-          return Response.json(session?.user ? await listDoctorResources(session.user.id, conditionId, manage) : await listAllActiveDoctorResources(conditionId, ownerId));
+          return Response.json(session?.user ? await listDoctorResources(session.user.id, conditionId, manage) : (await listAllActiveDoctorResources(conditionId, ownerId)).filter((resource) => resource.kind !== "exercise"));
         }
         if (!session?.user) return Response.json({ error: "Unauthorized" }, { status: 401 });
         if (request.method === "POST") {

@@ -2,17 +2,21 @@ import { conditions, type Condition } from "@/lib/conditions";
 import { getPathwayGuide } from "@/lib/patient-guides";
 import type { DoctorResourceRecord } from "@/lib/doctor-resource-db";
 
-export type ResourceKind = "document" | "video" | "exercise" | "link";
+/** "exercise" is a legacy kind: kept for stored data, never offered nor shown to patients. */
+export type ResourceKind = "document" | "sheet" | "video" | "link" | "exercise";
 
 export const resourceKindLabels: Record<ResourceKind, string> = {
-  document: "Document",
   video: "Vidéo",
-  exercise: "Exercice",
-  link: "Lien",
+  document: "Document",
+  sheet: "Fiche pédagogique",
+  link: "Lien utile",
+  exercise: "Ancien exercice · non publié",
 };
 
+export const selectableResourceKinds: ResourceKind[] = ["video", "document", "sheet", "link"];
+
 export function resourceKind(resource: Pick<DoctorResourceRecord, "kind" | "contentType" | "filename">): ResourceKind {
-  if (resource.kind === "document" || resource.kind === "video" || resource.kind === "exercise" || resource.kind === "link") return resource.kind;
+  if (resource.kind === "document" || resource.kind === "sheet" || resource.kind === "video" || resource.kind === "exercise" || resource.kind === "link") return resource.kind;
   const type = resource.contentType ?? "";
   if (type.startsWith("video/")) return "video";
   if (type === "application/pdf" || type.startsWith("image/") || resource.filename) return "document";
@@ -31,27 +35,26 @@ export type PathwayStats = {
   warnings: number;
   documents: number;
   videos: number;
-  exercises: number;
   lastValidatedAt: string | null;
 };
 
-/** Compte les contenus réels du parcours : contenus Kivoir + ressources visibles du médecin. */
+/** Compte les contenus réels du parcours : contenus Kivoir + ressources visibles du médecin (hors anciens exercices). */
 export function getPathwayStats(conditionId: string, doctorResources: DoctorResourceRecord[]): PathwayStats {
   const guide = getPathwayGuide(conditionId);
-  const own = doctorResources.filter((resource) => resource.conditionId === conditionId && resource.status === "active");
+  const own = doctorResources.filter(
+    (resource) => resource.conditionId === conditionId && resource.status === "active" && resourceKind(resource) !== "exercise",
+  );
   const ownKinds = own.map(resourceKind);
   const dates = [
     ...(guide?.recommendations ?? []).map((item) => item.validatedAt),
-    ...(guide?.exercises ?? []).map((item) => item.validatedAt),
     ...own.map((resource) => resource.validatedAt ?? undefined),
   ].filter((value): value is string => Boolean(value));
   dates.sort();
   return {
     recommendations: guide?.recommendations.length ?? 0,
     warnings: guide?.warnings.length ?? 0,
-    documents: ownKinds.filter((kind) => kind === "document").length,
+    documents: ownKinds.filter((kind) => kind === "document" || kind === "sheet").length,
     videos: (guide?.videos.length ?? 0) + ownKinds.filter((kind) => kind === "video").length,
-    exercises: (guide?.exercises.length ?? 0) + ownKinds.filter((kind) => kind === "exercise").length,
     lastValidatedAt: dates.at(-1) ?? null,
   };
 }

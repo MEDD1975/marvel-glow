@@ -6,7 +6,6 @@ export function PathwaySummary({ stats }: { stats: PathwayStats }) {
     { label: "Signes à surveiller", value: stats.warnings },
     { label: "Documents", value: stats.documents },
     { label: "Vidéos", value: stats.videos },
-    { label: "Exercices", value: stats.exercises },
   ];
   return (
     <section aria-labelledby="pathway-summary-title" className="rounded-2xl border border-border bg-card p-4 shadow-sm sm:p-5">

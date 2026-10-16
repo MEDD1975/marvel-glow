@@ -20,7 +20,7 @@ export type DoctorResourceRecord = {
 
 const columns = '"id", "ownerId", "title", "conditionId", "url", "filename", "contentType", "source", "status", "createdAt", "description", "kind", to_char("validatedAt", \'YYYY-MM-DD\') AS "validatedAt"';
 
-const resourceKinds = new Set(["document", "video", "exercise", "link"]);
+const resourceKinds = new Set(["document", "sheet", "video", "exercise", "link"]);
 function normalizeKind(kind: string | null | undefined) {
   return kind && resourceKinds.has(kind) ? kind : null;
 }

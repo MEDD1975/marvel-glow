@@ -51,7 +51,6 @@ export function QRTransmissionCard({ pathwayName, zone, stats, qr, url, onFullsc
         { value: stats.recommendations, one: "recommandation", many: "recommandations" },
         { value: stats.documents, one: "document", many: "documents" },
         { value: stats.videos, one: "vidéo", many: "vidéos" },
-        { value: stats.exercises, one: "exercice", many: "exercices" },
       ]
         .filter((item) => item.value > 0)
         .map((item) => ({ label: item.value > 1 ? item.many : item.one, value: item.value }))

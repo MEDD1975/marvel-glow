@@ -3,6 +3,7 @@ import { ExternalLink } from "lucide-react";
 import { useDoctorResources, usePatient } from "@/components/patient/PatientProvider";
 import { EmptyState, ErrorState, LoadingState, NoPathwayState, PageHeading, SectionTitle } from "@/components/patient/PatientUi";
 import { formatTitle, resourceDisplayTitle } from "@/lib/typography";
+import { VideoCautionNote } from "@/components/patient/PatientBlocks";
 
 export const Route = createFileRoute("/patient/ressources/videos")({
   component: VideosPage,
@@ -29,7 +30,11 @@ function VideosPage() {
               <video src={item.url} controls preload="metadata" playsInline className="aspect-video w-full bg-foreground">
                 <track kind="captions" />
               </video>
-              <p className="px-4 py-3 font-medium text-foreground">{resourceDisplayTitle(item.title)}</p>
+              <p className="px-4 pt-3 font-medium text-foreground">{resourceDisplayTitle(item.title)}</p>
+              {item.source ? <p className="px-4 text-xs text-muted-foreground">Source : {item.source}</p> : null}
+              <div className="p-4 pt-2">
+                <VideoCautionNote />
+              </div>
             </li>
           ))}
         </ul>

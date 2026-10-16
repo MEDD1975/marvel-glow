@@ -166,8 +166,8 @@ export function PatientHomeContent() {
         to="/parcours"
         icon={Signpost}
         tone="blue"
-        title="Comment évolue votre situation ?"
-        intro="Choisissez votre situation pour savoir quoi faire."
+        title="Et si la gêne évolue ?"
+        intro="Retrouvez simplement quoi faire selon l’évolution que vous observez."
       />
 
       <HomeLinkCard

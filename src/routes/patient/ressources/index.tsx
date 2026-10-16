@@ -1,35 +1,94 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Dumbbell, FileText, PlayCircle } from "lucide-react";
 import { useDoctorResources, usePatient } from "@/components/patient/PatientProvider";
-import { ActionCard, LoadingState, NoPathwayState, PageHeading, SafetyNotice } from "@/components/patient/PatientUi";
+import { DoctorResourceRow, ExerciseList, PatientPageHeader, SourcesList, VideoCard } from "@/components/patient/PatientBlocks";
+import { LoadingState, NoPathwayState, SafetyNotice } from "@/components/patient/PatientUi";
 
 export const Route = createFileRoute("/patient/ressources/")({
-  component: ResourcesHub,
+  head: () => ({
+    meta: [
+      { title: "Mes ressources — Kivoir" },
+      { name: "description", content: "Documents, vidéos, exercices et sources sélectionnés pour votre parcours." },
+    ],
+  }),
+  component: ResourcesPage,
 });
 
-function plural(count: number, one: string, many: string) {
-  return `${count} ${count > 1 ? many : one}`;
-}
+const groupTitle = "mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground";
 
-function ResourcesHub() {
+function ResourcesPage() {
   const { ready, guide } = usePatient();
   const resources = useDoctorResources();
   if (!ready) return <LoadingState />;
   if (!guide) return <NoPathwayState />;
   const files = resources.data ?? [];
-  const documentCount = files.filter((item) => !item.contentType?.startsWith("video/")).length + guide.sources.length;
-  const videoCount = files.filter((item) => item.contentType?.startsWith("video/")).length + guide.videos.length;
+  const documents = files.filter((item) => !item.contentType?.startsWith("video/"));
+  const videoFiles = files.filter((item) => item.contentType?.startsWith("video/"));
+
   return (
-    <div>
-      <PageHeading back={{ to: "/patient", label: "Accueil" }} title="Mes ressources" description={`Documents, vidéos et exercices pour votre parcours « ${guide.name} ».`} />
-      <div className="flex flex-col gap-3">
-        <ActionCard to="/patient/ressources/documents" icon={FileText} tone="blue" title="Documents" description={resources.isLoading ? "Chargement…" : plural(documentCount, "document", "documents")} />
-        <ActionCard to="/patient/ressources/videos" icon={PlayCircle} tone="violet" title="Vidéos" description={resources.isLoading ? "Chargement…" : plural(videoCount, "vidéo", "vidéos")} />
-        <ActionCard to="/patient/ressources/exercices" icon={Dumbbell} tone="green" title="Exercices" description={plural(guide.exercises.length, "exercice", "exercices")} />
-      </div>
-      <div className="mt-6">
-        <SafetyNotice />
-      </div>
+    <div className="flex flex-col gap-8">
+      <PatientPageHeader
+        title="Mes ressources"
+        intro="Retrouvez les contenus sélectionnés pour votre parcours et des sources complémentaires."
+        pathwayName={guide.name}
+      />
+
+      <section aria-labelledby="documents-title">
+        <h2 id="documents-title" className={groupTitle}>Documents</h2>
+        {resources.isLoading ? (
+          <LoadingState />
+        ) : documents.length ? (
+          <ul className="flex flex-col gap-2">
+            {documents.map((resource) => (
+              <li key={resource.id}>
+                <DoctorResourceRow resource={resource} />
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="rounded-xl bg-muted px-4 py-3 text-sm text-muted-foreground">Votre médecin n&apos;a pas encore partagé de document pour ce parcours.</p>
+        )}
+      </section>
+
+      <section aria-labelledby="videos-title">
+        <h2 id="videos-title" className={groupTitle}>Vidéos</h2>
+        {videoFiles.length || guide.videos.length ? (
+          <div className="flex flex-col gap-3">
+            {videoFiles.length ? (
+              <ul className="flex flex-col gap-2">
+                {videoFiles.map((resource) => (
+                  <li key={resource.id}>
+                    <DoctorResourceRow resource={resource} />
+                  </li>
+                ))}
+              </ul>
+            ) : null}
+            {guide.videos.length ? (
+              <ul className="grid gap-3 sm:grid-cols-2">
+                {guide.videos.map((video) => (
+                  <li key={video.url}>
+                    <VideoCard video={video} />
+                  </li>
+                ))}
+              </ul>
+            ) : null}
+          </div>
+        ) : (
+          <p className="rounded-xl bg-muted px-4 py-3 text-sm text-muted-foreground">Aucune vidéo pour ce parcours.</p>
+        )}
+      </section>
+
+      <section aria-labelledby="exercices-title">
+        <h2 id="exercices-title" className={groupTitle}>Exercices</h2>
+        {guide.exercises.length ? (
+          <ExerciseList exercises={guide.exercises} />
+        ) : (
+          <p className="rounded-xl bg-muted px-4 py-3 text-sm text-muted-foreground">Aucun exercice pour ce parcours.</p>
+        )}
+      </section>
+
+      <SourcesList links={guide.sources} />
+
+      <SafetyNotice />
     </div>
   );
 }

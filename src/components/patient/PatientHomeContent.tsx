@@ -41,8 +41,7 @@ export function PatientHomeContent() {
         />
         <DecisionCard
           step={2}
-          to="/conseils"
-          hash="surveiller"
+          to="/patient/surveiller"
           icon={AlertTriangle}
           tone="orange"
           title="Ce que je dois surveiller"
@@ -65,7 +64,7 @@ export function PatientHomeContent() {
           Pour aller plus loin
         </h2>
         <div className="grid gap-2.5 md:grid-cols-2">
-          <ActionCard to="/conseils" hash="ressources" icon={FolderOpen} tone="blue" title="Mes ressources" description="Conseils, documents et vidéos sélectionnés pour votre parcours" />
+          <ActionCard to="/patient/ressources" icon={FolderOpen} tone="blue" title="Mes ressources" description="Conseils, documents et vidéos sélectionnés pour votre parcours" />
           <ActionCard to="/parcours" icon={RouteIcon} tone="blue" title="La suite de mon parcours" description="Les prochaines étapes et repères transmis" />
         </div>
       </section>

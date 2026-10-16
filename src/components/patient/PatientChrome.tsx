@@ -10,9 +10,9 @@ const menuGroups: Array<{ label: string; items: Array<{ to: string; hash?: strin
     label: "Mon espace",
     items: [
       { to: "/patient", label: "Accueil" },
-      { to: "/conseils", label: "Mes conseils" },
-      { to: "/conseils", hash: "surveiller", label: "Ce que je dois surveiller" },
-      { to: "/conseils", hash: "ressources", label: "Mes ressources" },
+      { to: "/conseils", label: "Mes recommandations" },
+      { to: "/patient/surveiller", label: "Ce que je dois surveiller" },
+      { to: "/patient/ressources", label: "Mes ressources" },
       { to: "/annuaire", label: "Professionnels" },
       { to: "/parcours", label: "La suite de mon parcours" },
     ],

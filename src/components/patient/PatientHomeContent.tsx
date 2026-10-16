@@ -70,6 +70,25 @@ function HomeSection({
   );
 }
 
+function HomeLinkCard({ to, icon: Icon, tone, title, intro }: { to: string; icon: LucideIcon; tone: keyof typeof sectionTones; title: string; intro: string }) {
+  const classes = sectionTones[tone];
+  return (
+    <Link
+      to={to}
+      className={`flex items-center gap-3 rounded-[18px] border bg-white p-4 shadow-[0_1px_3px_rgba(16,28,51,0.04)] transition-colors hover:border-[#0B63CE] hover:bg-[#F7FAFE] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${classes.border}`}
+    >
+      <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${classes.icon}`}>
+        <Icon className="h-5 w-5" aria-hidden="true" />
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="block text-base font-semibold leading-snug text-foreground">{title}</span>
+        <span className="mt-0.5 block text-sm leading-snug text-muted-foreground">{intro}</span>
+      </span>
+      <ChevronRight className="h-5 w-5 shrink-0 text-[#0B63CE]" aria-hidden="true" />
+    </Link>
+  );
+}
+
 const buttonClasses =
   "inline-flex min-h-12 w-full items-center justify-between gap-2 rounded-[14px] border border-[#DCE5F0] bg-white px-4 text-sm font-semibold text-[#0B63CE] shadow-[0_1px_3px_rgba(16,28,51,0.04)] transition-colors hover:border-[#0B63CE] hover:bg-[#F2F6FB] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring md:w-auto";
 
@@ -86,7 +105,7 @@ export function PatientHomeContent() {
   const { ready, guide, hasContext, senderLabel } = usePatient();
   if (!ready) return <LoadingState />;
 
-  const firstRecommendations = guide?.recommendations.slice(0, 3) ?? [];
+  const recommendationCount = guide?.recommendations.length ?? 0;
   const warnings = guide?.warnings ?? [];
   const visibleWarnings = warnings.slice(0, 4);
   const contacts = adviceContactsFor(guide?.id);
@@ -115,32 +134,15 @@ export function PatientHomeContent() {
         </section>
       ) : null}
 
-      <HomeSection id="maintenant-title" icon={CheckCircle2} tone="green" title="À faire maintenant" intro="Retrouvez les premiers conseils adaptés à votre situation après la consultation.">
-        {firstRecommendations.length ? (
-          <ul className="mb-3 flex flex-col gap-2">
-            {firstRecommendations.map((item) => (
-              <li key={item.id} className="flex gap-2 text-sm leading-snug">
-                <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-[#17855B]" aria-hidden="true" />
-                <span>
-                  <span className="font-medium text-foreground">{item.title}</span>
-                  <span className="text-muted-foreground">{` — ${item.summary}`}</span>
-                </span>
-              </li>
-            ))}
-          </ul>
-        ) : null}
-        <SectionLink to="/conseils">Voir mes recommandations</SectionLink>
-      </HomeSection>
+      <HomeLinkCard
+        to="/conseils"
+        icon={CheckCircle2}
+        tone="green"
+        title="À faire maintenant"
+        intro={recommendationCount ? `${recommendationCount} conseils à appliquer après la consultation` : "Les conseils à appliquer après la consultation"}
+      />
 
-      <HomeSection
-        id="evolution-title"
-        icon={TrendingUp}
-        tone="blue"
-        title="Suivre votre évolution"
-        intro="Observez progressivement votre évolution et adaptez vos activités selon les conseils de votre parcours."
-      >
-        <SectionLink to="/parcours">Voir mes repères d’évolution</SectionLink>
-      </HomeSection>
+      <HomeLinkCard to="/parcours" icon={TrendingUp} tone="blue" title="Suivre votre évolution" intro="Les repères pour adapter vos activités" />
 
       <HomeSection
         id="avis-title"

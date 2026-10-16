@@ -11,6 +11,7 @@ import {
 } from "@/components/patient/PatientUi";
 import { formatTitle, resourceDisplayTitle } from "@/lib/typography";
 import { VideoCautionNote } from "@/components/patient/PatientBlocks";
+import { isPlayableVideo } from "@/lib/learning-content";
 
 export const Route = createFileRoute("/patient/ressources/videos")({
   component: VideosPage,
@@ -21,7 +22,7 @@ function VideosPage() {
   const resources = useDoctorResources();
   if (!ready) return <LoadingState />;
   if (!guide) return <NoPathwayState />;
-  const videos = (resources.data ?? []).filter((item) => item.contentType?.startsWith("video/"));
+  const videos = (resources.data ?? []).filter(isPlayableVideo);
   return (
     <div>
       <PageHeading back={{ to: "/patient/ressources", label: "Mes ressources" }} title="Vidéos" />

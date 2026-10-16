@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { ExternalLink, Eye, EyeOff, Pencil, Plus, Search, Trash2 } from "lucide-react";
 import { conditions } from "@/lib/conditions";
-import { findCondition, formatDate, resourceKind, resourceKindLabels, type ResourceKind } from "@/lib/doctor-pathway-info";
+import { findCondition, formatDate, resourceKind, resourceKindLabels, selectableResourceKinds, type ResourceKind } from "@/lib/doctor-pathway-info";
 import type { DoctorResourceRecord } from "@/lib/doctor-resource-db";
 import { DoctorHeader, DoctorPage } from "@/components/doctor/DoctorLayout";
 import { EmptyState, ErrorState, LoadingState } from "@/components/doctor/states";
@@ -69,7 +69,7 @@ function ResourcesPage() {
     <DoctorPage>
       <DoctorHeader
         title="Mes ressources"
-        description="Documents, vidéos, exercices et liens transmis à vos patients."
+        description="Vidéos, documents, fiches pédagogiques et liens utiles transmis à vos patients."
         actions={<button type="button" onClick={() => openForm(null)} className="flex min-h-11 items-center gap-2 rounded-xl bg-care px-4 text-sm font-semibold text-care-foreground"><Plus className="h-4 w-4" aria-hidden="true" />Ajouter une ressource</button>}
       />
 
@@ -82,7 +82,8 @@ function ResourcesPage() {
         <label><span className="sr-only">Type</span>
           <select value={kind} onChange={(event) => setKind(event.target.value as ResourceKind | "all")} className={`${select} w-full`}>
             <option value="all">Tous les types</option>
-            {(Object.keys(resourceKindLabels) as ResourceKind[]).map((key) => <option key={key} value={key}>{resourceKindLabels[key]}</option>)}
+            {selectableResourceKinds.map((key) => <option key={key} value={key}>{resourceKindLabels[key]}</option>)}
+            {resources.data?.some((item) => resourceKind(item) === "exercise") ? <option value="exercise">{resourceKindLabels.exercise}</option> : null}
           </select>
         </label>
         <label><span className="sr-only">Parcours</span>

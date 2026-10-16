@@ -127,41 +127,15 @@ export function VideoCard({ video }: { video: ResourceLink }) {
   );
 }
 
-export function ExerciseList({ exercises }: { exercises: PathwayGuide["exercises"] }) {
+export function VideoCautionNote() {
   return (
-    <ul className="flex flex-col gap-2">
-      {exercises.map((exercise) => (
-        <li key={exercise.id}>
-          <details className="group rounded-2xl border border-border bg-card">
-            <summary className="flex min-h-14 cursor-pointer list-none items-center gap-3 px-4 py-2">
-              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-tone-blue text-care">
-                <Dumbbell className="h-5 w-5" aria-hidden="true" />
-              </span>
-              <span className="min-w-0 flex-1">
-                <span className="block font-medium text-foreground">{exercise.title}</span>
-                <span className="block text-xs text-muted-foreground">Exercice · Uniquement s&apos;il vous a été recommandé</span>
-              </span>
-              <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-180" aria-hidden="true" />
-            </summary>
-            <div className="px-4 pb-4">
-              <ol className="flex list-decimal flex-col gap-1.5 pl-5 text-sm leading-relaxed text-foreground">
-                {exercise.instructions.map((step) => (
-                  <li key={step}>{step}</li>
-                ))}
-              </ol>
-              {exercise.frequency ? <p className="mt-2 text-sm text-muted-foreground">{exercise.frequency}</p> : null}
-              <div className="mt-3">
-                <ValidationNote validatedAt={exercise.validatedAt} validatedBy={exercise.validatedBy} source={exercise.source} />
-              </div>
-            </div>
-          </details>
-        </li>
-      ))}
-    </ul>
+    <p className="rounded-xl bg-muted px-4 py-3 text-xs leading-relaxed text-muted-foreground">
+      Contenu pédagogique sélectionné pour ce parcours. Cette vidéo ne constitue pas un programme personnalisé. Réalisez les mouvements uniquement selon les consignes reçues d&apos;un professionnel de santé.
+    </p>
   );
 }
 
-export function SourcesList({ links, title = "Sources fiables complémentaires" }: { links: ResourceLink[]; title?: string }) {
+export function SourcesList({ links, title = "Sources complémentaires" }: { links: ResourceLink[]; title?: string }) {
   if (!links.length) return null;
   return (
     <section aria-label={title}>

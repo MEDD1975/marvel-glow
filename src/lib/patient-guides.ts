@@ -122,54 +122,6 @@ const entorseWarnings: string[] = [
   "Fièvre associée à une rougeur ou une chaleur importante",
 ];
 
-const entorsePhases: RehabPhase[] = [
-  { id: "mobilite", label: "Phase 1 · Mobilité", description: "Retrouver le mouvement de la cheville, sans douleur vive." },
-  { id: "stabilite", label: "Phase 2 · Stabilité", description: "Travailler l'équilibre une fois la phase douloureuse passée." },
-  { id: "renforcement", label: "Phase 3 · Renforcement", description: "Renforcer la cheville pour limiter le risque de récidive." },
-];
-
-const entorseExercises: Exercise[] = [
-  {
-    ...pending,
-    id: "alphabet",
-    title: "Mobilité en alphabet",
-    phaseId: "mobilite",
-    instructions: [
-      "Asseyez-vous confortablement.",
-      "Soulevez légèrement le pied.",
-      "Dessinez lentement les lettres de l'alphabet avec le gros orteil.",
-      "Arrêtez en cas de douleur vive.",
-    ],
-    frequency: undefined,
-  },
-  {
-    ...pending,
-    id: "equilibre",
-    title: "Équilibre sur un pied",
-    phaseId: "stabilite",
-    instructions: [
-      "Placez-vous debout près d'un mur ou d'un appui stable.",
-      "Tenez-vous sur la jambe concernée, d'abord les yeux ouverts.",
-      "Gardez une main près de l'appui pour vous rattraper si besoin.",
-      "Arrêtez en cas de douleur vive ou d'instabilité.",
-    ],
-    frequency: undefined,
-  },
-  {
-    ...pending,
-    id: "elastique",
-    title: "Renforcement avec élastique",
-    phaseId: "renforcement",
-    instructions: [
-      "Placez un élastique autour de l'avant-pied.",
-      "Poussez doucement le pied vers l'extérieur.",
-      "Revenez lentement à la position de départ.",
-      "Arrêtez en cas de douleur vive.",
-    ],
-    frequency: undefined,
-  },
-];
-
 const careSteps: CareStep[] = [
   { id: "consultation", title: "Consultation initiale", description: "Votre professionnel a évalué votre situation et vous a remis ce parcours.", status: "Réalisée" },
   { id: "recuperation", title: "Phase de récupération", description: "Suivez les recommandations et les consignes reçues." },
@@ -197,7 +149,8 @@ export function getPathwayGuide(pathwayId: string | undefined): PathwayGuide | n
   const advice = conditionAdvice[condition.id];
   const resources = conditionResources[condition.id];
   const links = resources?.links ?? generalLinks;
-  const videos = links.filter((link) => link.kind === "video");
+  // Curated YouTube videos show rehab movements and are not doctor-selected: never shown automatically.
+  const videos: ResourceLink[] = [];
   const sources = [...links.filter((link) => link.kind === "site"), ...generalLinks.filter((link) => link.kind === "site")]
     .filter((link, index, all) => all.findIndex((other) => other.url === link.url) === index);
 
@@ -207,8 +160,8 @@ export function getPathwayGuide(pathwayId: string | undefined): PathwayGuide | n
       name: condition.name,
       recommendations: entorseRecommendations,
       warnings: toWarnings(entorseWarnings),
-      phases: entorsePhases,
-      exercises: entorseExercises,
+      phases: [],
+      exercises: [],
       videos,
       sources,
       careSteps,
@@ -225,27 +178,13 @@ export function getPathwayGuide(pathwayId: string | undefined): PathwayGuide | n
     caution: defaultCaution,
   }));
 
-  const phase: RehabPhase = {
-    id: "exercices",
-    label: "Exercices proposés",
-    description: "Réalisez-les uniquement s'ils vous ont été recommandés, sans douleur vive.",
-  };
-  const exercises: Exercise[] = (resources?.exercises ?? []).map((exercise) => ({
-    ...pending,
-    id: slug(exercise.title),
-    title: exercise.title,
-    phaseId: phase.id,
-    instructions: [...exercise.how.split(/(?<=\.)\s/).filter(Boolean), "Arrêtez en cas de douleur vive."],
-    frequency: undefined,
-  }));
-
   return {
     id: condition.id,
     name: condition.name,
     recommendations,
     warnings: toWarnings([...(advice?.redFlags ?? []), ...generalRedFlags]),
-    phases: exercises.length ? [phase] : [],
-    exercises,
+    phases: [],
+    exercises: [],
     videos,
     sources,
     careSteps,

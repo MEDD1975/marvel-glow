@@ -63,7 +63,7 @@ function PathwaysPage() {
                     </span>
                   </div>
                   <p className="text-sm text-muted-foreground">
-                    {stats.recommendations} recommandations · {stats.warnings} signes · {stats.documents} documents · {stats.videos} vidéos · {stats.exercises} exercices
+                    {stats.recommendations} recommandations · {stats.warnings} signes · {stats.documents} documents · {stats.videos} vidéos
                   </p>
                   <p className="text-xs text-muted-foreground">Dernière validation : {formatDate(stats.lastValidatedAt) ?? "non renseignée"}</p>
                   <div className="mt-auto flex flex-wrap gap-2">

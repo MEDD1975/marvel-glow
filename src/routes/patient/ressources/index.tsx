@@ -2,14 +2,14 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ChevronRight } from "lucide-react";
 import { countLearningContent, totalLearningContent } from "@/lib/learning-content";
 import { useDoctorResources, usePatient } from "@/components/patient/PatientProvider";
-import { DoctorResourceRow, ExerciseList, PatientPageHeader, SourcesList, VideoCard } from "@/components/patient/PatientBlocks";
+import { DoctorResourceRow, PatientPageHeader, SourcesList, VideoCard, VideoCautionNote } from "@/components/patient/PatientBlocks";
 import { LoadingState, NoPathwayState, SafetyNotice } from "@/components/patient/PatientUi";
 
 export const Route = createFileRoute("/patient/ressources/")({
   head: () => ({
     meta: [
-      { title: "Mes ressources — Kivoir" },
-      { name: "description", content: "Documents, vidéos, exercices et sources sélectionnés pour votre parcours." },
+      { title: "Contenus pédagogiques — Kivoir" },
+      { name: "description", content: "Vidéos, documents, fiches pédagogiques et sources complémentaires de votre parcours." },
     ],
   }),
   component: ResourcesPage,
@@ -29,9 +29,9 @@ function ResourcesPage() {
   if (!resources.isLoading && totalLearningContent(countLearningContent(guide, files)) === 0) {
     return (
       <div className="flex flex-col gap-6">
-        <PatientPageHeader title="Mes ressources" intro="Contenus pédagogiques de votre parcours." pathwayName={guide.name} />
+        <PatientPageHeader title="Contenus pédagogiques" intro="Vidéos et documents de votre parcours." pathwayName={guide.name} />
         <section className="rounded-2xl border border-[#E4EAF2] bg-[#FAFBFD] p-5" aria-labelledby="empty-resources-title">
-          <h2 id="empty-resources-title" className="text-base font-semibold text-foreground">Aucun contenu complémentaire pour le moment</h2>
+          <h2 id="empty-resources-title" className="text-base font-semibold text-foreground">Aucun contenu complémentaire n&apos;est disponible pour le moment.</h2>
           <p className="mt-1 text-sm leading-relaxed text-muted-foreground">Les conseils transmis restent disponibles dans “À faire maintenant”.</p>
           <Link
             to="/conseils"
@@ -49,8 +49,8 @@ function ResourcesPage() {
   return (
     <div className="flex flex-col gap-8">
       <PatientPageHeader
-        title="Mes ressources"
-        intro="Retrouvez les contenus sélectionnés pour votre parcours et des sources complémentaires."
+        title="Contenus pédagogiques"
+        intro="Vidéos et documents sélectionnés pour votre parcours, et sources complémentaires."
         pathwayName={guide.name}
       />
 
@@ -78,8 +78,9 @@ function ResourcesPage() {
             {videoFiles.length ? (
               <ul className="flex flex-col gap-2">
                 {videoFiles.map((resource) => (
-                  <li key={resource.id}>
+                  <li key={resource.id} className="flex flex-col gap-2">
                     <DoctorResourceRow resource={resource} />
+                    <VideoCautionNote />
                   </li>
                 ))}
               </ul>
@@ -96,15 +97,6 @@ function ResourcesPage() {
           </div>
         ) : (
           <p className="rounded-xl bg-muted px-4 py-3 text-sm text-muted-foreground">Aucune vidéo pour ce parcours.</p>
-        )}
-      </section>
-
-      <section aria-labelledby="exercices-title">
-        <h2 id="exercices-title" className={groupTitle}>Exercices</h2>
-        {guide.exercises.length ? (
-          <ExerciseList exercises={guide.exercises} />
-        ) : (
-          <p className="rounded-xl bg-muted px-4 py-3 text-sm text-muted-foreground">Aucun exercice pour ce parcours.</p>
         )}
       </section>
 

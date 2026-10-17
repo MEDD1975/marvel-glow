@@ -60,7 +60,7 @@ function ProfessionalDetail() {
         {maps ? (
           <a href={maps} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-border bg-card px-4 font-semibold text-foreground hover:bg-accent">
             <MapPin className="h-5 w-5" aria-hidden="true" />
-            Voir l’itinéraire
+            Itinéraire
           </a>
         ) : null}
         {item.email ? (

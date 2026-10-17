@@ -10,7 +10,7 @@ import type { DoctorResourceRecord } from "@/lib/doctor-resource-db";
 import type { FollowUpStepRecord } from "@/lib/follow-up-db";
 import { cabinets, type Profession } from "@/lib/directory";
 import { formatAddress, formatCity, formatProfession, formatProviderName, formatStreet, isPlaceholderPhone } from "@/lib/typography";
-import { formatDoctorName } from "@/lib/patient-context";
+import { professionalDisplayName } from "@/lib/professions";
 
 export type PatientProfessional = {
   id: string;
@@ -28,6 +28,7 @@ export type PublicNetwork = {
   address: string;
   phone: string | null;
   ownerName?: string | null;
+  ownerProfession?: string | null;
   practitioners: Array<{
     id: string;
     name: string;
@@ -91,7 +92,7 @@ export function PatientProvider({
   const network = usePublicNetwork(ownerId);
   const guide = useMemo(() => getPathwayGuide(context.pathwayId), [context.pathwayId]);
   const cabinetName = network.data?.name;
-  const doctorLabel = formatDoctorName(network.data?.ownerName ?? undefined);
+  const doctorLabel = professionalDisplayName(network.data?.ownerName, network.data?.ownerProfession);
   const senderLabel = cabinetName ? `Parcours transmis par ${cabinetName}` : "Parcours transmis par votre cabinet";
   const hasContext = Boolean(context.pathwayId || ownerId);
 

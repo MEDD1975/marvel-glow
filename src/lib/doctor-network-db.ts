@@ -60,7 +60,8 @@ export async function getPublicDoctorNetworks(filter: { ownerId?: string | undef
     address: string;
     phone: string | null;
     ownerName: string | null;
-  }>(`SELECT n."id", n."name", n."address", n."phone", u."name" AS "ownerName" FROM "doctor_network" n JOIN "user" u ON u."id" = n."ownerId" WHERE n."status" NOT IN ($1) AND u."disabledAt" IS NULL${conditions} ORDER BY n."createdAt" DESC LIMIT 1`, values);
+    ownerProfession: string | null;
+  }>(`SELECT n."id", n."name", n."address", n."phone", u."name" AS "ownerName", u."profession" AS "ownerProfession" FROM "doctor_network" n JOIN "user" u ON u."id" = n."ownerId" WHERE n."status" NOT IN ($1) AND u."disabledAt" IS NULL${conditions} ORDER BY n."createdAt" DESC LIMIT 1`, values);
 
   const networks = [];
   for (const network of networkResult.rows) {

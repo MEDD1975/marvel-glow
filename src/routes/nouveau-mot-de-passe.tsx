@@ -43,7 +43,7 @@ function ResetPasswordPage() {
         <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-care/10 text-care">
           <KeyRound className="h-6 w-6" aria-hidden="true" />
         </div>
-        <p className="mt-6 text-xs font-semibold uppercase tracking-wide text-care">Espace médecin</p>
+        <p className="mt-6 text-xs font-semibold uppercase tracking-wide text-care">Espace professionnel de santé</p>
         <h1 className="mt-2 text-3xl font-semibold text-foreground">Nouveau mot de passe</h1>
 
         {!token || linkError ? (

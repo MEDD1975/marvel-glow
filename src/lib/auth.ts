@@ -38,6 +38,7 @@ export const auth = betterAuth({
     additionalFields: {
       role: { type: "string", input: false, required: false, defaultValue: "doctor" },
       disabledAt: { type: "date", input: false, required: false },
+      profession: { type: "string", input: false, required: false },
     },
   },
   databaseHooks: {
@@ -46,7 +47,7 @@ export const auth = betterAuth({
         before: async (session) => {
           const status = await getAccountStatus(session.userId);
           if (!status || status.disabled) {
-            throw new APIError("FORBIDDEN", { message: "Ce compte médecin est désactivé.", code: "ACCOUNT_DISABLED" });
+            throw new APIError("FORBIDDEN", { message: "Ce compte professionnel est désactivé.", code: "ACCOUNT_DISABLED" });
           }
         },
       },

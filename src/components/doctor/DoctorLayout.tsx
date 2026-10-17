@@ -56,7 +56,7 @@ export function DoctorSidebar() {
         <Logo size="sm" />
         <span className="mt-1 block text-xs font-medium text-muted-foreground">Espace professionnel de santé</span>
       </Link>
-      <nav aria-label="Espace médecin" className="flex flex-1 flex-col gap-1 px-3">
+      <nav aria-label="Espace professionnel de santé" className="flex flex-1 flex-col gap-1 px-3">
         {navItems.map((item) => {
           const active = isActive(item.to, "exact" in item ? item.exact : false);
           const Icon = item.icon;
@@ -114,7 +114,7 @@ function DoctorMobileBar() {
           </button>
         </div>
       </header>
-      <nav aria-label="Espace médecin" className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-5 border-t border-border bg-card/95 pb-[env(safe-area-inset-bottom)] backdrop-blur print:hidden md:hidden">
+      <nav aria-label="Espace professionnel de santé" className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-5 border-t border-border bg-card/95 pb-[env(safe-area-inset-bottom)] backdrop-blur print:hidden md:hidden">
         {navItems.map((item) => {
           const active = isActive(item.to, "exact" in item ? item.exact : false);
           const Icon = item.icon;

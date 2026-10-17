@@ -5,7 +5,7 @@ import { KeyRound } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 
 type ActivationSearch = { token?: string | undefined };
-type InvitationPreview = { email: string; firstName: string; lastName: string; cabinetName: string | null };
+type InvitationPreview = { email: string; displayName: string; professionLabel: string; cabinetName: string | null };
 
 const MIN_PASSWORD_LENGTH = 10;
 const inputClass = "mt-2 w-full rounded-xl border border-border bg-background px-3 py-2.5 text-foreground outline-none focus:border-care";
@@ -77,7 +77,7 @@ function ActivationPage() {
         ) : (
           <>
             <p className="mt-3 text-sm leading-6 text-muted-foreground">
-              Bonjour Dr {invitation.data.firstName} {invitation.data.lastName}, choisissez votre mot de passe pour accéder à votre cabinet
+              Bonjour {invitation.data.displayName} ({invitation.data.professionLabel}), choisissez votre mot de passe pour accéder à votre espace professionnel
               {invitation.data.cabinetName ? <> « {invitation.data.cabinetName} »</> : null}.
             </p>
             <form className="mt-6 space-y-4" onSubmit={handleSubmit}>

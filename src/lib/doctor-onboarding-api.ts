@@ -6,6 +6,7 @@ import {
   createInvitation,
   emailHasAccount,
   findValidInvitation,
+  getUserProfession,
   isActiveAdmin,
   listDoctors,
   listInvitations,
@@ -18,6 +19,7 @@ import {
 } from "./doctor-account-db";
 import { saveDoctorNetwork } from "./doctor-network-db";
 import { sendDoctorInvitationEmail } from "./kivoir-email";
+import { defaultCabinetName, isProfessionId, professionalDisplayName, professionLabel, usesDoctorTitle } from "./professions";
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
@@ -30,12 +32,15 @@ function parseInvitationInput(payload: Record<string, unknown>): { value: Invita
   const firstName = text(payload["firstName"], 80);
   const lastName = text(payload["lastName"], 80);
   if (!EMAIL_PATTERN.test(email)) return { error: "Adresse e-mail invalide." };
-  if (!firstName || !lastName) return { error: "Le prénom et le nom du médecin sont obligatoires." };
+  if (!firstName || !lastName) return { error: "Le prénom et le nom du professionnel sont obligatoires." };
+  const profession = payload["profession"];
+  if (!isProfessionId(profession)) return { error: "Choisissez la profession du professionnel de santé." };
   const postalCode = text(payload["postalCode"], 10);
   if (postalCode && !/^\d{5}$/.test(postalCode)) return { error: "Le code postal doit contenir 5 chiffres." };
   return {
     value: {
       email,
+      profession,
       firstName,
       lastName,
       cabinetName: text(payload["cabinetName"], 160),
@@ -51,9 +56,19 @@ function activationUrl(origin: string, token: string) {
   return `${origin}/activation-medecin?token=${encodeURIComponent(token)}`;
 }
 
-async function sendInvitation(origin: string, invitation: { id: string; email: string; firstName: string }, token: string, expiresAt: Date) {
+async function sendInvitation(
+  origin: string,
+  invitation: { id: string; email: string; firstName: string; lastName: string; profession: string | null },
+  token: string,
+  expiresAt: Date,
+) {
   try {
-    const sent = await sendDoctorInvitationEmail({ to: invitation.email, firstName: invitation.firstName, activationUrl: activationUrl(origin, token), expiresAt });
+    const sent = await sendDoctorInvitationEmail({
+      to: invitation.email,
+      greetingName: usesDoctorTitle(invitation.profession) ? `Dr ${invitation.lastName}` : `${invitation.firstName} ${invitation.lastName}`,
+      activationUrl: activationUrl(origin, token),
+      expiresAt,
+    });
     await markInvitationSent(invitation.id, sent.id);
     return true;
   } catch (error) {
@@ -104,7 +119,7 @@ async function handleAdminDoctors(request: Request, url: URL): Promise<Response>
       case "enable":
         return (await setDoctorDisabled(id, payload.action === "disable"))
           ? Response.json({ ok: true })
-          : Response.json({ error: "Médecin introuvable." }, { status: 404 });
+          : Response.json({ error: "Professionnel introuvable." }, { status: 404 });
       default:
         return Response.json({ error: "Action inconnue." }, { status: 400 });
     }
@@ -123,7 +138,12 @@ async function handleActivation(request: Request, url: URL): Promise<Response> {
     const token = url.searchParams.get("token") ?? "";
     const invitation = token ? await findValidInvitation(token) : null;
     if (!invitation) return Response.json({ error: "Ce lien d’activation est invalide, expiré ou déjà utilisé." }, { status: 404 });
-    return Response.json({ email: invitation.email, firstName: invitation.firstName, lastName: invitation.lastName, cabinetName: invitation.cabinetName });
+    return Response.json({
+      email: invitation.email,
+      displayName: professionalDisplayName(`${invitation.firstName} ${invitation.lastName}`, invitation.profession),
+      professionLabel: professionLabel(invitation.profession),
+      cabinetName: invitation.cabinetName,
+    });
   }
 
   if (request.method === "POST") {
@@ -157,7 +177,7 @@ async function handleActivation(request: Request, url: URL): Promise<Response> {
       });
       await attachInvitationUser(invitation.id, user.id);
       await saveDoctorNetwork(user.id, {
-        name: invitation.cabinetName ?? `Cabinet du Dr ${invitation.lastName}`,
+        name: invitation.cabinetName ?? defaultCabinetName(invitation.firstName, invitation.lastName, invitation.profession),
         address: composeAddress(invitation),
         phone: invitation.phone,
         practitioners: [],
@@ -176,8 +196,8 @@ async function handleActivation(request: Request, url: URL): Promise<Response> {
 async function handleCabinetRef(request: Request): Promise<Response> {
   const session = await auth.api.getSession({ headers: request.headers });
   if (!session?.user) return Response.json({ error: "Unauthorized" }, { status: 401 });
-  const admin = await isActiveAdmin(session.user.id);
-  return Response.json({ ref: signCabinetRef(session.user.id), admin });
+  const [admin, profession] = await Promise.all([isActiveAdmin(session.user.id), getUserProfession(session.user.id)]);
+  return Response.json({ ref: signCabinetRef(session.user.id), admin, profession });
 }
 
 /** Routes d'invitation, d'activation et d'identification du cabinet. Retourne null si non concerné. */

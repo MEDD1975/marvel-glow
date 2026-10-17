@@ -3,10 +3,12 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { FormEvent, useState } from "react";
 import { MailPlus, ShieldCheck } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
+import { PROFESSIONS, professionLabel } from "@/lib/professions";
 
 type Invitation = {
   id: string;
   email: string;
+  profession: string | null;
   firstName: string;
   lastName: string;
   cabinetName: string | null;
@@ -15,15 +17,15 @@ type Invitation = {
   sentAt: string | null;
   expiresAt: string;
 };
-type Doctor = { id: string; name: string; email: string; createdAt: string; disabledAt: string | null; cabinetName: string | null };
+type Doctor = { id: string; name: string; email: string; profession: string | null; createdAt: string; disabledAt: string | null; cabinetName: string | null };
 type AdminData = { doctors: Doctor[]; invitations: Invitation[] };
 
-const emptyForm = { email: "", firstName: "", lastName: "", cabinetName: "", phone: "", address: "", postalCode: "", city: "" };
+const emptyForm = { email: "", profession: "", firstName: "", lastName: "", cabinetName: "", phone: "", address: "", postalCode: "", city: "" };
 const inputClass = "mt-1 w-full rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus:border-care";
 const dateFormat = new Intl.DateTimeFormat("fr-FR", { dateStyle: "short", timeStyle: "short" });
 
 export const Route = createFileRoute("/admin/medecins")({
-  head: () => ({ meta: [{ title: "Médecins — Administration Kivoir" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({ meta: [{ title: "Professionnels — Administration Kivoir" }, { name: "robots", content: "noindex" }] }),
   component: AdminDoctorsPage,
 });
 
@@ -74,7 +76,7 @@ function AdminDoctorsPage() {
   const action = useMutation({
     mutationFn: (input: { action: "resend" | "cancel" | "disable" | "enable"; id: string }) => request("PATCH", input),
     onSuccess: (_result, input) => {
-      const texts = { resend: "Invitation renvoyée.", cancel: "Invitation annulée.", disable: "Médecin désactivé.", enable: "Médecin réactivé." };
+      const texts = { resend: "Invitation renvoyée.", cancel: "Invitation annulée.", disable: "Professionnel désactivé.", enable: "Professionnel réactivé." };
       setMessage({ kind: "ok", text: texts[input.action] });
       void refresh();
     },
@@ -111,10 +113,17 @@ function AdminDoctorsPage() {
       <section aria-labelledby="invite-title" className="rounded-3xl border border-border bg-card p-6 shadow-sm">
         <div className="flex items-center gap-3">
           <MailPlus className="h-5 w-5 text-care" aria-hidden="true" />
-          <h2 id="invite-title" className="text-lg font-semibold text-foreground">Inviter un médecin</h2>
+          <h2 id="invite-title" className="text-lg font-semibold text-foreground">Inviter un professionnel de santé</h2>
         </div>
-        <p className="mt-1 text-sm text-muted-foreground">Le médecin reçoit un lien valable 7 jours pour choisir son mot de passe. Son cabinet est créé à l’activation, avec les 10 parcours TMS.</p>
+        <p className="mt-1 text-sm text-muted-foreground">Le professionnel reçoit un lien valable 7 jours pour choisir son mot de passe. Son espace est créé à l’activation, avec les 10 parcours TMS.</p>
         <form onSubmit={submit} className="mt-5 grid gap-4 md:grid-cols-2">
+          <label className="block text-sm font-medium text-foreground md:col-span-2">
+            Profession *
+            <select required className={inputClass} value={form.profession} onChange={(event) => setForm({ ...form, profession: event.target.value })}>
+              <option value="" disabled>Choisir une profession</option>
+              {PROFESSIONS.map((profession) => <option key={profession.id} value={profession.id}>{profession.label}</option>)}
+            </select>
+          </label>
           {field("firstName", "Prénom *", { required: true, maxLength: 80, autoComplete: "off" })}
           {field("lastName", "Nom *", { required: true, maxLength: 80, autoComplete: "off" })}
           {field("email", "E-mail professionnel *", { required: true, type: "email", maxLength: 254, autoComplete: "off" })}
@@ -141,12 +150,12 @@ function AdminDoctorsPage() {
         <div className="mt-3 overflow-x-auto rounded-2xl border border-border bg-card">
           <table className="w-full min-w-[640px] text-left text-sm">
             <thead className="border-b border-border text-xs uppercase tracking-wide text-muted-foreground">
-              <tr><th className="px-4 py-3">Médecin</th><th className="px-4 py-3">Cabinet</th><th className="px-4 py-3">Statut</th><th className="px-4 py-3">Expire le</th><th className="px-4 py-3"><span className="sr-only">Actions</span></th></tr>
+              <tr><th className="px-4 py-3">Professionnel</th><th className="px-4 py-3">Cabinet</th><th className="px-4 py-3">Statut</th><th className="px-4 py-3">Expire le</th><th className="px-4 py-3"><span className="sr-only">Actions</span></th></tr>
             </thead>
             <tbody>
               {data.data?.invitations.length ? data.data.invitations.map((invitation) => (
                 <tr key={invitation.id} className="border-b border-border last:border-0">
-                  <td className="px-4 py-3"><p className="font-medium text-foreground">{invitation.firstName} {invitation.lastName}</p><p className="text-xs text-muted-foreground">{invitation.email}</p></td>
+                  <td className="px-4 py-3"><p className="font-medium text-foreground">{invitation.firstName} {invitation.lastName}</p><p className="text-xs text-muted-foreground">{professionLabel(invitation.profession)} · {invitation.email}</p></td>
                   <td className="px-4 py-3 text-muted-foreground">{invitation.cabinetName ?? "—"}</td>
                   <td className="px-4 py-3">{invitationLabel(invitation)}</td>
                   <td className="px-4 py-3 text-muted-foreground">{dateFormat.format(new Date(invitation.expiresAt))}</td>
@@ -166,16 +175,16 @@ function AdminDoctorsPage() {
       </section>
 
       <section aria-labelledby="doctors-title" className="mt-8">
-        <h2 id="doctors-title" className="text-lg font-semibold text-foreground">Médecins</h2>
+        <h2 id="doctors-title" className="text-lg font-semibold text-foreground">Professionnels</h2>
         <div className="mt-3 overflow-x-auto rounded-2xl border border-border bg-card">
           <table className="w-full min-w-[640px] text-left text-sm">
             <thead className="border-b border-border text-xs uppercase tracking-wide text-muted-foreground">
-              <tr><th className="px-4 py-3">Médecin</th><th className="px-4 py-3">Cabinet</th><th className="px-4 py-3">Statut</th><th className="px-4 py-3"><span className="sr-only">Actions</span></th></tr>
+              <tr><th className="px-4 py-3">Professionnel</th><th className="px-4 py-3">Cabinet</th><th className="px-4 py-3">Statut</th><th className="px-4 py-3"><span className="sr-only">Actions</span></th></tr>
             </thead>
             <tbody>
               {data.data?.doctors.length ? data.data.doctors.map((doctor) => (
                 <tr key={doctor.id} className="border-b border-border last:border-0">
-                  <td className="px-4 py-3"><p className="font-medium text-foreground">{doctor.name}</p><p className="text-xs text-muted-foreground">{doctor.email}</p></td>
+                  <td className="px-4 py-3"><p className="font-medium text-foreground">{doctor.name}</p><p className="text-xs text-muted-foreground">{professionLabel(doctor.profession)} · {doctor.email}</p></td>
                   <td className="px-4 py-3 text-muted-foreground">{doctor.cabinetName ?? "—"}</td>
                   <td className="px-4 py-3">{doctor.disabledAt ? <span className="text-destructive">Désactivé</span> : "Actif"}</td>
                   <td className="px-4 py-3 text-right">
@@ -186,7 +195,7 @@ function AdminDoctorsPage() {
                     )}
                   </td>
                 </tr>
-              )) : <tr><td colSpan={4} className="px-4 py-6 text-center text-muted-foreground">{data.isPending ? "Chargement…" : "Aucun médecin."}</td></tr>}
+              )) : <tr><td colSpan={4} className="px-4 py-6 text-center text-muted-foreground">{data.isPending ? "Chargement…" : "Aucun professionnel."}</td></tr>}
             </tbody>
           </table>
         </div>
@@ -202,7 +211,7 @@ function Shell({ children }: { children: React.ReactNode }) {
         <ShieldCheck className="h-4 w-4" aria-hidden="true" />
         Administration Kivoir
       </div>
-      <h1 className="mt-3 text-3xl font-semibold tracking-tight text-foreground md:text-4xl">Médecins et invitations</h1>
+      <h1 className="mt-3 text-3xl font-semibold tracking-tight text-foreground md:text-4xl">Professionnels et invitations</h1>
       <div className="mt-8">{children}</div>
     </main>
   );

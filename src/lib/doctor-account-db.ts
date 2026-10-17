@@ -10,6 +10,8 @@ const INVITATION_TTL_MS = 7 * 24 * 60 * 60 * 1000;
 
 export type InvitationInput = {
   email: string;
+  /** Profession décrite (ex. « kinesitherapeute ») ; sans effet sur les droits. Null pour les invitations antérieures. */
+  profession: string | null;
   firstName: string;
   lastName: string;
   cabinetName: string | null;
@@ -34,13 +36,14 @@ export type DoctorSummary = {
   id: string;
   name: string;
   email: string;
+  profession: string | null;
   createdAt: string;
   disabledAt: string | null;
   cabinetName: string | null;
 };
 
 const invitationColumns =
-  '"id", "email", "firstName", "lastName", "cabinetName", "phone", "address", "postalCode", "city", "status", "createdAt", "sentAt", "expiresAt", "usedAt", "cancelledAt", "userId"';
+  '"id", "email", "profession", "firstName", "lastName", "cabinetName", "phone", "address", "postalCode", "city", "status", "createdAt", "sentAt", "expiresAt", "usedAt", "cancelledAt", "userId"';
 
 export function hashToken(token: string) {
   return createHash("sha256").update(token).digest("hex");
@@ -117,7 +120,7 @@ export async function emailHasAccount(email: string) {
 
 export async function listDoctors(): Promise<DoctorSummary[]> {
   const result = await pool.query<DoctorSummary>(
-    `SELECT u."id", u."name", u."email", u."createdAt", u."disabledAt",
+    `SELECT u."id", u."name", u."email", u."profession", u."createdAt", u."disabledAt",
        (SELECT n."name" FROM "doctor_network" n WHERE n."ownerId" = u."id" ORDER BY n."createdAt" DESC LIMIT 1) AS "cabinetName"
      FROM "user" u WHERE u."role" = $1 ORDER BY u."createdAt" DESC`,
     [DOCTOR_ROLE],
@@ -143,9 +146,9 @@ export async function createInvitation(input: InvitationInput, createdBy: string
       [input.email],
     );
     await client.query(
-      `INSERT INTO "doctor_invitation" ("id", "email", "firstName", "lastName", "cabinetName", "phone", "address", "postalCode", "city", "tokenHash", "createdBy", "expiresAt")
-       VALUES ($1, lower($2), $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`,
-      [id, input.email, input.firstName, input.lastName, input.cabinetName, input.phone, input.address, input.postalCode, input.city, hashToken(token), createdBy, expiresAt],
+      `INSERT INTO "doctor_invitation" ("id", "email", "firstName", "lastName", "cabinetName", "phone", "address", "postalCode", "city", "tokenHash", "createdBy", "expiresAt", "profession")
+       VALUES ($1, lower($2), $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)`,
+      [id, input.email, input.firstName, input.lastName, input.cabinetName, input.phone, input.address, input.postalCode, input.city, hashToken(token), createdBy, expiresAt, input.profession],
     );
     await client.query("COMMIT");
   } catch (error) {
@@ -200,11 +203,21 @@ export async function releaseInvitation(id: string) {
   await pool.query(`UPDATE "doctor_invitation" SET "status" = 'pending', "usedAt" = NULL WHERE "id" = $1 AND "status" = 'used' AND "userId" IS NULL`, [id]);
 }
 
+/** Rattache le compte créé à son invitation et lui reporte la profession choisie par l'administration. */
 export async function attachInvitationUser(id: string, userId: string) {
   await pool.query('UPDATE "doctor_invitation" SET "userId" = $1 WHERE "id" = $2', [userId, id]);
+  await pool.query(
+    'UPDATE "user" SET "profession" = (SELECT "profession" FROM "doctor_invitation" WHERE "id" = $1), "updatedAt" = now() WHERE "id" = $2',
+    [id, userId],
+  );
 }
 
-/** Désactive ou réactive un médecin. La désactivation ferme immédiatement toutes ses sessions. */
+export async function getUserProfession(userId: string): Promise<string | null> {
+  const result = await pool.query<{ profession: string | null }>('SELECT "profession" FROM "user" WHERE "id" = $1', [userId]);
+  return result.rows[0]?.profession ?? null;
+}
+
+/** Désactive ou réactive un professionnel. La désactivation ferme immédiatement toutes ses sessions. */
 export async function setDoctorDisabled(userId: string, disabled: boolean) {
   const client = await pool.connect();
   try {

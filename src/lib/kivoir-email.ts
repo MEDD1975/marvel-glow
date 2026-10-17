@@ -33,25 +33,26 @@ async function sendEmail(input: { to: string; subject: string; html: string; tex
   return { id: payload.id };
 }
 
-export function sendDoctorInvitationEmail(input: { to: string; firstName: string; activationUrl: string; expiresAt: Date }) {
+/** greetingName est déjà formaté selon la profession (« Dr Martin » ou « Paul Martin »). */
+export function sendDoctorInvitationEmail(input: { to: string; greetingName: string; activationUrl: string; expiresAt: Date }) {
   const expires = input.expiresAt.toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric", timeZone: "Europe/Paris" });
   const paragraphs = [
-    `Bonjour Dr ${input.firstName},`,
-    "L’équipe Kivoir vous invite à activer votre espace médecin. Vous y retrouverez immédiatement les 10 parcours TMS, vos QR codes patient et la gestion de votre cabinet.",
+    `Bonjour ${input.greetingName},`,
+    "L’équipe Kivoir vous invite à activer votre espace professionnel Kivoir. Vous y retrouverez immédiatement les 10 parcours TMS, vos QR codes patient et la gestion de votre cabinet.",
     `Pour des raisons de sécurité, ce lien est personnel, utilisable une seule fois et valable jusqu’au ${expires}.`,
   ];
   const footer = "Vous n’attendiez pas cette invitation ? Ignorez simplement ce message : aucun compte ne sera créé.";
   return sendEmail({
     to: input.to,
-    subject: "Activez votre espace médecin Kivoir",
-    html: layout("Votre espace médecin vous attend", paragraphs, { label: "Activer mon compte", url: input.activationUrl }, footer),
+    subject: "Activez votre espace professionnel Kivoir",
+    html: layout("Votre espace professionnel Kivoir vous attend", paragraphs, { label: "Activer mon compte", url: input.activationUrl }, footer),
     text: `${paragraphs.join("\n\n")}\n\nActiver mon compte : ${input.activationUrl}\n\n${footer}`,
   });
 }
 
 export function sendPasswordResetEmail(input: { to: string; resetUrl: string }) {
   const paragraphs = [
-    "Une demande de réinitialisation du mot de passe de votre espace médecin Kivoir a été effectuée.",
+    "Une demande de réinitialisation du mot de passe de votre espace professionnel Kivoir a été effectuée.",
     "Ce lien est valable une heure et ne peut être utilisé qu’une seule fois.",
   ];
   const footer = "Si vous n’êtes pas à l’origine de cette demande, ignorez ce message : votre mot de passe actuel reste inchangé.";

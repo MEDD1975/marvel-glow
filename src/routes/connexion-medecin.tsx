@@ -4,7 +4,7 @@ import { ArrowLeft, LockKeyhole } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 
 export const Route = createFileRoute("/connexion-medecin")({
-  head: () => ({ meta: [{ title: "Connexion médecin — Kivoir" }] }),
+  head: () => ({ meta: [{ title: "Connexion professionnel de santé — Kivoir" }] }),
   component: DoctorSignInPage,
 });
 
@@ -66,7 +66,7 @@ function DoctorSignInPage() {
         <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-care/10 text-care">
           <LockKeyhole className="h-6 w-6" aria-hidden="true" />
         </div>
-        <p className="mt-6 text-xs font-semibold uppercase tracking-wide text-care">Espace médecin</p>
+        <p className="mt-6 text-xs font-semibold uppercase tracking-wide text-care">Espace professionnel de santé</p>
         <h1 className="mt-2 text-3xl font-semibold text-foreground">{mode === "forgot" ? "Mot de passe oublié" : "Se connecter"}</h1>
         <p className="mt-3 text-sm leading-6 text-muted-foreground">
           {mode === "forgot"
@@ -131,7 +131,7 @@ function DoctorSignInPage() {
         )}
 
         <p className="mt-6 border-t border-border pt-4 text-center text-xs leading-5 text-muted-foreground">
-          L’accès à Kivoir se fait sur invitation. Pour ouvrir un compte médecin, contactez l’équipe Kivoir.
+          L’accès à Kivoir se fait sur invitation. Pour ouvrir un compte professionnel, contactez l’équipe Kivoir.
         </p>
       </section>
     </main>

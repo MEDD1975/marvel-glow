@@ -19,7 +19,7 @@ import {
 } from "./doctor-account-db";
 import { saveDoctorNetwork } from "./doctor-network-db";
 import { sendDoctorInvitationEmail } from "./kivoir-email";
-import { defaultCabinetName, isProfessionId, professionalDisplayName, professionLabel, usesDoctorTitle } from "./professions";
+import { defaultCabinetName, isProfessionId, professionalDisplayName, professionLabel } from "./professions";
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
@@ -65,7 +65,7 @@ async function sendInvitation(
   try {
     const sent = await sendDoctorInvitationEmail({
       to: invitation.email,
-      greetingName: usesDoctorTitle(invitation.profession) ? `Dr ${invitation.lastName}` : `${invitation.firstName} ${invitation.lastName}`,
+      greetingName: `${invitation.firstName} ${invitation.lastName}`,
       activationUrl: activationUrl(origin, token),
       expiresAt,
     });

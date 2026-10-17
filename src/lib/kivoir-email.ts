@@ -33,13 +33,14 @@ async function sendEmail(input: { to: string; subject: string; html: string; tex
   return { id: payload.id };
 }
 
-/** greetingName est déjà formaté selon la profession (« Dr Martin » ou « Paul Martin »). */
+/** greetingName provient des données professionnelles explicites ; aucun titre n'est ajouté automatiquement. */
 export function sendDoctorInvitationEmail(input: { to: string; greetingName: string; activationUrl: string; expiresAt: Date }) {
   const expires = input.expiresAt.toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric", timeZone: "Europe/Paris" });
   const paragraphs = [
     `Bonjour ${input.greetingName},`,
-    "L’équipe Kivoir vous invite à activer votre espace professionnel Kivoir. Vous y retrouverez immédiatement les 10 parcours TMS, vos QR codes patient et la gestion de votre cabinet.",
-    `Pour des raisons de sécurité, ce lien est personnel, utilisable une seule fois et valable jusqu’au ${expires}.`,
+    "L’équipe Kivoir vous invite à activer votre espace professionnel. Vous y retrouverez immédiatement les 10 parcours TMS, les QR codes associés à chaque parcours et les outils permettant de personnaliser votre espace professionnel.",
+    "Pour des raisons de sécurité, ce lien est personnel, temporaire et utilisable une seule fois.",
+    `Ce lien est valable jusqu’au ${expires}.`,
   ];
   const footer = "Vous n’attendiez pas cette invitation ? Ignorez simplement ce message : aucun compte ne sera créé.";
   return sendEmail({

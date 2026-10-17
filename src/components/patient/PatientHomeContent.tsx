@@ -16,6 +16,8 @@ import {
   totalLearningContent,
 } from "@/lib/learning-content";
 import { LoadingState, SafetyNotice } from "@/components/patient/PatientUi";
+import { conditions } from "@/lib/conditions";
+import { zoneVisuals } from "@/lib/zone-visuals";
 
 const sectionTones = {
   green: { icon: "bg-[#F1F8F5] text-[#17855B]", border: "border-[#DCE5F0]" },
@@ -83,6 +85,8 @@ export function PatientHomeContent() {
     : "Mieux comprendre votre atteinte";
 
   const recommendationCount = guide?.recommendations.length ?? 0;
+  const conditionZone = guide ? conditions.find((condition) => condition.id === guide.id)?.zone : undefined;
+  const anatomyVisual = conditionZone ? zoneVisuals[conditionZone] : null;
 
   return (
     <div className="flex flex-col gap-4">
@@ -106,12 +110,21 @@ export function PatientHomeContent() {
           <p className="text-xs font-semibold uppercase tracking-[0.08em] text-[#0B63CE] md:text-[13px]">
             Parcours transmis par votre médecin
           </p>
-          <h2
-            id="diagnostic-title"
-            className="mt-1.5 text-pretty break-words text-2xl font-bold leading-tight text-[#101C33] md:text-[1.75rem]"
-          >
-            {guide.name}
-          </h2>
+          <div className="mt-1.5 flex items-center gap-3">
+            <h2
+              id="diagnostic-title"
+              className="min-w-0 flex-1 text-pretty break-words text-2xl font-bold leading-tight text-[#101C33] md:text-[1.75rem]"
+            >
+              {guide.name}
+            </h2>
+            <img
+              src={anatomyVisual?.src ?? ""}
+              alt={anatomyVisual?.alt ?? ""}
+              loading="eager"
+              decoding="async"
+              className="h-14 w-14 shrink-0 rounded-xl bg-white/80 object-cover ring-1 ring-[#C9DCF3]"
+            />
+          </div>
           {cabinetName ? (
             <p className="mt-2 flex items-start gap-1.5 text-sm leading-snug text-[#526176] md:text-[15px]">
               <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-[#0B63CE]" aria-hidden="true" />

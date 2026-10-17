@@ -1,5 +1,6 @@
 import { Pool } from "pg";
 import { createHash, createHmac, randomBytes, timingSafeEqual } from "node:crypto";
+import { isLegacyQrPeriodOver, isLegacyQrRef, LEGACY_QR_ACCOUNTS_CREATED_BEFORE } from "./legacy-qr";
 
 const pool = new Pool({ connectionString: process.env["DATABASE_URL"] });
 
@@ -76,9 +77,20 @@ export function verifyCabinetRef(ref: string | null | undefined): string | null 
 
 /** Retourne l'identifiant du médecin si le QR est authentique et que son compte est actif. */
 export async function resolveActiveCabinetOwner(ref: string | null | undefined): Promise<string | null> {
+  if (isLegacyQrRef(ref)) return resolveLegacyCabinetOwner(ref.trim());
   const userId = verifyCabinetRef(ref);
   if (!userId) return null;
   const result = await pool.query('SELECT 1 FROM "user" WHERE "id" = $1 AND "disabledAt" IS NULL', [userId]);
+  return result.rowCount ? userId : null;
+}
+
+/** Ancien QR non signé : accepté jusqu'à la date limite, uniquement pour un médecin actif créé avant la migration. */
+async function resolveLegacyCabinetOwner(userId: string): Promise<string | null> {
+  if (isLegacyQrPeriodOver() || userId.length > 100) return null;
+  const result = await pool.query(
+    'SELECT 1 FROM "user" WHERE "id" = $1 AND "disabledAt" IS NULL AND "createdAt" < $2',
+    [userId, LEGACY_QR_ACCOUNTS_CREATED_BEFORE],
+  );
   return result.rowCount ? userId : null;
 }
 

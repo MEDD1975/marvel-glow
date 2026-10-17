@@ -5,7 +5,7 @@ import { PatientShell } from "@/components/patient/PatientShell";
 import { categoryOf, usePatient } from "@/components/patient/PatientProvider";
 import { EmptyState, LoadingState } from "@/components/patient/PatientUi";
 import { professionOrder, isProfession, type Profession, type Cabinet } from "@/lib/directory";
-import { formatDoctorName } from "@/lib/patient-context";
+import { professionalDisplayName } from "@/lib/professions";
 import { formatCity, formatPhone, formatProviderName, formatStreet, phoneHref } from "@/lib/typography";
 
 type PublicNetwork = {
@@ -14,6 +14,7 @@ type PublicNetwork = {
   address: string;
   phone: string | null;
   ownerName: string | null;
+  ownerProfession?: string | null;
   practitioners: Array<{ id: string; name: string; profession: string; phone: string | null; email: string | null; address: string | null; postalCode: string | null; city: string | null }>;
 };
 
@@ -64,10 +65,11 @@ function toCabinets(networks: PublicNetwork[]): Cabinet[] {
         cabinetName: network.name,
       }];
     });
+    const ownerDisplay = professionalDisplayName(network.ownerName, network.ownerProfession);
     return {
       id: network.id,
-      name: network.ownerName ? `Professionnels recommandés par le ${network.ownerName}` : (network.name || "Professionnels recommandés"),
-      searchNames: [network.ownerName, network.name].filter((value): value is string => Boolean(value)),
+      name: ownerDisplay ? `Professionnels recommandés par ${ownerDisplay}` : (network.name || "Professionnels recommandés"),
+      searchNames: [ownerDisplay, network.name].filter((value): value is string => Boolean(value)),
       providers: dynamicProviders,
     };
   });
@@ -217,7 +219,8 @@ function AnnuairePage() {
     );
   }
 
-  const ownerName = formatDoctorName(selected.searchNames?.[0]) ?? doctorLabel;
+  const ownerName = selected.searchNames?.[0] ?? doctorLabel;
+  const ownerPhrase = ownerName ? (ownerName.startsWith("Dr ") ? `du ${ownerName}` : `de ${ownerName}`) : undefined;
   const provider = pro ? selected.providers.find((item) => item.id === pro) : undefined;
   if (provider) return <ProviderDetail provider={provider} />;
 
@@ -229,10 +232,10 @@ function AnnuairePage() {
         <p className="mt-2 text-pretty text-base leading-relaxed text-muted-foreground">
           Retrouvez les professionnels pouvant intervenir dans la suite de votre parcours.
         </p>
-        {ownerName ? (
+        {ownerPhrase ? (
           <p className="mt-3 flex items-center gap-1.5 text-[13px] font-medium text-tone-green-text">
             <ShieldCheck className="h-4 w-4" aria-hidden="true" />
-            {`Coordonnées communiquées par le cabinet du ${ownerName}`}
+            {`Coordonnées communiquées par le cabinet ${ownerPhrase}`}
           </p>
         ) : null}
       </div>
@@ -277,24 +280,20 @@ function ProviderList({ providers, initialProfession }: { providers: Provider[];
     [providers, filter],
   );
 
-  const chip = (active: boolean) =>
-    `inline-flex min-h-11 shrink-0 items-center whitespace-nowrap rounded-full border px-4 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
-      active ? "border-care bg-care text-care-foreground" : "border-border bg-card text-foreground hover:bg-accent"
-    }`;
-
   return (
     <section aria-label="Liste des professionnels">
       {categories.length > 1 ? (
-        <div role="group" aria-label="Filtrer par spécialité" className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 [scrollbar-width:none]">
-          <button type="button" aria-pressed={filter === null} onClick={() => setFilter(null)} className={chip(filter === null)}>
-            Tous
-          </button>
-          {categories.map((category) => (
-            <button key={category} type="button" aria-pressed={filter === category} onClick={() => setFilter(filter === category ? null : category)} className={chip(filter === category)}>
-              {category}
-            </button>
-          ))}
-        </div>
+        <label className="block max-w-md">
+          <span className="sr-only">Filtrer par spécialité</span>
+          <select
+            value={filter ?? ""}
+            onChange={(event) => setFilter(event.target.value || null)}
+            className="min-h-12 w-full rounded-xl border border-border bg-card px-4 text-sm font-medium text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            <option value="">Toutes les spécialités</option>
+            {categories.map((category) => <option key={category} value={category}>{category}</option>)}
+          </select>
+        </label>
       ) : null}
 
       {list.length ? (
@@ -340,7 +339,7 @@ function ProviderCard({ provider }: { provider: Provider }) {
           className={`inline-flex min-h-11 items-center justify-center gap-1.5 rounded-xl border border-border bg-card px-3 text-sm font-semibold text-foreground hover:bg-accent ${tel ? "" : "col-span-2"}`}
         >
           <Navigation className="h-4 w-4" aria-hidden="true" />
-          Itinéraire
+          Itin��raire
         </a>
       </div>
       <Link
@@ -411,7 +410,7 @@ function ProviderDetail({ provider }: { provider: Provider }) {
           className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-border bg-card px-4 font-semibold text-foreground hover:bg-accent"
         >
           <Navigation className="h-5 w-5" aria-hidden="true" />
-          Itinéraire
+          Voir l’itinéraire
         </a>
       </div>
 

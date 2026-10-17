@@ -7,6 +7,8 @@ import { deleteDoctorPractitioner, getDoctorNetwork, getPublicDoctorNetworks, sa
 import { put } from "@vercel/blob";
 import { generateClientTokenFromReadWriteToken } from "@vercel/blob/client";
 import { createDoctorResource, deleteDoctorResource, listAllActiveDoctorResources, listDoctorResources, listPathwaySettings, setPathwayHidden, updateDoctorResource } from "./lib/doctor-resource-db";
+import { isActiveAdmin, resolveActiveCabinetOwner } from "./lib/doctor-account-db";
+import { handleOnboardingRequest } from "./lib/doctor-onboarding-api";
 
 function optionalText(value: unknown, max = 500): string | null {
   return typeof value === "string" && value.trim() ? value.trim().slice(0, max) : null;
@@ -103,13 +105,19 @@ export default {
       if (url.pathname.startsWith("/api/auth/")) {
         return await auth.handler(request);
       }
+      const onboardingResponse = await handleOnboardingRequest(request, url);
+      if (onboardingResponse) return onboardingResponse;
       if (url.pathname === "/api/doctor-resources") {
         const conditionId = url.searchParams.get("conditionId") ?? undefined;
-        const ownerId = url.searchParams.get("ownerId") ?? undefined;
+        const publicRef = url.searchParams.get("ownerId");
         const session = await auth.api.getSession({ headers: request.headers });
         if (request.method === "GET") {
           const manage = url.searchParams.get("scope") === "manage";
-          return Response.json(session?.user ? await listDoctorResources(session.user.id, conditionId, manage) : (await listAllActiveDoctorResources(conditionId, ownerId)).filter((resource) => resource.kind !== "exercise"));
+          if (session?.user && (manage || publicRef === null)) return Response.json(await listDoctorResources(session.user.id, conditionId, manage));
+          // Côté patient, seul un QR signé par Kivoir donne accès aux ressources d'un cabinet.
+          const ownerId = await resolveActiveCabinetOwner(publicRef);
+          if (!ownerId) return Response.json([]);
+          return Response.json((await listAllActiveDoctorResources(conditionId, ownerId)).filter((resource) => resource.kind !== "exercise"));
         }
         if (!session?.user) return Response.json({ error: "Unauthorized" }, { status: 401 });
         if (request.method === "POST") {
@@ -192,8 +200,10 @@ export default {
         const conditionId = url.searchParams.get("conditionId") ?? undefined;
         const session = await auth.api.getSession({ headers: request.headers });
         if (request.method === "GET") {
-          const requestedOwner = url.searchParams.get("ownerId")?.trim().slice(0, 160) || undefined;
-          return Response.json(await listFollowUpSteps(requestedOwner ?? session?.user?.id, conditionId));
+          const publicRef = url.searchParams.get("ownerId");
+          const ownerId = publicRef === null ? session?.user?.id ?? null : await resolveActiveCabinetOwner(publicRef);
+          if (!ownerId) return Response.json([]);
+          return Response.json(await listFollowUpSteps(ownerId, conditionId));
         }
         if (!session?.user) return Response.json({ error: "Votre session médecin a expiré. Reconnectez-vous." }, { status: 401 });
         if (request.method === "POST") {
@@ -227,21 +237,25 @@ export default {
       }
       if (url.pathname === "/api/scans" && request.method === "POST") {
         const payload = await request.json() as { medecinId?: unknown; medecin_id?: unknown; ref?: unknown; parcoursId?: unknown };
-        const medecinId = [payload.medecinId, payload.medecin_id, payload.ref].find((value): value is string => typeof value === "string" && value.trim().length > 0);
-        if (!medecinId || typeof payload.parcoursId !== "string" || !payload.parcoursId.trim()) return Response.json({ error: "Paramètres invalides" }, { status: 400 });
-        await recordAnonymousScan(medecinId.trim().slice(0, 160), payload.parcoursId.trim().slice(0, 160));
+        const ref = [payload.medecinId, payload.medecin_id, payload.ref].find((value): value is string => typeof value === "string" && value.trim().length > 0);
+        if (!ref || typeof payload.parcoursId !== "string" || !payload.parcoursId.trim()) return Response.json({ error: "Paramètres invalides" }, { status: 400 });
+        const medecinId = await resolveActiveCabinetOwner(ref.trim());
+        if (!medecinId) return Response.json({ error: "QR code non reconnu" }, { status: 400 });
+        await recordAnonymousScan(medecinId, payload.parcoursId.trim().slice(0, 160));
         return Response.json({ ok: true }, { status: 201 });
       }
       if (url.pathname === "/api/admin/scan-stats" && request.method === "GET") {
         const session = await auth.api.getSession({ headers: request.headers });
-        const admins = (process.env["ADMIN_EMAILS"] ?? "").split(",").map((email) => email.trim().toLowerCase()).filter(Boolean);
-        if (!session?.user || !admins.includes(session.user.email.toLowerCase())) return Response.json({ error: "Forbidden" }, { status: 403 });
+        if (!session?.user || !(await isActiveAdmin(session.user.id))) return Response.json({ error: "Forbidden" }, { status: 403 });
         return Response.json(await getScanStats());
       }
       if (url.pathname === "/api/public-networks" && request.method === "GET") {
-        const networks = await getPublicDoctorNetworks(url.searchParams.get("owner")?.trim().slice(0, 160) || undefined);
-        const requestedId = url.searchParams.get("id");
-        return Response.json(requestedId ? networks.filter((network) => network.id === requestedId) : networks);
+        // Jamais de liste globale : un cabinet n'est exposé que via son QR signé ou son lien de partage.
+        const requestedId = url.searchParams.get("id")?.trim().slice(0, 200) || undefined;
+        const ownerRef = url.searchParams.get("owner");
+        const ownerId = ownerRef ? (await resolveActiveCabinetOwner(ownerRef)) ?? undefined : undefined;
+        if (!requestedId && !ownerId) return Response.json([]);
+        return Response.json(await getPublicDoctorNetworks({ ownerId, networkId: requestedId }));
       }
       if (url.pathname === "/api/doctor-pathways") {
         const session = await auth.api.getSession({ headers: request.headers });

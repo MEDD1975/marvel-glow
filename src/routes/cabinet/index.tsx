@@ -9,7 +9,7 @@ import { QRTransmissionCard } from "@/components/doctor/QRTransmissionCard";
 import { QRFullscreenModal } from "@/components/doctor/QRFullscreenModal";
 import { PathwaySummary } from "@/components/doctor/PathwaySummary";
 import { TransmitActionBar } from "@/components/doctor/TransmitActionBar";
-import { useDoctorResources, usePathwaySettings } from "@/components/doctor/use-doctor-data";
+import { useCabinetRef, useDoctorResources, usePathwaySettings } from "@/components/doctor/use-doctor-data";
 import { buildPatientLink, doctorGreetingName, findCondition, getPathwayStats, openPatientPreview } from "@/lib/doctor-pathway-info";
 
 export const Route = createFileRoute("/cabinet/")({
@@ -30,6 +30,9 @@ function TransmitPage() {
   const user = session?.user;
   const resources = useDoctorResources();
   const settings = usePathwaySettings();
+  const cabinetRef = useCabinetRef();
+  const doctorRef = cabinetRef.data?.ref;
+  const doctorIdentity = useMemo(() => (doctorRef ? { id: doctorRef } : null), [doctorRef]);
 
   const [pathway, setPathway] = useState<string | null>(() => (findCondition(search.pathway) ? search.pathway ?? null : null));
   const [qr, setQr] = useState<{ url: string; image: string | null }>({ url: "", image: null });
@@ -48,8 +51,8 @@ function TransmitPage() {
   const stats = condition ? getPathwayStats(condition.id, resources.data ?? []) : null;
 
   useEffect(() => {
-    if (!pathway) return;
-    const target = buildPatientLink(window.location.origin, pathway, user);
+    if (!pathway || !doctorIdentity) return;
+    const target = buildPatientLink(window.location.origin, pathway, doctorIdentity);
     setQr({ url: target, image: null });
     let cancelled = false;
     void import("qrcode").then(async (mod) => {
@@ -59,7 +62,7 @@ function TransmitPage() {
     return () => {
       cancelled = true;
     };
-  }, [pathway, user]);
+  }, [pathway, doctorIdentity]);
 
   const selectPathway = (id: string) => {
     setPathway(id);
@@ -137,7 +140,7 @@ function TransmitPage() {
             onPrint={print}
             onShare={share}
             onExportPdf={() => void exportPdf()}
-            onPreview={() => condition && openPatientPreview(condition.id, user)}
+            onPreview={() => condition && openPatientPreview(condition.id, doctorIdentity)}
           />
           {condition && stats ? (
             <>
@@ -156,7 +159,7 @@ function TransmitPage() {
             onFullscreen={() => setFullscreen(true)}
             onPrint={print}
             onShare={share}
-            onPreview={() => openPatientPreview(condition.id, user)}
+            onPreview={() => openPatientPreview(condition.id, doctorIdentity)}
           />
           <QRFullscreenModal open={fullscreen} onOpenChange={setFullscreen} qr={qr.image} pathwayName={condition.name} />
           <div className="card-section hidden">

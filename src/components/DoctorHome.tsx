@@ -9,7 +9,7 @@ export function DoctorHome() {
         <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-[2rem] border border-care/20 bg-care/10 p-5">
           <img src="/favicon.svg" alt="" className="h-full w-full" />
         </div>
-        <p className="mt-7 text-sm font-semibold uppercase tracking-[0.16em] text-care">Espace médecin</p>
+        <p className="mt-7 text-sm font-semibold uppercase tracking-[0.16em] text-care">Espace professionnel de santé</p>
         <h1 className="mt-3 text-5xl font-semibold tracking-[-0.05em] text-foreground md:text-7xl">Kivoir</h1>
         <p className="mx-auto mt-5 max-w-md text-pretty text-lg leading-8 text-muted-foreground md:text-xl">Préparez simplement les contenus et les ressources à partager avec vos patients.</p>
         <button

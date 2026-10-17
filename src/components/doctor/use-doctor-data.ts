@@ -46,6 +46,15 @@ export function useDoctorNetwork() {
   return useQuery({ queryKey: doctorKeys.network, queryFn: () => getJson<DoctorNetwork | null>("/api/doctor-network") });
 }
 
+/** Identifiant signé du cabinet, à utiliser dans tous les QR et liens patient. */
+export function useCabinetRef() {
+  return useQuery({
+    queryKey: ["doctor", "cabinet-ref"],
+    staleTime: Infinity,
+    queryFn: () => getJson<{ ref: string; admin: boolean }>("/api/doctor-cabinet-ref"),
+  });
+}
+
 export function useDoctorCache() {
   return useQueryClient();
 }

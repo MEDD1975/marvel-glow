@@ -1,12 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { Eye, EyeOff, QrCode } from "lucide-react";
-import { authClient } from "@/lib/auth-client";
 import { conditions } from "@/lib/conditions";
 import { formatDate, getPathwayStats, openPatientPreview } from "@/lib/doctor-pathway-info";
 import { DoctorHeader, DoctorPage } from "@/components/doctor/DoctorLayout";
 import { ErrorState, LoadingState } from "@/components/doctor/states";
-import { doctorKeys, sendJson, useDoctorCache, useDoctorResources, usePathwaySettings } from "@/components/doctor/use-doctor-data";
+import { doctorKeys, sendJson, useCabinetRef, useDoctorCache, useDoctorResources, usePathwaySettings } from "@/components/doctor/use-doctor-data";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/cabinet/parcours")({
@@ -15,7 +14,8 @@ export const Route = createFileRoute("/cabinet/parcours")({
 });
 
 function PathwaysPage() {
-  const { data: session } = authClient.useSession();
+  const cabinetRef = useCabinetRef();
+  const doctorIdentity = cabinetRef.data ? { id: cabinetRef.data.ref } : null;
   const resources = useDoctorResources();
   const settings = usePathwaySettings();
   const cache = useDoctorCache();
@@ -70,7 +70,7 @@ function PathwaysPage() {
                     <Link to="/cabinet" search={{ pathway: condition.id } as never} className="flex min-h-11 items-center gap-2 rounded-xl bg-care px-4 text-sm font-semibold text-care-foreground">
                       <QrCode className="h-4 w-4" aria-hidden="true" />Transmettre
                     </Link>
-                    <button type="button" onClick={() => openPatientPreview(condition.id, session?.user)} className="flex min-h-11 items-center gap-2 rounded-xl border border-border px-4 text-sm font-medium">
+                    <button type="button" onClick={() => openPatientPreview(condition.id, doctorIdentity)} className="flex min-h-11 items-center gap-2 rounded-xl border border-border px-4 text-sm font-medium">
                       <Eye className="h-4 w-4" aria-hidden="true" />Prévisualiser
                     </button>
                     <button type="button" disabled={pending === condition.id} onClick={() => void toggle(condition.id)} className="flex min-h-11 items-center gap-2 rounded-xl border border-border px-4 text-sm font-medium disabled:opacity-50">

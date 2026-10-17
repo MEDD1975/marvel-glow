@@ -280,24 +280,20 @@ function ProviderList({ providers, initialProfession }: { providers: Provider[];
     [providers, filter],
   );
 
-  const chip = (active: boolean) =>
-    `inline-flex min-h-11 shrink-0 items-center whitespace-nowrap rounded-full border px-4 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
-      active ? "border-care bg-care text-care-foreground" : "border-border bg-card text-foreground hover:bg-accent"
-    }`;
-
   return (
     <section aria-label="Liste des professionnels">
       {categories.length > 1 ? (
-        <div role="group" aria-label="Filtrer par spécialité" className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 [scrollbar-width:none]">
-          <button type="button" aria-pressed={filter === null} onClick={() => setFilter(null)} className={chip(filter === null)}>
-            Tous
-          </button>
-          {categories.map((category) => (
-            <button key={category} type="button" aria-pressed={filter === category} onClick={() => setFilter(filter === category ? null : category)} className={chip(filter === category)}>
-              {category}
-            </button>
-          ))}
-        </div>
+        <label className="block max-w-md">
+          <span className="sr-only">Filtrer par spécialité</span>
+          <select
+            value={filter ?? ""}
+            onChange={(event) => setFilter(event.target.value || null)}
+            className="min-h-12 w-full rounded-xl border border-border bg-card px-4 text-sm font-medium text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            <option value="">Toutes les spécialités</option>
+            {categories.map((category) => <option key={category} value={category}>{category}</option>)}
+          </select>
+        </label>
       ) : null}
 
       {list.length ? (
@@ -414,7 +410,7 @@ function ProviderDetail({ provider }: { provider: Provider }) {
           className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-border bg-card px-4 font-semibold text-foreground hover:bg-accent"
         >
           <Navigation className="h-5 w-5" aria-hidden="true" />
-          Itinéraire
+          Voir l’itinéraire
         </a>
       </div>
 

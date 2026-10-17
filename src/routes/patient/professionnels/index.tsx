@@ -41,21 +41,17 @@ function ProfessionalsPage() {
           className="h-12 w-full rounded-xl border border-border bg-card pl-10 pr-4 text-base text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         />
       </label>
-      <div role="group" aria-label="Filtrer par catégorie" className="-mx-4 mt-3 flex gap-2 overflow-x-auto px-4 pb-1">
-        {categories.map((item) => (
-          <button
-            key={item}
-            type="button"
-            aria-pressed={category === item}
-            onClick={() => setCategory(item)}
-            className={`min-h-11 shrink-0 whitespace-nowrap rounded-full border px-4 text-sm font-medium transition-colors ${
-              category === item ? "border-care/30 bg-tone-blue text-care" : "border-border/70 bg-card text-foreground hover:bg-accent"
-            }`}
-          >
-            {item}
-          </button>
-        ))}
-      </div>
+      <label className="mt-3 block max-w-md">
+        <span className="sr-only">Filtrer par spécialité</span>
+        <select
+          value={category === "Tous" ? "" : category}
+          onChange={(event) => setCategory(event.target.value || "Tous")}
+          className="min-h-12 w-full rounded-xl border border-border bg-card px-4 text-sm font-medium text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        >
+          <option value="">Toutes les spécialités</option>
+          {categories.filter((item) => item !== "Tous").map((item) => <option key={item} value={item}>{item}</option>)}
+        </select>
+      </label>
       <div className="mt-4">
         {isError ? (
           <div className="mb-4">

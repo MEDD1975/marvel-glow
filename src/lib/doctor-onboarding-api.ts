@@ -16,6 +16,8 @@ import {
   setDoctorDisabled,
   signCabinetRef,
   type InvitationInput,
+  hashToken,
+  tokenMatchesInvitation,
 } from "./doctor-account-db";
 import { saveDoctorNetwork } from "./doctor-network-db";
 import { sendDoctorInvitationEmail } from "./kivoir-email";
@@ -75,6 +77,22 @@ function activationBaseUrl(origin: string) {
   return origin;
 }
 
+function isDiagnosticInvitation(email: string) {
+  return /test[._-]?kivoir/i.test(email);
+}
+
+function tokenFingerprint(token: string) {
+  return hashToken(token).slice(0, 12);
+}
+
+function diagnosticContext() {
+  return {
+    deployment: process.env["VERCEL_DEPLOYMENT_ID"] ?? process.env["VERCEL_URL"] ?? "local",
+    environment: process.env["VERCEL_ENV"] ?? "local",
+    neonProject: process.env["NEON_PROJECT_ID"] ?? "unknown",
+  };
+}
+
 function activationUrl(origin: string, token: string) {
   return `${activationBaseUrl(origin)}/activation-medecin?token=${encodeURIComponent(token)}`;
 }
@@ -86,10 +104,24 @@ async function sendInvitation(
   expiresAt: Date,
 ) {
   try {
+    const link = activationUrl(origin, token);
+    if (isDiagnosticInvitation(invitation.email)) {
+      const url = new URL(link);
+      console.info("[v0 token-diagnostic] before-resend", {
+        invitationId: invitation.id,
+        fingerprint: tokenFingerprint(token),
+        ...diagnosticContext(),
+        activationDomain: url.host,
+        route: url.pathname,
+        hasTokenParam: url.searchParams.has("token") ? "YES" : "NO",
+        tokenLength: token.length,
+        encoding: decodeURIComponent(url.searchParams.get("token") ?? "") === token ? "once" : "mismatch",
+      });
+    }
     const sent = await sendDoctorInvitationEmail({
       to: invitation.email,
       greetingName: `${invitation.firstName} ${invitation.lastName}`,
-      activationUrl: activationUrl(origin, token),
+      activationUrl: link,
       expiresAt,
     });
     await markInvitationSent(invitation.id, sent.id);
@@ -120,6 +152,16 @@ async function handleAdminDoctors(request: Request, url: URL): Promise<Response>
     if ("error" in parsed) return Response.json({ error: parsed.error }, { status: 400 });
     if (await emailHasAccount(parsed.value.email)) return Response.json({ error: "Un compte Kivoir existe déjà pour cette adresse." }, { status: 409 });
     const created = await createInvitation(parsed.value, admin.id);
+    if (isDiagnosticInvitation(parsed.value.email)) {
+      console.info("[v0 token-diagnostic] generated", {
+        invitationId: created.id,
+        fingerprint: tokenFingerprint(created.token),
+        hashMatchesToken: await tokenMatchesInvitation(created.id, created.token),
+        ...diagnosticContext(),
+        baseUrl: activationBaseUrl(url.origin),
+        generatedAt: new Date().toISOString(),
+      });
+    }
     const sent = await sendInvitation(url.origin, { id: created.id, ...parsed.value }, created.token, created.expiresAt);
     if (!sent) return Response.json({ error: "Invitation enregistrée, mais l’e-mail n’a pas pu être envoyé. Utilisez « Renvoyer »." }, { status: 502 });
     return Response.json({ ok: true }, { status: 201 });
@@ -133,6 +175,16 @@ async function handleAdminDoctors(request: Request, url: URL): Promise<Response>
       case "resend": {
         const renewed = await renewInvitationToken(id);
         if (!renewed) return Response.json({ error: "Cette invitation n’est plus en attente." }, { status: 404 });
+        if (isDiagnosticInvitation(renewed.invitation.email)) {
+          console.info("[v0 token-diagnostic] generated", {
+            invitationId: renewed.invitation.id,
+            fingerprint: tokenFingerprint(renewed.token),
+            hashMatchesToken: await tokenMatchesInvitation(renewed.invitation.id, renewed.token),
+            ...diagnosticContext(),
+            baseUrl: activationBaseUrl(url.origin),
+            generatedAt: new Date().toISOString(),
+          });
+        }
         const sent = await sendInvitation(url.origin, renewed.invitation, renewed.token, renewed.expiresAt);
         return sent ? Response.json({ ok: true }) : Response.json({ error: "L’e-mail n’a pas pu être envoyé. Réessayez." }, { status: 502 });
       }
@@ -160,6 +212,16 @@ async function handleActivation(request: Request, url: URL): Promise<Response> {
   if (request.method === "GET") {
     const token = url.searchParams.get("token") ?? "";
     const invitation = token ? await findValidInvitation(token) : null;
+    if (token && (invitation?.email ? isDiagnosticInvitation(invitation.email) : true)) {
+      console.info("[v0 token-diagnostic] received", {
+        invitationId: invitation?.id ?? "unknown",
+        fingerprint: tokenFingerprint(token),
+        tokenLength: token.length,
+        ...diagnosticContext(),
+        tokenHashComparison: invitation ? (await tokenMatchesInvitation(invitation.id, token) ? "CORRESPOND" : "NE CORRESPOND PAS") : "NE CORRESPOND PAS",
+        invitationStatus: invitation?.status ?? "not-found",
+      });
+    }
     if (!invitation) return Response.json({ error: "Ce lien d’activation est invalide, expiré ou déjà utilisé." }, { status: 404 });
     return Response.json({
       email: invitation.email,

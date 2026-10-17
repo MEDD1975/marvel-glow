@@ -189,6 +189,14 @@ export async function findValidInvitation(token: string): Promise<InvitationReco
   return result.rows[0] ?? null;
 }
 
+export async function tokenMatchesInvitation(id: string, token: string): Promise<boolean> {
+  const result = await pool.query<{ matches: boolean }>(
+    'SELECT "tokenHash" = $2 AS matches FROM "doctor_invitation" WHERE "id" = $1',
+    [id, hashToken(token)],
+  );
+  return result.rows[0]?.matches === true;
+}
+
 /** Marque l'invitation comme utilisée uniquement après la création complète du compte et du cabinet. */
 export async function consumeInvitation(id: string, token: string): Promise<boolean> {
   const result = await pool.query(

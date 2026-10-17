@@ -189,14 +189,14 @@ export async function findValidInvitation(token: string): Promise<InvitationReco
   return result.rows[0] ?? null;
 }
 
-/** Réserve l'invitation de façon atomique : un même lien ne peut être utilisé qu'une fois. */
-export async function claimInvitation(token: string): Promise<InvitationRecord | null> {
-  const result = await pool.query<InvitationRecord>(
+/** Marque l'invitation comme utilisée uniquement après la création complète du compte et du cabinet. */
+export async function consumeInvitation(id: string, token: string): Promise<boolean> {
+  const result = await pool.query(
     `UPDATE "doctor_invitation" SET "status" = 'used', "usedAt" = now()
-     WHERE "tokenHash" = $1 AND "status" = 'pending' AND "expiresAt" > now() RETURNING ${invitationColumns}`,
-    [hashToken(token)],
+     WHERE "id" = $1 AND "tokenHash" = $2 AND "status" = 'pending' AND "expiresAt" > now() AND "cancelledAt" IS NULL`,
+    [id, hashToken(token)],
   );
-  return result.rows[0] ?? null;
+  return Boolean(result.rowCount);
 }
 
 export async function releaseInvitation(id: string) {

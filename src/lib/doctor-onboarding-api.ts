@@ -1,8 +1,8 @@
 import { auth, MIN_PASSWORD_LENGTH } from "./auth";
 import {
   attachInvitationUser,
+  consumeInvitation,
   cancelInvitation,
-  claimInvitation,
   createInvitation,
   emailHasAccount,
   findValidInvitation,
@@ -167,7 +167,7 @@ async function handleActivation(request: Request, url: URL): Promise<Response> {
     if (password.length < MIN_PASSWORD_LENGTH || password.length > 128) {
       return Response.json({ error: `Le mot de passe doit contenir entre ${MIN_PASSWORD_LENGTH} et 128 caractères.` }, { status: 400 });
     }
-    const invitation = token ? await claimInvitation(token) : null;
+    const invitation = token ? await findValidInvitation(token) : null;
     if (!invitation) return Response.json({ error: "Ce lien d’activation est invalide, expiré ou déjà utilisé." }, { status: 404 });
 
     let userId: string | null = null;
@@ -196,10 +196,13 @@ async function handleActivation(request: Request, url: URL): Promise<Response> {
         phone: invitation.phone,
         practitioners: [],
       });
+      if (!(await consumeInvitation(invitation.id, token))) {
+        throw new Error("Invitation could not be consumed");
+      }
       return Response.json({ ok: true, email: invitation.email }, { status: 201 });
     } catch (error) {
       console.error("[kivoir] doctor activation failed", error);
-      if (!userId) await releaseInvitation(invitation.id);
+      await releaseInvitation(invitation.id);
       return Response.json({ error: "L’activation n’a pas pu aboutir. Réessayez ou contactez Kivoir." }, { status: 500 });
     }
   }

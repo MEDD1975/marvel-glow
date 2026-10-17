@@ -10,14 +10,17 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ActivationMedecinRouteImport } from './routes/activation-medecin'
 import { Route as AnnuaireRouteImport } from './routes/annuaire'
 import { Route as CabinetRouteRouteImport } from './routes/cabinet/route'
 import { Route as ConnexionMedecinRouteImport } from './routes/connexion-medecin'
 import { Route as ConseilsRouteImport } from './routes/conseils'
+import { Route as NouveauMotDePasseRouteImport } from './routes/nouveau-mot-de-passe'
 import { Route as OrientationRouteImport } from './routes/orientation'
 import { Route as ParcoursRouteImport } from './routes/parcours'
 import { Route as PatientRouteRouteImport } from './routes/patient/route'
 import { Route as SuiviRouteImport } from './routes/suivi'
+import { Route as AdminMedecinsRouteImport } from './routes/admin/medecins'
 import { Route as AdminStatsRouteImport } from './routes/admin/stats'
 import { Route as CabinetIndexRouteImport } from './routes/cabinet/index'
 import { Route as CabinetAccueilRouteImport } from './routes/cabinet/accueil'
@@ -46,6 +49,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ActivationMedecinRoute = ActivationMedecinRouteImport.update({
+  id: '/activation-medecin',
+  path: '/activation-medecin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AnnuaireRoute = AnnuaireRouteImport.update({
   id: '/annuaire',
   path: '/annuaire',
@@ -66,6 +74,11 @@ const ConseilsRoute = ConseilsRouteImport.update({
   path: '/conseils',
   getParentRoute: () => rootRouteImport,
 } as any)
+const NouveauMotDePasseRoute = NouveauMotDePasseRouteImport.update({
+  id: '/nouveau-mot-de-passe',
+  path: '/nouveau-mot-de-passe',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const OrientationRoute = OrientationRouteImport.update({
   id: '/orientation',
   path: '/orientation',
@@ -84,6 +97,11 @@ const PatientRouteRoute = PatientRouteRouteImport.update({
 const SuiviRoute = SuiviRouteImport.update({
   id: '/suivi',
   path: '/suivi',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminMedecinsRoute = AdminMedecinsRouteImport.update({
+  id: '/admin/medecins',
+  path: '/admin/medecins',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminStatsRoute = AdminStatsRouteImport.update({
@@ -207,12 +225,15 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/cabinet': typeof CabinetRouteRouteWithChildren
   '/patient': typeof PatientRouteRouteWithChildren
+  '/activation-medecin': typeof ActivationMedecinRoute
   '/annuaire': typeof AnnuaireRoute
   '/connexion-medecin': typeof ConnexionMedecinRoute
   '/conseils': typeof ConseilsRoute
+  '/nouveau-mot-de-passe': typeof NouveauMotDePasseRoute
   '/orientation': typeof OrientationRoute
   '/parcours': typeof ParcoursRoute
   '/suivi': typeof SuiviRoute
+  '/admin/medecins': typeof AdminMedecinsRoute
   '/admin/stats': typeof AdminStatsRoute
   '/cabinet/accueil': typeof CabinetAccueilRoute
   '/cabinet/aide': typeof CabinetAideRoute
@@ -238,12 +259,15 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/activation-medecin': typeof ActivationMedecinRoute
   '/annuaire': typeof AnnuaireRoute
   '/connexion-medecin': typeof ConnexionMedecinRoute
   '/conseils': typeof ConseilsRoute
+  '/nouveau-mot-de-passe': typeof NouveauMotDePasseRoute
   '/orientation': typeof OrientationRoute
   '/parcours': typeof ParcoursRoute
   '/suivi': typeof SuiviRoute
+  '/admin/medecins': typeof AdminMedecinsRoute
   '/admin/stats': typeof AdminStatsRoute
   '/cabinet/accueil': typeof CabinetAccueilRoute
   '/cabinet/aide': typeof CabinetAideRoute
@@ -272,12 +296,15 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/cabinet': typeof CabinetRouteRouteWithChildren
   '/patient': typeof PatientRouteRouteWithChildren
+  '/activation-medecin': typeof ActivationMedecinRoute
   '/annuaire': typeof AnnuaireRoute
   '/connexion-medecin': typeof ConnexionMedecinRoute
   '/conseils': typeof ConseilsRoute
+  '/nouveau-mot-de-passe': typeof NouveauMotDePasseRoute
   '/orientation': typeof OrientationRoute
   '/parcours': typeof ParcoursRoute
   '/suivi': typeof SuiviRoute
+  '/admin/medecins': typeof AdminMedecinsRoute
   '/admin/stats': typeof AdminStatsRoute
   '/cabinet/accueil': typeof CabinetAccueilRoute
   '/cabinet/aide': typeof CabinetAideRoute
@@ -307,12 +334,15 @@ export interface FileRouteTypes {
     | '/'
     | '/cabinet'
     | '/patient'
+    | '/activation-medecin'
     | '/annuaire'
     | '/connexion-medecin'
     | '/conseils'
+    | '/nouveau-mot-de-passe'
     | '/orientation'
     | '/parcours'
     | '/suivi'
+    | '/admin/medecins'
     | '/admin/stats'
     | '/cabinet/accueil'
     | '/cabinet/aide'
@@ -338,12 +368,15 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/activation-medecin'
     | '/annuaire'
     | '/connexion-medecin'
     | '/conseils'
+    | '/nouveau-mot-de-passe'
     | '/orientation'
     | '/parcours'
     | '/suivi'
+    | '/admin/medecins'
     | '/admin/stats'
     | '/cabinet/accueil'
     | '/cabinet/aide'
@@ -371,12 +404,15 @@ export interface FileRouteTypes {
     | '/'
     | '/cabinet'
     | '/patient'
+    | '/activation-medecin'
     | '/annuaire'
     | '/connexion-medecin'
     | '/conseils'
+    | '/nouveau-mot-de-passe'
     | '/orientation'
     | '/parcours'
     | '/suivi'
+    | '/admin/medecins'
     | '/admin/stats'
     | '/cabinet/accueil'
     | '/cabinet/aide'
@@ -405,12 +441,15 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CabinetRouteRoute: typeof CabinetRouteRouteWithChildren
   PatientRouteRoute: typeof PatientRouteRouteWithChildren
+  ActivationMedecinRoute: typeof ActivationMedecinRoute
   AnnuaireRoute: typeof AnnuaireRoute
   ConnexionMedecinRoute: typeof ConnexionMedecinRoute
   ConseilsRoute: typeof ConseilsRoute
+  NouveauMotDePasseRoute: typeof NouveauMotDePasseRoute
   OrientationRoute: typeof OrientationRoute
   ParcoursRoute: typeof ParcoursRoute
   SuiviRoute: typeof SuiviRoute
+  AdminMedecinsRoute: typeof AdminMedecinsRoute
   AdminStatsRoute: typeof AdminStatsRoute
   PPathologieRoute: typeof PPathologieRoute
 }
@@ -422,6 +461,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/activation-medecin': {
+      id: '/activation-medecin'
+      path: '/activation-medecin'
+      fullPath: '/activation-medecin'
+      preLoaderRoute: typeof ActivationMedecinRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/annuaire': {
@@ -452,6 +498,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ConseilsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/nouveau-mot-de-passe': {
+      id: '/nouveau-mot-de-passe'
+      path: '/nouveau-mot-de-passe'
+      fullPath: '/nouveau-mot-de-passe'
+      preLoaderRoute: typeof NouveauMotDePasseRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/orientation': {
       id: '/orientation'
       path: '/orientation'
@@ -478,6 +531,13 @@ declare module '@tanstack/react-router' {
       path: '/suivi'
       fullPath: '/suivi'
       preLoaderRoute: typeof SuiviRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/medecins': {
+      id: '/admin/medecins'
+      path: '/admin/medecins'
+      fullPath: '/admin/medecins'
+      preLoaderRoute: typeof AdminMedecinsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/stats': {
@@ -701,12 +761,15 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CabinetRouteRoute: CabinetRouteRouteWithChildren,
   PatientRouteRoute: PatientRouteRouteWithChildren,
+  ActivationMedecinRoute: ActivationMedecinRoute,
   AnnuaireRoute: AnnuaireRoute,
   ConnexionMedecinRoute: ConnexionMedecinRoute,
   ConseilsRoute: ConseilsRoute,
+  NouveauMotDePasseRoute: NouveauMotDePasseRoute,
   OrientationRoute: OrientationRoute,
   ParcoursRoute: ParcoursRoute,
   SuiviRoute: SuiviRoute,
+  AdminMedecinsRoute: AdminMedecinsRoute,
   AdminStatsRoute: AdminStatsRoute,
   PPathologieRoute: PPathologieRoute,
 }

@@ -41,15 +41,26 @@ export async function getDoctorNetwork(userId: string) {
   return { ...network, practitioners: practitioners.rows } satisfies DoctorNetworkRecord;
 }
 
-export async function getPublicDoctorNetworks(ownerId?: string) {
-  const ownerFilter = ownerId ? ' AND n."ownerId" = $2' : "";
+/** Cabinets publics d'un médecin actif, ciblés par propriétaire et/ou identifiant (jamais tous). */
+export async function getPublicDoctorNetworks(filter: { ownerId?: string | undefined; networkId?: string | undefined }) {
+  if (!filter.ownerId && !filter.networkId) return [];
+  const values: string[] = ["archived"];
+  let conditions = "";
+  if (filter.ownerId) {
+    values.push(filter.ownerId);
+    conditions += ` AND n."ownerId" = $${values.length}`;
+  }
+  if (filter.networkId) {
+    values.push(filter.networkId);
+    conditions += ` AND n."id" = $${values.length}`;
+  }
   const networkResult = await pool.query<{
     id: string;
     name: string;
     address: string;
     phone: string | null;
     ownerName: string | null;
-  }>(`SELECT n."id", n."name", n."address", n."phone", u."name" AS "ownerName" FROM "doctor_network" n LEFT JOIN "user" u ON u."id" = n."ownerId" WHERE n."status" NOT IN ($1)${ownerFilter} ORDER BY n."createdAt" DESC`, ownerId ? ["archived", ownerId] : ["archived"]);
+  }>(`SELECT n."id", n."name", n."address", n."phone", u."name" AS "ownerName" FROM "doctor_network" n JOIN "user" u ON u."id" = n."ownerId" WHERE n."status" NOT IN ($1) AND u."disabledAt" IS NULL${conditions} ORDER BY n."createdAt" DESC LIMIT 1`, values);
 
   const networks = [];
   for (const network of networkResult.rows) {

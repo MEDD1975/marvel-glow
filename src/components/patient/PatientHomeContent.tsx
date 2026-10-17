@@ -91,21 +91,22 @@ export function PatientHomeContent() {
   return (
     <div className="flex flex-col gap-4">
       <section aria-labelledby="home-title" className="mb-2">
+        <p className="mb-3 text-xs font-bold uppercase tracking-[0.16em] text-[#0B63CE]">Votre parcours, simplement</p>
         <h1
           id="home-title"
-          className="text-balance text-[clamp(1.875rem,8.5vw,2.125rem)] font-bold leading-[1.15] tracking-tight text-[#101C33] md:text-4xl"
+          className="max-w-[16ch] text-balance font-display text-[clamp(2.15rem,9vw,3rem)] font-bold leading-[1.02] tracking-[-0.04em] text-[#101C33] md:max-w-[18ch] md:text-5xl"
         >
-          Gardez les conseils de votre médecin à portée de main
+          Les bons gestes pour récupérer sereinement
         </h1>
-        <p className="mt-3 max-w-prose text-pretty text-base leading-relaxed text-[#526176] md:text-lg">
-          Retrouvez quoi faire maintenant, les points à surveiller et quand demander un nouvel avis.
+        <p className="mt-4 max-w-prose text-pretty text-base leading-relaxed text-[#526176] md:text-lg">
+          Votre médecin a préparé les prochaines étapes. Commencez par ce qui compte maintenant.
         </p>
       </section>
 
       {hasContext && guide ? (
         <section
           aria-labelledby="diagnostic-title"
-          className="rounded-2xl border border-[#D6E4F5] border-l-4 border-l-[#0B63CE] bg-[#F1F6FD] px-5 py-4"
+          className="relative overflow-hidden rounded-[24px] border border-[#C9DCF3] border-l-4 border-l-[#0B63CE] bg-[linear-gradient(135deg,#EAF3FF_0%,#F7FBFF_62%,#EEF9F5_100%)] px-5 py-5 shadow-[0_12px_30px_rgba(11,99,206,0.08)]"
         >
           <p className="text-xs font-semibold uppercase tracking-[0.08em] text-[#0B63CE] md:text-[13px]">
             Parcours transmis par votre médecin
@@ -138,7 +139,7 @@ export function PatientHomeContent() {
         to="/conseils"
         icon={CheckCircle2}
         tone="green"
-        title="À faire maintenant"
+        title="Commencer maintenant"
         intro={
           recommendationCount
             ? `${recommendationCount} conseils à appliquer après la consultation`

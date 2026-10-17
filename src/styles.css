@@ -61,6 +61,8 @@
   --color-tone-violet-border: var(--violet-border);
   --color-tone-violet-text: var(--violet-text);
   --color-tone-blue: var(--care-muted);
+  --color-patient-hero: var(--patient-hero);
+  --color-patient-hero-soft: var(--patient-hero-soft);
 }
 
 :root {
@@ -112,6 +114,8 @@
   --urgent-foreground: #FFFFFF;
   --soothe: var(--caution-bg);
   --soothe-foreground: var(--caution-text);
+  --patient-hero: #0B63CE;
+  --patient-hero-soft: #EAF3FF;
 }
 
 .dark {
@@ -134,6 +138,8 @@
   --violet-bg: #272046;
   --violet-border: #A79BFA;
   --violet-text: #DCD6FF;
+  --patient-hero: #60A5FA;
+  --patient-hero-soft: #172D48;
 }
 
 @layer base {

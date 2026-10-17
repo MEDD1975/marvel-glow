@@ -30,8 +30,11 @@ export function PathwayCard({ condition, selected, onSelect }: { condition: Cond
         ) : null}
       </span>
       <span className="flex flex-1 flex-col px-1.5 pb-1 pt-2">
-        <span className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">{condition.zone}</span>
-        <span className="mt-0.5 text-pretty text-sm font-semibold leading-snug text-foreground">{condition.name}</span>
+        <span className="inline-flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+          <img src={visual.src} alt={visual.alt} loading="lazy" decoding="async" className="h-7 w-7 rounded-full bg-care-muted object-cover ring-1 ring-border/70" />
+          <span>{condition.zone}</span>
+        </span>
+        <span className="mt-1 text-pretty text-sm font-semibold leading-snug text-foreground">{condition.name}</span>
         {selected ? (
           <span className="mt-1.5 inline-flex w-fit items-center gap-1 rounded-full bg-care px-2 py-0.5 text-[11px] font-semibold text-care-foreground">
             <Check className="h-3 w-3" strokeWidth={3} aria-hidden="true" />

@@ -52,18 +52,27 @@ function parseInvitationInput(payload: Record<string, unknown>): { value: Invita
   };
 }
 
-// Vercel: set APP_URL=https://kivoir.fr in Production; set APP_URL to the public Preview URL in Preview.
 // APP_URL is server-only: it is never exposed to the client or included in logs.
 function activationBaseUrl(origin: string) {
-  const configuredUrl = process.env["APP_URL"]?.trim().replace(/\/$/, "");
-  if (configuredUrl) return configuredUrl;
+  const vercelEnvironment = process.env["VERCEL_ENV"]?.trim();
 
-  if (process.env["NODE_ENV"] === "production") {
-    throw new Error("APP_URL is required in production to build activation links");
+  if (vercelEnvironment === "production") {
+    const productionUrl = process.env["APP_URL"]?.trim().replace(/\/$/, "");
+    if (!productionUrl) {
+      throw new Error("APP_URL is required in production to build activation links");
+    }
+    return productionUrl;
   }
 
-  const previewUrl = process.env["VERCEL_URL"]?.trim();
-  return previewUrl ? `https://${previewUrl}` : origin;
+  if (vercelEnvironment === "preview") {
+    const previewUrl = process.env["VERCEL_URL"]?.trim();
+    if (!previewUrl) {
+      throw new Error("VERCEL_URL is required in Preview to build activation links");
+    }
+    return `https://${previewUrl.replace(/^https?:\/\//, "").replace(/\/$/, "")}`;
+  }
+
+  return origin;
 }
 
 function activationUrl(origin: string, token: string) {

@@ -410,7 +410,7 @@ function ProviderDetail({ provider }: { provider: Provider }) {
           className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-border bg-card px-4 font-semibold text-foreground hover:bg-accent"
         >
           <Navigation className="h-5 w-5" aria-hidden="true" />
-          Voir l’itinéraire
+          Voir l&apos;itin&eacute;raire
         </a>
       </div>
 

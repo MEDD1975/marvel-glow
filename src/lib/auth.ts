@@ -10,6 +10,7 @@ export const MIN_PASSWORD_LENGTH = 10;
 
 const originCandidates = [
   process.env["BETTER_AUTH_URL"],
+  process.env["APP_URL"],
   process.env["VERCEL_PROJECT_PRODUCTION_URL"] && `https://${process.env["VERCEL_PROJECT_PRODUCTION_URL"]}`,
   process.env["VERCEL_URL"] && `https://${process.env["VERCEL_URL"]}`,
   process.env["V0_RUNTIME_URL"],

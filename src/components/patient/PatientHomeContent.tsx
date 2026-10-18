@@ -31,12 +31,6 @@ const linkCardSurfaces: Partial<Record<keyof typeof sectionTones, string>> = {
   learn: "bg-[#F5F9FE]",
 };
 
-function lowercaseFirst(name: string) {
-  const second = name.charAt(1);
-  if (second && second === second.toUpperCase() && second !== second.toLowerCase()) return name;
-  return name.charAt(0).toLowerCase() + name.slice(1);
-}
-
 function HomeLinkCard({
   to,
   icon: Icon,
@@ -80,9 +74,7 @@ export function PatientHomeContent() {
 
   const learningCounts = countLearningContent(guide, resources.data ?? []);
   const learningTotal = totalLearningContent(learningCounts);
-  const learningTitle = guide
-    ? `Mieux comprendre votre ${lowercaseFirst(guide.name)}`
-    : "Mieux comprendre votre atteinte";
+  const learningTitle = "Ressources utiles";
 
   const recommendationCount = guide?.recommendations.length ?? 0;
   const conditionZone = guide ? conditions.find((condition) => condition.id === guide.id)?.zone : undefined;

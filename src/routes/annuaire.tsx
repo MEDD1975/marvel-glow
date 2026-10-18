@@ -339,7 +339,7 @@ function ProviderCard({ provider }: { provider: Provider }) {
           className={`inline-flex min-h-11 items-center justify-center gap-1.5 rounded-xl border border-border bg-card px-3 text-sm font-semibold text-foreground hover:bg-accent ${tel ? "" : "col-span-2"}`}
         >
           <Navigation className="h-4 w-4" aria-hidden="true" />
-          Itin��raire
+          {"Itin\u00e9raire"}
         </a>
       </div>
       <Link

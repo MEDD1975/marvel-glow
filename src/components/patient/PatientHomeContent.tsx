@@ -96,10 +96,10 @@ export function PatientHomeContent() {
           id="home-title"
           className="max-w-[16ch] text-balance font-display text-[clamp(2.15rem,9vw,3rem)] font-bold leading-[1.02] tracking-[-0.04em] text-[#101C33] md:max-w-[18ch] md:text-5xl"
         >
-          Les bons gestes pour récupérer sereinement
+          Les prochaines étapes après votre consultation
         </h1>
         <p className="mt-4 max-w-prose text-pretty text-base leading-relaxed text-[#526176] md:text-lg">
-          Votre médecin a préparé les prochaines étapes. Commencez par ce qui compte maintenant.
+          Retrouvez les conseils de votre médecin, les bons gestes à adopter et les professionnels adaptés à votre situation.
         </p>
       </section>
 

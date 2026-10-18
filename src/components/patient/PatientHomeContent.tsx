@@ -15,10 +15,22 @@ import { conditions } from "@/lib/conditions";
 import { zoneVisuals } from "@/lib/zone-visuals";
 
 const sectionTones = {
-  green: { icon: "bg-[#F1F8F5] text-[#17855B]", border: "border-[#DCE5F0]" },
-  blue: { icon: "bg-[#F2F6FB] text-[#0B63CE]", border: "border-[#DCE5F0]" },
-  orange: { icon: "bg-white text-[#9A6100]", border: "border-[#F0DBAE] bg-[#FFF9ED]" },
-  neutral: { icon: "bg-[#FDECEC] text-[#B4232A]", border: "border-[#DCE5F0]" },
+  green: {
+    icon: "bg-[#E5F6EE] text-[#16845B]",
+    border: "border-[#BFE8D3] bg-[#F4FCF8]",
+  },
+  blue: {
+    icon: "bg-[#E3EEFF] text-[#1764C0]",
+    border: "border-[#C5DAF7] bg-[#F5F9FF]",
+  },
+  orange: {
+    icon: "bg-[#FFF0CF] text-[#9A6100]",
+    border: "border-[#F2D9A5] bg-[#FFFBF2]",
+  },
+  neutral: {
+    icon: "bg-[#FCE5E5] text-[#B4232A]",
+    border: "border-[#F0C7C7] bg-[#FFF8F8]",
+  },
 } as const;
 
 const linkCardSurfaces: Partial<Record<keyof typeof sectionTones, string>> = {
@@ -44,18 +56,18 @@ function HomeLinkCard({
     <Link
       to={to}
       aria-label={ariaLabel ? `${ariaLabel} – ${intro}` : undefined}
-      className={`flex items-center gap-3 rounded-[18px] border p-4 shadow-[0_1px_3px_rgba(16,28,51,0.04)] transition-colors hover:border-[#0B63CE] hover:bg-[#F2F6FB] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${linkCardSurfaces[tone] ?? "bg-white"} ${classes.border}`}
+      className={`flex min-h-[104px] items-center gap-4 rounded-[22px] border px-5 py-5 shadow-[0_4px_12px_rgba(16,28,51,0.045)] transition-all hover:-translate-y-0.5 hover:border-[#0B63CE] hover:shadow-[0_8px_20px_rgba(11,99,206,0.10)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${linkCardSurfaces[tone] ?? "bg-white"} ${classes.border}`}
     >
       <span
-        className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${classes.icon}`}
+        className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl ${classes.icon}`}
       >
-        <Icon className="h-5 w-5" aria-hidden="true" />
+        <Icon className="h-6 w-6" aria-hidden="true" />
       </span>
       <span className="min-w-0 flex-1">
-        <span className="block text-base font-semibold leading-snug text-foreground">{title}</span>
-        <span className="mt-0.5 block text-sm leading-snug text-muted-foreground">{intro}</span>
+        <span className="block text-[1.08rem] font-bold leading-snug text-[#101C33]">{title}</span>
+        <span className="mt-1 block text-[0.98rem] leading-snug text-[#526176]">{intro}</span>
       </span>
-      <ChevronRight className="h-5 w-5 shrink-0 text-[#0B63CE]" aria-hidden="true" />
+      <ChevronRight className="h-6 w-6 shrink-0 text-[#0B63CE]" aria-hidden="true" />
     </Link>
   );
 }

@@ -3,13 +3,11 @@ import {
   AlertTriangle,
   CheckCircle2,
   ChevronRight,
-  GraduationCap,
   ShieldCheck,
   Signpost,
   type LucideIcon,
 } from "lucide-react";
-import { useDoctorResources, usePatient } from "@/components/patient/PatientProvider";
-import { countLearningContent, formatLearningSummary, totalLearningContent } from "@/lib/learning-content";
+import { usePatient } from "@/components/patient/PatientProvider";
 import { LoadingState, SafetyNotice } from "@/components/patient/PatientUi";
 import { conditions } from "@/lib/conditions";
 import { zoneVisuals } from "@/lib/zone-visuals";
@@ -74,11 +72,7 @@ function HomeLinkCard({
 
 export function PatientHomeContent() {
   const { ready, guide, hasContext, cabinetName } = usePatient();
-  const resources = useDoctorResources();
   if (!ready) return <LoadingState />;
-
-  const resourceCounts = countLearningContent(guide, resources.data ?? []);
-  const resourceTotal = totalLearningContent(resourceCounts);
 
   const recommendationCount = guide?.recommendations.length ?? 0;
   const conditionZone = guide ? conditions.find((condition) => condition.id === guide.id)?.zone : undefined;
@@ -142,16 +136,6 @@ export function PatientHomeContent() {
             : "Les conseils à appliquer après la consultation"
         }
       />
-
-      {resourceTotal > 0 ? (
-        <HomeLinkCard
-          to="/patient/ressources"
-          icon={GraduationCap}
-          tone="blue"
-          title="Ressources utiles"
-          intro={formatLearningSummary(resourceCounts)}
-        />
-      ) : null}
 
       <HomeLinkCard
         to="/parcours"

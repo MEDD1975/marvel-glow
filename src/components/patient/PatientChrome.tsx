@@ -40,7 +40,7 @@ const isPathway = (path: string) => path.startsWith("/parcours") || path.startsW
 
 const tabs = [
   { to: "/patient", label: "Accueil", icon: Home, match: isHome },
-  { to: "/conseils", label: "Ressources utiles", icon: BookOpen, match: isAdvice },
+  { to: "/patient/ressources", label: "Ressources utiles", icon: BookOpen, match: isAdvice },
   { to: "/annuaire", label: "Professionnels", icon: Users, match: isPros },
 ];
 

@@ -1,7 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import {
   AlertTriangle,
-  BookOpen,
   CheckCircle2,
   ChevronRight,
   GraduationCap,
@@ -10,11 +9,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { useDoctorResources, usePatient } from "@/components/patient/PatientProvider";
-import {
-  countLearningContent,
-  formatLearningSummary,
-  totalLearningContent,
-} from "@/lib/learning-content";
+import { countLearningContent, formatLearningSummary, totalLearningContent } from "@/lib/learning-content";
 import { LoadingState, SafetyNotice } from "@/components/patient/PatientUi";
 import { conditions } from "@/lib/conditions";
 import { zoneVisuals } from "@/lib/zone-visuals";
@@ -24,11 +19,9 @@ const sectionTones = {
   blue: { icon: "bg-[#F2F6FB] text-[#0B63CE]", border: "border-[#DCE5F0]" },
   orange: { icon: "bg-white text-[#9A6100]", border: "border-[#F0DBAE] bg-[#FFF9ED]" },
   neutral: { icon: "bg-[#FDECEC] text-[#B4232A]", border: "border-[#DCE5F0]" },
-  learn: { icon: "bg-[#0B63CE] text-white", border: "border-[#C9DCF3]" },
 } as const;
 
 const linkCardSurfaces: Partial<Record<keyof typeof sectionTones, string>> = {
-  learn: "bg-[#F5F9FE]",
 };
 
 function HomeLinkCard({
@@ -72,9 +65,8 @@ export function PatientHomeContent() {
   const resources = useDoctorResources();
   if (!ready) return <LoadingState />;
 
-  const learningCounts = countLearningContent(guide, resources.data ?? []);
-  const learningTotal = totalLearningContent(learningCounts);
-  const learningTitle = "Ressources utiles";
+  const resourceCounts = countLearningContent(guide, resources.data ?? []);
+  const resourceTotal = totalLearningContent(resourceCounts);
 
   const recommendationCount = guide?.recommendations.length ?? 0;
   const conditionZone = guide ? conditions.find((condition) => condition.id === guide.id)?.zone : undefined;
@@ -139,34 +131,15 @@ export function PatientHomeContent() {
         }
       />
 
-      {learningTotal > 0 ? (
+      {resourceTotal > 0 ? (
         <HomeLinkCard
           to="/patient/ressources"
           icon={GraduationCap}
-          tone="learn"
-          title={learningTitle}
-          intro={formatLearningSummary(learningCounts)}
+          tone="blue"
+          title="Ressources utiles"
+          intro={formatLearningSummary(resourceCounts)}
         />
-      ) : (
-        <div
-          className="flex items-center gap-3 rounded-[18px] border border-[#E4EAF2] bg-[#FAFBFD] p-4"
-          aria-live="polite"
-        >
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#EEF2F7] text-[#6B7A90]">
-            <BookOpen className="h-5 w-5" aria-hidden="true" />
-          </span>
-          <span className="min-w-0 flex-1">
-            <span className="block text-base font-semibold leading-snug text-foreground">
-              {learningTitle}
-            </span>
-            <span className="mt-0.5 block text-sm leading-snug text-muted-foreground">
-              {resources.isLoading
-                ? "Recherche des contenus disponibles…"
-                : "Aucun contenu complémentaire n’est disponible pour le moment."}
-            </span>
-          </span>
-        </div>
-      )}
+      ) : null}
 
       <HomeLinkCard
         to="/parcours"

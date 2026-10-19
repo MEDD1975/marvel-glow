@@ -25,6 +25,7 @@ import { Route as AdminStatsRouteImport } from './routes/admin/stats'
 import { Route as CabinetIndexRouteImport } from './routes/cabinet/index'
 import { Route as CabinetAccueilRouteImport } from './routes/cabinet/accueil'
 import { Route as CabinetAideRouteImport } from './routes/cabinet/aide'
+import { Route as CabinetConseilsRouteImport } from './routes/cabinet/conseils'
 import { Route as CabinetMonCabinetRouteImport } from './routes/cabinet/mon-cabinet'
 import { Route as CabinetParcoursRouteImport } from './routes/cabinet/parcours'
 import { Route as CabinetProfessionnelsRouteImport } from './routes/cabinet/professionnels'
@@ -122,6 +123,11 @@ const CabinetAccueilRoute = CabinetAccueilRouteImport.update({
 const CabinetAideRoute = CabinetAideRouteImport.update({
   id: '/aide',
   path: '/aide',
+  getParentRoute: () => CabinetRouteRoute,
+} as any)
+const CabinetConseilsRoute = CabinetConseilsRouteImport.update({
+  id: '/conseils',
+  path: '/conseils',
   getParentRoute: () => CabinetRouteRoute,
 } as any)
 const CabinetMonCabinetRoute = CabinetMonCabinetRouteImport.update({
@@ -237,6 +243,7 @@ export interface FileRoutesByFullPath {
   '/admin/stats': typeof AdminStatsRoute
   '/cabinet/accueil': typeof CabinetAccueilRoute
   '/cabinet/aide': typeof CabinetAideRoute
+  '/cabinet/conseils': typeof CabinetConseilsRoute
   '/cabinet/mon-cabinet': typeof CabinetMonCabinetRoute
   '/cabinet/parcours': typeof CabinetParcoursRoute
   '/cabinet/professionnels': typeof CabinetProfessionnelsRoute
@@ -271,6 +278,7 @@ export interface FileRoutesByTo {
   '/admin/stats': typeof AdminStatsRoute
   '/cabinet/accueil': typeof CabinetAccueilRoute
   '/cabinet/aide': typeof CabinetAideRoute
+  '/cabinet/conseils': typeof CabinetConseilsRoute
   '/cabinet/mon-cabinet': typeof CabinetMonCabinetRoute
   '/cabinet/parcours': typeof CabinetParcoursRoute
   '/cabinet/professionnels': typeof CabinetProfessionnelsRoute
@@ -308,6 +316,7 @@ export interface FileRoutesById {
   '/admin/stats': typeof AdminStatsRoute
   '/cabinet/accueil': typeof CabinetAccueilRoute
   '/cabinet/aide': typeof CabinetAideRoute
+  '/cabinet/conseils': typeof CabinetConseilsRoute
   '/cabinet/mon-cabinet': typeof CabinetMonCabinetRoute
   '/cabinet/parcours': typeof CabinetParcoursRoute
   '/cabinet/professionnels': typeof CabinetProfessionnelsRoute
@@ -346,6 +355,7 @@ export interface FileRouteTypes {
     | '/admin/stats'
     | '/cabinet/accueil'
     | '/cabinet/aide'
+    | '/cabinet/conseils'
     | '/cabinet/mon-cabinet'
     | '/cabinet/parcours'
     | '/cabinet/professionnels'
@@ -380,6 +390,7 @@ export interface FileRouteTypes {
     | '/admin/stats'
     | '/cabinet/accueil'
     | '/cabinet/aide'
+    | '/cabinet/conseils'
     | '/cabinet/mon-cabinet'
     | '/cabinet/parcours'
     | '/cabinet/professionnels'
@@ -416,6 +427,7 @@ export interface FileRouteTypes {
     | '/admin/stats'
     | '/cabinet/accueil'
     | '/cabinet/aide'
+    | '/cabinet/conseils'
     | '/cabinet/mon-cabinet'
     | '/cabinet/parcours'
     | '/cabinet/professionnels'
@@ -568,6 +580,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CabinetAideRouteImport
       parentRoute: typeof CabinetRouteRoute
     }
+    '/cabinet/conseils': {
+      id: '/cabinet/conseils'
+      path: '/conseils'
+      fullPath: '/cabinet/conseils'
+      preLoaderRoute: typeof CabinetConseilsRouteImport
+      parentRoute: typeof CabinetRouteRoute
+    }
     '/cabinet/mon-cabinet': {
       id: '/cabinet/mon-cabinet'
       path: '/mon-cabinet'
@@ -700,6 +719,7 @@ declare module '@tanstack/react-router' {
 interface CabinetRouteRouteChildren {
   CabinetAccueilRoute: typeof CabinetAccueilRoute
   CabinetAideRoute: typeof CabinetAideRoute
+  CabinetConseilsRoute: typeof CabinetConseilsRoute
   CabinetMonCabinetRoute: typeof CabinetMonCabinetRoute
   CabinetParcoursRoute: typeof CabinetParcoursRoute
   CabinetProfessionnelsRoute: typeof CabinetProfessionnelsRoute
@@ -710,6 +730,7 @@ interface CabinetRouteRouteChildren {
 const CabinetRouteRouteChildren: CabinetRouteRouteChildren = {
   CabinetAccueilRoute: CabinetAccueilRoute,
   CabinetAideRoute: CabinetAideRoute,
+  CabinetConseilsRoute: CabinetConseilsRoute,
   CabinetMonCabinetRoute: CabinetMonCabinetRoute,
   CabinetParcoursRoute: CabinetParcoursRoute,
   CabinetProfessionnelsRoute: CabinetProfessionnelsRoute,

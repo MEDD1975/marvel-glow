@@ -81,15 +81,14 @@ export function PatientHomeContent() {
   return (
     <div className="flex flex-col gap-4">
       <section aria-labelledby="home-title" className="mb-2">
-        <p className="mb-3 text-xs font-bold uppercase tracking-[0.16em] text-[#0B63CE]">Les informations de votre parcours</p>
         <h1
           id="home-title"
-          className="max-w-[16ch] text-balance font-display text-[clamp(2.15rem,9vw,3rem)] font-bold leading-[1.02] tracking-[-0.04em] text-[#101C33] md:max-w-[18ch] md:text-5xl"
+          className="max-w-[19ch] text-balance font-display text-[clamp(2.15rem,9vw,3rem)] font-bold leading-[1.02] tracking-[-0.04em] text-[#101C33] md:max-w-[18ch] md:text-5xl"
         >
-          Les informations utiles pour la suite
+          Les conseils transmis, toujours à portée de main
         </h1>
         <p className="mt-4 max-w-prose text-pretty text-base leading-relaxed text-[#526176] md:text-lg">
-          Retrouvez les informations transmises, les conseils utiles et les situations dans lesquelles reprendre contact ou demander un nouvel avis.
+          Retrouvez quoi faire maintenant, ce qu’il faut surveiller et quand reprendre contact.
         </p>
       </section>
 

@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { Link, useLocation, useNavigate } from "@tanstack/react-router";
-import { Building2, FolderOpen, HelpCircle, LayoutGrid, LogOut, QrCode, Users } from "lucide-react";
+import { Building2, CheckCircle2, FolderOpen, HelpCircle, LayoutGrid, LogOut, QrCode, Users } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { authClient } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
@@ -9,6 +9,7 @@ const navItems = [
   { to: "/cabinet", label: "Transmettre un parcours", short: "Transmettre", icon: QrCode, exact: true },
   { to: "/cabinet/parcours", label: "Mes parcours TMS", short: "Parcours", icon: LayoutGrid },
   { to: "/cabinet/ressources", label: "Mes ressources", short: "Ressources", icon: FolderOpen },
+  { to: "/cabinet/conseils", label: "Conseils à appliquer", short: "Conseils", icon: CheckCircle2 },
   { to: "/cabinet/professionnels", label: "Professionnels", short: "Pros", icon: Users },
   { to: "/cabinet/mon-cabinet", label: "Mon cabinet", short: "Cabinet", icon: Building2 },
 ] as const;

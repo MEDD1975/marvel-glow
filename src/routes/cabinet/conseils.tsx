@@ -11,6 +11,7 @@ export const Route = createFileRoute("/cabinet/conseils")({
 const advice = [
   { title: "Appliquer du froid", description: "Pendant 15 à 20 minutes, protégé par un linge." },
   { title: "Surélever la zone concernée", description: "Au-dessus du niveau du cœur lorsque vous êtes au repos." },
+  { title: "Utiliser une compression adaptée", description: "Si elle vous a été recommandée, sans serrer excessivement." },
   { title: "Reprendre progressivement", description: "Selon les consignes reçues et votre douleur." },
 ];
 
@@ -66,7 +67,7 @@ function AdviceReviewPage() {
           <h2 id="preview-title" className="mt-2 text-xl font-semibold text-foreground">À faire maintenant</h2>
           <p className="mt-2 text-sm leading-6 text-muted-foreground">Voici ce que le patient verra après avoir scanné votre QR code.</p>
           <div className="mt-5 rounded-2xl border border-border bg-white p-4 shadow-sm">
-            <p className="text-xs font-semibold uppercase tracking-wide text-care">3 conseils transmis</p>
+            <p className="text-xs font-semibold uppercase tracking-wide text-care">{advice.length} conseils transmis</p>
             <div className="mt-3 flex flex-col divide-y divide-border">
               {advice.map((item) => <div key={item.title} className="flex gap-3 py-3 first:pt-0 last:pb-0"><span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#E5F6EE] text-care"><Check className="h-4 w-4" aria-hidden="true" /></span><p className="text-sm font-medium leading-5 text-foreground">{item.title}</p></div>)}
             </div>

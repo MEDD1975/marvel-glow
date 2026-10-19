@@ -8,7 +8,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { usePatient } from "@/components/patient/PatientProvider";
-import { LoadingState, SafetyNotice } from "@/components/patient/PatientUi";
+import { LoadingState, NoPathwayState, SafetyNotice } from "@/components/patient/PatientUi";
 import { conditions } from "@/lib/conditions";
 import { zoneVisuals } from "@/lib/zone-visuals";
 
@@ -71,7 +71,7 @@ function HomeLinkCard({
 }
 
 export function PatientHomeContent() {
-  const { ready, guide, hasContext, cabinetName } = usePatient();
+  const { ready, guide, hasContext, cabinetName, doctorLabel } = usePatient();
   if (!ready) return <LoadingState />;
 
   const recommendationCount = guide?.recommendations.length ?? 0;
@@ -81,17 +81,19 @@ export function PatientHomeContent() {
   return (
     <div className="flex flex-col gap-4">
       <section aria-labelledby="home-title" className="mb-2">
-        <p className="mb-3 text-xs font-bold uppercase tracking-[0.16em] text-[#0B63CE]">Votre parcours, simplement</p>
+        <p className="mb-3 text-xs font-bold uppercase tracking-[0.16em] text-[#0B63CE]">Les informations de votre parcours</p>
         <h1
           id="home-title"
           className="max-w-[16ch] text-balance font-display text-[clamp(2.15rem,9vw,3rem)] font-bold leading-[1.02] tracking-[-0.04em] text-[#101C33] md:max-w-[18ch] md:text-5xl"
         >
-          Les prochaines étapes après votre consultation
+          Les informations utiles pour la suite
         </h1>
         <p className="mt-4 max-w-prose text-pretty text-base leading-relaxed text-[#526176] md:text-lg">
-          Retrouvez les conseils de votre médecin, les bons gestes à adopter et les professionnels adaptés à votre situation.
+          Retrouvez les informations transmises, les conseils utiles et les situations dans lesquelles reprendre contact ou demander un nouvel avis.
         </p>
       </section>
+
+      {!hasContext || !guide ? <NoPathwayState /> : null}
 
       {hasContext && guide ? (
         <section
@@ -99,7 +101,7 @@ export function PatientHomeContent() {
           className="relative overflow-hidden rounded-[24px] border border-[#C9DCF3] border-l-4 border-l-[#0B63CE] bg-[linear-gradient(135deg,#EAF3FF_0%,#F7FBFF_62%,#EEF9F5_100%)] px-5 py-5 shadow-[0_12px_30px_rgba(11,99,206,0.08)]"
         >
           <p className="text-xs font-semibold uppercase tracking-[0.08em] text-[#0B63CE] md:text-[13px]">
-            Parcours transmis par votre médecin
+            Parcours transmis par votre professionnel de santé
           </p>
           <div className="mt-1.5 flex items-center gap-3">
             <h2
@@ -119,21 +121,27 @@ export function PatientHomeContent() {
           {cabinetName ? (
             <p className="mt-2 flex items-start gap-1.5 text-sm leading-snug text-[#526176] md:text-[15px]">
               <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-[#0B63CE]" aria-hidden="true" />
-              <span className="break-words">{cabinetName}</span>
+              <span className="break-words">
+                {cabinetName}
+                {doctorLabel ? <span className="block text-xs text-[#6B7A90]">{doctorLabel}</span> : null}
+              </span>
             </p>
           ) : null}
         </section>
       ) : null}
 
+      {hasContext && guide ? <>
       <HomeLinkCard
         to="/conseils"
         icon={CheckCircle2}
         tone="green"
-        title="Commencer maintenant"
+        title="À faire maintenant"
         intro={
-          recommendationCount
-            ? `${recommendationCount} conseils à appliquer après la consultation`
-            : "Les conseils à appliquer après la consultation"
+          recommendationCount === 1
+            ? "1 conseil transmis pour ce parcours"
+            : recommendationCount > 1
+              ? `${recommendationCount} conseils transmis pour ce parcours`
+              : "Aucun conseil complémentaire n’est disponible pour le moment."
         }
       />
 
@@ -142,7 +150,7 @@ export function PatientHomeContent() {
         icon={Signpost}
         tone="blue"
         title="Et si la gêne évolue ?"
-        intro="Retrouvez simplement quoi faire selon l’évolution que vous observez."
+        intro="Découvrez quoi faire selon l’évolution que vous observez."
       />
 
       <HomeLinkCard
@@ -150,13 +158,16 @@ export function PatientHomeContent() {
         icon={AlertTriangle}
         tone="neutral"
         title="Points à surveiller"
-        intro="Sachez dans quelles situations demander rapidement un avis."
+        intro="Sachez dans quelles situations reprendre contact ou demander rapidement un avis."
         ariaLabel="Voir les points à surveiller"
       />
 
+      </> : null}
+
       <p className="rounded-xl border border-border bg-card px-4 py-3 text-sm leading-relaxed text-muted-foreground">
-        Kivoir affiche un parcours d’information sélectionné par votre professionnel de santé. Aucun
-        compte patient n’est nécessaire. Ne saisissez aucune information personnelle ou médicale.
+        Kivoir permet de retrouver les informations transmises par un professionnel de santé. Ces informations ne
+        remplacent pas une consultation ni les décisions prises avec un professionnel. En cas de doute, d’évolution
+        défavorable ou de situation préoccupante, demandez un avis professionnel.
       </p>
 
       <SafetyNotice />

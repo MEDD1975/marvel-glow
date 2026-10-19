@@ -20,7 +20,7 @@ import { LoadingState, NoPathwayState, SafetyNotice } from "@/components/patient
 export const Route = createFileRoute("/patient/ressources/")({
   head: () => ({
     meta: [
-      { title: "Contenus pédagogiques — Kivoir" },
+      { title: "Conseils et contenus — Kivoir" },
       {
         name: "description",
         content:
@@ -49,8 +49,8 @@ function ResourcesPage() {
     return (
       <div className="flex flex-col gap-6">
         <PatientPageHeader
-          title="Contenus pédagogiques"
-          intro="Vidéos et documents de votre parcours."
+          title="Conseils et contenus"
+          intro="Vidéos, documents, fiches pédagogiques et sources complémentaires de votre parcours."
           pathwayName={guide.name}
         />
         <section
@@ -79,7 +79,7 @@ function ResourcesPage() {
   return (
     <div className="flex flex-col gap-8">
       <PatientPageHeader
-        title="Contenus pédagogiques"
+        title="Conseils et contenus"
         intro="Vidéos et documents sélectionnés pour votre parcours, et sources complémentaires."
         pathwayName={guide.name}
       />
@@ -100,7 +100,7 @@ function ResourcesPage() {
           </ul>
         ) : (
           <p className="rounded-xl bg-muted px-4 py-3 text-sm text-muted-foreground">
-            Votre médecin n&apos;a pas encore partagé de document pour ce parcours.
+            Aucun contenu complémentaire n&apos;est disponible pour le moment.
           </p>
         )}
       </section>

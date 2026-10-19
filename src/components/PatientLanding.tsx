@@ -18,7 +18,7 @@ export function PatientLanding({ search }: { search: Record<string, unknown> }) 
           </div>
           <p className="mt-6 text-xs font-bold uppercase tracking-[0.16em] text-[#0B63CE]">Espace patient privé</p>
           <h1 className="mt-3 text-balance text-2xl font-bold tracking-tight text-[#101C33]">Accédez à votre parcours via le QR code</h1>
-          <p className="mt-4 text-base leading-relaxed text-[#526176]">Cet espace contient des informations transmises par votre professionnel de santé. Scannez le QR code remis lors de votre consultation pour y accéder.</p>
+          <p className="mt-4 text-base leading-relaxed text-[#526176]">Cet espace contient des informations transmises par votre professionnel de santé. Scannez le QR code transmis par votre professionnel de santé pour y accéder.</p>
         </section>
       </main>
     );

@@ -10,11 +10,11 @@ const menuGroups: Array<{ label: string; items: Array<{ to: string; hash?: strin
     label: "Mon espace",
     items: [
       { to: "/patient", label: "Accueil" },
-      { to: "/conseils", label: "Mes recommandations" },
-      { to: "/patient/surveiller", label: "Ce que je dois surveiller" },
-      { to: "/patient/ressources", label: "Mes ressources" },
-      { to: "/annuaire", label: "Professionnels" },
-      { to: "/parcours", label: "Ma situation" },
+      { to: "/conseils", label: "Conseils et contenus" },
+      { to: "/patient/surveiller", label: "Points à surveiller" },
+      { to: "/patient/ressources", label: "Conseils et contenus" },
+      { to: "/annuaire", label: "Qui contacter ?" },
+      { to: "/parcours", label: "Pour la suite" },
     ],
   },
   {
@@ -40,13 +40,13 @@ const isPathway = (path: string) => path.startsWith("/parcours") || path.startsW
 
 const tabs = [
   { to: "/patient", label: "Accueil", icon: Home, match: isHome },
-  { to: "/patient/ressources", label: "Ressources utiles", icon: BookOpen, match: isAdvice },
-  { to: "/annuaire", label: "Professionnels", icon: Users, match: isPros },
+  { to: "/patient/ressources", label: "Conseils et contenus", icon: BookOpen, match: isAdvice },
+  { to: "/annuaire", label: "Qui contacter ?", icon: Users, match: isPros },
 ];
 
 const desktopLinks = [
   ...tabs,
-  { to: "/parcours", label: "Ma situation", icon: BookOpen, match: isPathway },
+  { to: "/parcours", label: "Pour la suite", icon: BookOpen, match: isPathway },
 ];
 
 function useLinkSearch() {

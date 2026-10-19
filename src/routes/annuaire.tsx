@@ -210,8 +210,8 @@ function AnnuairePage() {
           </h1>
           <p className="mt-2 text-pretty text-base leading-relaxed text-muted-foreground">
             {cabinetId
-              ? "Ce lien ne correspond à aucun cabinet disponible. Recherchez votre médecin pour afficher les professionnels qu'il recommande."
-              : "Pour afficher les professionnels recommandés, utilisez le QR code remis par votre cabinet ou recherchez votre médecin."}
+              ? "Ce lien ne correspond à aucun parcours disponible. Utilisez le QR code transmis par votre professionnel de santé."
+              : "Pour afficher les contacts communiqués, utilisez le QR code transmis par votre professionnel de santé."}
           </p>
         </div>
         <CabinetSearch profession={profession} doctor={doctor} />
@@ -228,9 +228,9 @@ function AnnuairePage() {
     <div className="flex flex-col gap-6">
       <div>
         <BackToHome />
-        <h1 className="text-balance text-[1.625rem] font-semibold leading-tight tracking-tight text-foreground md:text-3xl">Professionnels recommandés</h1>
+        <h1 className="text-balance text-[1.625rem] font-semibold leading-tight tracking-tight text-foreground md:text-3xl">Qui contacter ?</h1>
         <p className="mt-2 text-pretty text-base leading-relaxed text-muted-foreground">
-          Retrouvez les professionnels pouvant intervenir dans la suite de votre parcours.
+          Retrouvez les coordonnées et contacts communiqués pour ce parcours.
         </p>
         {ownerPhrase ? (
           <p className="mt-3 flex items-center gap-1.5 text-[13px] font-medium text-tone-green-text">

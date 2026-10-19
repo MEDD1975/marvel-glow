@@ -75,7 +75,7 @@ function ConseilsPage({ reco }: { reco: string | undefined }) {
         <h1 className="text-[1.625rem] font-semibold leading-tight tracking-tight text-foreground">Mes recommandations</h1>
         <EmptyState
           title="Aucun parcours ouvert"
-          description="Scannez le QR code remis par votre professionnel de santé pour afficher les recommandations de votre parcours."
+          description="Scannez le QR code transmis par votre professionnel de santé pour accéder aux informations correspondant à votre parcours."
           action={
             <Link to="/annuaire" className="inline-flex min-h-11 items-center rounded-xl bg-tone-blue px-4 text-sm font-semibold text-care">
               Rechercher un cabinet

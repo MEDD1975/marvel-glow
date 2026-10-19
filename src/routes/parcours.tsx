@@ -96,7 +96,7 @@ function ParcoursPage() {
     return (
       <EmptyState
         title="Aucun parcours ouvert"
-        description="Scannez le QR code remis par votre professionnel de santé pour retrouver votre parcours."
+        description="Scannez le QR code transmis par votre professionnel de santé pour accéder aux informations correspondant à votre parcours."
         action={
           <Link
             to="/annuaire"

@@ -27,8 +27,8 @@ function ProfessionalsPage() {
   return (
     <div>
       <PageHeading
-        title="Professionnels recommandés"
-        description={fromCabinet ? "Les professionnels que votre cabinet a choisi de vous communiquer." : "Annuaire de démonstration : votre cabinet n'a pas encore communiqué de professionnels."}
+        title="Qui contacter ?"
+        description="Retrouvez les coordonnées et contacts communiqués pour ce parcours."
       />
       <label className="relative block">
         <span className="sr-only">Rechercher un professionnel</span>

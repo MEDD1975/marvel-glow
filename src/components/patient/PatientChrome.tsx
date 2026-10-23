@@ -14,7 +14,6 @@ const menuGroups: Array<{ label: string; items: Array<{ to: string; hash?: strin
       { to: "/patient/surveiller", label: "Points à surveiller" },
       { to: "/patient/ressources", label: "Conseils et contenus" },
       { to: "/annuaire", label: "Qui contacter ?" },
-      { to: "/parcours", label: "Pour la suite" },
     ],
   },
   {
@@ -36,8 +35,6 @@ const menuGroups: Array<{ label: string; items: Array<{ to: string; hash?: strin
 const isHome = (path: string) => path === "/" || path === "/patient" || path === "/patient/";
 const isAdvice = (path: string) => path.startsWith("/conseils") || /^\/patient\/(recommandations|surveiller|ressources)/.test(path);
 const isPros = (path: string) => path.startsWith("/annuaire") || path.startsWith("/patient/professionnels");
-const isPathway = (path: string) => path.startsWith("/parcours") || path.startsWith("/patient/parcours");
-
 const tabs = [
   { to: "/patient", label: "Accueil", icon: Home, match: isHome },
   { to: "/patient/ressources", label: "Conseils et contenus", icon: BookOpen, match: isAdvice },
@@ -46,7 +43,6 @@ const tabs = [
 
 const desktopLinks = [
   ...tabs,
-  { to: "/parcours", label: "Pour la suite", icon: BookOpen, match: isPathway },
 ];
 
 function useLinkSearch() {

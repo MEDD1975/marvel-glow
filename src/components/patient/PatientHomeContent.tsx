@@ -4,7 +4,6 @@ import {
   CheckCircle2,
   ChevronRight,
   ShieldCheck,
-  Signpost,
   type LucideIcon,
 } from "lucide-react";
 import { usePatient } from "@/components/patient/PatientProvider";
@@ -144,13 +143,9 @@ export function PatientHomeContent() {
         }
       />
 
-      <HomeLinkCard
-        to="/parcours"
-        icon={Signpost}
-        tone="blue"
-        title="Pour la suite"
-        intro="Si la gêne persiste, recontactez le professionnel qui vous accompagne."
-      />
+      <p className="rounded-2xl border border-[#DCE5F0] bg-[#F7FAFE] px-4 py-3 text-sm leading-relaxed text-[#526176]">
+        <span className="font-semibold text-[#101C33]">Si la gêne persiste :</span> recontactez le professionnel qui vous accompagne pour faire le point.
+      </p>
 
       <HomeLinkCard
         to="/patient/surveiller"

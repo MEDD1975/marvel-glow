@@ -17,10 +17,10 @@ export const Route = createFileRoute("/parcours")({
   }),
   head: () => ({
     meta: [
-      { title: "Que faire pour la suite ? — Kivoir" },
+      { title: "Pour la suite — Kivoir" },
       {
         name: "description",
-        content: "Découvrez quoi faire si la gêne persiste ou si vous avez un doute.",
+        content: "Si la gêne persiste, recontactez le professionnel qui vous accompagne pour faire le point."
       },
     ],
   }),
@@ -100,10 +100,10 @@ function ParcoursPage() {
           Retour à mon espace patient
         </Link>
         <h1 className="text-balance text-[1.625rem] font-semibold leading-tight tracking-tight text-foreground md:text-3xl">
-          Que faire pour la suite ?
+          Pour la suite
         </h1>
         <p className="mt-2 text-pretty text-base leading-relaxed text-muted-foreground">
-          Les conseils essentiels sont déjà disponibles dans « À faire maintenant ». Cette page indique uniquement quoi faire si la situation ne s’améliore pas ou devient préoccupante.
+          Si la gêne persiste, recontactez le professionnel qui vous accompagne pour faire le point.
         </p>
         <p className="mt-4 inline-flex rounded-xl bg-[#EAF2FC] px-3 py-2 text-sm font-semibold text-[#0B63CE]">
           Parcours : {guide.name}

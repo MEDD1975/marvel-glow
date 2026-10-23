@@ -149,7 +149,7 @@ export function PatientHomeContent() {
         icon={Signpost}
         tone="blue"
         title="Pour la suite"
-        intro="Découvrez les différentes possibilités pour la suite de votre parcours."
+        intro="Si la gêne persiste, recontactez le professionnel qui vous accompagne."
       />
 
       <HomeLinkCard

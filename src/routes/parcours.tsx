@@ -1,6 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
-  AlertTriangle,
   ArrowLeft,
   ChevronRight,
   MessageCircleQuestion,
@@ -56,15 +55,7 @@ const infoBlocks: Array<{
     text: "Recontactez le professionnel qui vous accompagne. Il vous indiquera la suite la plus adaptée à votre situation.",
 
   },
-  {
-    id: "info-signe",
-    tone: "red",
-    icon: <AlertTriangle className="h-5 w-5" aria-hidden="true" />,
-    title: "En cas de doute",
-    text: "Consultez les points à surveiller et demandez rapidement un avis si nécessaire.",
-    action: "Voir les points à surveiller",
-    to: "/patient/surveiller",
-  },
+
 ];
 
 const tones: Record<Tone, string> = {

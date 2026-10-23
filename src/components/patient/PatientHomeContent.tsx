@@ -148,7 +148,7 @@ export function PatientHomeContent() {
         to="/parcours"
         icon={Signpost}
         tone="blue"
-        title="Et si la gêne évolue ?"
+        title="Si la gêne ne s’améliore pas ?"
         intro="Découvrez quoi faire selon l’évolution que vous observez."
       />
 

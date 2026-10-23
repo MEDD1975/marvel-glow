@@ -60,7 +60,7 @@ const infoBlocks: Array<{
     id: "info-signe",
     tone: "red",
     icon: <AlertTriangle className="h-5 w-5" aria-hidden="true" />,
-    title: "Si un signe vous inquiète",
+    title: "En cas de doute",
     text: "Consultez les points à surveiller et demandez rapidement un avis si nécessaire.",
     action: "Voir les points à surveiller",
     to: "/patient/surveiller",

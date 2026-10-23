@@ -19,10 +19,10 @@ export const Route = createFileRoute("/parcours")({
   }),
   head: () => ({
     meta: [
-      { title: "Si la gêne ne s’améliore pas ? — Kivoir" },
+      { title: "Si la gêne persiste ou si vous avez un doute — Kivoir" },
       {
         name: "description",
-        content: "Retrouvez simplement quoi faire selon l’évolution que vous observez.",
+        content: "Découvrez quoi faire si la gêne persiste ou si vous avez un doute.",
       },
     ],
   }),
@@ -63,16 +63,16 @@ const infoBlocks: Array<{
     tone: "orange",
     icon: <MessageCircleQuestion className="h-5 w-5" aria-hidden="true" />,
     title: "Si la gêne persiste",
-    text: "Reprenez contact avec le professionnel qui vous accompagne pour faire le point sur la suite.",
-    action: "Reprendre contact",
-    to: "/annuaire",
+    text: "Recontactez le professionnel qui vous accompagne. Il vous indiquera la suite la plus adaptée à votre situation.",
+    action: "Revoir mes conseils",
+    to: "/conseils",
   },
   {
     id: "info-signe",
     tone: "red",
     icon: <AlertTriangle className="h-5 w-5" aria-hidden="true" />,
     title: "Si un signe vous inquiète",
-    text: "Consultez les points à surveiller et demandez un avis lorsque cela est nécessaire.",
+    text: "Consultez les points à surveiller et demandez rapidement un avis si nécessaire.",
     action: "Voir les points à surveiller",
     to: "/patient/surveiller",
   },
@@ -120,7 +120,7 @@ function ParcoursPage() {
           Retour à mon espace patient
         </Link>
         <h1 className="text-balance text-[1.625rem] font-semibold leading-tight tracking-tight text-foreground md:text-3xl">
-          Si la gêne ne s’améliore pas ?
+          Si la gêne persiste ou si vous avez un doute
         </h1>
         <p className="mt-2 text-pretty text-base leading-relaxed text-muted-foreground">
 Découvrez quoi faire si la gêne persiste ou si vous avez un doute.
@@ -135,20 +135,20 @@ Découvrez quoi faire si la gêne persiste ou si vous avez un doute.
           <section
             key={block.id}
             aria-labelledby={block.id}
-            className={`rounded-[18px] border p-4 shadow-[0_1px_3px_rgba(16,28,51,0.04)] ${tones[block.tone]}`}
+            className={`rounded-[22px] border p-5 shadow-[0_4px_14px_rgba(16,28,51,0.045)] ${tones[block.tone]}`}
           >
             <div className="flex items-start gap-3">
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--icon-bg)] text-[var(--icon-fg)]">
+              <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[var(--icon-bg)] text-[var(--icon-fg)]">
                 {block.icon}
               </span>
               <div className="min-w-0 flex-1">
-                <h2 id={block.id} className="text-base font-semibold leading-snug text-foreground">
+                <h2 id={block.id} className="text-[1.08rem] font-bold leading-snug text-[#101C33]">
                   {block.title}
                 </h2>
                 <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{block.text}</p>
               </div>
             </div>
-            <Link to={block.to} className={`${actionButton} mt-4`}>
+            <Link to={block.to} className={`${actionButton} mt-5 min-h-14 rounded-2xl px-5 text-[0.98rem]`}>
               {block.action}
               <ChevronRight className="h-4 w-4" aria-hidden="true" />
             </Link>

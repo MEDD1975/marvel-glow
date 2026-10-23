@@ -4,7 +4,6 @@ import {
   ArrowLeft,
   ChevronRight,
   MessageCircleQuestion,
-  ThumbsUp,
 } from "lucide-react";
 import type { ReactNode } from "react";
 import { PatientShell } from "@/components/patient/PatientShell";
@@ -46,26 +45,16 @@ const infoBlocks: Array<{
   icon: ReactNode;
   title: string;
   text: string;
-  action: string;
-  to: "/conseils" | "/annuaire" | "/patient/surveiller";
+  action?: string;
+  to?: "/conseils" | "/annuaire" | "/patient/surveiller";
 }> = [
-  {
-    id: "info-amelioration",
-    tone: "blue",
-    icon: <ThumbsUp className="h-5 w-5" aria-hidden="true" />,
-    title: "Si ça s’améliore",
-    text: "Continuez à suivre les conseils transmis par votre professionnel de santé.",
-    action: "Voir mes conseils",
-    to: "/conseils",
-  },
   {
     id: "info-persistance",
     tone: "orange",
     icon: <MessageCircleQuestion className="h-5 w-5" aria-hidden="true" />,
     title: "Si la gêne persiste",
     text: "Recontactez le professionnel qui vous accompagne. Il vous indiquera la suite la plus adaptée à votre situation.",
-    action: "Revoir mes conseils",
-    to: "/conseils",
+
   },
   {
     id: "info-signe",
@@ -123,7 +112,7 @@ function ParcoursPage() {
           Que faire pour la suite ?
         </h1>
         <p className="mt-2 text-pretty text-base leading-relaxed text-muted-foreground">
-Découvrez quoi faire si la gêne persiste ou si vous avez un doute.
+          Les conseils essentiels sont déjà disponibles dans « À faire maintenant ». Cette page indique uniquement quoi faire si la situation ne s’améliore pas ou devient préoccupante.
         </p>
         <p className="mt-4 inline-flex rounded-xl bg-[#EAF2FC] px-3 py-2 text-sm font-semibold text-[#0B63CE]">
           Parcours : {guide.name}
@@ -148,10 +137,12 @@ Découvrez quoi faire si la gêne persiste ou si vous avez un doute.
                 <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{block.text}</p>
               </div>
             </div>
-            <Link to={block.to} className={`${actionButton} mt-5 min-h-14 rounded-2xl px-5 text-[0.98rem]`}>
-              {block.action}
-              <ChevronRight className="h-4 w-4" aria-hidden="true" />
-            </Link>
+            {block.action && block.to ? (
+              <Link to={block.to} className={`${actionButton} mt-5 min-h-14 rounded-2xl px-5 text-[0.98rem]`}>
+                {block.action}
+                <ChevronRight className="h-4 w-4" aria-hidden="true" />
+              </Link>
+            ) : null}
           </section>
         ))}
       </div>

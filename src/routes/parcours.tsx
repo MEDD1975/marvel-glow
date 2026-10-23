@@ -63,8 +63,8 @@ const infoBlocks: Array<{
     tone: "orange",
     icon: <MessageCircleQuestion className="h-5 w-5" aria-hidden="true" />,
     title: "Si la gêne persiste",
-    text: "Un nouvel avis peut être utile pour faire le point et décider de la suite.",
-    action: "Voir qui contacter",
+    text: "Reprenez contact avec le professionnel qui vous accompagne pour faire le point sur la suite.",
+    action: "Reprendre contact",
     to: "/annuaire",
   },
   {

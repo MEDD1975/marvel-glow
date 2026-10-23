@@ -19,7 +19,7 @@ export const Route = createFileRoute("/parcours")({
   }),
   head: () => ({
     meta: [
-      { title: "Si la gêne persiste ou si vous avez un doute — Kivoir" },
+      { title: "Que faire pour la suite ? — Kivoir" },
       {
         name: "description",
         content: "Découvrez quoi faire si la gêne persiste ou si vous avez un doute.",
@@ -120,7 +120,7 @@ function ParcoursPage() {
           Retour à mon espace patient
         </Link>
         <h1 className="text-balance text-[1.625rem] font-semibold leading-tight tracking-tight text-foreground md:text-3xl">
-          Si la gêne persiste ou si vous avez un doute
+          Que faire pour la suite ?
         </h1>
         <p className="mt-2 text-pretty text-base leading-relaxed text-muted-foreground">
 Découvrez quoi faire si la gêne persiste ou si vous avez un doute.

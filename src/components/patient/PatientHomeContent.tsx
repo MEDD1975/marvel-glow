@@ -148,8 +148,8 @@ export function PatientHomeContent() {
         to="/parcours"
         icon={Signpost}
         tone="blue"
-        title="Si la gêne ne s’améliore pas ?"
-        intro="Découvrez quoi faire selon l’évolution que vous observez."
+        title="Pour la suite"
+        intro="Découvrez les différentes possibilités pour la suite de votre parcours."
       />
 
       <HomeLinkCard

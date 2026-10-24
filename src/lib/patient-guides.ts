@@ -58,7 +58,7 @@ const entorseRecommendations: Recommendation[] = [
   {
     ...pending,
     id: "froid",
-    title: "Appliquer du froid",
+    title: "Mettre de la glace",
     summary: "Pendant 15 à 20 minutes, protégé par un linge.",
     intro: "Le froid peut aider à soulager temporairement la douleur et le gonflement.",
     steps: [

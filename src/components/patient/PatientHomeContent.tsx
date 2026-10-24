@@ -143,10 +143,10 @@ export function PatientHomeContent() {
         title="À faire maintenant"
         intro={
           recommendationCount === 1
-            ? "1 conseil transmis pour ce parcours"
+            ? "La recommandation de votre professionnel de santé"
             : recommendationCount > 1
-              ? `${recommendationCount} conseils transmis pour ce parcours`
-              : "Aucun conseil complémentaire n’est disponible pour le moment."
+              ? `${recommendationCount} recommandations de votre professionnel de santé`
+              : "Aucune recommandation complémentaire n’est disponible pour le moment."
         }
         details={guide.recommendations.slice(0, 2).map((recommendation) => recommendation.title)}
       />

@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { type FormEvent, useMemo, useState } from "react";
 import { Check, ChevronDown, GripVertical, Pencil, Plus, X } from "lucide-react";
 import { DoctorHeader, DoctorPage } from "@/components/doctor/DoctorLayout";
 import { conditions } from "@/lib/conditions";
@@ -12,13 +12,32 @@ export const Route = createFileRoute("/cabinet/conseils")({
 
 function AdviceReviewPage() {
   const [selectedPathwayId, setSelectedPathwayId] = useState("entorse-cheville");
+  const [isAddAdviceOpen, setIsAddAdviceOpen] = useState(false);
+  const [newAdviceTitle, setNewAdviceTitle] = useState("");
+  const [newAdviceSummary, setNewAdviceSummary] = useState("");
+  const [customAdvice, setCustomAdvice] = useState<Record<string, Array<{ title: string; summary: string }>>>({});
   const selectedCondition = conditions.find((condition) => condition.id === selectedPathwayId) ?? conditions[0];
   if (!selectedCondition) return null;
 
   const advice = useMemo(
-    () => getPathwayGuide(selectedCondition.id)?.recommendations ?? [],
-    [selectedCondition.id],
+    () => [
+      ...(getPathwayGuide(selectedCondition.id)?.recommendations ?? []),
+      ...(customAdvice[selectedCondition.id] ?? []),
+    ],
+    [customAdvice, selectedCondition.id],
   );
+
+  const addAdvice = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!newAdviceTitle.trim() || !newAdviceSummary.trim()) return;
+    setCustomAdvice((current) => ({
+      ...current,
+      [selectedCondition.id]: [...(current[selectedCondition.id] ?? []), { title: newAdviceTitle.trim(), summary: newAdviceSummary.trim() }],
+    }));
+    setIsAddAdviceOpen(false);
+    setNewAdviceTitle("");
+    setNewAdviceSummary("");
+  };
 
   return (
     <DoctorPage>
@@ -26,7 +45,7 @@ function AdviceReviewPage() {
         eyebrow="Contenu transmis au patient"
         title="Conseils à appliquer"
         description="Vérifiez les conseils proposés pour chaque parcours. Vous pouvez les conserver, les masquer ou les adapter sans avoir à tout recréer."
-        actions={<button type="button" className="flex min-h-11 items-center gap-2 rounded-xl bg-care px-4 text-sm font-semibold text-care-foreground"><Plus className="h-4 w-4" aria-hidden="true" />Ajouter un conseil</button>}
+        actions={<button type="button" onClick={() => setIsAddAdviceOpen(true)} className="flex min-h-11 items-center gap-2 rounded-xl bg-care px-4 text-sm font-semibold text-care-foreground"><Plus className="h-4 w-4" aria-hidden="true" />Ajouter un conseil</button>}
       />
 
       <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(300px,380px)]">
@@ -67,7 +86,7 @@ function AdviceReviewPage() {
               </article>
             ))}
           </div>
-          <button type="button" className="mt-4 flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-dashed border-care/40 text-sm font-semibold text-care hover:bg-care/5"><Plus className="h-4 w-4" aria-hidden="true" />Ajouter un conseil personnalisé</button>
+          <button type="button" onClick={() => setIsAddAdviceOpen(true)} className="mt-4 flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-dashed border-care/40 text-sm font-semibold text-care hover:bg-care/5"><Plus className="h-4 w-4" aria-hidden="true" />Ajouter un conseil personnalisé</button>
         </section>
 
         <aside className="h-fit rounded-3xl border border-[#C9DCF3] bg-[#F5F9FF] p-5 shadow-sm lg:sticky lg:top-8" aria-labelledby="preview-title">
@@ -83,6 +102,22 @@ function AdviceReviewPage() {
           <div className="mt-4 flex items-start gap-2 rounded-xl bg-white/70 p-3 text-xs leading-5 text-muted-foreground"><Check className="mt-0.5 h-4 w-4 shrink-0 text-care" aria-hidden="true" />Vous gardez la main : ces conseils seront transmis uniquement après votre partage du parcours.</div>
         </aside>
       </div>
+
+      {isAddAdviceOpen ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#101C33]/35 p-4" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setIsAddAdviceOpen(false); }}>
+          <form onSubmit={addAdvice} className="w-full max-w-lg rounded-3xl border border-border bg-card p-5 shadow-xl sm:p-6" aria-labelledby="add-advice-title">
+            <div className="flex items-start justify-between gap-4">
+              <div><p className="text-xs font-semibold uppercase tracking-wide text-care">{selectedCondition.name}</p><h2 id="add-advice-title" className="mt-1 text-xl font-semibold text-foreground">Ajouter un conseil</h2><p className="mt-1 text-sm text-muted-foreground">Ce conseil sera préparé pour ce parcours.</p></div>
+              <button type="button" onClick={() => setIsAddAdviceOpen(false)} className="rounded-lg p-2 text-muted-foreground hover:bg-muted" aria-label="Fermer"><X className="h-5 w-5" aria-hidden="true" /></button>
+            </div>
+            <div className="mt-5 space-y-4">
+              <label className="block text-sm font-medium text-foreground">Titre<input required value={newAdviceTitle} onChange={(event) => setNewAdviceTitle(event.target.value)} className="mt-1.5 min-h-11 w-full rounded-xl border border-border bg-background px-3 text-sm outline-none focus:border-care focus:ring-2 focus:ring-care/20" placeholder="Ex. Mettre de la glace" /></label>
+              <label className="block text-sm font-medium text-foreground">Consigne<textarea required value={newAdviceSummary} onChange={(event) => setNewAdviceSummary(event.target.value)} className="mt-1.5 min-h-28 w-full rounded-xl border border-border bg-background px-3 py-3 text-sm outline-none focus:border-care focus:ring-2 focus:ring-care/20" placeholder="Décrivez simplement le geste à faire." /></label>
+            </div>
+            <div className="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end"><button type="button" onClick={() => setIsAddAdviceOpen(false)} className="min-h-11 rounded-xl border border-border px-4 text-sm font-semibold text-foreground">Annuler</button><button type="submit" className="min-h-11 rounded-xl bg-care px-4 text-sm font-semibold text-care-foreground">Ajouter le conseil</button></div>
+          </form>
+        </div>
+      ) : null}
 
       <div className="mt-6 flex flex-col gap-3 rounded-2xl border border-border bg-card p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5"><div><p className="font-semibold text-foreground">Prêt à transmettre ce parcours ?</p><p className="mt-1 text-sm text-muted-foreground">Vous pourrez toujours modifier ou masquer un conseil plus tard.</p></div><button type="button" className="flex min-h-11 items-center justify-center gap-2 rounded-xl bg-care px-4 text-sm font-semibold text-care-foreground">Enregistrer et continuer<ChevronDown className="h-4 w-4 -rotate-90" aria-hidden="true" /></button></div>
     </DoctorPage>

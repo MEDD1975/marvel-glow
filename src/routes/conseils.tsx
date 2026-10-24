@@ -29,12 +29,12 @@ export const Route = createFileRoute("/conseils")({
   }),
   head: () => ({
     meta: [
-      { title: "Mes recommandations — Kivoir" },
+      { title: "Conseils de votre professionnel — Kivoir" },
       {
         name: "description",
-        content: "Les recommandations transmises pour votre parcours, en complément des consignes de votre professionnel.",
+        content: "Les recommandations transmises par votre professionnel de santé pour votre parcours.",
       },
-      { property: "og:title", content: "Mes recommandations — Kivoir" },
+      { property: "og:title", content: "Conseils de votre professionnel — Kivoir" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -72,7 +72,7 @@ function ConseilsPage({ reco }: { reco: string | undefined }) {
     return (
       <div className="flex flex-col gap-6">
         <BackToHome />
-        <h1 className="text-[1.625rem] font-semibold leading-tight tracking-tight text-foreground">Mes recommandations</h1>
+        <h1 className="text-[1.625rem] font-semibold leading-tight tracking-tight text-foreground">Conseils de votre professionnel</h1>
         <EmptyState
           title="Aucun parcours ouvert"
           description="Scannez le QR code transmis par votre professionnel de santé pour accéder aux informations correspondant à votre parcours."
@@ -95,7 +95,7 @@ function ConseilsPage({ reco }: { reco: string | undefined }) {
     <div className="flex flex-col gap-12">
       <div>
         <BackToHome />
-        <h1 className="text-balance text-[1.625rem] font-semibold leading-tight tracking-tight text-foreground md:text-3xl">Mes recommandations</h1>
+        <h1 className="text-balance text-[1.625rem] font-semibold leading-tight tracking-tight text-foreground md:text-3xl">Conseils de votre professionnel</h1>
         <p className="mt-2 text-pretty text-base leading-relaxed text-muted-foreground">
           Retrouvez les conseils transmis pour cette étape de votre parcours.
         </p>
@@ -119,7 +119,7 @@ function EssentialGestures({ guide }: { guide: PathwayGuide }) {
   const avoid = conditionAdvice[guide.id]?.avoid ?? [];
   return (
     <section aria-labelledby="gestes-title" id="gestes" className="scroll-mt-20">
-      <h2 id="gestes-title" className={sectionHeading}>Les gestes recommandés par votre professionnel</h2>
+      <h2 id="gestes-title" className={sectionHeading}>Les gestes recommandés par votre professionnel de santé</h2>
       {guide.recommendations.length ? (
         <ul className="mt-4 divide-y divide-tone-green-border/20 overflow-hidden rounded-2xl border border-tone-green-border/25 bg-tone-green/50">
           {guide.recommendations.map((item) => (

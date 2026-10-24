@@ -119,7 +119,7 @@ function EssentialGestures({ guide }: { guide: PathwayGuide }) {
   const avoid = conditionAdvice[guide.id]?.avoid ?? [];
   return (
     <section aria-labelledby="gestes-title" id="gestes" className="scroll-mt-20">
-      <h2 id="gestes-title" className={sectionHeading}>Les gestes essentiels</h2>
+      <h2 id="gestes-title" className={sectionHeading}>Les gestes recommandés par votre professionnel</h2>
       {guide.recommendations.length ? (
         <ul className="mt-4 divide-y divide-tone-green-border/20 overflow-hidden rounded-2xl border border-tone-green-border/25 bg-tone-green/50">
           {guide.recommendations.map((item) => (
@@ -143,7 +143,7 @@ function EssentialGestures({ guide }: { guide: PathwayGuide }) {
         </ul>
       ) : (
         <div className="mt-4">
-          <EmptyState title="Aucune recommandation pour ce parcours" description="Votre cabinet n'a pas encore ajouté de recommandation." />
+          <EmptyState title="Aucune recommandation transmise pour ce parcours" description="Votre professionnel n'a pas encore transmis de recommandation pour ce parcours." />
         </div>
       )}
       {avoid.length ? (

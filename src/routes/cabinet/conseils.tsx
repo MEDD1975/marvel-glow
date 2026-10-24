@@ -16,6 +16,9 @@ function AdviceReviewPage() {
   const [newAdviceTitle, setNewAdviceTitle] = useState("");
   const [newAdviceSummary, setNewAdviceSummary] = useState("");
   const [customAdvice, setCustomAdvice] = useState<Record<string, Array<{ title: string; summary: string }>>>({});
+  const [hiddenAdvice, setHiddenAdvice] = useState<Record<string, string[]>>({});
+  const [editedAdvice, setEditedAdvice] = useState<Record<string, Record<string, { title: string; summary: string }>>>({});
+  const [editingAdvice, setEditingAdvice] = useState<{ originalTitle: string; title: string; summary: string } | null>(null);
   const selectedCondition = conditions.find((condition) => condition.id === selectedPathwayId) ?? conditions[0];
   if (!selectedCondition) return null;
 
@@ -23,9 +26,29 @@ function AdviceReviewPage() {
     () => [
       ...(getPathwayGuide(selectedCondition.id)?.recommendations ?? []),
       ...(customAdvice[selectedCondition.id] ?? []),
-    ],
-    [customAdvice, selectedCondition.id],
-  );
+    ].map((item) => editedAdvice[selectedCondition.id]?.[item.title] ?? item),
+    [customAdvice, editedAdvice, selectedCondition.id],
+  ).filter((item) => !(hiddenAdvice[selectedCondition.id] ?? []).includes(item.title));
+
+  const hideAdvice = (title: string) => {
+    setHiddenAdvice((current) => ({
+      ...current,
+      [selectedCondition.id]: [...(current[selectedCondition.id] ?? []), title],
+    }));
+  };
+
+  const saveAdviceEdit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!editingAdvice || !editingAdvice.title.trim() || !editingAdvice.summary.trim()) return;
+    setEditedAdvice((current) => ({
+      ...current,
+      [selectedCondition.id]: {
+        ...(current[selectedCondition.id] ?? {}),
+        [editingAdvice.originalTitle]: { title: editingAdvice.title.trim(), summary: editingAdvice.summary.trim() },
+      },
+    }));
+    setEditingAdvice(null);
+  };
 
   const addAdvice = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -79,8 +102,8 @@ function AdviceReviewPage() {
                   </div>
                   <p className="mt-2 text-sm leading-6 text-muted-foreground">{item.summary}</p>
                   <div className="mt-3 flex flex-wrap gap-2">
-                    <button type="button" className="flex min-h-10 items-center gap-2 rounded-lg border border-border bg-white px-3 text-sm font-medium text-foreground"><Pencil className="h-3.5 w-3.5" aria-hidden="true" />Modifier</button>
-                    <button type="button" className="flex min-h-10 items-center gap-2 rounded-lg border border-border bg-white px-3 text-sm font-medium text-muted-foreground"><X className="h-3.5 w-3.5" aria-hidden="true" />Masquer</button>
+                    <button type="button" onClick={() => setEditingAdvice({ originalTitle: item.title, title: item.title, summary: item.summary })} className="flex min-h-10 items-center gap-2 rounded-lg border border-border bg-white px-3 text-sm font-medium text-foreground"><Pencil className="h-3.5 w-3.5" aria-hidden="true" />Modifier</button>
+                    <button type="button" onClick={() => hideAdvice(item.title)} className="flex min-h-10 items-center gap-2 rounded-lg border border-border bg-white px-3 text-sm font-medium text-muted-foreground"><X className="h-3.5 w-3.5" aria-hidden="true" />Masquer</button>
                   </div>
                 </div>
               </article>
@@ -102,6 +125,16 @@ function AdviceReviewPage() {
           <div className="mt-4 flex items-start gap-2 rounded-xl bg-white/70 p-3 text-xs leading-5 text-muted-foreground"><Check className="mt-0.5 h-4 w-4 shrink-0 text-care" aria-hidden="true" />Vous gardez la main : ces conseils seront transmis uniquement après votre partage du parcours.</div>
         </aside>
       </div>
+
+      {editingAdvice ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#101C33]/35 p-4" role="presentation">
+          <form onSubmit={saveAdviceEdit} className="w-full max-w-lg rounded-3xl border border-border bg-card p-5 shadow-xl sm:p-6" aria-labelledby="edit-advice-title">
+            <div className="flex items-start justify-between gap-4"><div><p className="text-xs font-semibold uppercase tracking-wide text-care">{selectedCondition.name}</p><h2 id="edit-advice-title" className="mt-1 text-xl font-semibold text-foreground">Modifier le conseil</h2></div><button type="button" onClick={() => setEditingAdvice(null)} className="rounded-lg p-2 text-muted-foreground hover:bg-muted" aria-label="Fermer"><X className="h-5 w-5" aria-hidden="true" /></button></div>
+            <div className="mt-5 space-y-4"><label className="block text-sm font-medium text-foreground">Titre<input required value={editingAdvice.title} onChange={(event) => setEditingAdvice((current) => current ? { ...current, title: event.target.value } : current)} className="mt-1.5 min-h-11 w-full rounded-xl border border-border bg-background px-3 text-sm" /></label><label className="block text-sm font-medium text-foreground">Consigne<textarea required value={editingAdvice.summary} onChange={(event) => setEditingAdvice((current) => current ? { ...current, summary: event.target.value } : current)} className="mt-1.5 min-h-28 w-full rounded-xl border border-border bg-background px-3 py-3 text-sm" /></label></div>
+            <div className="mt-6 flex justify-end gap-2"><button type="button" onClick={() => setEditingAdvice(null)} className="min-h-11 rounded-xl border border-border px-4 text-sm font-semibold">Annuler</button><button type="submit" className="min-h-11 rounded-xl bg-care px-4 text-sm font-semibold text-care-foreground">Enregistrer</button></div>
+          </form>
+        </div>
+      ) : null}
 
       {isAddAdviceOpen ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#101C33]/35 p-4" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setIsAddAdviceOpen(false); }}>

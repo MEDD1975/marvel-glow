@@ -1,7 +1,7 @@
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { PatientShell } from "@/components/patient/PatientShell";
 import { ExpiredQrNotice } from "@/components/patient/ExpiredQrNotice";
-import { isExpiredLegacyQr } from "@/lib/legacy-qr";
+import { isExpiredLegacyQr, isExpiredSignedCabinetRef } from "@/lib/legacy-qr";
 
 export const Route = createFileRoute("/patient")({
   head: () => ({
@@ -16,7 +16,7 @@ export const Route = createFileRoute("/patient")({
 function PatientLayout() {
   const search = Route.useSearch() as Record<string, unknown>;
   const ref = typeof search["ref"] === "string" ? search["ref"] : undefined;
-  if (isExpiredLegacyQr(ref)) return <ExpiredQrNotice />;
+  if (isExpiredLegacyQr(ref) || isExpiredSignedCabinetRef(ref)) return <ExpiredQrNotice />;
   return (
     <PatientShell search={search}>
       <Outlet />

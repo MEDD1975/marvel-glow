@@ -8,6 +8,7 @@ export const Route = createFileRoute("/cabinet/aide")({
 
 const faq = [
   { q: "Comment transmettre un parcours ?", a: "Dans « Transmettre un parcours », choisissez l’atteinte puis affichez le QR code en plein écran. Le patient le scanne avec l’appareil photo de son téléphone." },
+  { q: "Combien de temps le QR code est-il valable ?", a: "Le QR code est valable 7 jours à partir de sa génération. Si le patient doit poursuivre son parcours au-delà, générez simplement un nouveau QR code." },
   { q: "Le patient doit-il créer un compte ?", a: "Non. Le QR code ouvre directement son espace de conseils, sans inscription." },
   { q: "Puis-je ajouter mes propres documents ?", a: "Oui, dans « Mes ressources ». Chaque ressource est associée à un parcours et peut être masquée à tout moment." },
   { q: "Comment retirer un parcours de ma liste ?", a: "Dans « Mes parcours TMS », utilisez « Masquer ». Le parcours reste disponible et peut être proposé à nouveau." },

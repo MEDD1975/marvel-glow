@@ -59,24 +59,30 @@ function refSecret() {
   return secret;
 }
 
-function refSignature(userId: string) {
-  return createHmac("sha256", refSecret()).update(`kivoir-cabinet-ref:${userId}`).digest("base64url").slice(0, 24);
+const QR_TTL_SECONDS = 7 * 24 * 60 * 60;
+
+function refSignature(userId: string, expiresAt: number) {
+  return createHmac("sha256", refSecret()).update(`kivoir-cabinet-ref:${userId}:${expiresAt}`).digest("base64url").slice(0, 24);
 }
 
-/** Identifiant public du cabinet imprimé dans les QR : non devinable sans la clé serveur. */
-export function signCabinetRef(userId: string) {
-  return `${userId}.${refSignature(userId)}`;
+/** Identifiant public du cabinet imprimé dans les QR : authentique et valable sept jours. */
+export function signCabinetRef(userId: string, now = Date.now()) {
+  const expiresAt = Math.floor(now / 1000) + QR_TTL_SECONDS;
+  return `${userId}.${expiresAt}.${refSignature(userId, expiresAt)}`;
 }
 
 export function verifyCabinetRef(ref: string | null | undefined): string | null {
-  if (!ref || ref.length > 200) return null;
-  const separator = ref.lastIndexOf(".");
-  if (separator <= 0) return null;
-  const userId = ref.slice(0, separator);
-  const provided = Buffer.from(ref.slice(separator + 1));
-  const expected = Buffer.from(refSignature(userId));
+  if (!ref || ref.length > 220) return null;
+  const parts = ref.split(".");
+  if (parts.length !== 3) return null;
+  const [userId, expiresAtText, signature] = parts;
+  const expiresAt = Number(expiresAtText);
+  if (!userId || !signature || !Number.isSafeInteger(expiresAt) || expiresAt <= Math.floor(Date.now() / 1000)) return null;
+  const provided = Buffer.from(signature);
+  const expected = Buffer.from(refSignature(userId, expiresAt));
   return provided.length === expected.length && timingSafeEqual(provided, expected) ? userId : null;
 }
+
 
 /** Retourne l'identifiant du médecin si le QR est authentique et que son compte est actif. */
 export async function resolveActiveCabinetOwner(ref: string | null | undefined): Promise<string | null> {

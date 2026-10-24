@@ -40,6 +40,7 @@ function HomeLinkCard({
   title,
   intro,
   ariaLabel,
+  details,
 }: {
   to: string;
   icon: LucideIcon;
@@ -47,6 +48,7 @@ function HomeLinkCard({
   title: string;
   intro: string;
   ariaLabel?: string;
+  details?: string[];
 }) {
   const classes = sectionTones[tone];
   return (
@@ -63,6 +65,11 @@ function HomeLinkCard({
       <span className="min-w-0 flex-1">
         <span className="block text-[1.08rem] font-bold leading-snug text-[#101C33]">{title}</span>
         <span className="mt-1 block text-[0.98rem] leading-snug text-[#526176]">{intro}</span>
+        {details?.length ? (
+          <span className="mt-3 block space-y-1 text-sm leading-snug text-[#33445D]">
+            {details.map((detail) => <span key={detail} className="block">• {detail}</span>)}
+          </span>
+        ) : null}
       </span>
       <ChevronRight className="h-6 w-6 shrink-0 text-[#0B63CE]" aria-hidden="true" />
     </Link>
@@ -141,6 +148,7 @@ export function PatientHomeContent() {
               ? `${recommendationCount} conseils transmis pour ce parcours`
               : "Aucun conseil complémentaire n’est disponible pour le moment."
         }
+        details={guide.recommendations.slice(0, 2).map((recommendation) => recommendation.title)}
       />
 
       <p className="rounded-2xl border border-[#DCE5F0] bg-[#F7FAFE] px-4 py-3 text-sm leading-relaxed text-[#526176]">

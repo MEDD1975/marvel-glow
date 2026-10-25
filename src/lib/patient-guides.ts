@@ -6,6 +6,7 @@ import { conditionResources, generalLinks, type ResourceLink } from "@/lib/condi
  * Contenus éditoriaux du parcours patient.
  * Tant qu'un contenu n'a pas de date de validation, l'interface le signale comme
  * « en attente de validation » au lieu d'afficher une validation inexistante.
+ * Aucun contenu non daté ne doit être présenté comme une recommandation validée.
  */
 export type Editorial = {
   source: string | undefined;
@@ -52,15 +53,15 @@ export type PathwayGuide = {
 const pending: Editorial = { source: undefined, validatedAt: undefined, validatedBy: undefined };
 
 const defaultCaution =
-  "Ces conseils ne remplacent pas les consignes données par votre professionnel de santé.";
+  "Recommandation générale à confirmer et à adapter par votre professionnel de santé selon votre examen. Elle ne remplace pas ses consignes.";
 
 const entorseRecommendations: Recommendation[] = [
   {
     ...pending,
     id: "froid",
     title: "Mettre de la glace",
-    summary: "Pendant 15 à 20 minutes, protégé par un linge.",
-    intro: "Le froid peut aider à soulager temporairement la douleur et le gonflement.",
+    summary: "Pour soulager temporairement la douleur, si votre professionnel vous le conseille.",
+    intro: "Le froid est une mesure de confort : il ne remplace ni l’appui progressif ni la rééducation et ne doit pas être utilisé au long cours.",
     steps: [
       "Protégez la peau avec un linge propre.",
       "Appliquez pendant 15 à 20 minutes.",
@@ -84,6 +85,32 @@ const entorseRecommendations: Recommendation[] = [
   },
   {
     ...pending,
+    id: "mobilite",
+    title: "Bouger progressivement la cheville",
+    summary: "Commencez les mouvements doux dès que possible, sans forcer.",
+    intro: "La mobilisation précoce et progressive favorise la récupération. Elle doit rester compatible avec la douleur et les consignes données après votre examen.",
+    steps: [
+      "Commencez par de petits mouvements confortables de la cheville.",
+      "Arrêtez si la douleur augmente nettement ou si le gonflement s'aggrave.",
+      "Reprenez les exercices indiqués par votre professionnel de santé.",
+    ],
+    caution: defaultCaution,
+  },
+  {
+    ...pending,
+    id: "reevaluation",
+    title: "Prévoir une réévaluation",
+    summary: "Recontactez votre professionnel si l’évolution n’est pas favorable dans les premiers jours.",
+    intro: "Une réévaluation peut être nécessaire pour vérifier l’évolution, adapter le maintien ou débuter la rééducation.",
+    steps: [
+      "Suivez le délai de suivi indiqué lors de votre consultation.",
+      "Recontactez votre professionnel si vous ne progressez pas ou si la douleur augmente.",
+      "Ne reprenez pas le sport tant que les consignes de reprise ne sont pas réunies.",
+    ],
+    caution: defaultCaution,
+  },
+  {
+    ...pending,
     id: "compression",
     title: "Utiliser une compression adaptée",
     summary: "Si elle vous a été recommandée, sans serrer excessivement.",
@@ -99,8 +126,8 @@ const entorseRecommendations: Recommendation[] = [
     ...pending,
     id: "appui",
     title: "Reprendre l'appui progressivement",
-    summary: "Selon les consignes reçues et votre douleur.",
-    intro: "La reprise progressive de la marche fait partie de la récupération, dans les limites indiquées.",
+    summary: "Marchez progressivement, selon la douleur et les consignes reçues.",
+    intro: "Pour la plupart des entorses simples, l’appui fonctionnel progressif est privilégié plutôt qu’un repos prolongé, mais votre examen détermine ce qui est adapté.",
     steps: [
       "Respectez les consignes d'appui données lors de la consultation.",
       "Reprenez la marche progressivement lorsque cela est autorisé et supportable.",
@@ -119,6 +146,7 @@ const entorseWarnings: string[] = [
   "Fourmillements ou perte de sensibilité",
   "Plaie ouverte",
   "Gonflement important et rapide",
+  "Douleur du mollet, essoufflement ou douleur dans la poitrine",
   "Fièvre associée à une rougeur ou une chaleur importante",
 ];
 

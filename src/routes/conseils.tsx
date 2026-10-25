@@ -97,7 +97,7 @@ function ConseilsPage({ reco }: { reco: string | undefined }) {
         <BackToHome />
         <h1 className="text-balance text-[1.625rem] font-semibold leading-tight tracking-tight text-foreground md:text-3xl">Conseils de votre professionnel</h1>
         <p className="mt-2 text-pretty text-base leading-relaxed text-muted-foreground">
-          Retrouvez les conseils transmis pour cette étape de votre parcours.
+          {guide.recommendations.some((item) => item.validatedAt) ? "Retrouvez les conseils transmis pour cette étape de votre parcours." : "Retrouvez une base de conseils à confirmer avec votre professionnel pour cette étape de votre parcours."}
         </p>
         <p className="mt-3 inline-flex rounded-full bg-tone-blue px-2.5 py-0.5 text-[13px] font-medium text-care">{`Parcours : ${guide.name}`}</p>
       </div>
@@ -119,7 +119,7 @@ function EssentialGestures({ guide }: { guide: PathwayGuide }) {
   const avoid = conditionAdvice[guide.id]?.avoid ?? [];
   return (
     <section aria-labelledby="gestes-title" id="gestes" className="scroll-mt-20">
-      <h2 id="gestes-title" className={sectionHeading}>Les gestes recommandés par votre professionnel de santé</h2>
+      <h2 id="gestes-title" className={sectionHeading}>{guide.recommendations.some((item) => item.validatedAt) ? "Les gestes recommandés par votre professionnel de santé" : "Les conseils proposés pour ce parcours"}</h2>
       {guide.recommendations.length ? (
         <ul className="mt-4 divide-y divide-tone-green-border/20 overflow-hidden rounded-2xl border border-tone-green-border/25 bg-tone-green/50">
           {guide.recommendations.map((item) => (
@@ -162,11 +162,12 @@ function EssentialGestures({ guide }: { guide: PathwayGuide }) {
           </ul>
         </details>
       ) : null}
-      <p className="mt-3 text-xs text-muted-foreground">
+      <div className="mt-3 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-xs leading-relaxed text-amber-950">
         {guide.recommendations.some((item) => item.validatedAt)
-          ? "Contenus validés par votre cabinet."
-          : "Contenus de démonstration, en attente de validation médicale."}
-      </p>
+          ? "Ces recommandations ont été validées par votre professionnel de santé pour ce parcours."
+          : "Ces conseils généraux sont une base pédagogique. Ils ne sont pas encore validés pour ce parcours : confirmez-les avec votre professionnel de santé avant de les appliquer."
+        }
+      </div>
     </section>
   );
 }
@@ -212,7 +213,7 @@ function RecommendationDetail({ item }: { item: Recommendation }) {
       <section aria-labelledby="transmis-title" className="rounded-2xl border border-care/15 bg-tone-blue/60 p-4">
         <h2 id="transmis-title" className="flex items-center gap-2 text-sm font-semibold text-care">
           <ShieldCheck className="h-4 w-4" aria-hidden="true" />
-          Conseil transmis
+          {item.validatedAt ? "Conseil transmis par votre professionnel" : "Conseil général à confirmer"}
         </h2>
         {item.caution ? <p className="mt-1 text-sm leading-relaxed text-foreground">{item.caution}</p> : null}
         <div className="mt-2">

@@ -1,13 +1,12 @@
 import { Link } from "@tanstack/react-router";
 import {
-  AlertTriangle,
   BookOpen,
   CheckCircle2,
   ChevronRight,
   ShieldCheck,
   type LucideIcon,
 } from "lucide-react";
-import { useDoctorResources, usePatient } from "@/components/patient/PatientProvider";
+import { usePatient } from "@/components/patient/PatientProvider";
 import { LoadingState, NoPathwayState, SafetyNotice } from "@/components/patient/PatientUi";
 import { conditions } from "@/lib/conditions";
 import { zoneVisuals } from "@/lib/zone-visuals";
@@ -87,18 +86,6 @@ export function PatientHomeContent() {
 
   return (
     <div className="flex flex-col gap-4">
-      <section aria-labelledby="home-title" className="mb-2">
-        <h1
-          id="home-title"
-          className="max-w-[19ch] text-balance font-display text-[clamp(2.15rem,9vw,3rem)] font-bold leading-[1.02] tracking-[-0.04em] text-[#101C33] md:max-w-[18ch] md:text-5xl"
-        >
-          Les conseils transmis, toujours à portée de main
-        </h1>
-        <p className="mt-4 max-w-prose text-pretty text-base leading-relaxed text-[#526176] md:text-lg">
-          Retrouvez les gestes prioritaires, les signes qui nécessitent un avis et quand recontacter votre professionnel.
-        </p>
-      </section>
-
       {!hasContext || !guide ? <NoPathwayState /> : null}
 
       {hasContext && guide ? (
@@ -106,10 +93,7 @@ export function PatientHomeContent() {
           aria-labelledby="diagnostic-title"
           className="relative overflow-hidden rounded-[24px] border border-[#C9DCF3] border-l-4 border-l-[#0B63CE] bg-[linear-gradient(135deg,#EAF3FF_0%,#F7FBFF_62%,#EEF9F5_100%)] px-5 py-5 shadow-[0_12px_30px_rgba(11,99,206,0.08)]"
         >
-          <p className="text-xs font-semibold uppercase tracking-[0.08em] text-[#0B63CE] md:text-[13px]">
-            Parcours transmis par votre professionnel de santé
-          </p>
-          <div className="mt-1.5 flex items-center gap-3">
+          <div className="flex items-center gap-3">
             <h2
               id="diagnostic-title"
               className="min-w-0 flex-1 text-pretty break-words text-2xl font-bold leading-tight text-[#101C33] md:text-[1.75rem]"
@@ -125,13 +109,13 @@ export function PatientHomeContent() {
             />
           </div>
           {cabinetName ? (
-            <p className="mt-2 flex items-start gap-1.5 text-sm leading-snug text-[#526176] md:text-[15px]">
-              <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-[#0B63CE]" aria-hidden="true" />
+            <div className="mt-4 flex items-center gap-2 border-t border-[#C9DCF3] pt-3 text-sm text-[#526176]">
+              <ShieldCheck className="h-4 w-4 shrink-0 text-[#0B63CE]" aria-hidden="true" />
               <span className="break-words">
-                {cabinetName}
-                {doctorLabel ? <span className="block text-xs text-[#6B7A90]">{doctorLabel}</span> : null}
+                Parcours partagé par {cabinetName}
+                {doctorLabel ? <span className="ml-1 text-xs text-[#6B7A90]">· {doctorLabel}</span> : null}
               </span>
-            </p>
+            </div>
           ) : null}
         </section>
       ) : null}
@@ -151,7 +135,7 @@ export function PatientHomeContent() {
         to="/conseils"
         icon={CheckCircle2}
         tone="green"
-        title="À faire maintenant"
+        title="Retrouver mes conseils"
         intro={
           guide.recommendations.some((recommendation) => recommendation.validatedAt)
             ? recommendationCount === 1
@@ -173,12 +157,12 @@ export function PatientHomeContent() {
       </p>
 
       <HomeLinkCard
-        to="/patient/surveiller"
-        icon={AlertTriangle}
-        tone="neutral"
-        title="Points à surveiller"
-        intro="Sachez dans quelles situations reprendre contact ou demander rapidement un avis."
-        ariaLabel="Voir les points à surveiller"
+        to="/patient/professionnels"
+        icon={ShieldCheck}
+        tone="orange"
+        title="Qui consulter ?"
+        intro="Retrouvez le professionnel recommandé et le réseau partagé par votre professionnel de santé."
+        ariaLabel="Voir qui consulter"
       />
 
       </> : null}

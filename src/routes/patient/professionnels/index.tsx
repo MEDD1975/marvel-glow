@@ -20,11 +20,9 @@ function ProfessionalsPage() {
   const recommendedSpecialty = orientation?.title.replace(/^À voir ensuite\s*:\s*/i, "").trim();
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<string>("Tous");
-  const [showFullNetwork, setShowFullNetwork] = useState(false);
-
   const categories = useMemo(() => ["Tous", ...Array.from(new Set(professionals.map((item) => item.category))).sort((a, b) => a.localeCompare(b, "fr"))], [professionals]);
   const filtered = professionals.filter((item) => {
-    if (recommendedSpecialty && !showFullNetwork && !normalize(`${item.specialty} ${item.category}`).includes(normalize(recommendedSpecialty))) return false;
+    if (recommendedSpecialty && !normalize(`${item.specialty} ${item.category}`).includes(normalize(recommendedSpecialty))) return false;
     if (category !== "Tous" && item.category !== category) return false;
     if (!query.trim()) return true;
     return normalize(`${item.name} ${item.specialty} ${item.address ?? ""}`).includes(normalize(query.trim()));
@@ -47,18 +45,16 @@ function ProfessionalsPage() {
             </div>
           </div>
           <div className="px-5 py-4">
-            <p className="text-sm leading-6 text-[#526176]">{orientation?.description ?? `Les ${recommendedSpecialty.toLowerCase()} du réseau sont affichés en priorité.`}</p>
+            <p className="text-sm leading-6 text-[#526176]">Votre professionnel de santé vous recommande cette spécialité. Vous trouverez ci-dessous le professionnel correspondant dans le réseau qu’il a partagé.</p>
           </div>
         </section>
-        <div className="mb-5 flex justify-center">
-          <button type="button" onClick={() => setShowFullNetwork((current) => !current)} className="inline-flex min-h-11 items-center rounded-full border border-[#1769CF] bg-white px-5 text-sm font-semibold text-[#1769CF] shadow-sm transition-colors hover:bg-[#1769CF] hover:text-white">
-            {showFullNetwork ? "Voir les recommandations" : "Voir tout le réseau"}
-          </button>
-        </div>
         </>
       ) : null}
       <div className="mb-3 flex items-center justify-between gap-3">
-        <div className="flex items-center gap-2 text-sm font-semibold text-[#101C33]"><UsersRound className="h-4 w-4 text-[#1769CF]" aria-hidden="true" />{showFullNetwork ? "Tout le réseau" : recommendedSpecialty ? `Réseau ${recommendedSpecialty.toLowerCase()}` : "Professionnels du parcours"}</div>
+        <div>
+          <div className="flex items-center gap-2 text-sm font-semibold text-[#101C33]"><UsersRound className="h-4 w-4 text-[#1769CF]" aria-hidden="true" />{recommendedSpecialty ? `Réseau partagé par votre professionnel` : "Professionnels du parcours"}</div>
+          {recommendedSpecialty ? <p className="mt-1 text-xs text-[#718096]">Le {recommendedSpecialty.toLowerCase()} recommandé est affiché en premier.</p> : null}
+        </div>
         {!isLoading ? <span className="text-xs text-[#718096]">{filtered.length} résultat{filtered.length > 1 ? "s" : ""}</span> : null}
       </div>
       <label className="relative block">

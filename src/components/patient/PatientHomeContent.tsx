@@ -11,6 +11,7 @@ import { usePatient } from "@/components/patient/PatientProvider";
 import { LoadingState, NoPathwayState, SafetyNotice } from "@/components/patient/PatientUi";
 import { conditions } from "@/lib/conditions";
 import { zoneVisuals } from "@/lib/zone-visuals";
+import { pathways } from "@/lib/pathways";
 
 const sectionTones = {
   green: {
@@ -84,6 +85,7 @@ export function PatientHomeContent() {
   const recommendationCount = guide?.recommendations.length ?? 0;
   const conditionZone = guide ? conditions.find((condition) => condition.id === guide.id)?.zone : undefined;
   const anatomyVisual = conditionZone ? zoneVisuals[conditionZone] : null;
+  const nextActor = guide ? pathways[guide.id]?.actors[1] : undefined;
 
   return (
     <div className="flex flex-col gap-4">
@@ -145,6 +147,16 @@ export function PatientHomeContent() {
         intro={`Ce qui se passe habituellement pour ${guide.name.toLowerCase()}.`}
         details={guide.careSteps.slice(0, 2).map((step) => step.title)}
         ariaLabel="Comprendre mon parcours"
+      />
+
+      <HomeLinkCard
+        to="/patient/parcours"
+        icon={ShieldCheck}
+        tone="orange"
+        title="Qui consulter ensuite ?"
+        intro="Votre professionnel vous propose de vérifier l’étape suivante de votre prise en charge."
+        {...(nextActor ? { details: [`${nextActor.role} — ${nextActor.trigger}`] } : {})}
+        ariaLabel="Voir qui consulter ensuite"
       />
 
       <HomeLinkCard

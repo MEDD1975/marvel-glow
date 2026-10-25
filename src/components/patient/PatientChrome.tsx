@@ -61,7 +61,7 @@ export function KivoirHeader() {
             <Logo size="sm" />
           </Link>
           <p className="ml-[38px] flex items-center gap-0 text-[9px] leading-none font-semibold uppercase tracking-[0.12em] text-[#526176] sm:text-[10px]" aria-label="Les repères Kivoir">
-            <span>Quoi faire</span><span className="text-[#B6C4D5]" aria-hidden="true">·</span><span>Quand</span><span className="text-[#B6C4D5]" aria-hidden="true">·</span><span>Qui voir</span>
+            QUOI FAIRE, QUAND, QUI VOIR,.
           </p>
         </div>
         <nav aria-label="Navigation principale" className="hidden md:block">

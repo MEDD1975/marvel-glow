@@ -4,6 +4,7 @@ import { Check, ChevronDown, GripVertical, Pencil, Plus, X } from "lucide-react"
 import { DoctorHeader, DoctorPage } from "@/components/doctor/DoctorLayout";
 import { conditions } from "@/lib/conditions";
 import { getPathwayGuide } from "@/lib/patient-guides";
+import { doctorKeys, sendJson, useDoctorCache, useDoctorResources } from "@/components/doctor/use-doctor-data";
 
 export const Route = createFileRoute("/cabinet/conseils")({
   head: () => ({ meta: [{ title: "Conseils à appliquer — Kivoir" }] }),
@@ -21,6 +22,8 @@ function AdviceReviewPage() {
   const [editingAdvice, setEditingAdvice] = useState<{ originalTitle: string; title: string; summary: string } | null>(null);
   const [recommendedProfessional, setRecommendedProfessional] = useState<Record<string, string>>({});
   const [isReferralSaved, setIsReferralSaved] = useState<Record<string, boolean>>({});
+  const resources = useDoctorResources();
+  const cache = useDoctorCache();
   const selectedCondition = conditions.find((condition) => condition.id === selectedPathwayId) ?? conditions[0];
   if (!selectedCondition) return null;
 
@@ -50,6 +53,15 @@ function AdviceReviewPage() {
       },
     }));
     setEditingAdvice(null);
+  };
+
+  const saveReferral = async () => {
+    const professional = recommendedProfessional[selectedCondition.id];
+    if (!professional) return;
+    const existing = resources.data?.find((resource) => resource.conditionId === selectedCondition.id && resource.kind === "orientation");
+    await sendJson("/api/doctor-resources", existing ? "PATCH" : "POST", existing ? { id: existing.id, title: `À voir ensuite : ${professional}`, conditionId: selectedCondition.id, url: "/patient/parcours", description: "Orientation proposée par votre médecin.", kind: "orientation", status: "active" } : { title: `À voir ensuite : ${professional}`, conditionId: selectedCondition.id, url: "/patient/parcours", description: "Orientation proposée par votre médecin.", kind: "orientation" });
+    await cache.invalidateQueries({ queryKey: doctorKeys.resources });
+    setIsReferralSaved((current) => ({ ...current, [selectedCondition.id]: true }));
   };
 
   const addAdvice = (event: FormEvent<HTMLFormElement>) => {
@@ -170,7 +182,7 @@ function AdviceReviewPage() {
         </div>
       ) : null}
 
-      <div className="mt-6 flex flex-col gap-3 rounded-2xl border border-border bg-card p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5"><div><p className="font-semibold text-foreground">Prêt à transmettre ce parcours ?</p><p className="mt-1 text-sm text-muted-foreground">Vous pourrez toujours modifier ou masquer un conseil plus tard.</p></div><button type="button" onClick={() => setIsReferralSaved((current) => ({ ...current, [selectedCondition.id]: true }))} className="flex min-h-11 items-center justify-center gap-2 rounded-xl bg-care px-4 text-sm font-semibold text-care-foreground">Enregistrer et continuer<ChevronDown className="h-4 w-4 -rotate-90" aria-hidden="true" /></button></div>
+      <div className="mt-6 flex flex-col gap-3 rounded-2xl border border-border bg-card p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5"><div><p className="font-semibold text-foreground">Prêt à transmettre ce parcours ?</p><p className="mt-1 text-sm text-muted-foreground">Vous pourrez toujours modifier ou masquer un conseil plus tard.</p></div><button type="button" onClick={() => { void saveReferral(); }} className="flex min-h-11 items-center justify-center gap-2 rounded-xl bg-care px-4 text-sm font-semibold text-care-foreground">Enregistrer et continuer<ChevronDown className="h-4 w-4 -rotate-90" aria-hidden="true" /></button></div>
     </DoctorPage>
   );
 }

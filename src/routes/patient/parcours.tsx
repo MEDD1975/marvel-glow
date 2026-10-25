@@ -12,7 +12,7 @@ function PathwayPage() {
   if (!guide) return <NoPathwayState />;
   return (
     <div>
-      <PageHeading back={{ to: "/patient", label: "Accueil" }} title="Mon parcours" description={`Les grandes étapes habituelles pour « ${guide.name} ». Votre prise en charge peut différer.`} />
+      <PageHeading back={{ to: "/patient", label: "Accueil" }} title="Comprendre mon parcours" description={`Les grandes étapes habituelles pour « ${guide.name} ». Votre prise en charge peut différer.`} />
       <ol className="relative flex flex-col gap-4 border-l-2 border-border pl-6">
         {guide.careSteps.map((step, index) => (
           <li key={step.id} className="relative">
@@ -25,7 +25,7 @@ function PathwayPage() {
         ))}
       </ol>
       <div className="mt-6">
-        <SafetyNotice>Kivoir ne suit pas votre progression : ces étapes sont données à titre indicatif.</SafetyNotice>
+        <SafetyNotice>Ces étapes expliquent le parcours habituel. Votre professionnel de santé peut les adapter selon votre examen, vos symptômes et votre évolution.</SafetyNotice>
       </div>
     </div>
   );

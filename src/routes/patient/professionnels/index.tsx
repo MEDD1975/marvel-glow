@@ -1,6 +1,6 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { Search } from "lucide-react";
+import { Check, Search, UsersRound } from "lucide-react";
 import { useDoctorResources, usePatient, useProfessionals } from "@/components/patient/PatientProvider";
 import { EmptyState, ErrorState, FreeChoiceNotice, ListGroup, ListRow, LoadingState, PageHeading } from "@/components/patient/PatientUi";
 
@@ -34,18 +34,29 @@ function ProfessionalsPage() {
     <div>
       <PageHeading
         title="Qui contacter ?"
-        description={recommendedSpecialty ? `Votre prochaine étape : consulter un ${recommendedSpecialty.toLowerCase()}.` : "Retrouvez les coordonnées et contacts communiqués pour ce parcours."}
+        description={recommendedSpecialty ? "Les professionnels recommandés pour la suite de votre parcours." : "Retrouvez les coordonnées communiquées pour ce parcours."}
       />
       {recommendedSpecialty ? (
-        <section className="mb-4 rounded-2xl border border-[#C9DCF3] bg-[#F5F9FF] p-4">
-          <p className="text-sm leading-6 text-foreground">
-            {orientation?.description ?? `Les ${recommendedSpecialty.toLowerCase()} du réseau de votre professionnel de santé sont affichés en priorité.`}
-          </p>
-          <button type="button" onClick={() => setShowFullNetwork((current) => !current)} className="mt-3 text-sm font-semibold text-care underline-offset-4 hover:underline">
-            {showFullNetwork ? "Voir uniquement les professionnels recommandés" : "Voir le réseau complet"}
-          </button>
+        <section className="mb-5 overflow-hidden rounded-3xl border border-[#C9DCF3] bg-gradient-to-br from-[#EDF5FF] via-white to-[#F2FBF7] shadow-[0_10px_30px_rgba(31,78,121,0.07)]">
+          <div className="flex items-start gap-3 border-b border-[#D9E7F6] px-5 py-4">
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[#DCEBFF] text-[#1769CF]" aria-hidden="true"><Check className="h-5 w-5" /></span>
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#1769CF]">Orientation de votre professionnel</p>
+              <h2 className="mt-1 text-xl font-bold tracking-tight text-[#101C33]">Consulter un {recommendedSpecialty.toLowerCase()}</h2>
+            </div>
+          </div>
+          <div className="px-5 py-4">
+            <p className="text-sm leading-6 text-[#526176]">{orientation?.description ?? `Les ${recommendedSpecialty.toLowerCase()} du réseau sont affichés en priorité.`}</p>
+            <button type="button" onClick={() => setShowFullNetwork((current) => !current)} className="mt-3 inline-flex min-h-10 items-center rounded-full border border-[#1769CF] px-4 text-sm font-semibold text-[#1769CF] transition-colors hover:bg-[#1769CF] hover:text-white">
+              {showFullNetwork ? "Voir les recommandations" : "Voir tout le réseau"}
+            </button>
+          </div>
         </section>
       ) : null}
+      <div className="mb-3 flex items-center justify-between gap-3">
+        <div className="flex items-center gap-2 text-sm font-semibold text-[#101C33]"><UsersRound className="h-4 w-4 text-[#1769CF]" aria-hidden="true" />{showFullNetwork ? "Tout le réseau" : recommendedSpecialty ? `Réseau ${recommendedSpecialty.toLowerCase()}` : "Professionnels du parcours"}</div>
+        {!isLoading ? <span className="text-xs text-[#718096]">{filtered.length} résultat{filtered.length > 1 ? "s" : ""}</span> : null}
+      </div>
       <label className="relative block">
         <span className="sr-only">Rechercher un professionnel</span>
         <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
@@ -86,7 +97,7 @@ function ProfessionalsPage() {
                   title={item.name}
                   description={item.specialty}
                   leading={
-                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-tone-green text-sm font-semibold text-tone-green-text" aria-hidden="true">
+                    <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#E6F5EF] text-base font-bold text-[#277A5D]" aria-hidden="true">
                       {item.name.replace(/^(dr\.?|docteur)\s+/i, "").charAt(0).toUpperCase()}
                     </span>
                   }

@@ -5,13 +5,13 @@ import {
   CheckCircle2,
   ChevronRight,
   ShieldCheck,
+  UsersRound,
   type LucideIcon,
 } from "lucide-react";
 import { useDoctorResources, usePatient } from "@/components/patient/PatientProvider";
 import { LoadingState, NoPathwayState, SafetyNotice } from "@/components/patient/PatientUi";
 import { conditions } from "@/lib/conditions";
 import { zoneVisuals } from "@/lib/zone-visuals";
-import { pathways } from "@/lib/pathways";
 
 const sectionTones = {
   green: {
@@ -86,7 +86,6 @@ export function PatientHomeContent() {
   const recommendationCount = guide?.recommendations.length ?? 0;
   const conditionZone = guide ? conditions.find((condition) => condition.id === guide.id)?.zone : undefined;
   const anatomyVisual = conditionZone ? zoneVisuals[conditionZone] : null;
-  const nextActor = guide ? pathways[guide.id]?.actors[1] : undefined;
   const savedReferral = guide ? doctorResources.data?.find((resource) => resource.conditionId === guide.id && resource.kind === "orientation") : undefined;
 
   return (
@@ -152,16 +151,6 @@ export function PatientHomeContent() {
       />
 
       <HomeLinkCard
-        to="/patient/parcours"
-        icon={ShieldCheck}
-        tone="orange"
-        title="Qui consulter ensuite ?"
-        intro={savedReferral?.title ?? "Votre professionnel vous propose de vérifier l’étape suivante de votre prise en charge."}
-        {...(savedReferral ? { details: [savedReferral.description ?? "Orientation proposée par votre professionnel de santé."] } : nextActor ? { details: [`${nextActor.role} — ${nextActor.trigger}`] } : {})}
-        ariaLabel="Voir qui consulter ensuite"
-      />
-
-      <HomeLinkCard
         to="/conseils"
         icon={CheckCircle2}
         tone="green"
@@ -180,6 +169,16 @@ export function PatientHomeContent() {
                 : "Aucun conseil complémentaire n’est disponible pour le moment."
         }
         details={guide.recommendations.slice(0, 3).map((recommendation) => recommendation.title)}
+      />
+
+      <HomeLinkCard
+        to="/patient/ressources"
+        icon={UsersRound}
+        tone="orange"
+        title="À voir ensuite"
+        intro={savedReferral?.title ?? "Votre professionnel vous indique la prochaine étape de votre prise en charge."}
+        {...(savedReferral ? { details: [savedReferral.description ?? "Orientation proposée par votre professionnel de santé."] } : {})}
+        ariaLabel="Voir la prochaine étape de prise en charge"
       />
 
       <p className="rounded-2xl border border-[#DCE5F0] bg-[#F7FAFE] px-4 py-3 text-sm leading-relaxed text-[#526176]">

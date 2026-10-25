@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { Search } from "lucide-react";
 import { useDoctorResources, usePatient, useProfessionals } from "@/components/patient/PatientProvider";
@@ -20,10 +20,11 @@ function ProfessionalsPage() {
   const recommendedSpecialty = orientation?.title.replace(/^À voir ensuite\s*:\s*/i, "").trim();
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<string>("Tous");
+  const [showFullNetwork, setShowFullNetwork] = useState(false);
 
   const categories = useMemo(() => ["Tous", ...Array.from(new Set(professionals.map((item) => item.category))).sort((a, b) => a.localeCompare(b, "fr"))], [professionals]);
   const filtered = professionals.filter((item) => {
-    if (recommendedSpecialty && !normalize(`${item.specialty} ${item.category}`).includes(normalize(recommendedSpecialty))) return false;
+    if (recommendedSpecialty && !showFullNetwork && !normalize(`${item.specialty} ${item.category}`).includes(normalize(recommendedSpecialty))) return false;
     if (category !== "Tous" && item.category !== category) return false;
     if (!query.trim()) return true;
     return normalize(`${item.name} ${item.specialty} ${item.address ?? ""}`).includes(normalize(query.trim()));
@@ -33,8 +34,18 @@ function ProfessionalsPage() {
     <div>
       <PageHeading
         title="Qui contacter ?"
-        description={recommendedSpecialty ? `Professionnels du réseau recommandés : ${recommendedSpecialty}.` : "Retrouvez les coordonnées et contacts communiqués pour ce parcours."}
+        description={recommendedSpecialty ? `Votre prochaine étape : consulter un ${recommendedSpecialty.toLowerCase()}.` : "Retrouvez les coordonnées et contacts communiqués pour ce parcours."}
       />
+      {recommendedSpecialty ? (
+        <section className="mb-4 rounded-2xl border border-[#C9DCF3] bg-[#F5F9FF] p-4">
+          <p className="text-sm leading-6 text-foreground">
+            {orientation?.description ?? `Les ${recommendedSpecialty.toLowerCase()} du réseau de votre professionnel de santé sont affichés en priorité.`}
+          </p>
+          <button type="button" onClick={() => setShowFullNetwork((current) => !current)} className="mt-3 text-sm font-semibold text-care underline-offset-4 hover:underline">
+            {showFullNetwork ? "Voir uniquement les professionnels recommandés" : "Voir le réseau complet"}
+          </button>
+        </section>
+      ) : null}
       <label className="relative block">
         <span className="sr-only">Rechercher un professionnel</span>
         <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />

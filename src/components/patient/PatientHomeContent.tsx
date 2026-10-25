@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import {
   AlertTriangle,
+  BookOpen,
   CheckCircle2,
   ChevronRight,
   ShieldCheck,
@@ -136,6 +137,16 @@ export function PatientHomeContent() {
       ) : null}
 
       {hasContext && guide ? <>
+      <HomeLinkCard
+        to="/patient/parcours"
+        icon={BookOpen}
+        tone="blue"
+        title="Comprendre mon parcours"
+        intro={`Ce qui se passe habituellement pour ${guide.name.toLowerCase()}.`}
+        details={guide.careSteps.slice(0, 2).map((step) => step.title)}
+        ariaLabel="Comprendre mon parcours"
+      />
+
       <HomeLinkCard
         to="/conseils"
         icon={CheckCircle2}

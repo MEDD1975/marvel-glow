@@ -4,10 +4,10 @@ import { PatientLanding } from "@/components/PatientLanding";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Kivoir — Votre espace patient" },
-      { name: "description", content: "Votre espace patient Kivoir : retrouvez votre suivi, vos conseils et les professionnels recommandés par votre médecin." },
-      { property: "og:title", content: "Kivoir — Votre espace patient" },
-      { property: "og:description", content: "Retrouvez votre suivi, vos conseils et les professionnels recommandés avec Kivoir." },
+      { title: "Kivoir — Qui voir, quand ? Orientation et parcours de soins" },
+      { name: "description", content: "Kivoir vous aide à vous orienter en cas de douleur de la jambe, de la cheville ou du pied, et à retrouver les conseils transmis par votre professionnel de santé." },
+      { property: "og:title", content: "Kivoir — Qui voir, quand ?" },
+      { property: "og:description", content: "Orientation en cas de douleur et conseils transmis par votre professionnel de santé, entre deux rendez-vous." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],

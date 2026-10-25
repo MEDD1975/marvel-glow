@@ -39,7 +39,9 @@ function ResourcesPage() {
   if (!ready) return <LoadingState />;
   if (!guide) return <NoPathwayState />;
   const files = resources.data ?? [];
-  const documents = files.filter((item) => !isPlayableVideo(item));
+  const isOrientation = (item: (typeof files)[number]) => item.kind === "orientation" || item.title.startsWith("À voir ensuite :");
+  const orientationResources = files.filter(isOrientation);
+  const documents = files.filter((item) => !isPlayableVideo(item) && !isOrientation(item));
   const videos = [
     ...files.filter(isPlayableVideo).map(videoFromResource),
     ...guide.videos.map(videoFromLink),
@@ -83,6 +85,17 @@ function ResourcesPage() {
         intro="Vidéos et documents sélectionnés pour votre parcours, et sources complémentaires."
         pathwayName={guide.name}
       />
+
+      {orientationResources.length ? (
+        <section aria-labelledby="orientation-title">
+          <h2 id="orientation-title" className={groupTitle}>À voir ensuite</h2>
+          <ul className="flex flex-col gap-2">
+            {[...new Map(orientationResources.map((resource) => [resource.conditionId, resource])).values()].map((resource) => (
+              <li key={resource.id}><DoctorResourceRow resource={resource} /></li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
 
       <section aria-labelledby="documents-title">
         <h2 id="documents-title" className={groupTitle}>

@@ -17,16 +17,20 @@ function PrivateAccessNotice() {
   );
 }
 
-function PatientShellContent({ children }: { children: ReactNode }) {
+function PatientShellContent({ allowPublic, children }: { allowPublic?: boolean; children: ReactNode }) {
   const { hasContext } = usePatient();
-  if (!hasContext) return <PrivateAccessNotice />;
+  if (!hasContext && !allowPublic) return <PrivateAccessNotice />;
   return (
     <div className="min-h-dvh bg-background">
       <KivoirHeader />
-      <main className="mx-auto max-w-2xl pb-[calc(env(safe-area-inset-bottom)+6.5rem)] pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))] pt-6 md:pb-16 md:pt-10">
+      <main
+        className={`mx-auto max-w-2xl pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))] pt-6 md:pb-16 md:pt-10 ${
+          hasContext ? "pb-[calc(env(safe-area-inset-bottom)+6.5rem)]" : "pb-12"
+        }`}
+      >
         {children}
       </main>
-      <BottomNavigation />
+      {hasContext ? <BottomNavigation /> : null}
     </div>
   );
 }
@@ -35,15 +39,18 @@ function PatientShellContent({ children }: { children: ReactNode }) {
 export function PatientShell({
   search,
   requireFreshContext,
+  allowPublic,
   children,
 }: {
   search: Record<string, unknown>;
   requireFreshContext?: boolean;
+  /** Autorise l'affichage de la page sans contexte QR (ex. annuaire public). */
+  allowPublic?: boolean;
   children: ReactNode;
 }) {
   return (
     <PatientProvider search={search} requireFreshContext={requireFreshContext}>
-      <PatientShellContent>{children}</PatientShellContent>
+      <PatientShellContent allowPublic={allowPublic}>{children}</PatientShellContent>
     </PatientProvider>
   );
 }

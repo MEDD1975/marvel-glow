@@ -52,7 +52,7 @@ export type PathwayGuide = {
 const pending: Editorial = { source: undefined, validatedAt: undefined, validatedBy: undefined };
 
 const defaultCaution =
-  "Ces conseils ne remplacent pas les consignes données par votre professionnel de santé.";
+  "Recommandation générale à confirmer et à adapter par votre professionnel de santé selon votre examen. Elle ne remplace pas ses consignes.";
 
 const entorseRecommendations: Recommendation[] = [
   {
@@ -79,6 +79,19 @@ const entorseRecommendations: Recommendation[] = [
       "Asseyez-vous ou allongez-vous confortablement.",
       "Placez un coussin sous le mollet plutôt que sous le talon.",
       "Gardez le pied au-dessus du niveau du cœur dès que possible.",
+    ],
+    caution: defaultCaution,
+  },
+  {
+    ...pending,
+    id: "mobilite",
+    title: "Bouger progressivement la cheville",
+    summary: "Mobilisez doucement selon la douleur et les consignes reçues.",
+    intro: "Une mobilisation progressive peut aider à récupérer les mouvements, sans forcer ni provoquer une douleur importante.",
+    steps: [
+      "Commencez par de petits mouvements confortables de la cheville.",
+      "Arrêtez si la douleur augmente nettement ou si le gonflement s'aggrave.",
+      "Reprenez les exercices indiqués par votre professionnel de santé.",
     ],
     caution: defaultCaution,
   },
@@ -119,6 +132,7 @@ const entorseWarnings: string[] = [
   "Fourmillements ou perte de sensibilité",
   "Plaie ouverte",
   "Gonflement important et rapide",
+  "Douleur du mollet, essoufflement ou douleur dans la poitrine",
   "Fièvre associée à une rougeur ou une chaleur importante",
 ];
 

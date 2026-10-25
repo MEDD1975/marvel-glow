@@ -50,7 +50,7 @@ export function PatientShell({
 }) {
   return (
     <PatientProvider search={search} requireFreshContext={requireFreshContext}>
-      <PatientShellContent allowPublic={allowPublic}>{children}</PatientShellContent>
+      <PatientShellContent {...(allowPublic === undefined ? {} : { allowPublic })}>{children}</PatientShellContent>
     </PatientProvider>
   );
 }

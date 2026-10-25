@@ -60,7 +60,7 @@ export function KivoirHeader() {
           <Link to="/patient" search={linkSearch} aria-label="Kivoir, retour à l'accueil" className="shrink-0 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
             <Logo size="sm" />
           </Link>
-          <p className="ml-0 flex items-center gap-0 text-[9px] leading-none font-semibold uppercase tracking-[0.12em] text-[#526176] sm:text-[10px]" aria-label="Les repères Kivoir">
+          <p className="ml-[38px] flex items-center gap-0 text-[9px] leading-none font-semibold uppercase tracking-[0.12em] text-[#526176] sm:text-[10px]" aria-label="Les repères Kivoir">
             <span>Quoi faire</span><span className="text-[#B6C4D5]" aria-hidden="true">·</span><span>Quand</span><span className="text-[#B6C4D5]" aria-hidden="true">·</span><span>Qui voir</span>
           </p>
         </div>

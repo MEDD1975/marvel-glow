@@ -56,11 +56,11 @@ export function KivoirHeader() {
   return (
     <header className="sticky top-0 z-30 border-b border-border/60 bg-background/90 pt-[env(safe-area-inset-top)] backdrop-blur supports-[backdrop-filter]:bg-background/75">
       <div className="mx-auto flex h-12 max-w-3xl items-center justify-between gap-4 pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))] md:h-14">
-        <div className="flex min-w-0 flex-col items-start justify-center gap-0.5">
+        <div className="flex min-w-0 flex-col items-start justify-center gap-0">
           <Link to="/patient" search={linkSearch} aria-label="Kivoir, retour à l'accueil" className="shrink-0 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
             <Logo size="sm" />
           </Link>
-          <p className="ml-1 flex items-center gap-1.5 text-[9px] font-semibold uppercase tracking-[0.12em] text-[#526176] sm:gap-2 sm:text-[10px]" aria-label="Les repères Kivoir">
+          <p className="ml-1 flex items-center gap-1.5 text-[9px] leading-none font-semibold uppercase tracking-[0.12em] text-[#526176] sm:gap-2 sm:text-[10px]" aria-label="Les repères Kivoir">
             <span>Quoi faire</span><span className="text-[#B6C4D5]" aria-hidden="true">·</span><span>Quand</span><span className="text-[#B6C4D5]" aria-hidden="true">·</span><span>Qui voir</span>
           </p>
         </div>

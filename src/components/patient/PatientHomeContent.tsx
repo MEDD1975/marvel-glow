@@ -94,7 +94,7 @@ export function PatientHomeContent() {
           Les conseils transmis, toujours à portée de main
         </h1>
         <p className="mt-4 max-w-prose text-pretty text-base leading-relaxed text-[#526176] md:text-lg">
-          Retrouvez quoi faire maintenant, ce qu’il faut surveiller et quand reprendre contact.
+          Retrouvez les gestes prioritaires, les signes qui nécessitent un avis et quand recontacter votre professionnel.
         </p>
       </section>
 
@@ -148,7 +148,7 @@ export function PatientHomeContent() {
               ? `${recommendationCount} recommandations de votre professionnel de santé`
               : "Aucune recommandation complémentaire n’est disponible pour le moment."
         }
-        details={guide.recommendations.slice(0, 2).map((recommendation) => recommendation.title)}
+        details={guide.recommendations.slice(0, 3).map((recommendation) => recommendation.title)}
       />
 
       <p className="rounded-2xl border border-[#DCE5F0] bg-[#F7FAFE] px-4 py-3 text-sm leading-relaxed text-[#526176]">

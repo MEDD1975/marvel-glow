@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { Search } from "lucide-react";
-import { useProfessionals } from "@/components/patient/PatientProvider";
+import { useDoctorResources, usePatient, useProfessionals } from "@/components/patient/PatientProvider";
 import { EmptyState, ErrorState, FreeChoiceNotice, ListGroup, ListRow, LoadingState, PageHeading } from "@/components/patient/PatientUi";
 
 export const Route = createFileRoute("/patient/professionnels/")({
@@ -13,12 +13,17 @@ function normalize(value: string) {
 }
 
 function ProfessionalsPage() {
+  const { guide } = usePatient();
+  const { data: resources = [] } = useDoctorResources();
   const { isLoading, isError, retry, fromCabinet, professionals } = useProfessionals();
+  const orientation = resources.find((resource) => resource.kind === "orientation" && resource.conditionId === guide?.id);
+  const recommendedSpecialty = orientation?.title.replace(/^À voir ensuite\s*:\s*/i, "").trim();
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<string>("Tous");
 
   const categories = useMemo(() => ["Tous", ...Array.from(new Set(professionals.map((item) => item.category))).sort((a, b) => a.localeCompare(b, "fr"))], [professionals]);
   const filtered = professionals.filter((item) => {
+    if (recommendedSpecialty && !normalize(`${item.specialty} ${item.category}`).includes(normalize(recommendedSpecialty))) return false;
     if (category !== "Tous" && item.category !== category) return false;
     if (!query.trim()) return true;
     return normalize(`${item.name} ${item.specialty} ${item.address ?? ""}`).includes(normalize(query.trim()));
@@ -28,7 +33,7 @@ function ProfessionalsPage() {
     <div>
       <PageHeading
         title="Qui contacter ?"
-        description="Retrouvez les coordonnées et contacts communiqués pour ce parcours."
+        description={recommendedSpecialty ? `Professionnels du réseau recommandés : ${recommendedSpecialty}.` : "Retrouvez les coordonnées et contacts communiqués pour ce parcours."}
       />
       <label className="relative block">
         <span className="sr-only">Rechercher un professionnel</span>
@@ -79,7 +84,10 @@ function ProfessionalsPage() {
             ))}
           </ListGroup>
         ) : (
-          <EmptyState title="Aucun professionnel trouvé" description="Modifiez votre recherche ou le filtre." />
+          <EmptyState
+            title={recommendedSpecialty ? `Aucun ${recommendedSpecialty} trouvé dans le réseau` : "Aucun professionnel trouvé"}
+            description={recommendedSpecialty ? "Votre professionnel de santé peut vous orienter vers une autre structure si nécessaire." : "Modifiez votre recherche ou le filtre."}
+          />
         )}
       </div>
       <FreeChoiceNotice />

@@ -56,9 +56,14 @@ export function KivoirHeader() {
   return (
     <header className="sticky top-0 z-30 border-b border-border/60 bg-background/90 pt-[env(safe-area-inset-top)] backdrop-blur supports-[backdrop-filter]:bg-background/75">
       <div className="mx-auto flex h-12 max-w-3xl items-center justify-between gap-4 pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))] md:h-14">
-        <Link to="/patient" search={linkSearch} aria-label="Kivoir, retour à l'accueil" className="rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
-          <Logo size="sm" />
-        </Link>
+        <div className="flex min-w-0 items-center gap-3">
+          <Link to="/patient" search={linkSearch} aria-label="Kivoir, retour à l'accueil" className="shrink-0 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+            <Logo size="sm" />
+          </Link>
+          <p className="flex min-w-0 items-center gap-1.5 text-[10px] font-semibold tracking-wide text-[#526176] sm:gap-2 sm:text-xs" aria-label="Les repères Kivoir">
+            <span>Quoi faire</span><span className="text-[#B6C4D5]" aria-hidden="true">·</span><span>Quand</span><span className="text-[#B6C4D5]" aria-hidden="true">·</span><span>Qui voir</span>
+          </p>
+        </div>
         <nav aria-label="Navigation principale" className="hidden md:block">
           <ul className="flex items-center gap-1">
             {desktopLinks.map((link) => {

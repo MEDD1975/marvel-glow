@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { Check, Search, UsersRound } from "lucide-react";
 import { useDoctorResources, usePatient, useProfessionals } from "@/components/patient/PatientProvider";
@@ -37,6 +37,7 @@ function ProfessionalsPage() {
         description={recommendedSpecialty ? "Les professionnels recommandés pour la suite de votre parcours." : "Retrouvez les coordonnées communiquées pour ce parcours."}
       />
       {recommendedSpecialty ? (
+        <>
         <section className="mb-5 overflow-hidden rounded-3xl border border-[#C9DCF3] bg-gradient-to-br from-[#EDF5FF] via-white to-[#F2FBF7] shadow-[0_10px_30px_rgba(31,78,121,0.07)]">
           <div className="flex items-start gap-3 border-b border-[#D9E7F6] px-5 py-4">
             <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[#DCEBFF] text-[#1769CF]" aria-hidden="true"><Check className="h-5 w-5" /></span>
@@ -47,18 +48,14 @@ function ProfessionalsPage() {
           </div>
           <div className="px-5 py-4">
             <p className="text-sm leading-6 text-[#526176]">{orientation?.description ?? `Les ${recommendedSpecialty.toLowerCase()} du réseau sont affichés en priorité.`}</p>
-            {filtered[0] ? (
-              <Link to="/patient/professionnels/$proId" params={{ proId: filtered[0].id }} className="mt-4 flex items-center gap-3 rounded-2xl border border-[#D9E7F6] bg-white px-3 py-3 shadow-sm transition-shadow hover:shadow-md">
-                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#E6F5EF] text-base font-bold text-[#277A5D]" aria-hidden="true">{filtered[0].name.replace(/^(dr\.?|docteur)\s+/i, "").charAt(0).toUpperCase()}</span>
-                <span className="min-w-0 flex-1"><strong className="block truncate text-base text-[#101C33]">{filtered[0].name}</strong><span className="block text-sm text-[#526176]">{filtered[0].specialty}</span></span>
-                <span className="text-xl text-[#718096]" aria-hidden="true">›</span>
-              </Link>
-            ) : null}
-            <button type="button" onClick={() => setShowFullNetwork((current) => !current)} className="mt-3 inline-flex min-h-10 items-center rounded-full border border-[#1769CF] px-4 text-sm font-semibold text-[#1769CF] transition-colors hover:bg-[#1769CF] hover:text-white">
-              {showFullNetwork ? "Voir les recommandations" : "Voir tout le réseau"}
-            </button>
           </div>
         </section>
+        <div className="mb-5 flex justify-center">
+          <button type="button" onClick={() => setShowFullNetwork((current) => !current)} className="inline-flex min-h-11 items-center rounded-full border border-[#1769CF] bg-white px-5 text-sm font-semibold text-[#1769CF] shadow-sm transition-colors hover:bg-[#1769CF] hover:text-white">
+            {showFullNetwork ? "Voir les recommandations" : "Voir tout le réseau"}
+          </button>
+        </div>
+        </>
       ) : null}
       <div className="mb-3 flex items-center justify-between gap-3">
         <div className="flex items-center gap-2 text-sm font-semibold text-[#101C33]"><UsersRound className="h-4 w-4 text-[#1769CF]" aria-hidden="true" />{showFullNetwork ? "Tout le réseau" : recommendedSpecialty ? `Réseau ${recommendedSpecialty.toLowerCase()}` : "Professionnels du parcours"}</div>

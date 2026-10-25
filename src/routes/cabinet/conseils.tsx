@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { type FormEvent, useMemo, useState } from "react";
+import { type FormEvent, useEffect, useMemo, useState } from "react";
 import { Check, ChevronDown, GripVertical, Pencil, Plus, X } from "lucide-react";
 import { DoctorHeader, DoctorPage } from "@/components/doctor/DoctorLayout";
 import { conditions } from "@/lib/conditions";
@@ -25,6 +25,17 @@ function AdviceReviewPage() {
   const resources = useDoctorResources();
   const cache = useDoctorCache();
   const selectedCondition = conditions.find((condition) => condition.id === selectedPathwayId) ?? conditions[0];
+  const savedReferral = resources.data?.find((resource) => resource.conditionId === selectedCondition?.id && resource.kind === "orientation");
+
+  useEffect(() => {
+    if (!selectedCondition || !savedReferral) return;
+    const match = savedReferral.title.match(/^À voir ensuite\s*:\s*(.+)$/);
+    if (!match?.[1]) return;
+    const professional = match[1];
+    setRecommendedProfessional((current) => current[selectedCondition.id] === professional ? current : { ...current, [selectedCondition.id]: professional });
+    setIsReferralSaved((current) => current[selectedCondition.id] ? current : { ...current, [selectedCondition.id]: true });
+  }, [savedReferral, selectedCondition]);
+
   if (!selectedCondition) return null;
 
   const advice = useMemo(

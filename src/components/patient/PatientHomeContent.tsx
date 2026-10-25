@@ -5,7 +5,6 @@ import {
   CheckCircle2,
   ChevronRight,
   ShieldCheck,
-  UsersRound,
   type LucideIcon,
 } from "lucide-react";
 import { useDoctorResources, usePatient } from "@/components/patient/PatientProvider";
@@ -80,13 +79,11 @@ function HomeLinkCard({
 
 export function PatientHomeContent() {
   const { ready, guide, hasContext, cabinetName, doctorLabel } = usePatient();
-  const doctorResources = useDoctorResources();
   if (!ready) return <LoadingState />;
 
   const recommendationCount = guide?.recommendations.length ?? 0;
   const conditionZone = guide ? conditions.find((condition) => condition.id === guide.id)?.zone : undefined;
   const anatomyVisual = conditionZone ? zoneVisuals[conditionZone] : null;
-  const savedReferral = guide ? doctorResources.data?.find((resource) => resource.conditionId === guide.id && resource.kind === "orientation") : undefined;
 
   return (
     <div className="flex flex-col gap-4">
@@ -169,16 +166,6 @@ export function PatientHomeContent() {
                 : "Aucun conseil complémentaire n’est disponible pour le moment."
         }
         details={guide.recommendations.slice(0, 3).map((recommendation) => recommendation.title)}
-      />
-
-      <HomeLinkCard
-        to="/patient/ressources"
-        icon={UsersRound}
-        tone="orange"
-        title="À voir ensuite"
-        intro={savedReferral?.title ?? "Votre professionnel vous indique la prochaine étape de votre prise en charge."}
-        {...(savedReferral ? { details: [savedReferral.description ?? "Orientation proposée par votre professionnel de santé."] } : {})}
-        ariaLabel="Voir la prochaine étape de prise en charge"
       />
 
       <p className="rounded-2xl border border-[#DCE5F0] bg-[#F7FAFE] px-4 py-3 text-sm leading-relaxed text-[#526176]">

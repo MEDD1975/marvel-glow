@@ -166,6 +166,8 @@ export function useFollowUpSteps() {
 }
 
 const categoryBySpecialty: Record<string, string> = {
+  Kinésithérapeute: "Kinésithérapie",
+  Kinésithérapie: "Kinésithérapie",
   Radiologue: "Imagerie médicale",
   "Imagerie médicale": "Imagerie médicale",
   "Chirurgien orthopédiste": "Chirurgie orthopédique",

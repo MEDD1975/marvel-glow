@@ -10,10 +10,9 @@ const menuGroups: Array<{ label: string; items: Array<{ to: string; hash?: strin
     label: "Mon espace",
     items: [
       { to: "/patient", label: "Accueil" },
-      { to: "/conseils", label: "Conseils et contenus" },
-      { to: "/patient/surveiller", label: "Points à surveiller" },
       { to: "/patient/ressources", label: "Conseils et contenus" },
-      { to: "/annuaire", label: "Qui contacter ?" },
+      { to: "/patient/surveiller", label: "Points à surveiller" },
+      { to: "/patient/professionnels", label: "Qui contacter ?" },
     ],
   },
   {
@@ -38,7 +37,7 @@ const isPros = (path: string) => path.startsWith("/annuaire") || path.startsWith
 const tabs = [
   { to: "/patient", label: "Accueil", icon: Home, match: isHome },
   { to: "/patient/ressources", label: "Conseils et contenus", icon: BookOpen, match: isAdvice },
-  { to: "/annuaire", label: "Qui contacter ?", icon: Users, match: isPros },
+  { to: "/patient/professionnels", label: "Qui contacter ?", icon: Users, match: isPros },
 ];
 
 const desktopLinks = [

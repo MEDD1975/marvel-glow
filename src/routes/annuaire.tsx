@@ -157,7 +157,7 @@ export const Route = createFileRoute("/annuaire")({
 function AnnuaireRoute() {
   const search = Route.useSearch();
   return (
-    <PatientShell search={search as Record<string, unknown>}>
+    <PatientShell search={search as Record<string, unknown>} allowPublic>
       <AnnuairePage />
     </PatientShell>
   );
@@ -179,13 +179,14 @@ function directionsUrl(provider: Provider) {
 }
 
 function BackToHome() {
+  const { hasContext } = usePatient();
   return (
     <Link
-      to="/patient"
+      to={hasContext ? "/patient" : "/"}
       className="-ml-2 mb-2 inline-flex min-h-11 items-center gap-1.5 rounded-lg px-2 text-sm font-medium text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
     >
       <ArrowLeft className="h-4 w-4" aria-hidden="true" />
-      Retour à mon espace patient
+      {hasContext ? "Retour à mon espace patient" : "Retour à l'accueil"}
     </Link>
   );
 }
@@ -201,6 +202,24 @@ function AnnuairePage() {
   if (!ready || (hasSource && cabinets === null)) return <LoadingState />;
 
   if (!selected || !selected.providers.length) {
+    if (!hasSource) {
+      return (
+        <div className="flex flex-col gap-6">
+          <div>
+            <BackToHome />
+            <h1 className="text-balance text-[1.625rem] font-semibold leading-tight tracking-tight text-foreground md:text-3xl">
+              Trouver un professionnel de santé
+            </h1>
+            <p className="mt-2 text-pretty text-base leading-relaxed text-muted-foreground">
+              Recherchez le cabinet de votre médecin pour retrouver les professionnels qu&apos;il
+              recommande autour de Saint-Maur-des-Fossés.
+            </p>
+          </div>
+          <CabinetSearch profession={profession} doctor={doctor} />
+          <p className="rounded-xl bg-muted px-4 py-3 text-xs leading-relaxed text-muted-foreground">{DISCLAIMER}</p>
+        </div>
+      );
+    }
     return (
       <div className="flex flex-col gap-6">
         <div>

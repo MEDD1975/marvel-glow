@@ -20,6 +20,7 @@ function AdviceReviewPage() {
   const [editedAdvice, setEditedAdvice] = useState<Record<string, Record<string, { title: string; summary: string }>>>({});
   const [editingAdvice, setEditingAdvice] = useState<{ originalTitle: string; title: string; summary: string } | null>(null);
   const [recommendedProfessional, setRecommendedProfessional] = useState<Record<string, string>>({});
+  const [isReferralSaved, setIsReferralSaved] = useState<Record<string, boolean>>({});
   const selectedCondition = conditions.find((condition) => condition.id === selectedPathwayId) ?? conditions[0];
   if (!selectedCondition) return null;
 
@@ -94,7 +95,7 @@ function AdviceReviewPage() {
           <div className="mt-4 rounded-2xl border border-[#C9DCF3] bg-[#F5F9FF] p-4">
             <label className="block text-sm font-semibold text-foreground" htmlFor="recommended-professional">Qui consulter ensuite ?</label>
             <p className="mt-1 text-sm leading-6 text-muted-foreground">Choisissez le professionnel à voir pour ce parcours. Cette indication sera affichée au patient avec vos conseils.</p>
-            <select id="recommended-professional" value={recommendedProfessional[selectedCondition.id] ?? ""} onChange={(event) => setRecommendedProfessional((current) => ({ ...current, [selectedCondition.id]: event.target.value }))} className="mt-3 min-h-11 w-full rounded-xl border border-border bg-white px-3 text-sm text-foreground outline-none focus:border-care focus:ring-2 focus:ring-care/20">
+            <select id="recommended-professional" value={recommendedProfessional[selectedCondition.id] ?? ""} onChange={(event) => { setRecommendedProfessional((current) => ({ ...current, [selectedCondition.id]: event.target.value })); setIsReferralSaved((current) => ({ ...current, [selectedCondition.id]: false })); }} className="mt-3 min-h-11 w-full rounded-xl border border-border bg-white px-3 text-sm text-foreground outline-none focus:border-care focus:ring-2 focus:ring-care/20">
               <option value="">Aucune orientation renseignée</option>
               <option value="Médecin généraliste">Médecin généraliste</option>
               <option value="Kinésithérapeute">Kinésithérapeute</option>
@@ -139,6 +140,7 @@ function AdviceReviewPage() {
           </div>
           {recommendedProfessional[selectedCondition.id] ? <div className="mt-4 rounded-xl border border-[#C9DCF3] bg-white p-3 text-sm leading-5 text-foreground"><p className="text-xs font-semibold uppercase tracking-wide text-care">Orientation transmise</p><p className="mt-1">À voir ensuite : <strong>{recommendedProfessional[selectedCondition.id]}</strong></p><p className="mt-1 text-xs text-muted-foreground">Le patient reste libre de choisir son professionnel. Cette orientation ne remplace pas votre évaluation clinique.</p></div> : null}
           <div className="mt-4 flex items-start gap-2 rounded-xl bg-white/70 p-3 text-xs leading-5 text-muted-foreground"><Check className="mt-0.5 h-4 w-4 shrink-0 text-care" aria-hidden="true" />Vous gardez la main : ces conseils seront transmis uniquement après votre partage du parcours.</div>
+          {isReferralSaved[selectedCondition.id] ? <p className="mt-3 text-sm font-medium text-care" role="status">Orientation enregistrée pour l’aperçu de ce parcours.</p> : null}
         </aside>
       </div>
 
@@ -168,7 +170,7 @@ function AdviceReviewPage() {
         </div>
       ) : null}
 
-      <div className="mt-6 flex flex-col gap-3 rounded-2xl border border-border bg-card p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5"><div><p className="font-semibold text-foreground">Prêt à transmettre ce parcours ?</p><p className="mt-1 text-sm text-muted-foreground">Vous pourrez toujours modifier ou masquer un conseil plus tard.</p></div><button type="button" className="flex min-h-11 items-center justify-center gap-2 rounded-xl bg-care px-4 text-sm font-semibold text-care-foreground">Enregistrer et continuer<ChevronDown className="h-4 w-4 -rotate-90" aria-hidden="true" /></button></div>
+      <div className="mt-6 flex flex-col gap-3 rounded-2xl border border-border bg-card p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5"><div><p className="font-semibold text-foreground">Prêt à transmettre ce parcours ?</p><p className="mt-1 text-sm text-muted-foreground">Vous pourrez toujours modifier ou masquer un conseil plus tard.</p></div><button type="button" onClick={() => setIsReferralSaved((current) => ({ ...current, [selectedCondition.id]: true }))} className="flex min-h-11 items-center justify-center gap-2 rounded-xl bg-care px-4 text-sm font-semibold text-care-foreground">Enregistrer et continuer<ChevronDown className="h-4 w-4 -rotate-90" aria-hidden="true" /></button></div>
     </DoctorPage>
   );
 }

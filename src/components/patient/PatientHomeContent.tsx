@@ -7,7 +7,7 @@ import {
   ShieldCheck,
   type LucideIcon,
 } from "lucide-react";
-import { usePatient } from "@/components/patient/PatientProvider";
+import { useDoctorResources, usePatient } from "@/components/patient/PatientProvider";
 import { LoadingState, NoPathwayState, SafetyNotice } from "@/components/patient/PatientUi";
 import { conditions } from "@/lib/conditions";
 import { zoneVisuals } from "@/lib/zone-visuals";
@@ -80,12 +80,14 @@ function HomeLinkCard({
 
 export function PatientHomeContent() {
   const { ready, guide, hasContext, cabinetName, doctorLabel } = usePatient();
+  const doctorResources = useDoctorResources();
   if (!ready) return <LoadingState />;
 
   const recommendationCount = guide?.recommendations.length ?? 0;
   const conditionZone = guide ? conditions.find((condition) => condition.id === guide.id)?.zone : undefined;
   const anatomyVisual = conditionZone ? zoneVisuals[conditionZone] : null;
   const nextActor = guide ? pathways[guide.id]?.actors[1] : undefined;
+  const savedReferral = guide ? doctorResources.data?.find((resource) => resource.conditionId === guide.id && resource.kind === "orientation") : undefined;
 
   return (
     <div className="flex flex-col gap-4">
@@ -154,8 +156,8 @@ export function PatientHomeContent() {
         icon={ShieldCheck}
         tone="orange"
         title="Qui consulter ensuite ?"
-        intro="Votre professionnel vous propose de vérifier l’étape suivante de votre prise en charge."
-        {...(nextActor ? { details: [`${nextActor.role} — ${nextActor.trigger}`] } : {})}
+        intro={savedReferral?.title ?? "Votre professionnel vous propose de vérifier l’étape suivante de votre prise en charge."}
+        {...(savedReferral ? { details: [savedReferral.description ?? "Orientation proposée par votre professionnel de santé."] } : nextActor ? { details: [`${nextActor.role} — ${nextActor.trigger}`] } : {})}
         ariaLabel="Voir qui consulter ensuite"
       />
 

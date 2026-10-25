@@ -6,6 +6,7 @@ import { conditionResources, generalLinks, type ResourceLink } from "@/lib/condi
  * Contenus éditoriaux du parcours patient.
  * Tant qu'un contenu n'a pas de date de validation, l'interface le signale comme
  * « en attente de validation » au lieu d'afficher une validation inexistante.
+ * Aucun contenu non daté ne doit être présenté comme une recommandation validée.
  */
 export type Editorial = {
   source: string | undefined;

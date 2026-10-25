@@ -142,11 +142,17 @@ export function PatientHomeContent() {
         tone="green"
         title="À faire maintenant"
         intro={
-          recommendationCount === 1
-            ? "La recommandation de votre professionnel de santé"
-            : recommendationCount > 1
-              ? `${recommendationCount} recommandations de votre professionnel de santé`
-              : "Aucune recommandation complémentaire n’est disponible pour le moment."
+          guide.recommendations.some((recommendation) => recommendation.validatedAt)
+            ? recommendationCount === 1
+              ? "La recommandation de votre professionnel de santé"
+              : recommendationCount > 1
+                ? `${recommendationCount} recommandations de votre professionnel de santé`
+                : "Aucune recommandation complémentaire n’est disponible pour le moment."
+            : recommendationCount === 1
+              ? "1 conseil général à confirmer avec votre professionnel"
+              : recommendationCount > 1
+                ? `${recommendationCount} conseils généraux à confirmer avec votre professionnel`
+                : "Aucun conseil complémentaire n’est disponible pour le moment."
         }
         details={guide.recommendations.slice(0, 3).map((recommendation) => recommendation.title)}
       />

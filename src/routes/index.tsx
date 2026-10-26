@@ -23,18 +23,5 @@ export const Route = createFileRoute("/")({
 function HomePage() {
   const search = Route.useSearch();
 
-  if (search.started || search.pathway || search.doctorName) {
-    return <PatientLanding search={search} />;
-  }
-
-  return (
-    <main className="flex min-h-dvh items-center justify-center bg-[#F7FAFE] px-6 text-center">
-      <section className="max-w-md">
-        <h1 className="text-2xl font-bold tracking-tight text-[#101C33]">Accès par QR code</h1>
-        <p className="mt-3 text-base leading-relaxed text-[#526176]">
-          Kivoir est accessible uniquement depuis le QR code remis par votre professionnel de santé.
-        </p>
-      </section>
-    </main>
-  );
+  return <PatientLanding search={search} />;
 }

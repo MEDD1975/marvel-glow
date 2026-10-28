@@ -30,12 +30,17 @@ function ProfessionalsPage() {
   const recommendedSpecialty = orientation?.title.replace(/^À voir ensuite\s*:\s*/i, "").trim();
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<string>("Tous");
+  const [showFullNetwork, setShowFullNetwork] = useState(false);
   const categories = useMemo(() => ["Tous", ...Array.from(new Set(professionals.map((item) => item.category))).sort((a, b) => a.localeCompare(b, "fr"))], [professionals]);
   const filtered = professionals.filter((item) => {
-    if (recommendedSpecialty && !normalize(`${item.specialty} ${item.category}`).includes(normalize(recommendedSpecialty))) return false;
+    if (recommendedSpecialty && !showFullNetwork && !normalize(`${item.specialty} ${item.category}`).includes(normalize(recommendedSpecialty))) return false;
     if (category !== "Tous" && item.category !== category) return false;
     if (!query.trim()) return true;
     return normalize(`${item.name} ${item.specialty} ${item.address ?? ""}`).includes(normalize(query.trim()));
+  });
+  const visibleProfessionals = [...filtered].sort((a, b) => {
+    if (!recommendedSpecialty) return 0;
+    return Number(normalize(`${b.specialty} ${b.category}`).includes(normalize(recommendedSpecialty))) - Number(normalize(`${a.specialty} ${a.category}`).includes(normalize(recommendedSpecialty)));
   });
 
   return (
@@ -54,18 +59,23 @@ function ProfessionalsPage() {
               <h2 className="mt-1 text-xl font-bold tracking-tight text-[#101C33]">Consulter un {recommendedSpecialty.toLowerCase()}</h2>
             </div>
           </div>
-          <div className="px-5 py-4">
-            <p className="text-sm leading-6 text-[#526176]">Votre professionnel de santé vous recommande cette spécialité. Vous trouverez ci-dessous le professionnel correspondant dans le réseau qu’il a partagé.</p>
+          <div className="px-5 py-3">
+            <p className="text-sm leading-5 text-[#526176]">Votre professionnel vous recommande cette spécialité.</p>
           </div>
         </section>
+        <div className="mb-5 flex items-center justify-between gap-3">
+          <p className="text-sm text-[#526176]">Le professionnel recommandé est affiché en premier.</p>
+          <button type="button" onClick={() => setShowFullNetwork((current) => !current)} className="shrink-0 rounded-full border border-[#1769CF] bg-white px-4 py-2 text-xs font-semibold text-[#1769CF] transition-colors hover:bg-[#1769CF] hover:text-white">
+            {showFullNetwork ? "Voir la recommandation" : "Voir tout le réseau"}
+          </button>
+        </div>
         </>
       ) : null}
       <div className="mb-3 flex items-center justify-between gap-3">
         <div>
           <div className="flex items-center gap-2 text-sm font-semibold text-[#101C33]"><UsersRound className="h-4 w-4 text-[#1769CF]" aria-hidden="true" />{recommendedSpecialty ? `Réseau partagé par votre professionnel` : "Professionnels du parcours"}</div>
-          {recommendedSpecialty ? <p className="mt-1 text-xs text-[#718096]">Le {recommendedSpecialty.toLowerCase()} recommandé est affiché en premier.</p> : null}
         </div>
-        {!isLoading ? <span className="text-xs text-[#718096]">{filtered.length} résultat{filtered.length > 1 ? "s" : ""}</span> : null}
+        {!isLoading ? <span className="text-xs text-[#718096]">{visibleProfessionals.length} résultat{visibleProfessionals.length > 1 ? "s" : ""}</span> : null}
       </div>
       <label className="relative block">
         <span className="sr-only">Rechercher un professionnel</span>
@@ -97,9 +107,9 @@ function ProfessionalsPage() {
         ) : null}
         {isLoading ? (
           <LoadingState label="Chargement des professionnels…" />
-        ) : filtered.length ? (
+        ) : visibleProfessionals.length ? (
           <ListGroup label="Professionnels">
-            {filtered.map((item) => {
+            {visibleProfessionals.map((item) => {
               const badge = specialtyBadge(item.specialty, item.category);
               return (
               <li key={item.id}>

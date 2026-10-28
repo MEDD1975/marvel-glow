@@ -19,6 +19,8 @@ function specialtyBadge(specialty: string, category: string) {
   if (value.includes("osteo")) return { label: "O", className: "bg-[#F2EAFE] text-[#7851A9]" };
   if (value.includes("sport")) return { label: "MS", className: "bg-[#FFF0D8] text-[#A66B16]" };
   if (value.includes("rhum")) return { label: "R", className: "bg-[#FDE8E8] text-[#B55454]" };
+  if (value.includes("radiolog")) return { label: "RG", className: "bg-[#E8E6FB] text-[#6256A8]" };
+  if (value.includes("podolog")) return { label: "P", className: "bg-[#FBE7F0] text-[#AA5275]" };
   return { label: specialty.trim().charAt(0).toUpperCase(), className: "bg-[#EEF2F7] text-[#526176]" };
 }
 

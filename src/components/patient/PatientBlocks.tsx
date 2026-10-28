@@ -90,6 +90,8 @@ function resourceFormat(resource: DoctorResourceRecord) {
   if (type.startsWith("image/")) return { label: "Image", icon: ImageIcon };
   if (type === "application/pdf" || resource.filename?.toLowerCase().endsWith(".pdf"))
     return { label: "PDF", icon: FileText };
+  if (resource.kind === "sheet" || resource.kind === "document")
+    return { label: "Document", icon: FileText };
   if ((!type || type === "video/*" || resource.kind === "link") && resource.url)
     return { label: "Lien", icon: ExternalLink };
   return { label: "Document", icon: FileText };

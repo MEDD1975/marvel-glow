@@ -13,7 +13,7 @@ export const resourceKindLabels: Record<ResourceKind, string> = {
   exercise: "Ancien exercice · non publié",
 };
 
-export const selectableResourceKinds: ResourceKind[] = ["video", "document", "sheet", "link"];
+export const selectableResourceKinds: ResourceKind[] = ["video", "document", "link"];
 
 export function resourceKind(resource: Pick<DoctorResourceRecord, "kind" | "contentType" | "filename">): ResourceKind {
   if (resource.kind === "document" || resource.kind === "sheet" || resource.kind === "video" || resource.kind === "exercise" || resource.kind === "link") return resource.kind;

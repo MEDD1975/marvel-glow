@@ -12,6 +12,16 @@ function normalize(value: string) {
   return value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 }
 
+function specialtyBadge(specialty: string, category: string) {
+  const value = normalize(`${specialty} ${category}`);
+  if (value.includes("kines")) return { label: "K", className: "bg-[#E3F4ED] text-[#277A5D]" };
+  if (value.includes("general")) return { label: "MG", className: "bg-[#E5EEFF] text-[#2868B8]" };
+  if (value.includes("osteo")) return { label: "O", className: "bg-[#F2EAFE] text-[#7851A9]" };
+  if (value.includes("sport")) return { label: "MS", className: "bg-[#FFF0D8] text-[#A66B16]" };
+  if (value.includes("rhum")) return { label: "R", className: "bg-[#FDE8E8] text-[#B55454]" };
+  return { label: specialty.trim().charAt(0).toUpperCase(), className: "bg-[#EEF2F7] text-[#526176]" };
+}
+
 function ProfessionalsPage() {
   const { guide } = usePatient();
   const { data: resources = [] } = useDoctorResources();
@@ -89,7 +99,9 @@ function ProfessionalsPage() {
           <LoadingState label="Chargement des professionnels…" />
         ) : filtered.length ? (
           <ListGroup label="Professionnels">
-            {filtered.map((item) => (
+            {filtered.map((item) => {
+              const badge = specialtyBadge(item.specialty, item.category);
+              return (
               <li key={item.id}>
                 <ListRow
                   to="/patient/professionnels/$proId"
@@ -97,13 +109,14 @@ function ProfessionalsPage() {
                   title={item.name}
                   description={item.specialty}
                   leading={
-                    <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#E6F5EF] text-base font-bold text-[#277A5D]" aria-hidden="true">
-                      {item.name.replace(/^(dr\.?|docteur)\s+/i, "").charAt(0).toUpperCase()}
+                    <span className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl text-sm font-bold tracking-wide ${badge.className}`} aria-hidden="true">
+                      {badge.label}
                     </span>
                   }
                 />
               </li>
-            ))}
+              );
+            })}
           </ListGroup>
         ) : (
           <EmptyState

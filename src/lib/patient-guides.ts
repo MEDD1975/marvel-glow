@@ -153,7 +153,7 @@ const entorseWarnings: string[] = [
 const careSteps: CareStep[] = [
   { id: "consultation", title: "Consultation initiale", description: "Votre professionnel a évalué votre situation et vous a remis ce parcours.", status: "Réalisée" },
   { id: "recuperation", title: "Phase de récupération", description: "Suivez les recommandations et les consignes de votre professionnel de santé." },
-  { id: "suivi", title: "Suivi professionnel", description: "À adapter selon votre évolution et les recommandations reçues." },
+  { id: "suivi", title: "Suivi professionnel", description: "Si vos symptômes évoluent, si la douleur persiste ou si vous avez un doute, recontactez votre professionnel de santé pour faire le point." },
   { id: "reprise", title: "Reprise des activités", description: "Progressive et selon les consignes de votre professionnel de santé." },
 ];
 

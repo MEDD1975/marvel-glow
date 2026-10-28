@@ -7,7 +7,10 @@
       { "nom": "Dr. Claire Bernard", "specialite": "Rhumatologue", "adresse": "10 Rue des Lilas, 94100 Saint-Maur", "telephone": "01 00 00 00 05" },
       { "nom": "Julie Robert", "specialite": "Ostéopathe", "adresse": "10 Rue des Lilas, 94100 Saint-Maur", "telephone": "01 00 00 00 06" },
       { "nom": "Nina Petit", "specialite": "Podologue", "adresse": "10 Rue des Lilas, 94100 Saint-Maur", "telephone": "01 00 00 00 07" },
-      { "nom": "Dr. Antoine Leroy", "specialite": "Chirurgien orthopédiste", "adresse": "10 Rue des Lilas, 94100 Saint-Maur", "telephone": "01 00 00 00 08" }
+      { "nom": "Dr. Antoine Leroy", "specialite": "Chirurgien orthopédiste", "adresse": "10 Rue des Lilas, 94100 Saint-Maur", "telephone": "01 00 00 00 08" },
+      { "nom": "Centre d’Imagerie Médicale Saint-Maur", "specialite": "Radiologue", "adresse": "18 Avenue du Mesnil, 94100 Saint-Maur", "telephone": "01 00 00 00 13" },
+      { "nom": "Radiologie Saint-Maur Gare", "specialite": "Radiologue", "adresse": "7 Avenue du Général Leclerc, 94100 Saint-Maur", "telephone": "01 00 00 00 14" },
+      { "nom": "Centre de Radiologie La Varenne", "specialite": "Radiologue", "adresse": "42 Avenue de la République, 94100 Saint-Maur", "telephone": "01 00 00 00 15" }
     ]
   },
   "dr_b": {

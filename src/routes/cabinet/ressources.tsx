@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { ExternalLink, Eye, EyeOff, Pencil, Plus, Search, Trash2 } from "lucide-react";
+import { ExternalLink, Eye, EyeOff, Pencil, Play, Plus, Search, Trash2 } from "lucide-react";
 import { conditions } from "@/lib/conditions";
 import { findCondition, formatDate, resourceKind, resourceKindLabels, selectableResourceKinds, type ResourceKind } from "@/lib/doctor-pathway-info";
 import type { DoctorResourceRecord } from "@/lib/doctor-resource-db";
@@ -16,6 +16,11 @@ export const Route = createFileRoute("/cabinet/ressources")({
 });
 
 const select = "min-h-11 rounded-xl border border-input bg-background px-3 text-sm outline-none focus:ring-2 focus:ring-ring";
+
+function videoThumbnail(url: string) {
+  const youtubeMatch = url.match(/(?:youtu\.be\/|youtube(?:-nocookie)?\.com\/(?:watch\?v=|embed\/))([\w-]{11})/i);
+  return youtubeMatch ? `https://img.youtube.com/vi/${youtubeMatch[1]}/hqdefault.jpg` : null;
+}
 
 function ResourcesPage() {
   const resources = useDoctorResources();
@@ -115,8 +120,16 @@ function ResourcesPage() {
           <ul className="flex flex-col gap-2">
             {filtered.map((item) => {
               const hidden = item.status === "hidden";
+              const isVideo = resourceKind(item) === "video" || item.contentType?.startsWith("video/");
+              const thumbnail = isVideo ? videoThumbnail(item.url) : null;
               return (
                 <li key={item.id} className="flex flex-col gap-3 rounded-2xl border border-border bg-card p-4 shadow-sm md:flex-row md:items-center">
+                  {isVideo ? (
+                    <div className="relative aspect-video w-full shrink-0 overflow-hidden rounded-xl bg-gradient-to-br from-[#DCEBFF] via-[#E8F7F0] to-[#F8EFD9] md:w-36" aria-label="Aperçu de la vidéo">
+                      {thumbnail ? <img src={thumbnail} alt="" className="h-full w-full object-cover" /> : null}
+                      <span className="absolute inset-0 flex items-center justify-center bg-[#101C33]/15"><span className="flex h-10 w-10 items-center justify-center rounded-full bg-white/95 text-[#1769CF] shadow-sm"><Play className="ml-0.5 h-5 w-5 fill-current" aria-hidden="true" /></span></span>
+                    </div>
+                  ) : null}
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
                       <span className="rounded-full bg-care/10 px-2 py-0.5 text-xs font-medium text-care">{resourceKindLabels[resourceKind(item)]}</span>

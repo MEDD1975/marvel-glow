@@ -121,9 +121,9 @@ function EssentialGestures({ guide }: { guide: PathwayGuide }) {
     <section aria-labelledby="gestes-title" id="gestes" className="scroll-mt-20">
       <h2 id="gestes-title" className={sectionHeading}>{guide.recommendations.some((item) => item.validatedAt) ? "Les gestes recommandés par votre professionnel de santé" : "Les conseils proposés pour ce parcours"}</h2>
       {guide.recommendations.length ? (
-        <ul className="mt-4 divide-y divide-tone-green-border/20 overflow-hidden rounded-2xl border border-tone-green-border/25 bg-tone-green/50">
+        <ul className="mt-4 flex flex-col gap-2">
           {guide.recommendations.map((item) => (
-            <li key={item.id}>
+            <li key={item.id} className="overflow-hidden rounded-2xl border border-tone-green-border/35 bg-tone-green/50 shadow-[0_2px_8px_rgba(16,28,51,0.03)]">
               <Link
                 to="/conseils"
                 search={(prev: ConseilsSearch) => ({ ...prev, reco: item.id })}

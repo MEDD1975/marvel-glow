@@ -15,6 +15,19 @@ export const Route = createFileRoute("/cabinet/professionnels")({
 const field = "mt-1 min-h-11 w-full rounded-xl border border-input bg-background px-3 text-sm outline-none focus:ring-2 focus:ring-ring";
 const iconButton = "flex h-11 w-11 items-center justify-center rounded-xl border border-border hover:bg-muted";
 
+function specialtyBand(profession: string) {
+  const normalized = profession.toLocaleLowerCase("fr");
+  if (normalized.includes("kiné")) return "border-l-[#8BA9E8]";
+  if (normalized.includes("général")) return "border-l-[#8BC8AE]";
+  if (normalized.includes("rhumat")) return "border-l-[#B9A3D8]";
+  if (normalized.includes("podolog")) return "border-l-[#78BFC4]";
+  if (normalized.includes("ostéo")) return "border-l-[#E2B86B]";
+  if (normalized.includes("radiolog")) return "border-l-[#8FC6D9]";
+  if (normalized.includes("sport")) return "border-l-[#E49A86]";
+  if (normalized.includes("orthop")) return "border-l-[#D89BBA]";
+  return "border-l-[#AAB7C9]";
+}
+
 function ProfessionalsPage() {
   const network = useDoctorNetwork();
   const cache = useDoctorCache();
@@ -87,7 +100,7 @@ function ProfessionalsPage() {
               </li>
             ) : null}
             {filteredPractitioners.map((item) => (
-              <li key={item.id} className={`flex flex-col gap-3 rounded-2xl border bg-card p-4 shadow-sm ${item.hidden ? "border-dashed opacity-75" : "border-border"}`}>
+              <li key={item.id} className={`flex flex-col gap-3 rounded-2xl border border-l-4 bg-card p-4 shadow-sm transition-shadow hover:shadow-md ${item.hidden ? "border-dashed opacity-75" : "border-border"} ${specialtyBand(item.profession)}`}>
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
                     <p className="font-semibold text-foreground">{item.name}</p>

@@ -3,6 +3,7 @@ import {
   BookOpen,
   CheckCircle2,
   ChevronRight,
+  Eye,
   ShieldCheck,
   type LucideIcon,
 } from "lucide-react";
@@ -157,12 +158,12 @@ export function PatientHomeContent() {
       </p>
 
       <HomeLinkCard
-        to="/patient/professionnels"
-        icon={ShieldCheck}
+        to="/patient/surveiller"
+        icon={Eye}
         tone="orange"
-        title="Qui consulter ?"
-        intro="Retrouvez le professionnel recommandé et le réseau partagé par votre professionnel de santé."
-        ariaLabel="Voir qui consulter"
+        title="Voir les points à surveiller"
+        intro="Repérez les signes qui doivent vous amener à recontacter un professionnel de santé."
+        ariaLabel="Voir les points à surveiller"
       />
 
       </> : null}

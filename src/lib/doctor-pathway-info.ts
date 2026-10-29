@@ -16,7 +16,8 @@ export const resourceKindLabels: Record<ResourceKind, string> = {
 export const selectableResourceKinds: ResourceKind[] = ["video", "document", "link"];
 
 export function resourceKind(resource: Pick<DoctorResourceRecord, "kind" | "contentType" | "filename">): ResourceKind {
-  if (resource.kind === "document" || resource.kind === "sheet" || resource.kind === "video" || resource.kind === "exercise" || resource.kind === "link") return resource.kind;
+  if (resource.kind === "sheet") return "document";
+  if (resource.kind === "document" || resource.kind === "video" || resource.kind === "exercise" || resource.kind === "link") return resource.kind;
   const type = resource.contentType ?? "";
   if (type.startsWith("video/")) return "video";
   if (type === "application/pdf" || type.startsWith("image/") || resource.filename) return "document";

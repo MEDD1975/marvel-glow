@@ -24,7 +24,7 @@ function PatientShellContent({ allowPublic, children }: { allowPublic?: boolean;
     <div className="min-h-dvh bg-background">
       <KivoirHeader />
       <main
-        className={`mx-auto max-w-2xl pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))] pt-6 md:pb-16 md:pt-10 ${
+        className={`mx-auto max-w-2xl pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))] pt-6 md:max-w-5xl md:pb-16 md:pt-10 ${
           hasContext ? "pb-[calc(env(safe-area-inset-bottom)+6.5rem)]" : "pb-12"
         }`}
       >

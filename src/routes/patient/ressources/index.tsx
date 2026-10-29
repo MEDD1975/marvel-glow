@@ -78,13 +78,14 @@ function ResourcesPage() {
   }
 
   return (
-    <div className="flex flex-col gap-8">
-      <PatientPageHeader
+    <div className="flex flex-col gap-10">
+      <div className="rounded-3xl border border-[#E1EAF5] bg-gradient-to-br from-white via-white to-[#F3F7FD] p-5 shadow-[0_12px_32px_rgba(24,55,95,0.06)] md:p-8">
+        <PatientPageHeader
         title="Conseils et contenus"
         intro="Vidéos et documents sélectionnés pour votre parcours, et sources complémentaires."
         pathwayName={guide.name}
-      />
-
+        />
+      </div>
 
       {videos.length ? (
         <section aria-labelledby="videos-title">

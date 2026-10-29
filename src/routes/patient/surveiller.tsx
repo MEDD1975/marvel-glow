@@ -50,7 +50,7 @@ function WarningPage() {
           className="mt-4 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 font-semibold text-primary-foreground hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
         >
           <MessageCircle className="h-5 w-5" aria-hidden="true" />
-          Demander un avis
+          Demander l&apos;avis de mon professionnel de santé
         </button>
 
         {open ? (
@@ -59,7 +59,7 @@ function WarningPage() {
               <a href={cabinetHref} className="flex min-h-14 items-center gap-3 rounded-xl border border-border bg-card px-4 hover:bg-accent">
                 <Phone className="h-5 w-5 shrink-0 text-care" aria-hidden="true" />
                 <span>
-                  <span className="block font-semibold text-foreground">{contactCabinetLabel(cabinetName)}</span>
+                  <span className="block font-semibold text-foreground">Contacter mon professionnel de santé</span>
                   <span className="block text-sm text-muted-foreground">{formatPhone(cabinetPhone)}</span>
                 </span>
               </a>

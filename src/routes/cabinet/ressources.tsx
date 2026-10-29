@@ -37,12 +37,15 @@ function ResourcesPage() {
 
   const filtered = useMemo(() => {
     const needle = query.trim().toLowerCase();
-    return (resources.data ?? []).filter((item) =>
-      (kind === "all" || resourceKind(item) === kind) &&
-      (pathway === "all" || item.conditionId === pathway) &&
-      (status === "all" || item.status === status) &&
-      (!needle || item.title.toLowerCase().includes(needle)),
-    );
+    const priority: Record<string, number> = { video: 0, document: 1, link: 2 };
+    return (resources.data ?? [])
+      .filter((item) =>
+        (kind === "all" || resourceKind(item) === kind) &&
+        (pathway === "all" || item.conditionId === pathway) &&
+        (status === "all" || item.status === status) &&
+        (!needle || item.title.toLowerCase().includes(needle)),
+      )
+      .sort((a, b) => (priority[resourceKind(a)] ?? 3) - (priority[resourceKind(b)] ?? 3));
   }, [kind, pathway, query, resources.data, status]);
 
   const openForm = (resource: DoctorResourceRecord | null) => setEditing((current) => ({ open: true, resource, key: current.key + 1 }));

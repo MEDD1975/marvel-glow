@@ -81,7 +81,7 @@ function ResourcesPage() {
         actions={<button type="button" onClick={() => openForm(null)} className="flex min-h-11 items-center gap-2 rounded-xl bg-care px-4 text-sm font-semibold text-care-foreground"><Plus className="h-4 w-4" aria-hidden="true" />Ajouter une ressource</button>}
       />
 
-      <div className="mt-6 grid grid-cols-1 items-center gap-3 rounded-2xl border border-border bg-card p-3 shadow-sm sm:grid-cols-[minmax(220px,1fr)_repeat(3,minmax(240px,1fr))]">
+      <div className="mt-6 grid grid-cols-1 items-center gap-3 rounded-2xl border border-border bg-card p-3 shadow-sm sm:grid-cols-[minmax(180px,1fr)_repeat(3,minmax(280px,1fr))]">
         <label className="relative min-w-0">
           <span className="sr-only">Rechercher une ressource</span>
           <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />

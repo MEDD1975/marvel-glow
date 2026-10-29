@@ -86,6 +86,24 @@ function ResourcesPage() {
       />
 
 
+      {videos.length ? (
+        <section aria-labelledby="videos-title">
+          <h2 id="videos-title" className={groupTitle}>
+            Vidéos
+          </h2>
+          <div className="flex flex-col gap-4">
+            <VideoCautionNote />
+            <ul className="grid gap-4 md:grid-cols-2">
+              {videos.map((video) => (
+                <li key={video.key}>
+                  <VideoCard video={video} />
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+      ) : null}
+
       <section aria-labelledby="documents-title">
         <h2 id="documents-title" className={groupTitle}>
           Documents
@@ -106,24 +124,6 @@ function ResourcesPage() {
           </p>
         )}
       </section>
-
-      {videos.length ? (
-        <section aria-labelledby="videos-title">
-          <h2 id="videos-title" className={groupTitle}>
-            Vidéos
-          </h2>
-          <div className="flex flex-col gap-4">
-            <VideoCautionNote />
-            <ul className="grid gap-4 md:grid-cols-2">
-              {videos.map((video) => (
-                <li key={video.key}>
-                  <VideoCard video={video} />
-                </li>
-              ))}
-            </ul>
-          </div>
-        </section>
-      ) : null}
 
       <SourcesList links={guide.sources} />
 

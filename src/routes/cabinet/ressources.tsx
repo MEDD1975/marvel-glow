@@ -81,26 +81,26 @@ function ResourcesPage() {
         actions={<button type="button" onClick={() => openForm(null)} className="flex min-h-11 items-center gap-2 rounded-xl bg-care px-4 text-sm font-semibold text-care-foreground"><Plus className="h-4 w-4" aria-hidden="true" />Ajouter une ressource</button>}
       />
 
-      <div className="mt-6 flex flex-col gap-2 rounded-2xl border border-border bg-card p-3 shadow-sm sm:flex-row sm:flex-wrap">
+      <div className="mt-6 flex flex-col items-stretch gap-3 rounded-2xl border border-border bg-card p-3 shadow-sm sm:flex-row sm:flex-wrap sm:items-center">
         <label className="relative flex-1 sm:min-w-56">
           <span className="sr-only">Rechercher une ressource</span>
           <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
           <input type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Rechercher" className={`${select} w-full pl-9`} />
         </label>
-        <label className="w-full sm:w-56"><span className="sr-only">Type</span>
+        <label className="flex w-full items-center sm:w-60"><span className="sr-only">Type</span>
           <select value={kind} onChange={(event) => setKind(event.target.value as ResourceKind | "all")} className={`${select} w-full text-center`}>
             <option value="all">Tous les types</option>
             {selectableResourceKinds.map((key) => <option key={key} value={key}>{resourceKindLabels[key]}</option>)}
             {resources.data?.some((item) => resourceKind(item) === "exercise") ? <option value="exercise">{resourceKindLabels.exercise}</option> : null}
           </select>
         </label>
-        <label className="w-full sm:w-64"><span className="sr-only">Parcours</span>
+        <label className="flex w-full items-center sm:w-72"><span className="sr-only">Parcours</span>
           <select value={pathway} onChange={(event) => setPathway(event.target.value)} className={`${select} w-full text-center`}>
             <option value="all">Tous les parcours</option>
             {conditions.map((condition) => <option key={condition.id} value={condition.id}>{condition.name}</option>)}
           </select>
         </label>
-        <label className="w-full sm:w-56"><span className="sr-only">Statut</span>
+        <label className="flex w-full items-center sm:w-60"><span className="sr-only">Statut</span>
           <select value={status} onChange={(event) => setStatus(event.target.value as typeof status)} className={`${select} w-full text-center`}>
             <option value="all">Tous les statuts</option>
             <option value="active">Visibles</option>

@@ -123,6 +123,8 @@ function AdviceReviewPage() {
               <option value="Médecin généraliste">Médecin généraliste</option>
               <option value="Kinésithérapeute">Kinésithérapeute</option>
               <option value="Radiologue">Radiologue</option>
+              <option value="Podologue">Podologue</option>
+              <option value="Rhumatologue">Rhumatologue</option>
               <option value="Médecin du sport">Médecin du sport</option>
               <option value="Chirurgien orthopédiste">Chirurgien orthopédiste</option>
               <option value="Autre professionnel">Autre professionnel</option>

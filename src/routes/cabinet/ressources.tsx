@@ -87,21 +87,21 @@ function ResourcesPage() {
           <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
           <input type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Rechercher" className={`${select} w-full pl-9`} />
         </label>
-        <label><span className="sr-only">Type</span>
-          <select value={kind} onChange={(event) => setKind(event.target.value as ResourceKind | "all")} className={`${select} w-full`}>
+        <label className="sm:w-48"><span className="sr-only">Type</span>
+          <select value={kind} onChange={(event) => setKind(event.target.value as ResourceKind | "all")} className={`${select} w-full text-center`}>
             <option value="all">Tous les types</option>
             {selectableResourceKinds.map((key) => <option key={key} value={key}>{resourceKindLabels[key]}</option>)}
             {resources.data?.some((item) => resourceKind(item) === "exercise") ? <option value="exercise">{resourceKindLabels.exercise}</option> : null}
           </select>
         </label>
-        <label><span className="sr-only">Parcours</span>
-          <select value={pathway} onChange={(event) => setPathway(event.target.value)} className={`${select} w-full`}>
+        <label className="sm:w-56"><span className="sr-only">Parcours</span>
+          <select value={pathway} onChange={(event) => setPathway(event.target.value)} className={`${select} w-full text-center`}>
             <option value="all">Tous les parcours</option>
             {conditions.map((condition) => <option key={condition.id} value={condition.id}>{condition.name}</option>)}
           </select>
         </label>
-        <label><span className="sr-only">Statut</span>
-          <select value={status} onChange={(event) => setStatus(event.target.value as typeof status)} className={`${select} w-full`}>
+        <label className="sm:w-48"><span className="sr-only">Statut</span>
+          <select value={status} onChange={(event) => setStatus(event.target.value as typeof status)} className={`${select} w-full text-center`}>
             <option value="all">Tous les statuts</option>
             <option value="active">Visibles</option>
             <option value="hidden">Masquées</option>

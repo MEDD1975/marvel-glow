@@ -94,7 +94,7 @@ function ResourcesPage() {
             {resources.data?.some((item) => resourceKind(item) === "exercise") ? <option value="exercise">{resourceKindLabels.exercise}</option> : null}
           </select>
         </label>
-        <label className="flex w-full shrink-0 items-center sm:w-80"><span className="sr-only">Parcours</span>
+        <label className="flex w-full shrink-0 items-center sm:w-72"><span className="sr-only">Parcours</span>
           <select value={pathway} onChange={(event) => setPathway(event.target.value)} className={`${select} w-full text-center`}>
             <option value="all">Tous les parcours</option>
             {conditions.map((condition) => <option key={condition.id} value={condition.id}>{condition.name}</option>)}

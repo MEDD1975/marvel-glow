@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { Link, useLocation, useNavigate } from "@tanstack/react-router";
-import { Building2, CheckCircle2, FolderOpen, HelpCircle, LayoutGrid, LogOut, QrCode, Users } from "lucide-react";
+import { Building2, CheckCircle2, FolderOpen, HelpCircle, LayoutGrid, LogOut, QrCode, ShieldCheck, Users } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { authClient } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
@@ -22,6 +22,7 @@ function useIsActive() {
 function ConnectedAccount({ compact = false }: { compact?: boolean }) {
   const { data: session } = authClient.useSession();
   const user = session?.user;
+  const role = (user as typeof user & { role?: string } | undefined)?.role;
   if (!user) return null;
   if (compact) {
     return (
@@ -36,8 +37,14 @@ function ConnectedAccount({ compact = false }: { compact?: boolean }) {
       <p className="text-xs text-muted-foreground">Connecté en tant que</p>
       <p className="truncate text-sm font-medium text-foreground">{user.name || user.email}</p>
       {user.name ? <p className="truncate text-xs text-muted-foreground">{user.email}</p> : null}
+      {role === "admin_kivoir" ? <span className="mt-1 inline-flex w-fit items-center gap-1 rounded-full bg-care/10 px-2 py-1 text-[11px] font-semibold text-care"><ShieldCheck className="h-3 w-3" aria-hidden="true" />Administrateur principal</span> : null}
     </div>
   );
+}
+
+function useSessionRole() {
+  const { data: session } = authClient.useSession();
+  return (session?.user as { role?: string } | null | undefined)?.role;
 }
 
 function useSignOut() {
@@ -79,6 +86,7 @@ export function DoctorSidebar() {
       </nav>
       <div className="flex flex-col gap-1 border-t border-border p-3">
         <ConnectedAccount />
+        {useSessionRole() === "admin_kivoir" ? <Link to="/admin/medecins" className="flex min-h-11 items-center gap-3 rounded-xl bg-care/10 px-3 text-sm font-semibold text-care hover:bg-care/15"><ShieldCheck className="h-4 w-4" aria-hidden="true" />Administration</Link> : null}
         <Link
           to="/cabinet/aide"
           aria-current={isActive("/cabinet/aide") ? "page" : undefined}

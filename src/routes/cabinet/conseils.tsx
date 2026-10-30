@@ -20,7 +20,7 @@ function AdviceReviewPage() {
   const [hiddenAdvice, setHiddenAdvice] = useState<Record<string, string[]>>({});
   const [editedAdvice, setEditedAdvice] = useState<Record<string, Record<string, { title: string; summary: string }>>>({});
   const [editingAdvice, setEditingAdvice] = useState<{ originalTitle: string; title: string; summary: string } | null>(null);
-  const [recommendedProfessional, setRecommendedProfessional] = useState<Record<string, string>>({});
+  const [recommendedProfessionals, setRecommendedProfessionals] = useState<Record<string, string[]>>({});
   const [isReferralSaved, setIsReferralSaved] = useState<Record<string, boolean>>({});
   const resources = useDoctorResources();
   const cache = useDoctorCache();
@@ -31,8 +31,8 @@ function AdviceReviewPage() {
     if (!selectedCondition || !savedReferral) return;
     const match = savedReferral.title.match(/^À voir ensuite\s*:\s*(.+)$/);
     if (!match?.[1]) return;
-    const professional = match[1];
-    setRecommendedProfessional((current) => current[selectedCondition.id] === professional ? current : { ...current, [selectedCondition.id]: professional });
+    const professionals = match[1].split(" → ").filter(Boolean);
+    setRecommendedProfessionals((current) => current[selectedCondition.id]?.join(" → ") === professionals.join(" → ") ? current : { ...current, [selectedCondition.id]: professionals });
     setIsReferralSaved((current) => current[selectedCondition.id] ? current : { ...current, [selectedCondition.id]: true });
   }, [savedReferral, selectedCondition]);
 
@@ -67,10 +67,11 @@ function AdviceReviewPage() {
   };
 
   const saveReferral = async () => {
-    const professional = recommendedProfessional[selectedCondition.id];
-    if (!professional) return;
+    const professionals = recommendedProfessionals[selectedCondition.id] ?? [];
+    if (!professionals.length) return;
     const existing = resources.data?.find((resource) => resource.conditionId === selectedCondition.id && resource.kind === "orientation");
-    await sendJson("/api/doctor-resources", existing ? "PATCH" : "POST", existing ? { id: existing.id, title: `À voir ensuite : ${professional}`, conditionId: selectedCondition.id, url: "/patient/parcours", description: "Orientation proposée par votre médecin.", kind: "orientation", status: "active" } : { title: `À voir ensuite : ${professional}`, conditionId: selectedCondition.id, url: "/patient/parcours", description: "Orientation proposée par votre médecin.", kind: "orientation" });
+    const title = `À voir ensuite : ${professionals.join(" → ")}`;
+    await sendJson("/api/doctor-resources", existing ? "PATCH" : "POST", existing ? { id: existing.id, title, conditionId: selectedCondition.id, url: "/patient/parcours", description: "Orientation proposée par votre médecin.", kind: "orientation", status: "active" } : { title, conditionId: selectedCondition.id, url: "/patient/parcours", description: "Orientation proposée par votre médecin.", kind: "orientation" });
     await cache.invalidateQueries({ queryKey: doctorKeys.resources });
     setIsReferralSaved((current) => ({ ...current, [selectedCondition.id]: true }));
   };
@@ -118,17 +119,27 @@ function AdviceReviewPage() {
           <div className="mt-4 rounded-2xl border border-[#C9DCF3] bg-[#F5F9FF] p-4">
             <label className="block text-sm font-semibold text-foreground" htmlFor="recommended-professional">Qui consulter ensuite ?</label>
             <p className="mt-1 text-sm leading-6 text-muted-foreground">Choisissez le professionnel à voir pour ce parcours. Cette indication sera affichée au patient avec vos conseils.</p>
-            <select id="recommended-professional" value={recommendedProfessional[selectedCondition.id] ?? ""} onChange={(event) => { setRecommendedProfessional((current) => ({ ...current, [selectedCondition.id]: event.target.value })); setIsReferralSaved((current) => ({ ...current, [selectedCondition.id]: false })); }} className="mt-3 min-h-11 w-full rounded-xl border border-border bg-white px-3 text-sm text-foreground outline-none focus:border-care focus:ring-2 focus:ring-care/20">
-              <option value="">Aucune orientation renseignée</option>
-              <option value="Médecin généraliste">Médecin généraliste</option>
-              <option value="Kinésithérapeute">Kinésithérapeute</option>
-              <option value="Radiologue">Radiologue</option>
-              <option value="Podologue">Podologue</option>
-              <option value="Rhumatologue">Rhumatologue</option>
-              <option value="Médecin du sport">Médecin du sport</option>
-              <option value="Chirurgien orthopédiste">Chirurgien orthopédiste</option>
-              <option value="Autre professionnel">Autre professionnel</option>
-            </select>
+            <div className="mt-3 space-y-2">
+              {(recommendedProfessionals[selectedCondition.id] ?? [""]).map((professional, index, steps) => (
+                <div key={`${selectedCondition.id}-${index}`} className="flex items-center gap-2">
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-care/10 text-xs font-bold text-care">{index + 1}</span>
+                  <select aria-label={`Professionnel étape ${index + 1}`} value={professional} onChange={(event) => { const next = [...steps]; next[index] = event.target.value; setRecommendedProfessionals((current) => ({ ...current, [selectedCondition.id]: next })); setIsReferralSaved((current) => ({ ...current, [selectedCondition.id]: false })); }} className="min-h-11 w-full rounded-xl border border-border bg-white px-3 text-sm text-foreground outline-none focus:border-care focus:ring-2 focus:ring-care/20">
+                    <option value="">Choisir un professionnel</option>
+                    <option value="Médecin généraliste">Médecin généraliste</option>
+                    <option value="Kinésithérapeute">Kinésithérapeute</option>
+                    <option value="Radiologue">Radiologue</option>
+                    <option value="Podologue">Podologue</option>
+                    <option value="Rhumatologue">Rhumatologue</option>
+                    <option value="Médecin du sport">Médecin du sport</option>
+                    <option value="Chirurgien orthopédiste">Chirurgien orthopédiste</option>
+                    <option value="Autre professionnel">Autre professionnel</option>
+                  </select>
+                  {steps.length > 1 ? <button type="button" aria-label={`Supprimer l’étape ${index + 1}`} onClick={() => { setRecommendedProfessionals((current) => ({ ...current, [selectedCondition.id]: steps.filter((_, stepIndex) => stepIndex !== index) })); setIsReferralSaved((current) => ({ ...current, [selectedCondition.id]: false })); }} className="rounded-lg p-2 text-muted-foreground hover:bg-white"><X className="h-4 w-4" aria-hidden="true" /></button> : null}
+                </div>
+              ))}
+              {(recommendedProfessionals[selectedCondition.id] ?? [""]).length < 3 ? <button type="button" onClick={() => { setRecommendedProfessionals((current) => ({ ...current, [selectedCondition.id]: [...(current[selectedCondition.id] ?? [""]), ""] })); setIsReferralSaved((current) => ({ ...current, [selectedCondition.id]: false })); }} className="ml-10 flex items-center gap-1 text-sm font-semibold text-care"><Plus className="h-4 w-4" aria-hidden="true" />Ajouter une étape</button> : null}
+            </div>
+            <button type="button" onClick={saveReferral} disabled={!(recommendedProfessionals[selectedCondition.id] ?? []).every(Boolean)} className="mt-3 min-h-10 rounded-xl bg-care px-4 text-sm font-semibold text-care-foreground disabled:cursor-not-allowed disabled:opacity-50">Enregistrer l’orientation</button>
           </div>
 
           <div className="mt-4 flex flex-col gap-3">
@@ -163,7 +174,7 @@ function AdviceReviewPage() {
               {advice.map((item) => <div key={item.title} className="flex gap-3 py-3 first:pt-0 last:pb-0"><span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#E5F6EE] text-care"><Check className="h-4 w-4" aria-hidden="true" /></span><p className="text-sm font-medium leading-5 text-foreground">{item.title}</p></div>)}
             </div>
           </div>
-          {recommendedProfessional[selectedCondition.id] ? <div className="mt-4 rounded-xl border border-[#C9DCF3] bg-white p-3 text-sm leading-5 text-foreground"><p className="text-xs font-semibold uppercase tracking-wide text-care">Orientation transmise</p><p className="mt-1">À voir ensuite : <strong>{recommendedProfessional[selectedCondition.id]}</strong></p><p className="mt-1 text-xs text-muted-foreground">Le patient reste libre de choisir son professionnel. Cette orientation ne remplace pas votre évaluation clinique.</p></div> : null}
+          {(recommendedProfessionals[selectedCondition.id] ?? []).filter(Boolean).length ? <div className="mt-4 rounded-xl border border-[#C9DCF3] bg-white p-3 text-sm leading-5 text-foreground"><p className="text-xs font-semibold uppercase tracking-wide text-care">Orientation transmise</p><p className="mt-1">À voir ensuite : <strong>{(recommendedProfessionals[selectedCondition.id] ?? []).filter(Boolean).join(" → ")}</strong></p><p className="mt-1 text-xs text-muted-foreground">Le patient reste libre de choisir son professionnel. Cette orientation ne remplace pas votre évaluation clinique.</p></div> : null}
           <div className="mt-4 flex items-start gap-2 rounded-xl bg-white/70 p-3 text-xs leading-5 text-muted-foreground"><Check className="mt-0.5 h-4 w-4 shrink-0 text-care" aria-hidden="true" />Vous gardez la main : ces conseils seront transmis uniquement après votre partage du parcours.</div>
           {isReferralSaved[selectedCondition.id] ? <p className="mt-3 text-sm font-medium text-care" role="status">Orientation enregistrée pour l’aperçu de ce parcours.</p> : null}
         </aside>

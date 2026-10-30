@@ -29,20 +29,22 @@ function ProfessionalsPage() {
   const { data: resources = [] } = useDoctorResources();
   const { isLoading, isError, retry, fromCabinet, professionals } = useProfessionals();
   const orientation = resources.find((resource) => resource.kind === "orientation" && resource.conditionId === guide?.id);
-  const recommendedSpecialty = orientation?.title.replace(/^À voir ensuite\s*:\s*/i, "").trim();
+  const recommendedSpecialties = useMemo(() => orientation?.title.replace(/^À voir ensuite\s*:\s*/i, "").split(" → ").map((item) => item.trim()).filter(Boolean) ?? [], [orientation]);
+  const recommendedSpecialty = recommendedSpecialties[0];
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<string>("Tous");
   const [showFullNetwork, setShowFullNetwork] = useState(false);
   const categories = useMemo(() => ["Tous", ...Array.from(new Set(professionals.map((item) => item.category))).sort((a, b) => a.localeCompare(b, "fr"))], [professionals]);
   const filtered = professionals.filter((item) => {
-    if (recommendedSpecialty && !showFullNetwork && !normalize(`${item.specialty} ${item.category}`).includes(normalize(recommendedSpecialty))) return false;
+    if (recommendedSpecialties.length && !showFullNetwork && !recommendedSpecialties.some((specialty) => normalize(`${item.specialty} ${item.category}`).includes(normalize(specialty)))) return false;
     if (category !== "Tous" && item.category !== category) return false;
     if (!query.trim()) return true;
     return normalize(`${item.name} ${item.specialty} ${item.address ?? ""}`).includes(normalize(query.trim()));
   });
   const visibleProfessionals = [...filtered].sort((a, b) => {
-    if (!recommendedSpecialty) return 0;
-    return Number(normalize(`${b.specialty} ${b.category}`).includes(normalize(recommendedSpecialty))) - Number(normalize(`${a.specialty} ${a.category}`).includes(normalize(recommendedSpecialty)));
+    if (!recommendedSpecialties.length) return 0;
+    const rank = (item: (typeof professionals)[number]) => recommendedSpecialties.findIndex((specialty) => normalize(`${item.specialty} ${item.category}`).includes(normalize(specialty)));
+    return (rank(a) < 0 ? Number.MAX_SAFE_INTEGER : rank(a)) - (rank(b) < 0 ? Number.MAX_SAFE_INTEGER : rank(b));
   });
 
   return (
@@ -58,11 +60,11 @@ function ProfessionalsPage() {
             <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[#DCEBFF] text-[#1769CF]" aria-hidden="true"><Check className="h-5 w-5" /></span>
             <div>
               <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#1769CF]">Orientation de votre professionnel</p>
-              <h2 className="mt-1 text-xl font-bold tracking-tight text-[#101C33]">Consulter un {recommendedSpecialty.toLowerCase()}</h2>
+              <h2 className="mt-1 text-xl font-bold tracking-tight text-[#101C33]">Votre réseau recommandé</h2>
             </div>
           </div>
           <div className="px-5 py-3">
-            <p className="text-sm leading-5 text-[#526176]">Votre professionnel vous recommande cette spécialité.</p>
+            <div className="flex flex-wrap gap-2">{recommendedSpecialties.map((specialty, index) => <span key={`${specialty}-${index}`} className="rounded-full bg-white px-3 py-1.5 text-sm font-semibold text-[#1769CF] shadow-sm">{index + 1}. {specialty}</span>)}</div>
           </div>
         </section>
         <div className="mb-5 flex items-center justify-between gap-3">

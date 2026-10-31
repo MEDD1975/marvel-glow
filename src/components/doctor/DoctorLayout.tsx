@@ -26,10 +26,13 @@ function ConnectedAccount({ compact = false }: { compact?: boolean }) {
   if (!user) return null;
   if (compact) {
     return (
-      <p className="min-w-0 truncate text-xs text-muted-foreground">
-        <span className="sr-only">Connecté en tant que </span>
-        {user.email}
-      </p>
+      <div className="flex min-w-0 items-center gap-2">
+        <p className="min-w-0 truncate text-xs text-muted-foreground">
+          <span className="sr-only">Connecté en tant que </span>
+          {user.email}
+        </p>
+        {role === "admin_kivoir" ? <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-care/10 px-2 py-1 text-[10px] font-semibold text-care"><ShieldCheck className="h-3 w-3" aria-hidden="true" />Admin</span> : null}
+      </div>
     );
   }
   return (
@@ -113,6 +116,7 @@ function DoctorMobileBar() {
         <div className="flex min-w-0 flex-col">
           <Link to="/cabinet" className="text-foreground"><Logo size="sm" /></Link>
           <ConnectedAccount compact />
+          {useSessionRole() === "admin_kivoir" ? <Link to="/admin/medecins" className="mt-1 inline-flex w-fit items-center gap-1 rounded-full bg-care/10 px-2 py-1 text-[10px] font-semibold text-care"><ShieldCheck className="h-3 w-3" aria-hidden="true" />Administration</Link> : null}
         </div>
         <div className="flex shrink-0 items-center gap-1">
           <Link to="/cabinet/aide" aria-label="Aide" className={cn("flex h-11 w-11 items-center justify-center rounded-xl", isActive("/cabinet/aide") ? "bg-care/10 text-care" : "text-muted-foreground")}>

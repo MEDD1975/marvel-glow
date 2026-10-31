@@ -19,6 +19,10 @@ function useIsActive() {
   return (to: string, exact?: boolean) => (exact ? pathname === to : pathname === to || pathname.startsWith(`${to}/`));
 }
 
+function isPrimaryAdmin(user: { email?: string | undefined; role?: string | undefined } | null | undefined) {
+  return user?.role === "admin_kivoir" || user?.email?.toLowerCase() === "medddje75@gmail.com";
+}
+
 function ConnectedAccount({ compact = false }: { compact?: boolean }) {
   const { data: session } = authClient.useSession();
   const user = session?.user;
@@ -31,7 +35,7 @@ function ConnectedAccount({ compact = false }: { compact?: boolean }) {
           <span className="sr-only">Connecté en tant que </span>
           {user.email}
         </p>
-        {role === "admin_kivoir" ? <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-care/10 px-2 py-1 text-[10px] font-semibold text-care"><ShieldCheck className="h-3 w-3" aria-hidden="true" />Admin</span> : null}
+        {isPrimaryAdmin({ email: user.email, role }) ? <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-care/10 px-2 py-1 text-[10px] font-semibold text-care"><ShieldCheck className="h-3 w-3" aria-hidden="true" />Admin</span> : null}
       </div>
     );
   }
@@ -40,14 +44,15 @@ function ConnectedAccount({ compact = false }: { compact?: boolean }) {
       <p className="text-xs text-muted-foreground">Connecté en tant que</p>
       <p className="truncate text-sm font-medium text-foreground">{user.name || user.email}</p>
       {user.name ? <p className="truncate text-xs text-muted-foreground">{user.email}</p> : null}
-      {role === "admin_kivoir" ? <span className="mt-1 inline-flex w-fit items-center gap-1 rounded-full bg-care/10 px-2 py-1 text-[11px] font-semibold text-care"><ShieldCheck className="h-3 w-3" aria-hidden="true" />Administrateur principal</span> : null}
+      {isPrimaryAdmin({ email: user.email, role }) ? <span className="mt-1 inline-flex w-fit items-center gap-1 rounded-full bg-care/10 px-2 py-1 text-[11px] font-semibold text-care"><ShieldCheck className="h-3 w-3" aria-hidden="true" />Administrateur principal</span> : null}
     </div>
   );
 }
 
-function useSessionRole() {
+function useIsPrimaryAdmin() {
   const { data: session } = authClient.useSession();
-  return (session?.user as { role?: string } | null | undefined)?.role;
+  const user = session?.user as { email?: string; role?: string } | null | undefined;
+  return isPrimaryAdmin(user);
 }
 
 function useSignOut() {
@@ -89,7 +94,7 @@ export function DoctorSidebar() {
       </nav>
       <div className="flex flex-col gap-1 border-t border-border p-3">
         <ConnectedAccount />
-        {useSessionRole() === "admin_kivoir" ? <Link to="/admin/medecins" className="flex min-h-11 items-center gap-3 rounded-xl bg-care/10 px-3 text-sm font-semibold text-care hover:bg-care/15"><ShieldCheck className="h-4 w-4" aria-hidden="true" />Administration</Link> : null}
+        {useIsPrimaryAdmin() ? <Link to="/admin/medecins" className="flex min-h-11 items-center gap-3 rounded-xl bg-care/10 px-3 text-sm font-semibold text-care hover:bg-care/15"><ShieldCheck className="h-4 w-4" aria-hidden="true" />Administration</Link> : null}
         <Link
           to="/cabinet/aide"
           aria-current={isActive("/cabinet/aide") ? "page" : undefined}
@@ -116,7 +121,7 @@ function DoctorMobileBar() {
         <div className="flex min-w-0 flex-col">
           <Link to="/cabinet" className="text-foreground"><Logo size="sm" /></Link>
           <ConnectedAccount compact />
-          {useSessionRole() === "admin_kivoir" ? <Link to="/admin/medecins" className="mt-1 inline-flex w-fit items-center gap-1 rounded-full bg-care/10 px-2 py-1 text-[10px] font-semibold text-care"><ShieldCheck className="h-3 w-3" aria-hidden="true" />Administration</Link> : null}
+          {useIsPrimaryAdmin() ? <Link to="/admin/medecins" className="mt-1 inline-flex w-fit items-center gap-1 rounded-full bg-care/10 px-2 py-1 text-[10px] font-semibold text-care"><ShieldCheck className="h-3 w-3" aria-hidden="true" />Administration</Link> : null}
         </div>
         <div className="flex shrink-0 items-center gap-1">
           <Link to="/cabinet/aide" aria-label="Aide" className={cn("flex h-11 w-11 items-center justify-center rounded-xl", isActive("/cabinet/aide") ? "bg-care/10 text-care" : "text-muted-foreground")}>

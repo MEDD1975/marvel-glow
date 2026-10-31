@@ -18,7 +18,7 @@ export function Header() {
   const [open, setOpen] = useState(false);
   const location = useLocation();
   const isDoctorLogin = location.pathname.startsWith("/connexion-medecin");
-  const isDoctorSpace = location.pathname.startsWith("/cabinet") || isDoctorLogin;
+  const isDoctorSpace = location.pathname.startsWith("/cabinet") || location.pathname.startsWith("/admin") || isDoctorLogin;
   const navItems = isDoctorSpace ? doctorNavItems : patientNavItems;
   const isActive = (item: (typeof navItems)[number]) => {
     const pathname = location.pathname === "/cabinet" ? "/cabinet/" : location.pathname;

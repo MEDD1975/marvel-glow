@@ -205,7 +205,6 @@ function AdminDoctorsPage() {
 }
 
 function Shell({ children }: { children: React.ReactNode }) {
-  const { data: session } = authClient.useSession();
   return (
     <main className="mx-auto max-w-5xl px-4 py-6 md:py-12">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -213,7 +212,7 @@ function Shell({ children }: { children: React.ReactNode }) {
           <ShieldCheck className="h-4 w-4" aria-hidden="true" />
           Administration Kivoir
         </div>
-        {session?.user ? <div className="flex items-center gap-2"><span className="inline-flex items-center gap-1 rounded-full bg-care/10 px-2.5 py-1.5 text-[11px] font-semibold text-care"><ShieldCheck className="h-3 w-3" aria-hidden="true" />Administrateur principal</span><Link to="/admin/stats" className="rounded-full bg-care px-3 py-1.5 text-xs font-semibold text-care-foreground hover:bg-care/90">Utilisation globale</Link><Link to="/cabinet" className="text-xs font-semibold text-care hover:underline">Espace médecin</Link></div> : null}
+        <div className="flex flex-wrap items-center gap-2"><span className="inline-flex items-center gap-1 rounded-full bg-care/10 px-2.5 py-1.5 text-[11px] font-semibold text-care"><ShieldCheck className="h-3 w-3" aria-hidden="true" />Administrateur principal</span><Link to="/admin/stats" className="rounded-full bg-care px-3 py-1.5 text-xs font-semibold text-care-foreground hover:bg-care/90">Utilisation globale</Link><Link to="/cabinet" className="text-xs font-semibold text-care hover:underline">Espace médecin</Link></div>
       </div>
       <h1 className="mt-3 text-3xl font-semibold tracking-tight text-foreground md:text-4xl">Professionnels et invitations</h1>
       <div className="mt-8">{children}</div>

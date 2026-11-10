@@ -84,7 +84,7 @@ export function DoctorSidebar() {
               aria-current={active ? "page" : undefined}
               className={cn(
                 "flex min-h-11 items-center gap-3 rounded-xl px-3 text-sm transition-colors",
-                active ? "bg-care font-semibold text-care-foreground shadow-sm" : "text-muted-foreground hover:bg-care/10 hover:text-foreground",
+                active ? item.to === "/cabinet/kine" ? "bg-[#177e78] font-semibold text-white shadow-sm" : "bg-care font-semibold text-care-foreground shadow-sm" : "text-muted-foreground hover:bg-care/10 hover:text-foreground",
               )}
             >
               <Icon className="h-4 w-4 shrink-0" aria-hidden="true" />
@@ -133,7 +133,7 @@ function DoctorMobileBar() {
           </button>
         </div>
       </header>
-      <nav aria-label="Espace professionnel de santé" className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-5 border-t border-border bg-card/95 pb-[env(safe-area-inset-bottom)] backdrop-blur print:hidden md:hidden">
+      <nav aria-label="Espace professionnel de santé" className="fixed inset-x-0 bottom-0 z-40 flex overflow-x-auto border-t border-border bg-card/95 pb-[env(safe-area-inset-bottom)] backdrop-blur print:hidden md:hidden">
         {navItems.map((item) => {
           const active = isActive(item.to, "exact" in item ? item.exact : false);
           const Icon = item.icon;
@@ -143,9 +143,9 @@ function DoctorMobileBar() {
               to={item.to}
               aria-current={active ? "page" : undefined}
               aria-label={item.label}
-              className={cn("flex min-h-14 flex-col items-center justify-center gap-1 text-[11px] font-medium", active ? "text-care" : "text-muted-foreground")}
+              className={cn("flex min-h-14 min-w-[76px] shrink-0 flex-col items-center justify-center gap-1 text-[11px] font-medium", active ? item.to === "/cabinet/kine" ? "text-[#177e78]" : "text-care" : "text-muted-foreground")}
             >
-              <span className={cn("flex h-7 w-12 items-center justify-center rounded-full", active && "bg-care/15")}>
+              <span className={cn("flex h-7 w-12 items-center justify-center rounded-full", active && (item.to === "/cabinet/kine" ? "bg-[#177e78]/15" : "bg-care/15"))}>
                 <Icon className="h-5 w-5" aria-hidden="true" />
               </span>
               {item.short}

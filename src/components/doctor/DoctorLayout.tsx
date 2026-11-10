@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { Link, useLocation, useNavigate } from "@tanstack/react-router";
-import { Activity, Building2, CheckCircle2, FolderOpen, HelpCircle, LayoutGrid, LogOut, QrCode, ShieldCheck, Users } from "lucide-react";
+import { Building2, CheckCircle2, FolderOpen, HelpCircle, LayoutGrid, LogOut, QrCode, ShieldCheck, Users } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { authClient } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
@@ -8,7 +8,6 @@ import { cn } from "@/lib/utils";
 const navItems = [
   { to: "/cabinet", label: "Transmettre un parcours", short: "Transmettre", icon: QrCode, exact: true },
   { to: "/cabinet/parcours", label: "Mes parcours TMS", short: "Parcours", icon: LayoutGrid },
-  { to: "/cabinet/kine", label: "Espace kiné", short: "Kiné", icon: Activity },
   { to: "/cabinet/ressources", label: "Mes ressources", short: "Ressources", icon: FolderOpen },
   { to: "/cabinet/conseils", label: "Conseils à appliquer", short: "Conseils", icon: CheckCircle2 },
   { to: "/cabinet/professionnels", label: "Professionnels", short: "Pros", icon: Users },
@@ -84,7 +83,7 @@ export function DoctorSidebar() {
               aria-current={active ? "page" : undefined}
               className={cn(
                 "flex min-h-11 items-center gap-3 rounded-xl px-3 text-sm transition-colors",
-                active ? item.to === "/cabinet/kine" ? "bg-[#177e78] font-semibold text-white shadow-sm" : "bg-care font-semibold text-care-foreground shadow-sm" : "text-muted-foreground hover:bg-care/10 hover:text-foreground",
+                active ? "bg-care font-semibold text-care-foreground shadow-sm" : "text-muted-foreground hover:bg-care/10 hover:text-foreground",
               )}
             >
               <Icon className="h-4 w-4 shrink-0" aria-hidden="true" />
@@ -143,9 +142,9 @@ function DoctorMobileBar() {
               to={item.to}
               aria-current={active ? "page" : undefined}
               aria-label={item.label}
-              className={cn("flex min-h-14 min-w-[76px] shrink-0 flex-col items-center justify-center gap-1 text-[11px] font-medium", active ? item.to === "/cabinet/kine" ? "text-[#177e78]" : "text-care" : "text-muted-foreground")}
+              className={cn("flex min-h-14 min-w-[76px] shrink-0 flex-col items-center justify-center gap-1 text-[11px] font-medium", active ? "text-care" : "text-muted-foreground")}
             >
-              <span className={cn("flex h-7 w-12 items-center justify-center rounded-full", active && (item.to === "/cabinet/kine" ? "bg-[#177e78]/15" : "bg-care/15"))}>
+              <span className={cn("flex h-7 w-12 items-center justify-center rounded-full", active && "bg-care/15")}>
                 <Icon className="h-5 w-5" aria-hidden="true" />
               </span>
               {item.short}

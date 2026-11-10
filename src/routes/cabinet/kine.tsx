@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, BookOpen, CheckCircle2, FileText, Plus, QrCode, Video } from "lucide-react";
+import { authClient } from "@/lib/auth-client";
 
 export const Route = createFileRoute("/cabinet/kine")({
   component: KineWorkspace,
@@ -17,6 +18,15 @@ const libraryPreview = [
 ];
 
 function KineWorkspace() {
+  const { data: session, isPending } = authClient.useSession();
+  const role = (session?.user as { role?: string } | undefined)?.role;
+  const canAccess = role === "kine" || role === "kinesitherapeute" || role === "admin_kivoir";
+
+  if (isPending) return <p className="p-8 text-sm text-muted-foreground">Vérification de votre accès…</p>;
+  if (!canAccess) {
+    return <main className="mx-auto max-w-lg px-4 py-16"><section className="rounded-3xl border border-border bg-card p-8 text-center shadow-sm"><p className="text-sm font-semibold uppercase tracking-[0.14em] text-[#177e78]">Espace kinésithérapeute</p><h1 className="mt-3 text-2xl font-bold text-foreground">Cet espace est réservé aux comptes kiné.</h1><p className="mt-3 text-sm leading-6 text-muted-foreground">Connectez-vous avec une entrée kiné dédiée ou demandez une invitation professionnelle.</p><Link to="/connexion-kine" className="mt-6 inline-flex rounded-xl bg-[#177e78] px-4 py-3 font-semibold text-white">Accéder à la connexion kiné</Link></section></main>;
+  }
+
   return (
     <main className="mx-auto max-w-6xl space-y-8 px-4 py-8 md:px-8 md:py-10">
         <header className="max-w-3xl">

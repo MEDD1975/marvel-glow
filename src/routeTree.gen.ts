@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ActivationMedecinRouteImport } from './routes/activation-medecin'
 import { Route as AnnuaireRouteImport } from './routes/annuaire'
 import { Route as CabinetRouteRouteImport } from './routes/cabinet/route'
+import { Route as ConnexionKineRouteImport } from './routes/connexion-kine'
 import { Route as ConnexionMedecinRouteImport } from './routes/connexion-medecin'
 import { Route as ConseilsRouteImport } from './routes/conseils'
 import { Route as NouveauMotDePasseRouteImport } from './routes/nouveau-mot-de-passe'
@@ -64,6 +65,11 @@ const AnnuaireRoute = AnnuaireRouteImport.update({
 const CabinetRouteRoute = CabinetRouteRouteImport.update({
   id: '/cabinet',
   path: '/cabinet',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ConnexionKineRoute = ConnexionKineRouteImport.update({
+  id: '/connexion-kine',
+  path: '/connexion-kine',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ConnexionMedecinRoute = ConnexionMedecinRouteImport.update({
@@ -239,6 +245,7 @@ export interface FileRoutesByFullPath {
   '/patient': typeof PatientRouteRouteWithChildren
   '/activation-medecin': typeof ActivationMedecinRoute
   '/annuaire': typeof AnnuaireRoute
+  '/connexion-kine': typeof ConnexionKineRoute
   '/connexion-medecin': typeof ConnexionMedecinRoute
   '/conseils': typeof ConseilsRoute
   '/nouveau-mot-de-passe': typeof NouveauMotDePasseRoute
@@ -275,6 +282,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/activation-medecin': typeof ActivationMedecinRoute
   '/annuaire': typeof AnnuaireRoute
+  '/connexion-kine': typeof ConnexionKineRoute
   '/connexion-medecin': typeof ConnexionMedecinRoute
   '/conseils': typeof ConseilsRoute
   '/nouveau-mot-de-passe': typeof NouveauMotDePasseRoute
@@ -314,6 +322,7 @@ export interface FileRoutesById {
   '/patient': typeof PatientRouteRouteWithChildren
   '/activation-medecin': typeof ActivationMedecinRoute
   '/annuaire': typeof AnnuaireRoute
+  '/connexion-kine': typeof ConnexionKineRoute
   '/connexion-medecin': typeof ConnexionMedecinRoute
   '/conseils': typeof ConseilsRoute
   '/nouveau-mot-de-passe': typeof NouveauMotDePasseRoute
@@ -354,6 +363,7 @@ export interface FileRouteTypes {
     | '/patient'
     | '/activation-medecin'
     | '/annuaire'
+    | '/connexion-kine'
     | '/connexion-medecin'
     | '/conseils'
     | '/nouveau-mot-de-passe'
@@ -390,6 +400,7 @@ export interface FileRouteTypes {
     | '/'
     | '/activation-medecin'
     | '/annuaire'
+    | '/connexion-kine'
     | '/connexion-medecin'
     | '/conseils'
     | '/nouveau-mot-de-passe'
@@ -428,6 +439,7 @@ export interface FileRouteTypes {
     | '/patient'
     | '/activation-medecin'
     | '/annuaire'
+    | '/connexion-kine'
     | '/connexion-medecin'
     | '/conseils'
     | '/nouveau-mot-de-passe'
@@ -467,6 +479,7 @@ export interface RootRouteChildren {
   PatientRouteRoute: typeof PatientRouteRouteWithChildren
   ActivationMedecinRoute: typeof ActivationMedecinRoute
   AnnuaireRoute: typeof AnnuaireRoute
+  ConnexionKineRoute: typeof ConnexionKineRoute
   ConnexionMedecinRoute: typeof ConnexionMedecinRoute
   ConseilsRoute: typeof ConseilsRoute
   NouveauMotDePasseRoute: typeof NouveauMotDePasseRoute
@@ -506,6 +519,13 @@ declare module '@tanstack/react-router' {
       path: '/cabinet'
       fullPath: '/cabinet'
       preLoaderRoute: typeof CabinetRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/connexion-kine': {
+      id: '/connexion-kine'
+      path: '/connexion-kine'
+      fullPath: '/connexion-kine'
+      preLoaderRoute: typeof ConnexionKineRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/connexion-medecin': {
@@ -805,6 +825,7 @@ const rootRouteChildren: RootRouteChildren = {
   PatientRouteRoute: PatientRouteRouteWithChildren,
   ActivationMedecinRoute: ActivationMedecinRoute,
   AnnuaireRoute: AnnuaireRoute,
+  ConnexionKineRoute: ConnexionKineRoute,
   ConnexionMedecinRoute: ConnexionMedecinRoute,
   ConseilsRoute: ConseilsRoute,
   NouveauMotDePasseRoute: NouveauMotDePasseRoute,

@@ -131,8 +131,9 @@ function DoctorSignInPage() {
         )}
 
         <p className="mt-6 border-t border-border pt-4 text-center text-xs leading-5 text-muted-foreground">
-          L’accès à Kivoir se fait sur invitation. Pour ouvrir un compte professionnel, contactez l’équipe Kivoir.
+          L’accès médecin à Kivoir se fait sur invitation. Pour ouvrir un compte professionnel, contactez l’équipe Kivoir.
         </p>
+        <Link to="/connexion-kine" className="mt-4 block text-center text-sm font-semibold text-[#177e78] hover:underline">Accéder à l’espace kiné</Link>
       </section>
     </main>
   );

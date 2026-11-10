@@ -1,6 +1,6 @@
 /**
  * Professions des comptes professionnels Kivoir.
- * La profession décrit l'utilisateur ; elle ne donne aucun droit (les droits viennent du rôle technique).
+ * La profession détermine l'espace attribué à la création du compte : médecin ou kiné.
  * Pour ajouter une profession, ajouter une entrée ici : aucune migration n'est nécessaire.
  */
 export const PROFESSIONS = [

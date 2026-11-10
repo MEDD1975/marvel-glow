@@ -66,7 +66,7 @@ function DoctorSignInPage() {
         <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-care/10 text-care">
           <LockKeyhole className="h-6 w-6" aria-hidden="true" />
         </div>
-        <p className="mt-6 text-xs font-semibold uppercase tracking-wide text-care">Espace professionnel de santé</p>
+        <p className="mt-6 text-xs font-semibold uppercase tracking-wide text-care">Espace médecin</p>
         <h1 className="mt-2 text-3xl font-semibold text-foreground">{mode === "forgot" ? "Mot de passe oublié" : "Se connecter"}</h1>
         <p className="mt-3 text-sm leading-6 text-muted-foreground">
           {mode === "forgot"

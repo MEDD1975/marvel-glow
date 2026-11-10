@@ -26,6 +26,7 @@ import { Route as CabinetIndexRouteImport } from './routes/cabinet/index'
 import { Route as CabinetAccueilRouteImport } from './routes/cabinet/accueil'
 import { Route as CabinetAideRouteImport } from './routes/cabinet/aide'
 import { Route as CabinetConseilsRouteImport } from './routes/cabinet/conseils'
+import { Route as CabinetKineRouteImport } from './routes/cabinet/kine'
 import { Route as CabinetMonCabinetRouteImport } from './routes/cabinet/mon-cabinet'
 import { Route as CabinetParcoursRouteImport } from './routes/cabinet/parcours'
 import { Route as CabinetProfessionnelsRouteImport } from './routes/cabinet/professionnels'
@@ -128,6 +129,11 @@ const CabinetAideRoute = CabinetAideRouteImport.update({
 const CabinetConseilsRoute = CabinetConseilsRouteImport.update({
   id: '/conseils',
   path: '/conseils',
+  getParentRoute: () => CabinetRouteRoute,
+} as any)
+const CabinetKineRoute = CabinetKineRouteImport.update({
+  id: '/kine',
+  path: '/kine',
   getParentRoute: () => CabinetRouteRoute,
 } as any)
 const CabinetMonCabinetRoute = CabinetMonCabinetRouteImport.update({
@@ -244,6 +250,7 @@ export interface FileRoutesByFullPath {
   '/cabinet/accueil': typeof CabinetAccueilRoute
   '/cabinet/aide': typeof CabinetAideRoute
   '/cabinet/conseils': typeof CabinetConseilsRoute
+  '/cabinet/kine': typeof CabinetKineRoute
   '/cabinet/mon-cabinet': typeof CabinetMonCabinetRoute
   '/cabinet/parcours': typeof CabinetParcoursRoute
   '/cabinet/professionnels': typeof CabinetProfessionnelsRoute
@@ -279,6 +286,7 @@ export interface FileRoutesByTo {
   '/cabinet/accueil': typeof CabinetAccueilRoute
   '/cabinet/aide': typeof CabinetAideRoute
   '/cabinet/conseils': typeof CabinetConseilsRoute
+  '/cabinet/kine': typeof CabinetKineRoute
   '/cabinet/mon-cabinet': typeof CabinetMonCabinetRoute
   '/cabinet/parcours': typeof CabinetParcoursRoute
   '/cabinet/professionnels': typeof CabinetProfessionnelsRoute
@@ -317,6 +325,7 @@ export interface FileRoutesById {
   '/cabinet/accueil': typeof CabinetAccueilRoute
   '/cabinet/aide': typeof CabinetAideRoute
   '/cabinet/conseils': typeof CabinetConseilsRoute
+  '/cabinet/kine': typeof CabinetKineRoute
   '/cabinet/mon-cabinet': typeof CabinetMonCabinetRoute
   '/cabinet/parcours': typeof CabinetParcoursRoute
   '/cabinet/professionnels': typeof CabinetProfessionnelsRoute
@@ -356,6 +365,7 @@ export interface FileRouteTypes {
     | '/cabinet/accueil'
     | '/cabinet/aide'
     | '/cabinet/conseils'
+    | '/cabinet/kine'
     | '/cabinet/mon-cabinet'
     | '/cabinet/parcours'
     | '/cabinet/professionnels'
@@ -391,6 +401,7 @@ export interface FileRouteTypes {
     | '/cabinet/accueil'
     | '/cabinet/aide'
     | '/cabinet/conseils'
+    | '/cabinet/kine'
     | '/cabinet/mon-cabinet'
     | '/cabinet/parcours'
     | '/cabinet/professionnels'
@@ -428,6 +439,7 @@ export interface FileRouteTypes {
     | '/cabinet/accueil'
     | '/cabinet/aide'
     | '/cabinet/conseils'
+    | '/cabinet/kine'
     | '/cabinet/mon-cabinet'
     | '/cabinet/parcours'
     | '/cabinet/professionnels'
@@ -587,6 +599,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CabinetConseilsRouteImport
       parentRoute: typeof CabinetRouteRoute
     }
+    '/cabinet/kine': {
+      id: '/cabinet/kine'
+      path: '/kine'
+      fullPath: '/cabinet/kine'
+      preLoaderRoute: typeof CabinetKineRouteImport
+      parentRoute: typeof CabinetRouteRoute
+    }
     '/cabinet/mon-cabinet': {
       id: '/cabinet/mon-cabinet'
       path: '/mon-cabinet'
@@ -720,6 +739,7 @@ interface CabinetRouteRouteChildren {
   CabinetAccueilRoute: typeof CabinetAccueilRoute
   CabinetAideRoute: typeof CabinetAideRoute
   CabinetConseilsRoute: typeof CabinetConseilsRoute
+  CabinetKineRoute: typeof CabinetKineRoute
   CabinetMonCabinetRoute: typeof CabinetMonCabinetRoute
   CabinetParcoursRoute: typeof CabinetParcoursRoute
   CabinetProfessionnelsRoute: typeof CabinetProfessionnelsRoute
@@ -731,6 +751,7 @@ const CabinetRouteRouteChildren: CabinetRouteRouteChildren = {
   CabinetAccueilRoute: CabinetAccueilRoute,
   CabinetAideRoute: CabinetAideRoute,
   CabinetConseilsRoute: CabinetConseilsRoute,
+  CabinetKineRoute: CabinetKineRoute,
   CabinetMonCabinetRoute: CabinetMonCabinetRoute,
   CabinetParcoursRoute: CabinetParcoursRoute,
   CabinetProfessionnelsRoute: CabinetProfessionnelsRoute,

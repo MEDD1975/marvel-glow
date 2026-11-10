@@ -11,12 +11,19 @@ function CabinetLayout() {
   const navigate = useNavigate();
   const pathname = useLocation().pathname;
   const { data: session, isPending } = authClient.useSession();
+  const role = (session?.user as { role?: string } | undefined)?.role;
+  const isKine = role === "kine" || role === "kinesitherapeute";
+  const isAdmin = role === "admin_kivoir";
+  const isKinePath = pathname.startsWith("/cabinet/kine");
 
   useEffect(() => {
-    if (!isPending && !session?.user) {
-      void navigate({ to: "/connexion-medecin" });
+    if (isPending || !session?.user) {
+      if (!isPending && !session?.user) void navigate({ to: "/connexion-medecin" });
+      return;
     }
-  }, [isPending, navigate, session?.user]);
+    if (isKine && !isKinePath) void navigate({ to: "/cabinet/kine" });
+    if (!isKine && !isAdmin && isKinePath) void navigate({ to: "/cabinet" });
+  }, [isAdmin, isKine, isKinePath, isPending, navigate, session?.user]);
 
   if (pathname.startsWith("/cabinet/accueil")) return <Outlet />;
 
@@ -27,6 +34,8 @@ function CabinetLayout() {
       </main>
     );
   }
+
+  if (isKinePath) return <Outlet />;
 
   return (
     <DoctorLayout>

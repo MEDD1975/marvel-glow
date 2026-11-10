@@ -252,6 +252,7 @@ async function handleActivation(request: Request, url: URL): Promise<Response> {
         email: invitation.email,
         name: `${invitation.firstName} ${invitation.lastName}`,
         emailVerified: true,
+        role: invitation.profession === "kinesitherapeute" ? "kine" : "doctor",
       }, { method: "admin" });
       userId = user.id;
       await context.internalAdapter.linkAccount({

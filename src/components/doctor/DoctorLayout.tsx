@@ -8,11 +8,11 @@ import { cn } from "@/lib/utils";
 const navItems = [
   { to: "/cabinet", label: "Transmettre un parcours", short: "Transmettre", icon: QrCode, exact: true },
   { to: "/cabinet/parcours", label: "Mes parcours TMS", short: "Parcours", icon: LayoutGrid },
+  { to: "/cabinet/kine", label: "Espace kiné", short: "Kiné", icon: Activity },
   { to: "/cabinet/ressources", label: "Mes ressources", short: "Ressources", icon: FolderOpen },
   { to: "/cabinet/conseils", label: "Conseils à appliquer", short: "Conseils", icon: CheckCircle2 },
   { to: "/cabinet/professionnels", label: "Professionnels", short: "Pros", icon: Users },
   { to: "/cabinet/mon-cabinet", label: "Mon cabinet", short: "Cabinet", icon: Building2 },
-  { to: "/cabinet/kine", label: "Espace kiné", short: "Kiné", icon: Activity },
 ] as const;
 
 function useIsActive() {

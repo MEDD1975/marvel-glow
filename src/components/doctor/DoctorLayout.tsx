@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { Link, useLocation, useNavigate } from "@tanstack/react-router";
-import { Building2, CheckCircle2, FolderOpen, HelpCircle, LayoutGrid, LogOut, QrCode, ShieldCheck, Users } from "lucide-react";
+import { Activity, Building2, CheckCircle2, FolderOpen, HelpCircle, LayoutGrid, LogOut, QrCode, ShieldCheck, Users } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { authClient } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
@@ -12,6 +12,7 @@ const navItems = [
   { to: "/cabinet/conseils", label: "Conseils à appliquer", short: "Conseils", icon: CheckCircle2 },
   { to: "/cabinet/professionnels", label: "Professionnels", short: "Pros", icon: Users },
   { to: "/cabinet/mon-cabinet", label: "Mon cabinet", short: "Cabinet", icon: Building2 },
+  { to: "/cabinet/kine", label: "Espace kiné", short: "Kiné", icon: Activity },
 ] as const;
 
 function useIsActive() {

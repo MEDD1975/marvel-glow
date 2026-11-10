@@ -1,6 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, BookOpen, CheckCircle2, FileText, Plus, QrCode, Video } from "lucide-react";
-import { DoctorLayout } from "@/components/doctor/DoctorLayout";
 
 export const Route = createFileRoute("/cabinet/kine")({
   component: KineWorkspace,
@@ -19,8 +18,7 @@ const libraryPreview = [
 
 function KineWorkspace() {
   return (
-    <DoctorLayout>
-      <main className="mx-auto max-w-6xl space-y-8 px-4 py-8 md:px-8 md:py-10">
+    <main className="mx-auto max-w-6xl space-y-8 px-4 py-8 md:px-8 md:py-10">
         <header className="max-w-3xl">
           <p className="text-sm font-semibold uppercase tracking-[0.16em] text-care">Espace kinésithérapeute</p>
           <h1 className="mt-2 text-3xl font-bold tracking-tight text-foreground md:text-4xl">Prolongez vos séances à la maison.</h1>
@@ -62,7 +60,6 @@ function KineWorkspace() {
           <div className="flex flex-wrap items-end justify-between gap-3"><div><p className="text-sm font-semibold uppercase tracking-[0.14em] text-care">Votre contenu</p><h2 className="mt-1 text-2xl font-bold text-foreground">Aperçu de ma bibliothèque</h2></div><button type="button" className="inline-flex min-h-10 items-center gap-2 rounded-xl bg-care px-3 text-sm font-semibold text-care-foreground hover:bg-care/90"><Plus className="h-4 w-4" aria-hidden="true" />Ajouter un contenu</button></div>
           <div className="mt-5 grid gap-3 md:grid-cols-3">{libraryPreview.map((item) => { const Icon = item.icon; return <article key={item.title} className="rounded-xl border border-border bg-card p-4"><div className="flex items-start justify-between gap-3"><span className="flex h-9 w-9 items-center justify-center rounded-lg bg-care/10 text-care"><Icon className="h-4 w-4" aria-hidden="true" /></span><span className="rounded-full bg-muted px-2 py-1 text-xs font-medium text-muted-foreground">{item.type}</span></div><h3 className="mt-4 font-semibold text-foreground">{item.title}</h3><p className="mt-1 text-sm text-muted-foreground">{item.phase}</p></article>; })}</div>
         </section>
-      </main>
-    </DoctorLayout>
+    </main>
   );
 }

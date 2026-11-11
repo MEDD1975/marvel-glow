@@ -22,12 +22,14 @@ function CabinetLayout() {
 
   useEffect(() => {
     if (isPending || !session?.user) {
-      if (!isPending && !session?.user) void navigate({ to: "/connexion-medecin" });
+      if (!isPending && !session?.user && pathname.startsWith("/cabinet")) {
+        void navigate({ to: isKinePath ? "/connexion-kine" : "/connexion-medecin" });
+      }
       return;
     }
     if (isKine && !isKinePath) void navigate({ to: "/cabinet/kine" });
     if (!isKine && !isAdmin && isKinePath) void navigate({ to: "/cabinet" });
-  }, [isAdmin, isKine, isKinePath, isPending, navigate, session?.user]);
+  }, [isAdmin, isKine, isKinePath, isPending, navigate, pathname, session?.user]);
 
   if (pathname.startsWith("/cabinet/accueil")) return <Outlet />;
 

@@ -26,14 +26,14 @@ export function ResourceFormDialog({
   resource,
   onSaved,
   defaultSource,
-  filePickerOnModeSelect = false,
+  simplifiedKineForm = false,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   resource: DoctorResourceRecord | null;
   onSaved: () => Promise<void>;
   defaultSource?: string;
-  filePickerOnModeSelect?: boolean;
+  simplifiedKineForm?: boolean;
 }) {
   const editing = Boolean(resource);
   const [kind, setKind] = useState<ResourceKind>(resource ? resourceKind(resource) : "document");
@@ -47,6 +47,8 @@ export function ResourceFormDialog({
     const form = new FormData(event.currentTarget);
     const title = String(form.get("title") ?? "").trim();
     const conditionId = String(form.get("conditionId") ?? "");
+    if (simplifiedKineForm && !conditionId)
+      return setState({ status: "error", message: "Choisissez un parcours." });
     if (!title)
       return setState({ status: "error", message: "Le titre affiché au patient est obligatoire." });
     if (!conditionId) return setState({ status: "error", message: "Choisissez un parcours." });
@@ -107,116 +109,207 @@ export function ResourceFormDialog({
         <DialogHeader>
           <DialogTitle>{editing ? "Modifier la ressource" : "Ajouter une ressource"}</DialogTitle>
           <DialogDescription>
-            Le patient retrouvera cette ressource dans son parcours.
+            {simplifiedKineForm
+              ? "Choisissez le parcours puis le type ; le contenu s’adapte automatiquement."
+              : "Le patient retrouvera cette ressource dans son parcours."}
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={(event) => void submit(event)} className="flex flex-col gap-4">
-          <label className="text-sm font-medium">
-            Titre affiché au patient
-            <input
-              name="title"
-              required
-              maxLength={200}
-              defaultValue={resource?.title ?? ""}
-              className={field}
-            />
-          </label>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <label className="text-sm font-medium">
-              Type
-              <select
-                value={kind}
-                onChange={(event) => setKind(event.target.value as ResourceKind)}
-                className={field}
-              >
-                {kind === "exercise" ? (
-                  <option value="exercise">{resourceKindLabels.exercise}</option>
-                ) : null}
-                {selectableResourceKinds.map((key) => (
-                  <option key={key} value={key}>
-                    {resourceKindLabels[key]}
+          {simplifiedKineForm ? (
+            <>
+              <label className="text-sm font-medium">
+                Parcours
+                <select
+                  name="conditionId"
+                  required
+                  defaultValue={resource?.conditionId ?? ""}
+                  className={field}
+                >
+                  <option value="" disabled>
+                    Choisir…
                   </option>
-                ))}
-              </select>
-            </label>
-            <label className="text-sm font-medium">
-              Parcours
-              <select
-                name="conditionId"
-                required
-                defaultValue={resource?.conditionId ?? ""}
-                className={field}
-              >
-                <option value="" disabled>
-                  Choisir…
-                </option>
-                {conditions.map((condition) => (
-                  <option key={condition.id} value={condition.id}>
-                    {condition.name}
-                  </option>
-                ))}
-              </select>
-            </label>
-          </div>
-          {!editing ? (
-            <fieldset className="flex flex-col gap-2">
-              <legend className="text-sm font-medium">Contenu</legend>
-              <div className="grid grid-cols-2 gap-2" role="radiogroup">
-                {(["file", "link"] as const).map((value) => (
-                  <button
-                    key={value}
-                    type="button"
-                    role="radio"
-                    aria-checked={mode === value}
-                    onClick={() => {
-                      setMode(value);
-                      if (value === "file" && filePickerOnModeSelect) fileInputRef.current?.click();
-                    }}
-                    className={`min-h-11 rounded-xl border text-sm font-medium ${mode === value ? "border-care bg-care/10 text-care" : "border-border"}`}
-                  >
-                    {value === "file" ? "Fichier" : "Lien"}
-                  </button>
-                ))}
-              </div>
-              {filePickerOnModeSelect ? (
-                <input
-                  ref={fileInputRef}
-                  name="file"
-                  type="file"
-                  accept=".pdf,.jpg,.jpeg,.png,.heic,.heif,.webp,.mp4,.mov,.m4v"
-                  tabIndex={-1}
-                  aria-hidden="true"
-                  className="sr-only"
-                  onChange={(event) =>
-                    setSelectedFileName(event.currentTarget.files?.[0]?.name ?? "")
-                  }
-                />
+                  {conditions.map((condition) => (
+                    <option key={condition.id} value={condition.id}>
+                      {condition.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label className="text-sm font-medium">
+                Type
+                <select
+                  value={kind}
+                  onChange={(event) => {
+                    const nextKind = event.target.value as ResourceKind;
+                    setKind(nextKind);
+                    setMode(nextKind === "link" ? "link" : "file");
+                    setSelectedFileName("");
+                    if (fileInputRef.current) fileInputRef.current.value = "";
+                  }}
+                  className={field}
+                >
+                  {kind === "exercise" ? (
+                    <option value="exercise">{resourceKindLabels.exercise}</option>
+                  ) : null}
+                  {selectableResourceKinds.map((key) => (
+                    <option key={key} value={key}>
+                      {resourceKindLabels[key]}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              {!editing ? (
+                <fieldset className="flex flex-col gap-2">
+                  <legend className="text-sm font-medium">Contenu</legend>
+                  {kind === "link" ? (
+                    <label className="text-sm font-medium">
+                      Lien vers la ressource
+                      <input
+                        name="url"
+                        type="url"
+                        inputMode="url"
+                        required
+                        placeholder="https://"
+                        className={field}
+                      />
+                    </label>
+                  ) : (
+                    <>
+                      <input
+                        ref={fileInputRef}
+                        name="file"
+                        type="file"
+                        accept={
+                          kind === "video"
+                            ? ".mp4,.mov,.m4v,video/mp4,video/quicktime,video/x-m4v"
+                            : ".pdf,.jpg,.jpeg,.png,.heic,.heif,.webp,application/pdf,image/*"
+                        }
+                        tabIndex={-1}
+                        aria-hidden="true"
+                        className="sr-only"
+                        onChange={(event) =>
+                          setSelectedFileName(event.currentTarget.files?.[0]?.name ?? "")
+                        }
+                      />
+                      <div className="flex flex-col gap-2">
+                        <button
+                          type="button"
+                          onClick={() => fileInputRef.current?.click()}
+                          className="min-h-11 w-fit rounded-xl border border-border px-4 text-sm font-medium hover:bg-muted"
+                        >
+                          {selectedFileName ? "Changer de fichier" : "Choisir un fichier"}
+                        </button>
+                        <p aria-live="polite" className="text-xs text-muted-foreground">
+                          {selectedFileName ||
+                            (kind === "video"
+                              ? "MP4, MOV ou M4V · 50 Mo maximum"
+                              : "PDF ou image · 50 Mo maximum")}
+                        </p>
+                      </div>
+                    </>
+                  )}
+                </fieldset>
               ) : null}
-              {mode === "file" ? (
-                filePickerOnModeSelect ? (
-                  <p aria-live="polite" className="text-sm text-muted-foreground">
-                    {selectedFileName || "Appuyez sur Fichier pour choisir un fichier."}
-                  </p>
-                ) : (
-                  <input
-                    name="file"
-                    type="file"
-                    accept=".pdf,.jpg,.jpeg,.png,.heic,.heif,.webp,.mp4,.mov,.m4v"
-                    className="text-sm file:mr-3 file:min-h-10 file:rounded-lg file:border-0 file:bg-muted file:px-3 file:font-medium"
-                  />
-                )
-              ) : (
+              <label className="text-sm font-medium">
+                Titre affiché au patient
                 <input
-                  name="url"
-                  type="url"
-                  inputMode="url"
-                  placeholder="https://"
+                  name="title"
+                  required
+                  maxLength={200}
+                  defaultValue={resource?.title ?? ""}
                   className={field}
                 />
-              )}
-              <p className="text-xs text-muted-foreground">PDF, images ou vidéos, 50 Mo maximum.</p>
-            </fieldset>
-          ) : null}
+              </label>
+            </>
+          ) : (
+            <>
+              <label className="text-sm font-medium">
+                Titre affiché au patient
+                <input
+                  name="title"
+                  required
+                  maxLength={200}
+                  defaultValue={resource?.title ?? ""}
+                  className={field}
+                />
+              </label>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <label className="text-sm font-medium">
+                  Type
+                  <select
+                    value={kind}
+                    onChange={(event) => setKind(event.target.value as ResourceKind)}
+                    className={field}
+                  >
+                    {kind === "exercise" ? (
+                      <option value="exercise">{resourceKindLabels.exercise}</option>
+                    ) : null}
+                    {selectableResourceKinds.map((key) => (
+                      <option key={key} value={key}>
+                        {resourceKindLabels[key]}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label className="text-sm font-medium">
+                  Parcours
+                  <select
+                    name="conditionId"
+                    required
+                    defaultValue={resource?.conditionId ?? ""}
+                    className={field}
+                  >
+                    <option value="" disabled>
+                      Choisir…
+                    </option>
+                    {conditions.map((condition) => (
+                      <option key={condition.id} value={condition.id}>
+                        {condition.name}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              </div>
+              {!editing ? (
+                <fieldset className="flex flex-col gap-2">
+                  <legend className="text-sm font-medium">Contenu</legend>
+                  <div className="grid grid-cols-2 gap-2" role="radiogroup">
+                    {(["file", "link"] as const).map((value) => (
+                      <button
+                        key={value}
+                        type="button"
+                        role="radio"
+                        aria-checked={mode === value}
+                        onClick={() => setMode(value)}
+                        className={`min-h-11 rounded-xl border text-sm font-medium ${mode === value ? "border-care bg-care/10 text-care" : "border-border"}`}
+                      >
+                        {value === "file" ? "Fichier" : "Lien"}
+                      </button>
+                    ))}
+                  </div>
+                  {mode === "file" ? (
+                    <input
+                      name="file"
+                      type="file"
+                      accept=".pdf,.jpg,.jpeg,.png,.heic,.heif,.webp,.mp4,.mov,.m4v"
+                      className="text-sm file:mr-3 file:min-h-10 file:rounded-lg file:border-0 file:bg-muted file:px-3 file:font-medium"
+                    />
+                  ) : (
+                    <input
+                      name="url"
+                      type="url"
+                      inputMode="url"
+                      placeholder="https://"
+                      className={field}
+                    />
+                  )}
+                  <p className="text-xs text-muted-foreground">
+                    PDF, images ou vidéos, 50 Mo maximum.
+                  </p>
+                </fieldset>
+              ) : null}
+            </>
+          )}
           <label className="text-sm font-medium">
             Description courte{" "}
             <span className="font-normal text-muted-foreground">(facultatif)</span>

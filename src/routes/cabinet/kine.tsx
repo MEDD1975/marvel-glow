@@ -446,7 +446,7 @@ function KineWorkspace() {
         resource={editing.resource}
         onSaved={refreshResources}
         defaultSource="Partagé par le kinésithérapeute"
-        filePickerOnModeSelect
+        simplifiedKineForm
       />
       <ConfirmationDialog
         open={Boolean(toDelete)}

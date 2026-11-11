@@ -11,8 +11,12 @@ function CabinetLayout() {
   const navigate = useNavigate();
   const pathname = useLocation().pathname;
   const { data: session, isPending } = authClient.useSession();
-  const role = (session?.user as { role?: string } | undefined)?.role;
-  const isKine = role === "kine" || role === "kinesitherapeute";
+  const currentUser = session?.user as { role?: string; profession?: string } | undefined;
+  const role = currentUser?.role;
+  const isKine =
+    role === "kine" ||
+    role === "kinesitherapeute" ||
+    currentUser?.profession === "kinesitherapeute";
   const isAdmin = role === "admin_kivoir";
   const isKinePath = pathname.startsWith("/cabinet/kine");
 
@@ -30,7 +34,9 @@ function CabinetLayout() {
   if (isPending || !session?.user) {
     return (
       <main className="mx-auto max-w-3xl px-4 py-16">
-        <p role="status" className="text-center text-sm text-muted-foreground">Vérification de votre session…</p>
+        <p role="status" className="text-center text-sm text-muted-foreground">
+          Vérification de votre session…
+        </p>
       </main>
     );
   }

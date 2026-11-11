@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from "react";
+import { useRef, useState, type FormEvent } from "react";
 import {
   Dialog,
   DialogContent,
@@ -26,17 +26,21 @@ export function ResourceFormDialog({
   resource,
   onSaved,
   defaultSource,
+  filePickerOnModeSelect = false,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   resource: DoctorResourceRecord | null;
   onSaved: () => Promise<void>;
   defaultSource?: string;
+  filePickerOnModeSelect?: boolean;
 }) {
   const editing = Boolean(resource);
   const [kind, setKind] = useState<ResourceKind>(resource ? resourceKind(resource) : "document");
   const [mode, setMode] = useState<"file" | "link">("file");
   const [state, setState] = useState<SaveState>({ status: "idle" });
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [selectedFileName, setSelectedFileName] = useState("");
 
   const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -164,20 +168,43 @@ export function ResourceFormDialog({
                     type="button"
                     role="radio"
                     aria-checked={mode === value}
-                    onClick={() => setMode(value)}
+                    onClick={() => {
+                      setMode(value);
+                      if (value === "file" && filePickerOnModeSelect) fileInputRef.current?.click();
+                    }}
                     className={`min-h-11 rounded-xl border text-sm font-medium ${mode === value ? "border-care bg-care/10 text-care" : "border-border"}`}
                   >
                     {value === "file" ? "Fichier" : "Lien"}
                   </button>
                 ))}
               </div>
-              {mode === "file" ? (
+              {filePickerOnModeSelect ? (
                 <input
+                  ref={fileInputRef}
                   name="file"
                   type="file"
                   accept=".pdf,.jpg,.jpeg,.png,.heic,.heif,.webp,.mp4,.mov,.m4v"
-                  className="text-sm file:mr-3 file:min-h-10 file:rounded-lg file:border-0 file:bg-muted file:px-3 file:font-medium"
+                  tabIndex={-1}
+                  aria-hidden="true"
+                  className="sr-only"
+                  onChange={(event) =>
+                    setSelectedFileName(event.currentTarget.files?.[0]?.name ?? "")
+                  }
                 />
+              ) : null}
+              {mode === "file" ? (
+                filePickerOnModeSelect ? (
+                  <p aria-live="polite" className="text-sm text-muted-foreground">
+                    {selectedFileName || "Appuyez sur Fichier pour choisir un fichier."}
+                  </p>
+                ) : (
+                  <input
+                    name="file"
+                    type="file"
+                    accept=".pdf,.jpg,.jpeg,.png,.heic,.heif,.webp,.mp4,.mov,.m4v"
+                    className="text-sm file:mr-3 file:min-h-10 file:rounded-lg file:border-0 file:bg-muted file:px-3 file:font-medium"
+                  />
+                )
               ) : (
                 <input
                   name="url"

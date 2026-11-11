@@ -175,6 +175,13 @@ function KineWorkspace() {
       <section className="grid gap-4 md:grid-cols-3" aria-label="Actions principales">
         <a
           href="#bibliotheque"
+          onClick={(event) => {
+            event.preventDefault();
+            document.getElementById("bibliotheque")?.scrollIntoView({
+              behavior: "smooth",
+              block: "start",
+            });
+          }}
           className="group rounded-2xl border border-border bg-card p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-[#177e78]/40 hover:shadow-md"
         >
           <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#177e78]/10 text-[#177e78]">
@@ -271,7 +278,7 @@ function KineWorkspace() {
 
       <section
         id="bibliotheque"
-        className="rounded-2xl border border-border bg-[#F5FAF8] p-5 md:p-6"
+        className="scroll-mt-24 rounded-2xl border border-border bg-[#F5FAF8] p-5 md:p-6"
       >
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>

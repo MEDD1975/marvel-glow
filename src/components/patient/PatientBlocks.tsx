@@ -8,6 +8,7 @@ import {
   ExternalLink,
   FileText,
   Image as ImageIcon,
+  Music2,
   Play,
 } from "lucide-react";
 import { ValidationNote } from "@/components/patient/PatientUi";
@@ -87,7 +88,10 @@ export function CompactLinks({
 function resourceFormat(resource: DoctorResourceRecord) {
   const type = resource.contentType ?? "";
   if (isPlayableVideo(resource)) return { label: "Vidéo", icon: Play };
-  if (type.startsWith("image/")) return { label: "Image", icon: ImageIcon };
+  if (type.startsWith("image/") || resource.kind === "photo")
+    return { label: "Photo", icon: ImageIcon };
+  if (type.startsWith("audio/") || resource.kind === "audio")
+    return { label: "Audio", icon: Music2 };
   if (type === "application/pdf" || resource.filename?.toLowerCase().endsWith(".pdf"))
     return { label: "PDF", icon: FileText };
   if (resource.kind === "sheet" || resource.kind === "document")

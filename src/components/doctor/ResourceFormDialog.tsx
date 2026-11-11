@@ -11,6 +11,7 @@ import {
   resourceKind,
   resourceKindLabels,
   selectableResourceKinds,
+  kineSelectableResourceKinds,
   type ResourceKind,
 } from "@/lib/doctor-pathway-info";
 import type { DoctorResourceRecord } from "@/lib/doctor-resource-db";
@@ -19,6 +20,13 @@ import { sendJson } from "@/components/doctor/use-doctor-data";
 
 const field =
   "mt-1 min-h-11 w-full rounded-xl border border-input bg-background px-3 text-sm outline-none focus:ring-2 focus:ring-ring";
+
+const uploadAcceptByKind: Partial<Record<ResourceKind, string>> = {
+  video: ".mp4,.mov,.m4v,video/mp4,video/quicktime,video/x-m4v",
+  document: ".pdf,application/pdf",
+  photo: ".jpg,.jpeg,.png,.heic,.heif,.webp,image/*",
+  audio: ".mp3,.wav,.m4a,.aac,.ogg,audio/mpeg,audio/wav,audio/mp4,audio/aac,audio/ogg",
+};
 
 export function ResourceFormDialog({
   open,
@@ -41,6 +49,7 @@ export function ResourceFormDialog({
   const [state, setState] = useState<SaveState>({ status: "idle" });
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [selectedFileName, setSelectedFileName] = useState("");
+  const availableKinds = simplifiedKineForm ? kineSelectableResourceKinds : selectableResourceKinds;
 
   const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -148,10 +157,10 @@ export function ResourceFormDialog({
                   }}
                   className={field}
                 >
-                  {kind === "exercise" ? (
-                    <option value="exercise">{resourceKindLabels.exercise}</option>
+                  {!availableKinds.includes(kind) ? (
+                    <option value={kind}>{resourceKindLabels[kind]}</option>
                   ) : null}
-                  {selectableResourceKinds.map((key) => (
+                  {availableKinds.map((key) => (
                     <option key={key} value={key}>
                       {resourceKindLabels[key]}
                     </option>
@@ -179,11 +188,7 @@ export function ResourceFormDialog({
                         ref={fileInputRef}
                         name="file"
                         type="file"
-                        accept={
-                          kind === "video"
-                            ? ".mp4,.mov,.m4v,video/mp4,video/quicktime,video/x-m4v"
-                            : ".pdf,.jpg,.jpeg,.png,.heic,.heif,.webp,application/pdf,image/*"
-                        }
+                        accept={uploadAcceptByKind[kind] ?? uploadAcceptByKind.document}
                         tabIndex={-1}
                         aria-hidden="true"
                         className="sr-only"
@@ -203,7 +208,11 @@ export function ResourceFormDialog({
                           {selectedFileName ||
                             (kind === "video"
                               ? "MP4, MOV ou M4V · 50 Mo maximum"
-                              : "PDF ou image · 50 Mo maximum")}
+                              : kind === "photo"
+                                ? "JPG, PNG, HEIC ou WEBP · 50 Mo maximum"
+                                : kind === "audio"
+                                  ? "MP3, WAV, M4A, AAC ou OGG · 50 Mo maximum"
+                                  : "PDF · 50 Mo maximum")}
                         </p>
                       </div>
                     </>
@@ -241,10 +250,10 @@ export function ResourceFormDialog({
                     onChange={(event) => setKind(event.target.value as ResourceKind)}
                     className={field}
                   >
-                    {kind === "exercise" ? (
-                      <option value="exercise">{resourceKindLabels.exercise}</option>
+                    {!availableKinds.includes(kind) ? (
+                      <option value={kind}>{resourceKindLabels[kind]}</option>
                     ) : null}
-                    {selectableResourceKinds.map((key) => (
+                    {availableKinds.map((key) => (
                       <option key={key} value={key}>
                         {resourceKindLabels[key]}
                       </option>

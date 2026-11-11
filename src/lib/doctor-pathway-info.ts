@@ -3,24 +3,50 @@ import { getPathwayGuide } from "@/lib/patient-guides";
 import type { DoctorResourceRecord } from "@/lib/doctor-resource-db";
 
 /** "exercise" is a legacy kind: kept for stored data, never offered nor shown to patients. */
-export type ResourceKind = "document" | "sheet" | "video" | "link" | "exercise";
+export type ResourceKind =
+  | "document"
+  | "sheet"
+  | "video"
+  | "photo"
+  | "audio"
+  | "link"
+  | "exercise";
 
 export const resourceKindLabels: Record<ResourceKind, string> = {
   video: "Vidéo",
   document: "Document",
+  photo: "Photo",
+  audio: "Audio",
   sheet: "Fiche pédagogique",
   link: "Lien utile",
   exercise: "Ancien exercice · non publié",
 };
 
 export const selectableResourceKinds: ResourceKind[] = ["video", "document", "link"];
+export const kineSelectableResourceKinds: ResourceKind[] = [
+  "video",
+  "document",
+  "photo",
+  "audio",
+  "link",
+];
 
 export function resourceKind(resource: Pick<DoctorResourceRecord, "kind" | "contentType" | "filename">): ResourceKind {
   if (resource.kind === "sheet") return "document";
-  if (resource.kind === "document" || resource.kind === "video" || resource.kind === "exercise" || resource.kind === "link") return resource.kind;
+  if (
+    resource.kind === "document" ||
+    resource.kind === "video" ||
+    resource.kind === "photo" ||
+    resource.kind === "audio" ||
+    resource.kind === "exercise" ||
+    resource.kind === "link"
+  )
+    return resource.kind;
   const type = resource.contentType ?? "";
   if (type.startsWith("video/")) return "video";
-  if (type === "application/pdf" || type.startsWith("image/") || resource.filename) return "document";
+  if (type.startsWith("audio/")) return "audio";
+  if (type.startsWith("image/")) return "photo";
+  if (type === "application/pdf" || resource.filename) return "document";
   return "link";
 }
 

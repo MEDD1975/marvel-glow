@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ChevronRight } from "lucide-react";
 import {
   countLearningContent,
+  isPlayableAudio,
   isPlayableVideo,
   totalLearningContent,
 } from "@/lib/learning-content";
@@ -24,7 +25,7 @@ export const Route = createFileRoute("/patient/ressources/")({
       {
         name: "description",
         content:
-          "Vidéos, documents, fiches pédagogiques et sources complémentaires de votre parcours.",
+          "Vidéos, audios, documents, photos et sources complémentaires de votre parcours.",
       },
     ],
   }),
@@ -40,7 +41,10 @@ function ResourcesPage() {
   if (!guide) return <NoPathwayState />;
   const files = resources.data ?? [];
   const isOrientation = (item: (typeof files)[number]) => item.kind === "orientation" || item.title.startsWith("À voir ensuite :");
-  const documents = files.filter((item) => !isPlayableVideo(item) && !isOrientation(item));
+  const audios = files.filter((item) => isPlayableAudio(item) && !isOrientation(item));
+  const documents = files.filter(
+    (item) => !isPlayableVideo(item) && !isPlayableAudio(item) && !isOrientation(item),
+  );
   const videos = [
     ...files.filter(isPlayableVideo).map(videoFromResource),
     ...guide.videos.map(videoFromLink),
@@ -51,7 +55,7 @@ function ResourcesPage() {
       <div className="flex flex-col gap-6">
         <PatientPageHeader
           title="Conseils et contenus"
-          intro="Vidéos, documents, fiches pédagogiques et sources complémentaires de votre parcours."
+          intro="Vidéos, audios, documents, photos et sources complémentaires de votre parcours."
           pathwayName={guide.name}
         />
         <section
@@ -82,7 +86,7 @@ function ResourcesPage() {
       <div className="rounded-3xl border border-[#E1EAF5] bg-gradient-to-br from-white via-white to-[#F3F7FD] p-5 shadow-[0_12px_32px_rgba(24,55,95,0.06)] md:p-8">
         <PatientPageHeader
         title="Conseils et contenus"
-        intro="Vidéos et documents sélectionnés pour votre parcours, et sources complémentaires."
+        intro="Vidéos, audios, documents et photos sélectionnés pour votre parcours, et sources complémentaires."
         pathwayName={guide.name}
         />
       </div>
@@ -105,9 +109,36 @@ function ResourcesPage() {
         </section>
       ) : null}
 
+      {audios.length ? (
+        <section aria-labelledby="audios-title">
+          <h2 id="audios-title" className={groupTitle}>
+            Audios
+          </h2>
+          <ul className="flex flex-col gap-3">
+            {audios.map((resource) => (
+              <li key={resource.id} className="rounded-2xl border border-border bg-card p-4">
+                <h3 className="font-medium text-foreground">{resource.title}</h3>
+                {resource.source ? (
+                  <p className="mt-1 text-xs text-muted-foreground">{resource.source}</p>
+                ) : null}
+                <audio
+                  className="mt-3 w-full"
+                  controls
+                  preload="none"
+                  src={resource.url}
+                  aria-label={`Écouter ${resource.title}`}
+                >
+                  Votre navigateur ne prend pas en charge la lecture audio.
+                </audio>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
+
       <section aria-labelledby="documents-title">
         <h2 id="documents-title" className={groupTitle}>
-          Documents
+          Documents et photos
         </h2>
         {resources.isLoading ? (
           <LoadingState />
@@ -121,7 +152,7 @@ function ResourcesPage() {
           </ul>
         ) : (
           <p className="rounded-xl bg-muted px-4 py-3 text-sm text-muted-foreground">
-            Aucun contenu complémentaire n&apos;est disponible pour le moment.
+            Aucun document ni aucune photo ne sont disponibles pour le moment.
           </p>
         )}
       </section>

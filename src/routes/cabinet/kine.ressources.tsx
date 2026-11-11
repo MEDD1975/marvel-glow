@@ -7,7 +7,9 @@ import {
   Eye,
   EyeOff,
   FileText,
+  Image as ImageIcon,
   Link2,
+  Music2,
   Pencil,
   Play,
   Plus,
@@ -43,7 +45,9 @@ export const Route = createFileRoute("/cabinet/kine/ressources")({
 const contentFilters: Array<{ value: ResourceKind | "all"; label: string }> = [
   { value: "all", label: "Tout" },
   { value: "video", label: "Vidéos" },
-  { value: "document", label: "Documents & photos" },
+  { value: "document", label: "Documents" },
+  { value: "photo", label: "Photos" },
+  { value: "audio", label: "Audio" },
   { value: "link", label: "Liens" },
 ];
 
@@ -89,7 +93,8 @@ function KineResourcesPage() {
     return {
       total: items.length,
       videos: items.filter((item) => resourceKind(item) === "video").length,
-      documents: items.filter((item) => resourceKind(item) === "document").length,
+      files: items.filter((item) => ["document", "photo"].includes(resourceKind(item))).length,
+      audios: items.filter((item) => resourceKind(item) === "audio").length,
       links: items.filter((item) => resourceKind(item) === "link").length,
     };
   }, [resources.data]);
@@ -157,12 +162,12 @@ function KineResourcesPage() {
                 className="mt-6 inline-flex min-h-11 items-center gap-2 rounded-xl bg-[#177e78] px-5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#126b66] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#177e78] focus-visible:ring-offset-2"
               >
                 <Plus className="h-4 w-4" aria-hidden="true" />
-                Ajouter une vidéo, un document ou un lien
+                Ajouter une ressource
               </button>
             </div>
 
-            <div className="grid grid-cols-3 gap-3 self-end md:self-center">
-              <div className="col-span-3 rounded-2xl bg-[#176b5b] p-4 text-white md:p-5">
+            <div className="grid grid-cols-2 gap-3 self-end md:self-center">
+              <div className="col-span-2 rounded-2xl bg-[#176b5b] p-4 text-white md:p-5">
                 <p className="text-sm font-medium text-white/75">
                   Contenus dans votre bibliothèque
                 </p>
@@ -178,9 +183,16 @@ function KineResourcesPage() {
               <div className="rounded-2xl border border-[#cfe2d5] bg-white/85 p-4">
                 <FileText className="h-5 w-5 text-[#177e78]" aria-hidden="true" />
                 <p className="mt-3 text-2xl font-bold tabular-nums text-[#19392f]">
-                  {totals.documents}
+                  {totals.files}
                 </p>
-                <p className="text-xs font-medium text-[#587269]">Docs & photos</p>
+                <p className="text-xs font-medium text-[#587269]">Documents & photos</p>
+              </div>
+              <div className="rounded-2xl border border-[#cfe2d5] bg-white/85 p-4">
+                <Music2 className="h-5 w-5 text-[#177e78]" aria-hidden="true" />
+                <p className="mt-3 text-2xl font-bold tabular-nums text-[#19392f]">
+                  {totals.audios}
+                </p>
+                <p className="text-xs font-medium text-[#587269]">Audios</p>
               </div>
               <div className="rounded-2xl border border-[#cfe2d5] bg-white/85 p-4">
                 <Link2 className="h-5 w-5 text-[#177e78]" aria-hidden="true" />
@@ -255,8 +267,8 @@ function KineResourcesPage() {
                   Votre bibliothèque est vide
                 </h3>
                 <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-[#668075]">
-                  Ajoutez une vidéo, un document, une photo ou un lien pour le retrouver ici lors de
-                  vos prochaines séances.
+                  Ajoutez une vidéo, un document, une photo, un fichier audio ou un lien pour le retrouver ici
+                  lors de vos prochaines séances.
                 </p>
                 <button
                   type="button"
@@ -275,6 +287,8 @@ function KineResourcesPage() {
                 {filtered.map((item) => {
                   const itemKind = resourceKind(item);
                   const isVideo = itemKind === "video" || item.contentType?.startsWith("video/");
+                  const isPhoto = itemKind === "photo" || item.contentType?.startsWith("image/");
+                  const isAudio = itemKind === "audio" || item.contentType?.startsWith("audio/");
                   const thumbnail = isVideo ? videoThumbnail(item.url) : null;
                   const hidden = item.status === "hidden";
                   return (
@@ -283,14 +297,20 @@ function KineResourcesPage() {
                       className="group flex min-w-0 flex-col overflow-hidden rounded-2xl border border-[#dce8df] bg-white shadow-[0_8px_24px_rgba(25,57,47,0.04)] transition hover:-translate-y-0.5 hover:border-[#a8cbb6] hover:shadow-[0_14px_30px_rgba(25,57,47,0.08)]"
                     >
                       <div className="relative flex aspect-[16/9] items-center justify-center overflow-hidden bg-[#edf5ef]">
-                        {thumbnail ? (
+                        {isPhoto ? (
+                          <img src={item.url} alt="" className="h-full w-full object-cover" />
+                        ) : thumbnail ? (
                           <img src={thumbnail} alt="" className="h-full w-full object-cover" />
                         ) : (
                           <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-[#177e78] shadow-sm">
                             {isVideo ? (
                               <Play className="ml-0.5 h-6 w-6 fill-current" aria-hidden="true" />
+                            ) : isAudio ? (
+                              <Music2 className="h-6 w-6" aria-hidden="true" />
                             ) : itemKind === "link" ? (
                               <Link2 className="h-6 w-6" aria-hidden="true" />
+                            ) : itemKind === "photo" ? (
+                              <ImageIcon className="h-6 w-6" aria-hidden="true" />
                             ) : (
                               <FileText className="h-6 w-6" aria-hidden="true" />
                             )}

@@ -4,6 +4,7 @@ import type { ResourceLink } from "@/lib/condition-resources";
 const VIDEO_HOSTS =
   /(^|\.)(youtube\.com|youtube-nocookie\.com|youtu\.be|vimeo\.com|dailymotion\.com|dai\.ly)$/i;
 const VIDEO_FILE = /\.(mp4|webm|mov|m4v|ogv)$/i;
+const AUDIO_FILE = /\.(mp3|wav|m4a|aac|ogg)$/i;
 
 function parseUrl(url: string) {
   try {
@@ -24,6 +25,15 @@ export function isPlayableVideo(resource: Pick<DoctorResourceRecord, "url" | "co
   return Boolean(url && (VIDEO_HOSTS.test(url.hostname) || VIDEO_FILE.test(url.pathname)));
 }
 
+export function isPlayableAudio(
+  resource: Pick<DoctorResourceRecord, "url" | "contentType" | "filename" | "kind">,
+) {
+  const type = resource.contentType ?? "";
+  if (resource.kind === "audio" || type.startsWith("audio/")) return true;
+  const url = parseUrl(resource.url);
+  return AUDIO_FILE.test(resource.filename ?? "") || Boolean(url && AUDIO_FILE.test(url.pathname));
+}
+
 export function youtubeThumbnail(rawUrl: string) {
   const url = parseUrl(rawUrl);
   if (!url) return undefined;
@@ -39,7 +49,13 @@ export function youtubeThumbnail(rawUrl: string) {
   return id && /^[\w-]{6,}$/.test(id) ? `https://i.ytimg.com/vi/${id}/hqdefault.jpg` : undefined;
 }
 
-export type LearningCounts = { videos: number; documents: number; sheets: number; links: number };
+export type LearningCounts = {
+  videos: number;
+  audios: number;
+  documents: number;
+  sheets: number;
+  links: number;
+};
 
 type LearningSource = {
   videos?: ResourceLink[];
@@ -56,7 +72,7 @@ export function countLearningContent(
   resources: DoctorResourceRecord[] = [],
 ): LearningCounts {
   const seen = new Set<string>();
-  const counts: LearningCounts = { videos: 0, documents: 0, sheets: 0, links: 0 };
+  const counts: LearningCounts = { videos: 0, audios: 0, documents: 0, sheets: 0, links: 0 };
   const add = (url: string, category: keyof LearningCounts) => {
     const key = url.trim();
     if (!key || seen.has(key)) return;
@@ -67,6 +83,7 @@ export function countLearningContent(
   for (const resource of resources) {
     if (resource.status !== "active" || resource.kind === "exercise") continue;
     if (isPlayableVideo(resource)) add(resource.url, "videos");
+    else if (isPlayableAudio(resource)) add(resource.url, "audios");
     else if (
       resource.kind === "link" ||
       resource.kind === "video" ||
@@ -84,7 +101,7 @@ export function countLearningContent(
 }
 
 export function totalLearningContent(counts: LearningCounts) {
-  return counts.videos + counts.documents + counts.sheets + counts.links;
+  return counts.videos + counts.audios + counts.documents + counts.sheets + counts.links;
 }
 
 const plural = (count: number, singular: string, pluralForm: string) =>
@@ -93,6 +110,7 @@ const plural = (count: number, singular: string, pluralForm: string) =>
 export function formatLearningSummary(counts: LearningCounts) {
   const parts = [
     counts.videos ? plural(counts.videos, "vidéo", "vidéos") : null,
+    counts.audios ? plural(counts.audios, "fichier audio", "fichiers audio") : null,
     counts.documents ? plural(counts.documents, "document", "documents") : null,
     counts.sheets ? plural(counts.sheets, "fiche pédagogique", "fiches pédagogiques") : null,
     counts.links ? plural(counts.links, "lien utile", "liens utiles") : null,

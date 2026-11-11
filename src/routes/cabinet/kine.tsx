@@ -173,9 +173,8 @@ function KineWorkspace() {
       </header>
 
       <section className="grid gap-4 md:grid-cols-3" aria-label="Actions principales">
-        <Link
-          to="/cabinet/kine"
-          hash="bibliotheque"
+        <a
+          href="#bibliotheque"
           className="group rounded-2xl border border-border bg-card p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-[#177e78]/40 hover:shadow-md"
         >
           <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#177e78]/10 text-[#177e78]">
@@ -188,7 +187,7 @@ function KineWorkspace() {
           <span className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-[#177e78]">
             Gérer mes contenus <ArrowRight className="h-4 w-4" aria-hidden="true" />
           </span>
-        </Link>
+        </a>
         <button
           type="button"
           onClick={() => startTransmission()}

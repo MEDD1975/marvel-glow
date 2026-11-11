@@ -37,6 +37,7 @@ import { Route as PatientIndexRouteImport } from './routes/patient/index'
 import { Route as PatientFaqRouteImport } from './routes/patient/faq'
 import { Route as PatientParcoursRouteImport } from './routes/patient/parcours'
 import { Route as PatientSurveillerRouteImport } from './routes/patient/surveiller'
+import { Route as CabinetKineRessourcesRouteImport } from './routes/cabinet/kine.ressources'
 import { Route as PatientInfosPageRouteImport } from './routes/patient/infos/$page'
 import { Route as PatientProfessionnelsIndexRouteImport } from './routes/patient/professionnels/index'
 import { Route as PatientProfessionnelsProIdRouteImport } from './routes/patient/professionnels/$proId'
@@ -187,6 +188,11 @@ const PatientSurveillerRoute = PatientSurveillerRouteImport.update({
   path: '/surveiller',
   getParentRoute: () => PatientRouteRoute,
 } as any)
+const CabinetKineRessourcesRoute = CabinetKineRessourcesRouteImport.update({
+  id: '/ressources',
+  path: '/ressources',
+  getParentRoute: () => CabinetKineRoute,
+} as any)
 const PatientInfosPageRoute = PatientInfosPageRouteImport.update({
   id: '/infos/$page',
   path: '/infos/$page',
@@ -257,7 +263,7 @@ export interface FileRoutesByFullPath {
   '/cabinet/accueil': typeof CabinetAccueilRoute
   '/cabinet/aide': typeof CabinetAideRoute
   '/cabinet/conseils': typeof CabinetConseilsRoute
-  '/cabinet/kine': typeof CabinetKineRoute
+  '/cabinet/kine': typeof CabinetKineRouteWithChildren
   '/cabinet/mon-cabinet': typeof CabinetMonCabinetRoute
   '/cabinet/parcours': typeof CabinetParcoursRoute
   '/cabinet/professionnels': typeof CabinetProfessionnelsRoute
@@ -268,6 +274,7 @@ export interface FileRoutesByFullPath {
   '/patient/surveiller': typeof PatientSurveillerRoute
   '/cabinet/': typeof CabinetIndexRoute
   '/patient/': typeof PatientIndexRoute
+  '/cabinet/kine/ressources': typeof CabinetKineRessourcesRoute
   '/patient/infos/$page': typeof PatientInfosPageRoute
   '/patient/professionnels/$proId': typeof PatientProfessionnelsProIdRoute
   '/patient/recommandations/$recoId': typeof PatientRecommandationsRecoIdRoute
@@ -294,7 +301,7 @@ export interface FileRoutesByTo {
   '/cabinet/accueil': typeof CabinetAccueilRoute
   '/cabinet/aide': typeof CabinetAideRoute
   '/cabinet/conseils': typeof CabinetConseilsRoute
-  '/cabinet/kine': typeof CabinetKineRoute
+  '/cabinet/kine': typeof CabinetKineRouteWithChildren
   '/cabinet/mon-cabinet': typeof CabinetMonCabinetRoute
   '/cabinet/parcours': typeof CabinetParcoursRoute
   '/cabinet/professionnels': typeof CabinetProfessionnelsRoute
@@ -305,6 +312,7 @@ export interface FileRoutesByTo {
   '/patient/surveiller': typeof PatientSurveillerRoute
   '/cabinet': typeof CabinetIndexRoute
   '/patient': typeof PatientIndexRoute
+  '/cabinet/kine/ressources': typeof CabinetKineRessourcesRoute
   '/patient/infos/$page': typeof PatientInfosPageRoute
   '/patient/professionnels/$proId': typeof PatientProfessionnelsProIdRoute
   '/patient/recommandations/$recoId': typeof PatientRecommandationsRecoIdRoute
@@ -334,7 +342,7 @@ export interface FileRoutesById {
   '/cabinet/accueil': typeof CabinetAccueilRoute
   '/cabinet/aide': typeof CabinetAideRoute
   '/cabinet/conseils': typeof CabinetConseilsRoute
-  '/cabinet/kine': typeof CabinetKineRoute
+  '/cabinet/kine': typeof CabinetKineRouteWithChildren
   '/cabinet/mon-cabinet': typeof CabinetMonCabinetRoute
   '/cabinet/parcours': typeof CabinetParcoursRoute
   '/cabinet/professionnels': typeof CabinetProfessionnelsRoute
@@ -345,6 +353,7 @@ export interface FileRoutesById {
   '/patient/surveiller': typeof PatientSurveillerRoute
   '/cabinet/': typeof CabinetIndexRoute
   '/patient/': typeof PatientIndexRoute
+  '/cabinet/kine/ressources': typeof CabinetKineRessourcesRoute
   '/patient/infos/$page': typeof PatientInfosPageRoute
   '/patient/professionnels/$proId': typeof PatientProfessionnelsProIdRoute
   '/patient/recommandations/$recoId': typeof PatientRecommandationsRecoIdRoute
@@ -386,6 +395,7 @@ export interface FileRouteTypes {
     | '/patient/surveiller'
     | '/cabinet/'
     | '/patient/'
+    | '/cabinet/kine/ressources'
     | '/patient/infos/$page'
     | '/patient/professionnels/$proId'
     | '/patient/recommandations/$recoId'
@@ -423,6 +433,7 @@ export interface FileRouteTypes {
     | '/patient/surveiller'
     | '/cabinet'
     | '/patient'
+    | '/cabinet/kine/ressources'
     | '/patient/infos/$page'
     | '/patient/professionnels/$proId'
     | '/patient/recommandations/$recoId'
@@ -462,6 +473,7 @@ export interface FileRouteTypes {
     | '/patient/surveiller'
     | '/cabinet/'
     | '/patient/'
+    | '/cabinet/kine/ressources'
     | '/patient/infos/$page'
     | '/patient/professionnels/$proId'
     | '/patient/recommandations/$recoId'
@@ -689,6 +701,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PatientSurveillerRouteImport
       parentRoute: typeof PatientRouteRoute
     }
+    '/cabinet/kine/ressources': {
+      id: '/cabinet/kine/ressources'
+      path: '/ressources'
+      fullPath: '/cabinet/kine/ressources'
+      preLoaderRoute: typeof CabinetKineRessourcesRouteImport
+      parentRoute: typeof CabinetKineRoute
+    }
     '/patient/infos/$page': {
       id: '/patient/infos/$page'
       path: '/infos/$page'
@@ -755,11 +774,23 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface CabinetKineRouteChildren {
+  CabinetKineRessourcesRoute: typeof CabinetKineRessourcesRoute
+}
+
+const CabinetKineRouteChildren: CabinetKineRouteChildren = {
+  CabinetKineRessourcesRoute: CabinetKineRessourcesRoute,
+}
+
+const CabinetKineRouteWithChildren = CabinetKineRoute._addFileChildren(
+  CabinetKineRouteChildren,
+)
+
 interface CabinetRouteRouteChildren {
   CabinetAccueilRoute: typeof CabinetAccueilRoute
   CabinetAideRoute: typeof CabinetAideRoute
   CabinetConseilsRoute: typeof CabinetConseilsRoute
-  CabinetKineRoute: typeof CabinetKineRoute
+  CabinetKineRoute: typeof CabinetKineRouteWithChildren
   CabinetMonCabinetRoute: typeof CabinetMonCabinetRoute
   CabinetParcoursRoute: typeof CabinetParcoursRoute
   CabinetProfessionnelsRoute: typeof CabinetProfessionnelsRoute
@@ -771,7 +802,7 @@ const CabinetRouteRouteChildren: CabinetRouteRouteChildren = {
   CabinetAccueilRoute: CabinetAccueilRoute,
   CabinetAideRoute: CabinetAideRoute,
   CabinetConseilsRoute: CabinetConseilsRoute,
-  CabinetKineRoute: CabinetKineRoute,
+  CabinetKineRoute: CabinetKineRouteWithChildren,
   CabinetMonCabinetRoute: CabinetMonCabinetRoute,
   CabinetParcoursRoute: CabinetParcoursRoute,
   CabinetProfessionnelsRoute: CabinetProfessionnelsRoute,

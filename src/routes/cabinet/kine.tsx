@@ -25,6 +25,7 @@ import { ResourceFormDialog } from "@/components/doctor/ResourceFormDialog";
 import {
   doctorKeys,
   sendJson,
+  useCabinetRef,
   useDoctorCache,
   useDoctorResources,
 } from "@/components/doctor/use-doctor-data";

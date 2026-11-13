@@ -22,7 +22,7 @@ export function PathwayCard({ condition, selected, onSelect }: { condition: Cond
       )}
     >
       <span className="relative block aspect-[4/3] overflow-hidden rounded-xl bg-care-muted">
-        <img src={visual.src} alt="" aria-hidden="true" loading="lazy" decoding="async" className="h-full w-full scale-[1.35] object-cover" />
+        <img src={visual.src} alt="" aria-hidden="true" loading="lazy" decoding="async" className="doctor-image-tone h-full w-full scale-[1.35] object-cover" />
         {selected ? (
           <span className="absolute right-1.5 top-1.5 flex h-6 w-6 items-center justify-center rounded-full bg-care text-care-foreground shadow-sm ring-2 ring-card">
             <Check className="h-3.5 w-3.5" strokeWidth={3} aria-hidden="true" />
@@ -31,7 +31,7 @@ export function PathwayCard({ condition, selected, onSelect }: { condition: Cond
       </span>
       <span className="flex flex-1 flex-col px-1.5 pb-1 pt-2">
         <span className="inline-flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
-          <img src={visual.src} alt={visual.alt} loading="lazy" decoding="async" className="h-7 w-7 rounded-full bg-care-muted object-cover ring-1 ring-border/70" />
+          <img src={visual.src} alt={visual.alt} loading="lazy" decoding="async" className="doctor-image-tone h-7 w-7 rounded-full bg-care-muted object-cover ring-1 ring-border/70" />
           <span>{condition.zone}</span>
         </span>
         <span className="mt-1 text-pretty text-sm font-semibold leading-snug text-foreground">{condition.name}</span>

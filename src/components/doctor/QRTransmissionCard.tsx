@@ -61,7 +61,7 @@ export function QRTransmissionCard({ pathwayName, zone, stats, qr, url, onFullsc
   return (
     <section aria-labelledby="qr-card-title" className="overflow-hidden rounded-2xl border border-care/25 bg-card shadow-[0_8px_24px_-12px_rgba(16,35,72,0.25)]">
       <div className="flex items-center gap-3 bg-care-muted/70 px-4 py-3">
-        {zone ? <img src={zoneVisuals[zone].src} alt="" aria-hidden="true" className="h-11 w-11 shrink-0 rounded-xl object-cover ring-1 ring-care/15" /> : null}
+        {zone ? <img src={zoneVisuals[zone].src} alt="" aria-hidden="true" className="doctor-image-tone h-11 w-11 shrink-0 rounded-xl object-cover ring-1 ring-care/15" /> : null}
         <div className="min-w-0">
           <p className="text-[11px] font-medium uppercase tracking-wide text-care">Parcours à transmettre</p>
           <h2 id="qr-card-title" className="text-pretty text-base font-semibold leading-snug text-foreground">{pathwayName}</h2>

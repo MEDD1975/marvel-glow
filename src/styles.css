@@ -143,6 +143,10 @@
 }
 
 @layer base {
+  .doctor-image-tone {
+    filter: hue-rotate(32deg) saturate(0.82);
+  }
+
   html {
     scroll-behavior: smooth;
   }

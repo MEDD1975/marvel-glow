@@ -29,12 +29,7 @@ import {
   useDoctorCache,
   useDoctorResources,
 } from "@/components/doctor/use-doctor-data";
-import {
-  buildPatientLink,
-  findCondition,
-  resourceKind,
-  resourceKindLabels,
-} from "@/lib/doctor-pathway-info";
+import { findCondition, resourceKind, resourceKindLabels } from "@/lib/doctor-pathway-info";
 import type { DoctorResourceRecord } from "@/lib/doctor-resource-db";
 
 const transmissionFocusOptions = [
@@ -518,9 +513,12 @@ function KineWorkspace() {
                         return;
                       }
                       try {
-                        const url = buildPatientLink(window.location.origin, condition.id, {
-                          id: cabinetId,
-                        });
+                        const patientUrl = new URL("/parcours-kine", window.location.origin);
+                        patientUrl.searchParams.set("pathway", condition.id);
+                        patientUrl.searchParams.set("ref", cabinetId);
+                        patientUrl.searchParams.set("items", selectedItems.join(","));
+                        patientUrl.searchParams.set("focus", selectedTransmission.label);
+                        const url = patientUrl.toString();
                         const qr = await import("qrcode");
                         const image = await qr.default.toDataURL(url, {
                           width: 480,

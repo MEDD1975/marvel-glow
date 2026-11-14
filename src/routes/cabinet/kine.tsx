@@ -536,7 +536,9 @@ function KineWorkspace() {
                     </>
                   ) : (
                     <div className="rounded-2xl border border-[#cfe2d6] bg-white px-4 py-3 text-center shadow-sm">
-                      <p className="font-semibold text-slate-900">Parcours validé — QR code prêt</p>
+                      <p className="font-semibold text-slate-900" role="status">
+                        QR code prêt à partager
+                      </p>
                       <img
                         src={transmissionQr.image}
                         alt={`QR code du parcours ${selectedTransmission.label}`}
@@ -598,7 +600,9 @@ function KineWorkspace() {
                       disabled={!cabinetRef.data?.ref}
                       className="min-h-12 w-full rounded-2xl bg-[#279b6b] px-5 py-3 text-base font-semibold text-white shadow-md shadow-[#215346]/10 transition hover:bg-[#208b60] disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
                     >
-                      {transmissionQr ? "QR code généré" : "Valider et afficher le QR code"}
+                      <span key={transmissionQr ? "qr-ready" : "qr-action"}>
+                        {transmissionQr ? "QR code prêt" : "Générer le QR code"}
+                      </span>
                     </button>
                   </div>
                 </div>

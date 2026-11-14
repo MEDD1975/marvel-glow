@@ -7,7 +7,6 @@ import {
   Eye,
   EyeOff,
   FileText,
-  Image as ImageIcon,
   Link2,
   Music2,
   Pencil,
@@ -267,8 +266,8 @@ function KineResourcesPage() {
                   Votre bibliothèque est vide
                 </h3>
                 <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-[#668075]">
-                  Ajoutez une vidéo, un document, une photo, un fichier audio ou un lien pour le retrouver ici
-                  lors de vos prochaines séances.
+                  Ajoutez une vidéo, un document, une photo, un fichier audio ou un lien pour le
+                  retrouver ici lors de vos prochaines séances.
                 </p>
                 <button
                   type="button"
@@ -309,8 +308,6 @@ function KineResourcesPage() {
                               <Music2 className="h-6 w-6" aria-hidden="true" />
                             ) : itemKind === "link" ? (
                               <Link2 className="h-6 w-6" aria-hidden="true" />
-                            ) : itemKind === "photo" ? (
-                              <ImageIcon className="h-6 w-6" aria-hidden="true" />
                             ) : (
                               <FileText className="h-6 w-6" aria-hidden="true" />
                             )}

@@ -34,10 +34,11 @@ export const doctorKeys = {
   network: ["doctor", "network"] as const,
 };
 
-export function useDoctorResources(ownerId?: string) {
+export function useDoctorResources(ownerId?: string, enabled = true) {
   return useQuery({
     queryKey: ownerId ? [...doctorKeys.resources, ownerId] : doctorKeys.resources,
     queryFn: () => getJson<DoctorResourceRecord[]>("/api/doctor-resources?scope=manage"),
+    enabled,
   });
 }
 
@@ -56,11 +57,12 @@ export function useDoctorNetwork() {
 }
 
 /** Identifiant signé du cabinet, à utiliser dans tous les QR et liens patient. */
-export function useCabinetRef() {
+export function useCabinetRef(enabled = true) {
   return useQuery({
     queryKey: ["doctor", "cabinet-ref"],
     staleTime: Infinity,
     queryFn: () => getJson<{ ref: string; admin: boolean }>("/api/doctor-cabinet-ref"),
+    enabled,
   });
 }
 

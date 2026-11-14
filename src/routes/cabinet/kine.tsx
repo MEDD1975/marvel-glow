@@ -559,7 +559,7 @@ function KineWorkspace() {
                       {qrError}
                     </p>
                   ) : null}
-                  <div className="sticky bottom-0 -mx-5 flex flex-col-reverse gap-3 border-t border-[#d4e5da] bg-[#f1f8f3]/95 px-5 pb-[max(1rem,env(safe-area-inset-bottom))] pt-4 backdrop-blur sm:-mx-7 sm:flex-row sm:justify-between sm:px-7">
+                  <div className="-mx-5 flex flex-col-reverse gap-3 border-t border-[#d4e5da] bg-[#f1f8f3] px-5 pb-[max(1rem,env(safe-area-inset-bottom))] pt-4 sm:-mx-7 sm:flex-row sm:justify-between sm:px-7">
                     <button
                       type="button"
                       onClick={() => setPreviewOpen(false)}
@@ -673,7 +673,7 @@ function KineWorkspace() {
                         ))}
                     </div>
                   </fieldset>
-                  <div className="sticky bottom-0 -mx-5 flex flex-col-reverse gap-3 border-t border-[#d4e5da] bg-[#f1f8f3]/95 px-5 pb-[max(1rem,env(safe-area-inset-bottom))] pt-4 backdrop-blur sm:-mx-7 sm:flex-row sm:justify-end sm:px-7">
+                  <div className="-mx-5 flex flex-col-reverse gap-3 border-t border-[#d4e5da] bg-[#f1f8f3] px-5 pb-[max(1rem,env(safe-area-inset-bottom))] pt-4 sm:-mx-7 sm:flex-row sm:justify-end sm:px-7">
                     <button
                       type="button"
                       onClick={() => setTransmissionOpen(false)}

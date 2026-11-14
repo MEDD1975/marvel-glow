@@ -3,6 +3,7 @@ import { useState } from "react";
 import {
   ArrowRight,
   BookOpen,
+  CheckCircle2,
   ExternalLink,
   Eye,
   EyeOff,
@@ -28,7 +29,12 @@ import {
   useDoctorCache,
   useDoctorResources,
 } from "@/components/doctor/use-doctor-data";
-import { buildPatientLink, findCondition, resourceKind, resourceKindLabels } from "@/lib/doctor-pathway-info";
+import {
+  buildPatientLink,
+  findCondition,
+  resourceKind,
+  resourceKindLabels,
+} from "@/lib/doctor-pathway-info";
 import type { DoctorResourceRecord } from "@/lib/doctor-resource-db";
 
 export const Route = createFileRoute("/cabinet/kine")({
@@ -38,8 +44,16 @@ export const Route = createFileRoute("/cabinet/kine")({
 function KineWorkspace() {
   const pathname = useLocation({ select: (location) => location.pathname });
   const { data: session, isPending } = authClient.useSession();
-  const resources = useDoctorResources(session?.user?.id);
-  const cabinetRef = useCabinetRef();
+  const currentUser = session?.user as { role?: string; profession?: string } | undefined;
+  const role = currentUser?.role;
+  const canAccess =
+    role === "kine" ||
+    role === "kinesitherapeute" ||
+    role === "admin_kivoir" ||
+    currentUser?.profession === "kinesitherapeute";
+  const hasKineAccess = !isPending && canAccess;
+  const resources = useDoctorResources(session?.user?.id, hasKineAccess);
+  const cabinetRef = useCabinetRef(hasKineAccess);
   const cache = useDoctorCache();
   const [librarySearch, setLibrarySearch] = useState("");
   const [editing, setEditing] = useState<{
@@ -113,14 +127,6 @@ function KineWorkspace() {
       current.includes(title) ? current.filter((item) => item !== title) : [...current, title],
     );
   };
-  const currentUser = session?.user as { role?: string; profession?: string } | undefined;
-  const role = currentUser?.role;
-  const canAccess =
-    role === "kine" ||
-    role === "kinesitherapeute" ||
-    role === "admin_kivoir" ||
-    currentUser?.profession === "kinesitherapeute";
-
   if (isPending)
     return <p className="p-8 text-sm text-muted-foreground">Vérification de votre accès…</p>;
   if (!canAccess) {
@@ -293,16 +299,16 @@ function KineWorkspace() {
           <ul className="mt-5 flex flex-col gap-3">
             {libraryItems.map((item) => {
               const kind = resourceKind(item);
-                  const Icon =
-                    item.contentType?.startsWith("video/") || kind === "video"
-                      ? Video
-                      : item.contentType?.startsWith("audio/") || kind === "audio"
-                        ? Music2
-                        : item.contentType?.startsWith("image/") || kind === "photo"
-                          ? ImageIcon
-                          : kind === "link"
-                            ? Link2
-                            : FileText;
+              const Icon =
+                item.contentType?.startsWith("video/") || kind === "video"
+                  ? Video
+                  : item.contentType?.startsWith("audio/") || kind === "audio"
+                    ? Music2
+                    : item.contentType?.startsWith("image/") || kind === "photo"
+                      ? ImageIcon
+                      : kind === "link"
+                        ? Link2
+                        : FileText;
               const hidden = item.status === "hidden";
               return (
                 <li
@@ -458,8 +464,19 @@ function KineWorkspace() {
                 {transmissionQr ? (
                   <div className="rounded-2xl border border-[#177e78]/20 bg-[#f3faf7] p-5 text-center">
                     <p className="font-semibold text-slate-900">Parcours validé — QR code prêt</p>
-                    <img src={transmissionQr.image} alt={`QR code du parcours ${selectedCondition}`} className="mx-auto mt-3 w-56 rounded-xl bg-white p-2" />
-                    <a href={transmissionQr.url} target="_blank" rel="noreferrer" className="mt-3 block break-all text-sm text-[#177e78] underline">Ouvrir le lien patient</a>
+                    <img
+                      src={transmissionQr.image}
+                      alt={`QR code du parcours ${selectedCondition}`}
+                      className="mx-auto mt-3 w-56 rounded-xl bg-white p-2"
+                    />
+                    <a
+                      href={transmissionQr.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="mt-3 block break-all text-sm text-[#177e78] underline"
+                    >
+                      Ouvrir le lien patient
+                    </a>
                   </div>
                 ) : null}
                 <div className="flex flex-wrap justify-between gap-3">
@@ -475,9 +492,15 @@ function KineWorkspace() {
                     onClick={async () => {
                       const condition = findCondition(selectedCondition);
                       if (!condition || !cabinetRef.data?.ref) return;
-                      const url = buildPatientLink(window.location.origin, condition.id, { id: cabinetRef.data.ref });
+                      const url = buildPatientLink(window.location.origin, condition.id, {
+                        id: cabinetRef.data.ref,
+                      });
                       const qr = await import("qrcode");
-                      const image = await qr.default.toDataURL(url, { width: 480, margin: 1, errorCorrectionLevel: "H" });
+                      const image = await qr.default.toDataURL(url, {
+                        width: 480,
+                        margin: 1,
+                        errorCorrectionLevel: "H",
+                      });
                       setTransmissionQr({ image, url });
                     }}
                     disabled={!cabinetRef.data?.ref}

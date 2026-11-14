@@ -10,6 +10,7 @@ import { ConfirmationDialog } from "@/components/doctor/ConfirmationDialog";
 import { ResourceFormDialog } from "@/components/doctor/ResourceFormDialog";
 import { doctorKeys, sendJson, useDoctorCache, useDoctorResources } from "@/components/doctor/use-doctor-data";
 import { VideoThumbnail } from "@/components/VideoThumbnail";
+import { youtubeThumbnail } from "@/lib/learning-content";
 
 export const Route = createFileRoute("/cabinet/ressources")({
   head: () => ({ meta: [{ title: "Mes ressources — Kivoir" }] }),
@@ -19,8 +20,7 @@ export const Route = createFileRoute("/cabinet/ressources")({
 const select = "min-h-11 rounded-xl border border-input bg-background px-3 text-sm outline-none focus:ring-2 focus:ring-ring";
 
 function videoThumbnail(url: string) {
-  const youtubeMatch = url.match(/(?:youtu\.be\/|youtube(?:-nocookie)?\.com\/(?:watch\?v=|embed\/))([\w-]{11})/i);
-  return youtubeMatch ? `https://img.youtube.com/vi/${youtubeMatch[1]}/hqdefault.jpg` : null;
+  return youtubeThumbnail(url) ?? null;
 }
 
 function ResourcesPage() {

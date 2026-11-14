@@ -25,6 +25,7 @@ import {
   type ResourceKind,
 } from "@/lib/doctor-pathway-info";
 import type { DoctorResourceRecord } from "@/lib/doctor-resource-db";
+import { youtubeThumbnail } from "@/lib/learning-content";
 import { authClient } from "@/lib/auth-client";
 import { ConfirmationDialog } from "@/components/doctor/ConfirmationDialog";
 import { ErrorState, LoadingState } from "@/components/doctor/states";
@@ -52,10 +53,7 @@ const contentFilters: Array<{ value: ResourceKind | "all"; label: string }> = [
 ];
 
 function videoThumbnail(url: string) {
-  const match = url.match(
-    /(?:youtu\.be\/|youtube(?:-nocookie)?\.com\/(?:watch\?v=|embed\/))([\w-]{11})/i,
-  );
-  return match ? `https://img.youtube.com/vi/${match[1]}/hqdefault.jpg` : null;
+  return youtubeThumbnail(url) ?? null;
 }
 
 function KineResourcesPage() {

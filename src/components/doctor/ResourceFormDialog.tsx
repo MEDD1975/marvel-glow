@@ -19,7 +19,7 @@ import { SaveStatus, type SaveState } from "@/components/doctor/states";
 import { sendJson } from "@/components/doctor/use-doctor-data";
 
 const field =
-  "mt-1 min-h-11 w-full rounded-xl border border-input bg-background px-3 text-sm outline-none focus:ring-2 focus:ring-ring";
+  "mt-1 min-h-11 w-full rounded-xl border border-[#d4e2d9] bg-white px-3 text-sm outline-none transition focus:border-[#177e78] focus:ring-2 focus:ring-[#177e78]/20";
 
 const uploadAcceptByKind: Partial<Record<ResourceKind, string>> = {
   video: ".mp4,.mov,.m4v,video/mp4,video/quicktime,video/x-m4v",
@@ -116,13 +116,23 @@ export function ResourceFormDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className="max-h-[90dvh] overflow-y-auto sm:max-w-lg"
+        className={`max-h-[90dvh] overflow-y-auto sm:max-w-lg ${
+          simplifiedKineForm
+            ? "border-[#cfe2d5] bg-[#f1f7f2] p-4 shadow-[0_20px_60px_rgba(25,57,47,0.2)] sm:rounded-[1.75rem] sm:p-5"
+            : ""
+        }`}
         onOpenAutoFocus={(event) => {
           event.preventDefault();
           dialogTitleRef.current?.focus();
         }}
       >
-        <DialogHeader>
+        <DialogHeader
+          className={
+            simplifiedKineForm
+              ? "rounded-2xl border border-[#d4e6d9] bg-[#e7f2ea] px-5 py-5 pr-12"
+              : undefined
+          }
+        >
           <DialogTitle ref={dialogTitleRef} tabIndex={-1}>
             {editing ? "Modifier la ressource" : "Ajouter une ressource"}
           </DialogTitle>
@@ -132,7 +142,14 @@ export function ResourceFormDialog({
               : "Le patient retrouvera cette ressource dans son parcours."}
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={(event) => void submit(event)} className="flex flex-col gap-4">
+        <form
+          onSubmit={(event) => void submit(event)}
+          className={`flex flex-col gap-4 ${
+            simplifiedKineForm
+              ? "rounded-2xl border border-[#dce8df] bg-white p-4 shadow-sm sm:p-5"
+              : ""
+          }`}
+        >
           {simplifiedKineForm ? (
             <>
               <label className="text-sm font-medium">

@@ -1,5 +1,5 @@
 import { createFileRoute, Link, Outlet, useLocation } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   ArrowRight,
   BookOpen,
@@ -78,6 +78,7 @@ function KineWorkspace() {
   const [patientLabel, setPatientLabel] = useState("");
   const [transmissionQr, setTransmissionQr] = useState<{ image: string; url: string } | null>(null);
   const [qrError, setQrError] = useState("");
+  const previewScrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!transmissionOpen) return;
@@ -112,6 +113,10 @@ function KineWorkspace() {
       window.scrollTo(0, scrollY);
     };
   }, [transmissionOpen]);
+
+  useEffect(() => {
+    if (transmissionQr) previewScrollRef.current?.scrollTo({ top: 0 });
+  }, [transmissionQr]);
 
   const refreshResources = () => cache.invalidateQueries({ queryKey: doctorKeys.resources });
   const openResourceForm = (resource: DoctorResourceRecord | null) =>
@@ -491,52 +496,62 @@ function KineWorkspace() {
                 </button>
               </div>
             </header>
-            <div className="min-h-0 flex-1 touch-pan-y overflow-y-auto overscroll-contain px-5 py-5 [-webkit-overflow-scrolling:touch] sm:px-7">
+            <div
+              ref={previewScrollRef}
+              className={`min-h-0 flex-1 touch-pan-y overflow-y-auto overscroll-contain [-webkit-overflow-scrolling:touch] ${
+                transmissionQr ? "px-5 py-3 sm:px-7 sm:py-4" : "px-5 py-5 sm:px-7"
+              }`}
+            >
               {previewOpen ? (
                 <div className="flex flex-col gap-5">
-                  <div className="rounded-2xl border border-[#d4e5da] bg-white/80 p-4 shadow-sm">
-                    <p className="text-sm text-slate-600">Parcours</p>
-                    <p className="mt-1 font-semibold text-slate-900">
-                      {selectedTransmission.label}
-                    </p>
-                    {patientLabel.trim() && (
-                      <p className="mt-2 text-sm text-slate-600">Repère patient : {patientLabel}</p>
-                    )}
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-slate-900">Contenus transmis</h3>
-                    <ul className="mt-2 flex flex-col gap-2">
-                      {selectedItems.map((id) => {
-                        const item = resources.data?.find((resource) => resource.id === id);
-                        return item ? (
-                          <li
-                            key={item.id}
-                            className="rounded-2xl border border-[#d4e2da] bg-white px-4 py-3 text-sm text-[#203d34] shadow-sm"
-                          >
-                            {item.title}
-                          </li>
-                        ) : null;
-                      })}
-                    </ul>
-                  </div>
-                  {transmissionQr ? (
-                    <div className="rounded-2xl border border-[#cfe2d6] bg-white p-5 text-center shadow-sm">
+                  {!transmissionQr ? (
+                    <>
+                      <div className="rounded-2xl border border-[#d4e5da] bg-white/80 p-4 shadow-sm">
+                        <p className="text-sm text-slate-600">Parcours</p>
+                        <p className="mt-1 font-semibold text-slate-900">
+                          {selectedTransmission.label}
+                        </p>
+                        {patientLabel.trim() && (
+                          <p className="mt-2 text-sm text-slate-600">
+                            Repère patient : {patientLabel}
+                          </p>
+                        )}
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-slate-900">Contenus transmis</h3>
+                        <ul className="mt-2 flex flex-col gap-2">
+                          {selectedItems.map((id) => {
+                            const item = resources.data?.find((resource) => resource.id === id);
+                            return item ? (
+                              <li
+                                key={item.id}
+                                className="rounded-2xl border border-[#d4e2da] bg-white px-4 py-3 text-sm text-[#203d34] shadow-sm"
+                              >
+                                {item.title}
+                              </li>
+                            ) : null;
+                          })}
+                        </ul>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="rounded-2xl border border-[#cfe2d6] bg-white px-4 py-3 text-center shadow-sm">
                       <p className="font-semibold text-slate-900">Parcours validé — QR code prêt</p>
                       <img
                         src={transmissionQr.image}
                         alt={`QR code du parcours ${selectedTransmission.label}`}
-                        className="mx-auto mt-3 w-56 rounded-xl bg-white p-2"
+                        className="mx-auto mt-2 size-[min(34dvh,13rem)] max-w-[62vw] rounded-xl bg-white p-2"
                       />
                       <a
                         href={transmissionQr.url}
                         target="_blank"
                         rel="noreferrer"
-                        className="mt-3 block break-all text-sm text-[#177e78] underline"
+                        className="mt-2 block break-all text-sm text-[#177e78] underline"
                       >
                         Ouvrir le lien patient
                       </a>
                     </div>
-                  ) : null}
+                  )}
                   {qrError ? (
                     <p role="alert" className="text-sm text-red-700">
                       {qrError}

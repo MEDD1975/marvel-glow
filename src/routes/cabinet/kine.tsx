@@ -37,6 +37,15 @@ import {
 } from "@/lib/doctor-pathway-info";
 import type { DoctorResourceRecord } from "@/lib/doctor-resource-db";
 
+const transmissionFocusOptions = [
+  { key: "entorse-cheville", label: "Entorse de cheville", pathwayId: "entorse-cheville" },
+  { key: "reprise-appui", label: "Reprise progressive de l’appui", pathwayId: "entorse-cheville" },
+  { key: "arthrose-genou", label: "Arthrose du genou", pathwayId: "arthrose-genou" },
+  { key: "equilibre", label: "Exercices d’équilibre", pathwayId: "entorse-cheville" },
+] as const;
+
+type TransmissionFocusKey = (typeof transmissionFocusOptions)[number]["key"];
+
 export const Route = createFileRoute("/cabinet/kine")({
   component: KineWorkspace,
 });
@@ -66,14 +75,19 @@ function KineWorkspace() {
   const [transmissionOpen, setTransmissionOpen] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
-  const [selectedCondition, setSelectedCondition] = useState("Entorse de cheville");
+  const [selectedCondition, setSelectedCondition] =
+    useState<TransmissionFocusKey>("entorse-cheville");
+  const selectedTransmission =
+    transmissionFocusOptions.find((option) => option.key === selectedCondition) ??
+    transmissionFocusOptions[0];
   const [patientLabel, setPatientLabel] = useState("");
   const [transmissionQr, setTransmissionQr] = useState<{ image: string; url: string } | null>(null);
+  const [qrError, setQrError] = useState("");
 
   const refreshResources = () => cache.invalidateQueries({ queryKey: doctorKeys.resources });
   const openResourceForm = (resource: DoctorResourceRecord | null) =>
     setEditing((current) => ({ open: true, resource, key: current.key + 1 }));
-  const startTransmission = (condition = "Entorse de cheville") => {
+  const startTransmission = (condition: TransmissionFocusKey = "entorse-cheville") => {
     setSelectedCondition(condition);
     setSelectedItems(
       (resources.data ?? [])
@@ -83,6 +97,7 @@ function KineWorkspace() {
     );
     setPreviewOpen(false);
     setTransmissionQr(null);
+    setQrError("");
     setTransmissionOpen(true);
   };
 
@@ -440,7 +455,7 @@ function KineWorkspace() {
               <div className="mt-5 space-y-5">
                 <div className="rounded-2xl bg-[#f3faf7] p-4">
                   <p className="text-sm text-slate-600">Parcours</p>
-                  <p className="mt-1 font-semibold text-slate-900">{selectedCondition}</p>
+                  <p className="mt-1 font-semibold text-slate-900">{selectedTransmission.label}</p>
                   {patientLabel.trim() && (
                     <p className="mt-2 text-sm text-slate-600">Repère patient : {patientLabel}</p>
                   )}
@@ -466,7 +481,7 @@ function KineWorkspace() {
                     <p className="font-semibold text-slate-900">Parcours validé — QR code prêt</p>
                     <img
                       src={transmissionQr.image}
-                      alt={`QR code du parcours ${selectedCondition}`}
+                      alt={`QR code du parcours ${selectedTransmission.label}`}
                       className="mx-auto mt-3 w-56 rounded-xl bg-white p-2"
                     />
                     <a
@@ -479,6 +494,11 @@ function KineWorkspace() {
                     </a>
                   </div>
                 ) : null}
+                {qrError ? (
+                  <p role="alert" className="text-sm text-red-700">
+                    {qrError}
+                  </p>
+                ) : null}
                 <div className="flex flex-wrap justify-between gap-3">
                   <button
                     type="button"
@@ -490,18 +510,29 @@ function KineWorkspace() {
                   <button
                     type="button"
                     onClick={async () => {
-                      const condition = findCondition(selectedCondition);
-                      if (!condition || !cabinetRef.data?.ref) return;
-                      const url = buildPatientLink(window.location.origin, condition.id, {
-                        id: cabinetRef.data.ref,
-                      });
-                      const qr = await import("qrcode");
-                      const image = await qr.default.toDataURL(url, {
-                        width: 480,
-                        margin: 1,
-                        errorCorrectionLevel: "H",
-                      });
-                      setTransmissionQr({ image, url });
+                      setQrError("");
+                      const condition = findCondition(selectedTransmission.pathwayId);
+                      const cabinetId = cabinetRef.data?.ref;
+                      if (!condition || !cabinetId) {
+                        setQrError("Le parcours ou le cabinet est indisponible. Réessayez.");
+                        return;
+                      }
+                      try {
+                        const url = buildPatientLink(window.location.origin, condition.id, {
+                          id: cabinetId,
+                        });
+                        const qr = await import("qrcode");
+                        const image = await qr.default.toDataURL(url, {
+                          width: 480,
+                          margin: 1,
+                          errorCorrectionLevel: "H",
+                        });
+                        setTransmissionQr({ image, url });
+                      } catch {
+                        setQrError(
+                          "Impossible de générer le QR code. Vérifiez la connexion puis réessayez.",
+                        );
+                      }
                     }}
                     disabled={!cabinetRef.data?.ref}
                     className="rounded-xl bg-[#177e78] px-4 py-3 text-sm font-semibold text-white disabled:opacity-50"
@@ -518,13 +549,16 @@ function KineWorkspace() {
                   </span>
                   <select
                     value={selectedCondition}
-                    onChange={(event) => setSelectedCondition(event.target.value)}
+                    onChange={(event) =>
+                      setSelectedCondition(event.target.value as TransmissionFocusKey)
+                    }
                     className="min-h-12 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-900"
                   >
-                    <option>Entorse de cheville</option>
-                    <option>Reprise progressive de l’appui</option>
-                    <option>Arthrose du genou</option>
-                    <option>Exercices d’équilibre</option>
+                    {transmissionFocusOptions.map((option) => (
+                      <option key={option.key} value={option.key}>
+                        {option.label}
+                      </option>
+                    ))}
                   </select>
                 </label>
                 <label className="block">

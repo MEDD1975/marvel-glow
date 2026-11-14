@@ -465,10 +465,9 @@ function KineWorkspace() {
             role="dialog"
             aria-modal="true"
             aria-labelledby="transmission-title"
-            ref={previewScrollRef}
-            className="flex max-h-[92dvh] w-full max-w-xl flex-col touch-pan-y overflow-y-auto overscroll-contain rounded-t-[2rem] border border-[#cfe2d6] bg-[#f1f8f3] shadow-2xl [-webkit-overflow-scrolling:touch] sm:rounded-3xl"
+            className="flex h-[68dvh] max-h-[92dvh] w-full max-w-xl flex-col overflow-hidden rounded-t-[2rem] border border-[#cfe2d6] bg-[#f1f8f3] shadow-2xl sm:h-auto sm:rounded-3xl"
           >
-            <header className="sticky top-0 z-10 shrink-0 border-b border-[#d4e5da] bg-[#f1f8f3] px-5 pb-5 pt-3 sm:px-7 sm:pt-6">
+            <header className="shrink-0 border-b border-[#d4e5da] bg-[#f1f8f3] px-5 pb-5 pt-3 sm:px-7 sm:pt-6">
               <div className="mx-auto mb-5 h-1.5 w-12 rounded-full bg-[#215346]/20 sm:hidden" />
               <div className="flex items-start justify-between gap-4">
                 <div className="flex items-center gap-4">
@@ -497,7 +496,12 @@ function KineWorkspace() {
                 </button>
               </div>
             </header>
-            <div className={transmissionQr ? "px-5 py-3 sm:px-7 sm:py-4" : "px-5 py-5 sm:px-7"}>
+            <div
+              ref={previewScrollRef}
+              className={`min-h-0 flex-1 touch-pan-y overflow-y-auto overscroll-contain [-webkit-overflow-scrolling:touch] ${
+                transmissionQr ? "px-5 py-3 sm:px-7 sm:py-4" : "px-5 py-5 sm:px-7"
+              }`}
+            >
               {previewOpen ? (
                 <div className="flex flex-col gap-5">
                   {!transmissionQr ? (

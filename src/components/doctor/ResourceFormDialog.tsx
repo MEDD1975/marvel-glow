@@ -372,7 +372,7 @@ export function ResourceFormDialog({
             <button
               type="submit"
               disabled={state.status === "saving"}
-              className="min-h-11 rounded-xl bg-care px-5 text-sm font-semibold text-care-foreground disabled:opacity-60"
+              className="min-h-11 rounded-xl bg-tone-green-border px-5 text-sm font-semibold text-white transition-colors hover:bg-tone-green-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-tone-green-border focus-visible:ring-offset-2 disabled:opacity-60"
             >
               Enregistrer
             </button>

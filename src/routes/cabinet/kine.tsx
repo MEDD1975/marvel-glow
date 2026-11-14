@@ -465,7 +465,7 @@ function KineWorkspace() {
             role="dialog"
             aria-modal="true"
             aria-labelledby="transmission-title"
-            className="flex h-[68dvh] max-h-[92dvh] w-full max-w-xl flex-col overflow-hidden rounded-t-[2rem] border border-[#cfe2d6] bg-[#f1f8f3] shadow-2xl sm:h-auto sm:rounded-3xl"
+            className="flex h-[92dvh] max-h-[92dvh] w-full max-w-xl flex-col overflow-hidden rounded-t-[2rem] border border-[#cfe2d6] bg-[#f1f8f3] shadow-2xl sm:h-auto sm:rounded-3xl"
           >
             <header className="shrink-0 border-b border-[#d4e5da] bg-[#f1f8f3] px-5 pb-5 pt-3 sm:px-7 sm:pt-6">
               <div className="mx-auto mb-5 h-1.5 w-12 rounded-full bg-[#215346]/20 sm:hidden" />

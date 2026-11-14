@@ -1,5 +1,5 @@
 import { createFileRoute, Link, Outlet, useLocation } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ArrowRight,
   BookOpen,
@@ -78,6 +78,40 @@ function KineWorkspace() {
   const [patientLabel, setPatientLabel] = useState("");
   const [transmissionQr, setTransmissionQr] = useState<{ image: string; url: string } | null>(null);
   const [qrError, setQrError] = useState("");
+
+  useEffect(() => {
+    if (!transmissionOpen) return;
+
+    const scrollY = window.scrollY;
+    const previousBodyStyles = {
+      position: document.body.style.position,
+      top: document.body.style.top,
+      left: document.body.style.left,
+      right: document.body.style.right,
+      width: document.body.style.width,
+      overflow: document.body.style.overflow,
+    };
+    const previousRootOverflow = document.documentElement.style.overflow;
+
+    document.body.style.position = "fixed";
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.left = "0";
+    document.body.style.right = "0";
+    document.body.style.width = "100%";
+    document.body.style.overflow = "hidden";
+    document.documentElement.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.position = previousBodyStyles.position;
+      document.body.style.top = previousBodyStyles.top;
+      document.body.style.left = previousBodyStyles.left;
+      document.body.style.right = previousBodyStyles.right;
+      document.body.style.width = previousBodyStyles.width;
+      document.body.style.overflow = previousBodyStyles.overflow;
+      document.documentElement.style.overflow = previousRootOverflow;
+      window.scrollTo(0, scrollY);
+    };
+  }, [transmissionOpen]);
 
   const refreshResources = () => cache.invalidateQueries({ queryKey: doctorKeys.resources });
   const openResourceForm = (resource: DoctorResourceRecord | null) =>
@@ -457,7 +491,7 @@ function KineWorkspace() {
                 </button>
               </div>
             </header>
-            <div className="min-h-0 flex-1 overflow-y-auto px-5 py-5 sm:px-7">
+            <div className="min-h-0 flex-1 touch-pan-y overflow-y-auto overscroll-contain px-5 py-5 [-webkit-overflow-scrolling:touch] sm:px-7">
               {previewOpen ? (
                 <div className="flex flex-col gap-5">
                   <div className="rounded-2xl border border-[#d4e5da] bg-white/80 p-4 shadow-sm">

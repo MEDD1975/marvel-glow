@@ -109,6 +109,7 @@ export default {
       if (onboardingResponse) return onboardingResponse;
       if (url.pathname === "/api/doctor-resources") {
         const conditionId = url.searchParams.get("conditionId") ?? undefined;
+        const requestedItems = url.searchParams.get("items");
         const publicRef = url.searchParams.get("ownerId");
         const session = await auth.api.getSession({ headers: request.headers });
         if (request.method === "GET") {
@@ -117,7 +118,18 @@ export default {
           // Côté patient, seul un QR signé par Kivoir donne accès aux ressources d'un cabinet.
           const ownerId = await resolveActiveCabinetOwner(publicRef);
           if (!ownerId) return Response.json([]);
-          return Response.json((await listAllActiveDoctorResources(conditionId, ownerId)).filter((resource) => resource.kind !== "exercise"));
+          const cabinetResources = await listAllActiveDoctorResources(conditionId, ownerId);
+          if (requestedItems === null) {
+            return Response.json(cabinetResources.filter((resource) => resource.kind !== "exercise"));
+          }
+          const itemIds = new Set(
+            requestedItems
+              .split(",")
+              .map((id) => id.trim())
+              .filter((id) => id.length > 0 && id.length <= 128)
+              .slice(0, 100),
+          );
+          return Response.json(cabinetResources.filter((resource) => itemIds.has(resource.id)));
         }
         if (!session?.user) return Response.json({ error: "Unauthorized" }, { status: 401 });
         if (request.method === "POST") {

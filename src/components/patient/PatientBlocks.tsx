@@ -101,7 +101,13 @@ function resourceFormat(resource: DoctorResourceRecord) {
   return { label: "Document", icon: FileText };
 }
 
-export function DoctorResourceRow({ resource }: { resource: DoctorResourceRecord }) {
+export function DoctorResourceRow({
+  resource,
+  sharedBy = "votre médecin",
+}: {
+  resource: DoctorResourceRecord;
+  sharedBy?: string;
+}) {
   const format = resourceFormat(resource);
   const Icon = format.icon;
   return (
@@ -119,7 +125,7 @@ export function DoctorResourceRow({ resource }: { resource: DoctorResourceRecord
           {resourceDisplayTitle(resource.title)}
         </span>
         <span className="mt-0.5 block truncate text-xs text-muted-foreground">
-          {[format.label, "Partagé par votre médecin", resource.source].filter(Boolean).join(" · ")}
+          {[format.label, `Partagé par ${sharedBy}`, resource.source].filter(Boolean).join(" · ")}
         </span>
       </span>
       <ExternalLink className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />

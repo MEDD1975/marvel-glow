@@ -19,6 +19,7 @@ import { Route as ConseilsRouteImport } from './routes/conseils'
 import { Route as NouveauMotDePasseRouteImport } from './routes/nouveau-mot-de-passe'
 import { Route as OrientationRouteImport } from './routes/orientation'
 import { Route as ParcoursRouteImport } from './routes/parcours'
+import { Route as ParcoursKineRouteImport } from './routes/parcours-kine'
 import { Route as PatientRouteRouteImport } from './routes/patient/route'
 import { Route as SuiviRouteImport } from './routes/suivi'
 import { Route as AdminMedecinsRouteImport } from './routes/admin/medecins'
@@ -97,6 +98,11 @@ const OrientationRoute = OrientationRouteImport.update({
 const ParcoursRoute = ParcoursRouteImport.update({
   id: '/parcours',
   path: '/parcours',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ParcoursKineRoute = ParcoursKineRouteImport.update({
+  id: '/parcours-kine',
+  path: '/parcours-kine',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PatientRouteRoute = PatientRouteRouteImport.update({
@@ -264,6 +270,7 @@ export interface FileRoutesByFullPath {
   '/nouveau-mot-de-passe': typeof NouveauMotDePasseRoute
   '/orientation': typeof OrientationRoute
   '/parcours': typeof ParcoursRoute
+  '/parcours-kine': typeof ParcoursKineRoute
   '/suivi': typeof SuiviRoute
   '/admin/medecins': typeof AdminMedecinsRoute
   '/admin/stats': typeof AdminStatsRoute
@@ -303,6 +310,7 @@ export interface FileRoutesByTo {
   '/nouveau-mot-de-passe': typeof NouveauMotDePasseRoute
   '/orientation': typeof OrientationRoute
   '/parcours': typeof ParcoursRoute
+  '/parcours-kine': typeof ParcoursKineRoute
   '/suivi': typeof SuiviRoute
   '/admin/medecins': typeof AdminMedecinsRoute
   '/admin/stats': typeof AdminStatsRoute
@@ -345,6 +353,7 @@ export interface FileRoutesById {
   '/nouveau-mot-de-passe': typeof NouveauMotDePasseRoute
   '/orientation': typeof OrientationRoute
   '/parcours': typeof ParcoursRoute
+  '/parcours-kine': typeof ParcoursKineRoute
   '/suivi': typeof SuiviRoute
   '/admin/medecins': typeof AdminMedecinsRoute
   '/admin/stats': typeof AdminStatsRoute
@@ -388,6 +397,7 @@ export interface FileRouteTypes {
     | '/nouveau-mot-de-passe'
     | '/orientation'
     | '/parcours'
+    | '/parcours-kine'
     | '/suivi'
     | '/admin/medecins'
     | '/admin/stats'
@@ -427,6 +437,7 @@ export interface FileRouteTypes {
     | '/nouveau-mot-de-passe'
     | '/orientation'
     | '/parcours'
+    | '/parcours-kine'
     | '/suivi'
     | '/admin/medecins'
     | '/admin/stats'
@@ -468,6 +479,7 @@ export interface FileRouteTypes {
     | '/nouveau-mot-de-passe'
     | '/orientation'
     | '/parcours'
+    | '/parcours-kine'
     | '/suivi'
     | '/admin/medecins'
     | '/admin/stats'
@@ -510,6 +522,7 @@ export interface RootRouteChildren {
   NouveauMotDePasseRoute: typeof NouveauMotDePasseRoute
   OrientationRoute: typeof OrientationRoute
   ParcoursRoute: typeof ParcoursRoute
+  ParcoursKineRoute: typeof ParcoursKineRoute
   SuiviRoute: typeof SuiviRoute
   AdminMedecinsRoute: typeof AdminMedecinsRoute
   AdminStatsRoute: typeof AdminStatsRoute
@@ -586,6 +599,13 @@ declare module '@tanstack/react-router' {
       path: '/parcours'
       fullPath: '/parcours'
       preLoaderRoute: typeof ParcoursRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/parcours-kine': {
+      id: '/parcours-kine'
+      path: '/parcours-kine'
+      fullPath: '/parcours-kine'
+      preLoaderRoute: typeof ParcoursKineRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/patient': {
@@ -884,6 +904,7 @@ const rootRouteChildren: RootRouteChildren = {
   NouveauMotDePasseRoute: NouveauMotDePasseRoute,
   OrientationRoute: OrientationRoute,
   ParcoursRoute: ParcoursRoute,
+  ParcoursKineRoute: ParcoursKineRoute,
   SuiviRoute: SuiviRoute,
   AdminMedecinsRoute: AdminMedecinsRoute,
   AdminStatsRoute: AdminStatsRoute,

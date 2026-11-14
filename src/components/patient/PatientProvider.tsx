@@ -136,18 +136,21 @@ export function usePublicNetwork(doctorId: string | undefined) {
   });
 }
 
-export function useDoctorResources() {
+export function useDoctorResources(options: { resourceIds?: string[] } = {}) {
   const { context, ready, ownerId } = usePatient();
+  const resourceIds = options.resourceIds;
+  const resourceIdsKey = resourceIds?.join(",");
   return useQuery({
-    queryKey: ["patient-resources", context.pathwayId, ownerId],
+    queryKey: ["patient-resources", context.pathwayId, ownerId, resourceIdsKey],
     enabled: ready && Boolean(context.pathwayId),
     staleTime: 60_000,
-    queryFn: () =>
-      getJson<DoctorResourceRecord[]>(
-        `/api/doctor-resources?conditionId=${encodeURIComponent(context.pathwayId ?? "")}${
-          ownerId ? `&ownerId=${encodeURIComponent(ownerId)}` : ""
-        }`,
-      ),
+    queryFn: () => {
+      const params = new URLSearchParams();
+      if (resourceIds === undefined) params.set("conditionId", context.pathwayId ?? "");
+      if (ownerId) params.set("ownerId", ownerId);
+      if (resourceIds !== undefined) params.set("items", resourceIds.join(","));
+      return getJson<DoctorResourceRecord[]>(`/api/doctor-resources?${params.toString()}`);
+    },
   });
 }
 

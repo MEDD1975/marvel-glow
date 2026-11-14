@@ -416,7 +416,7 @@ function KineWorkspace() {
       />
       {transmissionOpen && (
         <div
-          className="fixed inset-0 z-50 flex items-end justify-center bg-slate-950/50 p-0 sm:items-center sm:p-5"
+          className="fixed inset-0 z-50 flex items-end justify-center bg-slate-950/55 p-0 backdrop-blur-[2px] sm:items-center sm:p-5"
           role="presentation"
           onMouseDown={(event) => {
             if (event.target === event.currentTarget) setTransmissionOpen(false);
@@ -426,201 +426,220 @@ function KineWorkspace() {
             role="dialog"
             aria-modal="true"
             aria-labelledby="transmission-title"
-            className="max-h-[92vh] w-full max-w-xl overflow-y-auto rounded-t-3xl bg-white p-5 shadow-2xl sm:rounded-3xl sm:p-7"
+            className="flex max-h-[92dvh] w-full max-w-xl flex-col overflow-hidden rounded-t-[2rem] border border-[#cfe2d6] bg-[#f1f8f3] shadow-2xl sm:rounded-3xl"
           >
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#177e78]">
-                  Nouvelle transmission
-                </p>
-                <h2 id="transmission-title" className="mt-2 text-2xl font-bold text-slate-900">
-                  {previewOpen ? "Prévisualisation patient" : "Préparer la séance"}
-                </h2>
-              </div>
-              <button
-                type="button"
-                aria-label="Fermer"
-                onClick={() => setTransmissionOpen(false)}
-                className="rounded-full p-2 text-slate-500 hover:bg-slate-100"
-              >
-                <X className="h-5 w-5" />
-              </button>
-            </div>
-            {previewOpen ? (
-              <div className="mt-5 space-y-5">
-                <div className="rounded-2xl bg-[#f3faf7] p-4">
-                  <p className="text-sm text-slate-600">Parcours</p>
-                  <p className="mt-1 font-semibold text-slate-900">{selectedTransmission.label}</p>
-                  {patientLabel.trim() && (
-                    <p className="mt-2 text-sm text-slate-600">Repère patient : {patientLabel}</p>
-                  )}
-                </div>
-                <div>
-                  <h3 className="font-semibold text-slate-900">Contenus transmis</h3>
-                  <ul className="mt-2 space-y-2">
-                    {selectedItems.map((id) => {
-                      const item = resources.data?.find((resource) => resource.id === id);
-                      return item ? (
-                        <li
-                          key={item.id}
-                          className="rounded-xl border border-slate-200 px-4 py-3 text-sm"
-                        >
-                          {item.title}
-                        </li>
-                      ) : null;
-                    })}
-                  </ul>
-                </div>
-                {transmissionQr ? (
-                  <div className="rounded-2xl border border-[#177e78]/20 bg-[#f3faf7] p-5 text-center">
-                    <p className="font-semibold text-slate-900">Parcours validé — QR code prêt</p>
-                    <img
-                      src={transmissionQr.image}
-                      alt={`QR code du parcours ${selectedTransmission.label}`}
-                      className="mx-auto mt-3 w-56 rounded-xl bg-white p-2"
-                    />
-                    <a
-                      href={transmissionQr.url}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="mt-3 block break-all text-sm text-[#177e78] underline"
+            <header className="shrink-0 border-b border-[#d4e5da] px-5 pb-5 pt-3 sm:px-7 sm:pt-6">
+              <div className="mx-auto mb-5 h-1.5 w-12 rounded-full bg-[#215346]/20 sm:hidden" />
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex items-center gap-4">
+                  <span className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-white text-[#177e78] shadow-sm ring-1 ring-[#d4e5da]">
+                    <BookOpen className="h-6 w-6" aria-hidden="true" />
+                  </span>
+                  <div>
+                    <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#177e78]">
+                      Nouvelle transmission
+                    </p>
+                    <h2
+                      id="transmission-title"
+                      className="mt-1 text-2xl font-bold tracking-tight text-[#17382f] sm:text-3xl"
                     >
-                      Ouvrir le lien patient
-                    </a>
+                      {previewOpen ? "Prévisualisation patient" : "Préparer la séance"}
+                    </h2>
                   </div>
-                ) : null}
-                {qrError ? (
-                  <p role="alert" className="text-sm text-red-700">
-                    {qrError}
-                  </p>
-                ) : null}
-                <div className="flex flex-wrap justify-between gap-3">
-                  <button
-                    type="button"
-                    onClick={() => setPreviewOpen(false)}
-                    className="rounded-xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700"
-                  >
-                    Modifier la sélection
-                  </button>
-                  <button
-                    type="button"
-                    onClick={async () => {
-                      setQrError("");
-                      const condition = findCondition(selectedTransmission.pathwayId);
-                      const cabinetId = cabinetRef.data?.ref;
-                      if (!condition || !cabinetId) {
-                        setQrError("Le parcours ou le cabinet est indisponible. Réessayez.");
-                        return;
-                      }
-                      try {
-                        const patientUrl = new URL("/parcours-kine", window.location.origin);
-                        patientUrl.searchParams.set("pathway", condition.id);
-                        patientUrl.searchParams.set("ref", cabinetId);
-                        patientUrl.searchParams.set("items", selectedItems.join(","));
-                        patientUrl.searchParams.set("focus", selectedTransmission.label);
-                        const url = patientUrl.toString();
-                        const qr = await import("qrcode");
-                        const image = await qr.default.toDataURL(url, {
-                          width: 480,
-                          margin: 1,
-                          errorCorrectionLevel: "H",
-                        });
-                        setTransmissionQr({ image, url });
-                      } catch {
-                        setQrError(
-                          "Impossible de générer le QR code. Vérifiez la connexion puis réessayez.",
-                        );
-                      }
-                    }}
-                    disabled={!cabinetRef.data?.ref}
-                    className="rounded-xl bg-[#177e78] px-4 py-3 text-sm font-semibold text-white disabled:opacity-50"
-                  >
-                    {transmissionQr ? "QR code généré" : "Valider et afficher le QR code"}
-                  </button>
                 </div>
+                <button
+                  type="button"
+                  aria-label="Fermer"
+                  onClick={() => setTransmissionOpen(false)}
+                  className="flex size-10 shrink-0 items-center justify-center rounded-full text-slate-500 transition-colors hover:bg-white hover:text-slate-900"
+                >
+                  <X className="h-5 w-5" />
+                </button>
               </div>
-            ) : (
-              <div className="mt-5 space-y-5">
-                <label className="block">
-                  <span className="mb-2 block text-sm font-semibold text-slate-800">
-                    Parcours / motif
-                  </span>
-                  <select
-                    value={selectedCondition}
-                    onChange={(event) =>
-                      setSelectedCondition(event.target.value as TransmissionFocusKey)
-                    }
-                    className="min-h-12 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-900"
-                  >
-                    {transmissionFocusOptions.map((option) => (
-                      <option key={option.key} value={option.key}>
-                        {option.label}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-                <label className="block">
-                  <span className="mb-2 block text-sm font-semibold text-slate-800">
-                    Repère patient (facultatif)
-                  </span>
-                  <input
-                    value={patientLabel}
-                    onChange={(event) => setPatientLabel(event.target.value)}
-                    maxLength={50}
-                    placeholder="Initiales ou repère local"
-                    className="min-h-12 w-full rounded-xl border border-slate-200 px-3 text-sm text-slate-900 placeholder:text-slate-400"
-                  />
-                </label>
-                <fieldset>
-                  <legend className="mb-2 text-sm font-semibold text-slate-800">
-                    Sélectionnez les contenus montrés
-                  </legend>
-                  <div className="space-y-2">
-                    {(resources.data ?? [])
-                      .filter((item) => item.status === "active")
-                      .map((item) => (
-                        <label
-                          key={item.id}
-                          className="flex cursor-pointer items-start gap-3 rounded-xl border border-slate-200 p-3 hover:border-[#177e78]/50"
-                        >
-                          <input
-                            type="checkbox"
-                            checked={selectedItems.includes(item.id)}
-                            onChange={() => toggleItem(item.id)}
-                            className="mt-1 accent-[#177e78]"
-                          />
-                          <span>
-                            <span className="block text-sm font-semibold text-slate-900">
-                              {item.title}
-                            </span>
-                            <span className="mt-1 block text-xs text-slate-500">
-                              {resourceKindLabels[resourceKind(item)]} ·{" "}
-                              {findCondition(item.conditionId)?.name ?? "Parcours"}
-                            </span>
-                          </span>
-                        </label>
+            </header>
+            <div className="min-h-0 flex-1 overflow-y-auto px-5 py-5 sm:px-7">
+              {previewOpen ? (
+                <div className="flex flex-col gap-5">
+                  <div className="rounded-2xl border border-[#d4e5da] bg-white/80 p-4 shadow-sm">
+                    <p className="text-sm text-slate-600">Parcours</p>
+                    <p className="mt-1 font-semibold text-slate-900">
+                      {selectedTransmission.label}
+                    </p>
+                    {patientLabel.trim() && (
+                      <p className="mt-2 text-sm text-slate-600">Repère patient : {patientLabel}</p>
+                    )}
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-slate-900">Contenus transmis</h3>
+                    <ul className="mt-2 flex flex-col gap-2">
+                      {selectedItems.map((id) => {
+                        const item = resources.data?.find((resource) => resource.id === id);
+                        return item ? (
+                          <li
+                            key={item.id}
+                            className="rounded-2xl border border-[#d4e2da] bg-white px-4 py-3 text-sm text-[#203d34] shadow-sm"
+                          >
+                            {item.title}
+                          </li>
+                        ) : null;
+                      })}
+                    </ul>
+                  </div>
+                  {transmissionQr ? (
+                    <div className="rounded-2xl border border-[#cfe2d6] bg-white p-5 text-center shadow-sm">
+                      <p className="font-semibold text-slate-900">Parcours validé — QR code prêt</p>
+                      <img
+                        src={transmissionQr.image}
+                        alt={`QR code du parcours ${selectedTransmission.label}`}
+                        className="mx-auto mt-3 w-56 rounded-xl bg-white p-2"
+                      />
+                      <a
+                        href={transmissionQr.url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="mt-3 block break-all text-sm text-[#177e78] underline"
+                      >
+                        Ouvrir le lien patient
+                      </a>
+                    </div>
+                  ) : null}
+                  {qrError ? (
+                    <p role="alert" className="text-sm text-red-700">
+                      {qrError}
+                    </p>
+                  ) : null}
+                  <div className="sticky bottom-0 -mx-5 flex flex-col-reverse gap-3 border-t border-[#d4e5da] bg-[#f1f8f3]/95 px-5 pb-[max(1rem,env(safe-area-inset-bottom))] pt-4 backdrop-blur sm:-mx-7 sm:flex-row sm:justify-between sm:px-7">
+                    <button
+                      type="button"
+                      onClick={() => setPreviewOpen(false)}
+                      className="min-h-12 w-full rounded-2xl border border-[#d4e2da] bg-white px-5 py-3 text-base font-semibold text-[#315a4c] transition hover:bg-[#f8fbf8] sm:w-auto"
+                    >
+                      Modifier la sélection
+                    </button>
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        setQrError("");
+                        const condition = findCondition(selectedTransmission.pathwayId);
+                        const cabinetId = cabinetRef.data?.ref;
+                        if (!condition || !cabinetId) {
+                          setQrError("Le parcours ou le cabinet est indisponible. Réessayez.");
+                          return;
+                        }
+                        try {
+                          const patientUrl = new URL("/parcours-kine", window.location.origin);
+                          patientUrl.searchParams.set("pathway", condition.id);
+                          patientUrl.searchParams.set("ref", cabinetId);
+                          patientUrl.searchParams.set("items", selectedItems.join(","));
+                          patientUrl.searchParams.set("focus", selectedTransmission.label);
+                          const url = patientUrl.toString();
+                          const qr = await import("qrcode");
+                          const image = await qr.default.toDataURL(url, {
+                            width: 480,
+                            margin: 1,
+                            errorCorrectionLevel: "H",
+                          });
+                          setTransmissionQr({ image, url });
+                        } catch {
+                          setQrError(
+                            "Impossible de générer le QR code. Vérifiez la connexion puis réessayez.",
+                          );
+                        }
+                      }}
+                      disabled={!cabinetRef.data?.ref}
+                      className="min-h-12 w-full rounded-2xl bg-[#279b6b] px-5 py-3 text-base font-semibold text-white shadow-md shadow-[#215346]/10 transition hover:bg-[#208b60] disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+                    >
+                      {transmissionQr ? "QR code généré" : "Valider et afficher le QR code"}
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex flex-col gap-5">
+                  <label className="block">
+                    <span className="mb-2 block text-sm font-semibold text-[#315a4c]">
+                      Parcours / motif
+                    </span>
+                    <select
+                      value={selectedCondition}
+                      onChange={(event) =>
+                        setSelectedCondition(event.target.value as TransmissionFocusKey)
+                      }
+                      className="min-h-12 w-full rounded-2xl border border-[#d4e2da] bg-white px-4 text-base font-medium text-[#203d34] shadow-sm outline-none transition focus:border-[#178d86] focus:ring-2 focus:ring-[#178d86]/15"
+                    >
+                      {transmissionFocusOptions.map((option) => (
+                        <option key={option.key} value={option.key}>
+                          {option.label}
+                        </option>
                       ))}
+                    </select>
+                  </label>
+                  <label className="block">
+                    <span className="mb-2 block text-sm font-semibold text-[#315a4c]">
+                      Repère patient{" "}
+                      <span className="font-normal text-[#688277]">(facultatif)</span>
+                    </span>
+                    <input
+                      value={patientLabel}
+                      onChange={(event) => setPatientLabel(event.target.value)}
+                      maxLength={50}
+                      placeholder="Initiales ou repère local"
+                      className="min-h-12 w-full rounded-2xl border border-[#d4e2da] bg-white px-4 text-base text-[#203d34] shadow-sm outline-none transition placeholder:text-[#8aa398] focus:border-[#178d86] focus:ring-2 focus:ring-[#178d86]/15"
+                    />
+                  </label>
+                  <fieldset>
+                    <legend className="mb-3 flex w-full items-center justify-between gap-3 text-sm font-semibold text-[#315a4c]">
+                      <span>Sélectionnez les contenus montrés</span>
+                      <span className="shrink-0 rounded-full bg-[#e3f1e8] px-3 py-1 text-xs font-semibold text-[#177e78]">
+                        {selectedItems.length} sélectionné{selectedItems.length > 1 ? "s" : ""}
+                      </span>
+                    </legend>
+                    <div className="flex flex-col gap-2">
+                      {(resources.data ?? [])
+                        .filter((item) => item.status === "active")
+                        .map((item) => (
+                          <label
+                            key={item.id}
+                            className="flex cursor-pointer items-start gap-3 rounded-2xl border border-[#d4e2da] bg-white p-4 shadow-sm transition-colors hover:border-[#178d86]/60 has-[:checked]:border-[#178d86] has-[:checked]:bg-[#e8f4ec]"
+                          >
+                            <input
+                              type="checkbox"
+                              checked={selectedItems.includes(item.id)}
+                              onChange={() => toggleItem(item.id)}
+                              className="mt-1 size-5 shrink-0 accent-[#177e78]"
+                            />
+                            <span>
+                              <span className="block text-sm font-semibold text-slate-900">
+                                {item.title}
+                              </span>
+                              <span className="mt-1 block text-sm text-[#688277]">
+                                {resourceKindLabels[resourceKind(item)]} ·{" "}
+                                {findCondition(item.conditionId)?.name ?? "Parcours"}
+                              </span>
+                            </span>
+                          </label>
+                        ))}
+                    </div>
+                  </fieldset>
+                  <div className="sticky bottom-0 -mx-5 flex flex-col-reverse gap-3 border-t border-[#d4e5da] bg-[#f1f8f3]/95 px-5 pb-[max(1rem,env(safe-area-inset-bottom))] pt-4 backdrop-blur sm:-mx-7 sm:flex-row sm:justify-end sm:px-7">
+                    <button
+                      type="button"
+                      onClick={() => setTransmissionOpen(false)}
+                      className="min-h-12 w-full rounded-2xl border border-[#d4e2da] bg-white px-5 py-3 text-base font-semibold text-[#315a4c] transition hover:bg-[#f8fbf8] sm:w-auto"
+                    >
+                      Annuler
+                    </button>
+                    <button
+                      type="button"
+                      disabled={selectedItems.length === 0}
+                      onClick={() => setPreviewOpen(true)}
+                      className="min-h-12 w-full rounded-2xl bg-[#279b6b] px-5 py-3 text-base font-semibold text-white shadow-md shadow-[#215346]/10 transition hover:bg-[#208b60] disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+                    >
+                      Prévisualiser ({selectedItems.length})
+                    </button>
                   </div>
-                </fieldset>
-                <div className="flex flex-wrap justify-end gap-3">
-                  <button
-                    type="button"
-                    onClick={() => setTransmissionOpen(false)}
-                    className="rounded-xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700"
-                  >
-                    Annuler
-                  </button>
-                  <button
-                    type="button"
-                    disabled={selectedItems.length === 0}
-                    onClick={() => setPreviewOpen(true)}
-                    className="rounded-xl bg-[#177e78] px-4 py-3 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
-                  >
-                    Prévisualiser ({selectedItems.length})
-                  </button>
                 </div>
-              </div>
-            )}
+              )}
+            </div>
           </section>
         </div>
       )}

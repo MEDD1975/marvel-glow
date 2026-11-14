@@ -38,6 +38,7 @@ import { Route as PatientFaqRouteImport } from './routes/patient/faq'
 import { Route as PatientParcoursRouteImport } from './routes/patient/parcours'
 import { Route as PatientSurveillerRouteImport } from './routes/patient/surveiller'
 import { Route as CabinetKineRessourcesRouteImport } from './routes/cabinet/kine.ressources'
+import { Route as CabinetKineTransmissionsRouteImport } from './routes/cabinet/kine.transmissions'
 import { Route as PatientInfosPageRouteImport } from './routes/patient/infos/$page'
 import { Route as PatientProfessionnelsIndexRouteImport } from './routes/patient/professionnels/index'
 import { Route as PatientProfessionnelsProIdRouteImport } from './routes/patient/professionnels/$proId'
@@ -193,6 +194,12 @@ const CabinetKineRessourcesRoute = CabinetKineRessourcesRouteImport.update({
   path: '/ressources',
   getParentRoute: () => CabinetKineRoute,
 } as any)
+const CabinetKineTransmissionsRoute =
+  CabinetKineTransmissionsRouteImport.update({
+    id: '/transmissions',
+    path: '/transmissions',
+    getParentRoute: () => CabinetKineRoute,
+  } as any)
 const PatientInfosPageRoute = PatientInfosPageRouteImport.update({
   id: '/infos/$page',
   path: '/infos/$page',
@@ -275,6 +282,7 @@ export interface FileRoutesByFullPath {
   '/cabinet/': typeof CabinetIndexRoute
   '/patient/': typeof PatientIndexRoute
   '/cabinet/kine/ressources': typeof CabinetKineRessourcesRoute
+  '/cabinet/kine/transmissions': typeof CabinetKineTransmissionsRoute
   '/patient/infos/$page': typeof PatientInfosPageRoute
   '/patient/professionnels/$proId': typeof PatientProfessionnelsProIdRoute
   '/patient/recommandations/$recoId': typeof PatientRecommandationsRecoIdRoute
@@ -313,6 +321,7 @@ export interface FileRoutesByTo {
   '/cabinet': typeof CabinetIndexRoute
   '/patient': typeof PatientIndexRoute
   '/cabinet/kine/ressources': typeof CabinetKineRessourcesRoute
+  '/cabinet/kine/transmissions': typeof CabinetKineTransmissionsRoute
   '/patient/infos/$page': typeof PatientInfosPageRoute
   '/patient/professionnels/$proId': typeof PatientProfessionnelsProIdRoute
   '/patient/recommandations/$recoId': typeof PatientRecommandationsRecoIdRoute
@@ -354,6 +363,7 @@ export interface FileRoutesById {
   '/cabinet/': typeof CabinetIndexRoute
   '/patient/': typeof PatientIndexRoute
   '/cabinet/kine/ressources': typeof CabinetKineRessourcesRoute
+  '/cabinet/kine/transmissions': typeof CabinetKineTransmissionsRoute
   '/patient/infos/$page': typeof PatientInfosPageRoute
   '/patient/professionnels/$proId': typeof PatientProfessionnelsProIdRoute
   '/patient/recommandations/$recoId': typeof PatientRecommandationsRecoIdRoute
@@ -396,6 +406,7 @@ export interface FileRouteTypes {
     | '/cabinet/'
     | '/patient/'
     | '/cabinet/kine/ressources'
+    | '/cabinet/kine/transmissions'
     | '/patient/infos/$page'
     | '/patient/professionnels/$proId'
     | '/patient/recommandations/$recoId'
@@ -434,6 +445,7 @@ export interface FileRouteTypes {
     | '/cabinet'
     | '/patient'
     | '/cabinet/kine/ressources'
+    | '/cabinet/kine/transmissions'
     | '/patient/infos/$page'
     | '/patient/professionnels/$proId'
     | '/patient/recommandations/$recoId'
@@ -474,6 +486,7 @@ export interface FileRouteTypes {
     | '/cabinet/'
     | '/patient/'
     | '/cabinet/kine/ressources'
+    | '/cabinet/kine/transmissions'
     | '/patient/infos/$page'
     | '/patient/professionnels/$proId'
     | '/patient/recommandations/$recoId'
@@ -708,6 +721,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CabinetKineRessourcesRouteImport
       parentRoute: typeof CabinetKineRoute
     }
+    '/cabinet/kine/transmissions': {
+      id: '/cabinet/kine/transmissions'
+      path: '/transmissions'
+      fullPath: '/cabinet/kine/transmissions'
+      preLoaderRoute: typeof CabinetKineTransmissionsRouteImport
+      parentRoute: typeof CabinetKineRoute
+    }
     '/patient/infos/$page': {
       id: '/patient/infos/$page'
       path: '/infos/$page'
@@ -776,10 +796,12 @@ declare module '@tanstack/react-router' {
 
 interface CabinetKineRouteChildren {
   CabinetKineRessourcesRoute: typeof CabinetKineRessourcesRoute
+  CabinetKineTransmissionsRoute: typeof CabinetKineTransmissionsRoute
 }
 
 const CabinetKineRouteChildren: CabinetKineRouteChildren = {
   CabinetKineRessourcesRoute: CabinetKineRessourcesRoute,
+  CabinetKineTransmissionsRoute: CabinetKineTransmissionsRoute,
 }
 
 const CabinetKineRouteWithChildren = CabinetKineRoute._addFileChildren(

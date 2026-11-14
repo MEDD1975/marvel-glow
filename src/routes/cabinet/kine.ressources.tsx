@@ -286,13 +286,17 @@ function KineResourcesPage() {
               <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
                 {filtered.map((item) => {
                   const itemKind = resourceKind(item);
-                  const isVideo = itemKind === "video" || item.contentType?.startsWith("video/");
-                  const isPhoto = itemKind === "photo" || item.contentType?.startsWith("image/");
-                  const isAudio = itemKind === "audio" || item.contentType?.startsWith("audio/");
-                  const thumbnail = isVideo ? videoThumbnail(item.url) : null;
+                  const thumbnail = videoThumbnail(item.url);
                   const isVideoFile =
                     item.contentType?.startsWith("video/") ||
                     /\.(mp4|webm|mov|m4v|ogv)(?:$|[?#])/i.test(item.url);
+                  const isVideo =
+                    itemKind === "video" ||
+                    item.contentType?.startsWith("video/") ||
+                    isVideoFile ||
+                    Boolean(thumbnail);
+                  const isPhoto = itemKind === "photo" || item.contentType?.startsWith("image/");
+                  const isAudio = itemKind === "audio" || item.contentType?.startsWith("audio/");
                   const hidden = item.status === "hidden";
                   return (
                     <li

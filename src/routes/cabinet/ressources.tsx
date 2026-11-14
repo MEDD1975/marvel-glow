@@ -124,11 +124,15 @@ function ResourcesPage() {
           <ul className="flex flex-col gap-2">
             {filtered.map((item) => {
               const hidden = item.status === "hidden";
-              const isVideo = resourceKind(item) === "video" || item.contentType?.startsWith("video/");
-  const thumbnail = isVideo ? videoThumbnail(item.url) : null;
-  const isVideoFile =
-    item.contentType?.startsWith("video/") ||
-    /\.(mp4|webm|mov|m4v|ogv)(?:$|[?#])/i.test(item.url);
+              const thumbnail = videoThumbnail(item.url);
+              const isVideoFile =
+                item.contentType?.startsWith("video/") ||
+                /\.(mp4|webm|mov|m4v|ogv)(?:$|[?#])/i.test(item.url);
+              const isVideo =
+                resourceKind(item) === "video" ||
+                item.contentType?.startsWith("video/") ||
+                isVideoFile ||
+                Boolean(thumbnail);
   return (
                 <li key={item.id} className="flex flex-col gap-3 rounded-2xl border border-border bg-card p-4 shadow-sm md:flex-row md:items-center">
                   {isVideo ? (

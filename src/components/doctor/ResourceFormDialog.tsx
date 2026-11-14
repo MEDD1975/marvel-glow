@@ -118,7 +118,7 @@ export function ResourceFormDialog({
       <DialogContent
         className={`max-h-[90dvh] overflow-y-auto sm:max-w-lg ${
           simplifiedKineForm
-            ? "border-[#cfe2d5] bg-[#f1f7f2] p-4 text-white shadow-[0_20px_60px_rgba(25,57,47,0.2)] sm:rounded-[1.75rem] sm:p-5"
+            ? "border-[#cfe2d5] bg-[#eaf4ed] p-4 text-[#19392f] shadow-[0_20px_60px_rgba(25,57,47,0.2)] sm:rounded-[1.75rem] sm:p-5"
             : ""
         }`}
         onOpenAutoFocus={(event) => {
@@ -129,14 +129,14 @@ export function ResourceFormDialog({
         <DialogHeader
           className={
             simplifiedKineForm
-              ? "rounded-2xl border border-[#176b5b] bg-[#176b5b] px-5 py-5 pr-12 text-white"
+              ? "rounded-2xl border border-[#cfe2d5] bg-[#eaf4ed] px-5 py-5 pr-12 text-[#19392f]"
               : undefined
           }
         >
           <DialogTitle ref={dialogTitleRef} tabIndex={-1}>
             {editing ? "Modifier la ressource" : "Ajouter une ressource"}
           </DialogTitle>
-          <DialogDescription className={simplifiedKineForm ? "text-white/80" : undefined}>
+          <DialogDescription className={simplifiedKineForm ? "text-[#49685d]" : undefined}>
             {simplifiedKineForm
               ? "Choisissez le parcours puis le type ; le contenu s’adapte automatiquement."
               : "Le patient retrouvera cette ressource dans son parcours."}
@@ -146,7 +146,7 @@ export function ResourceFormDialog({
           onSubmit={(event) => void submit(event)}
           className={`flex flex-col gap-4 ${
             simplifiedKineForm
-              ? "rounded-2xl border border-[#cfe2d5] bg-[#e7f2ea] p-4 text-[#19392f] shadow-sm sm:p-5"
+              ? "rounded-2xl border border-[#d4e2d9] bg-[#f3f8f4] p-4 text-[#19392f] shadow-sm sm:p-5"
               : ""
           }`}
         >

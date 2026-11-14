@@ -48,6 +48,7 @@ export function ResourceFormDialog({
   const [mode, setMode] = useState<"file" | "link">("file");
   const [state, setState] = useState<SaveState>({ status: "idle" });
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const dialogTitleRef = useRef<HTMLHeadingElement>(null);
   const [selectedFileName, setSelectedFileName] = useState("");
   const availableKinds = simplifiedKineForm ? kineSelectableResourceKinds : selectableResourceKinds;
 
@@ -114,9 +115,17 @@ export function ResourceFormDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90dvh] overflow-y-auto sm:max-w-lg">
+      <DialogContent
+        className="max-h-[90dvh] overflow-y-auto sm:max-w-lg"
+        onOpenAutoFocus={(event) => {
+          event.preventDefault();
+          dialogTitleRef.current?.focus();
+        }}
+      >
         <DialogHeader>
-          <DialogTitle>{editing ? "Modifier la ressource" : "Ajouter une ressource"}</DialogTitle>
+          <DialogTitle ref={dialogTitleRef} tabIndex={-1}>
+            {editing ? "Modifier la ressource" : "Ajouter une ressource"}
+          </DialogTitle>
           <DialogDescription>
             {simplifiedKineForm
               ? "Choisissez le parcours puis le type ; le contenu s’adapte automatiquement."

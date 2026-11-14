@@ -17,6 +17,7 @@ import type { DoctorResourceRecord } from "@/lib/doctor-resource-db";
 import { isPlayableVideo, youtubeThumbnail } from "@/lib/learning-content";
 import type { PathwayGuide } from "@/lib/patient-guides";
 import { formatTitle, resourceDisplayTitle } from "@/lib/typography";
+import { VideoThumbnail } from "@/components/VideoThumbnail";
 
 export function BackToHome() {
   return (
@@ -139,6 +140,7 @@ export type PatientVideo = {
   title: string;
   url: string;
   thumbnailUrl?: string | undefined;
+  previewUrl?: string | undefined;
   source?: string | null | undefined;
 };
 
@@ -160,6 +162,11 @@ export function videoFromResource(resource: DoctorResourceRecord): PatientVideo 
     title: resourceDisplayTitle(resource.title),
     url: resource.url,
     thumbnailUrl: youtubeThumbnail(resource.url),
+    previewUrl:
+      resource.contentType?.startsWith("video/") ||
+      /\.(mp4|webm|mov|m4v|ogv)(?:$|[?#])/i.test(resource.url)
+        ? resource.url
+        : undefined,
     source: resource.source,
   };
 }
@@ -183,6 +190,8 @@ export function VideoCard({ video }: { video: PatientVideo }) {
             onError={() => setThumbnailFailed(true)}
             className="h-full w-full object-cover"
           />
+        ) : video.previewUrl ? (
+          <VideoThumbnail src={video.previewUrl} className="h-full w-full object-cover" />
         ) : (
           <span
             className="absolute inset-0 bg-gradient-to-br from-[#F4F8FD] to-[#E3EDFA]"
@@ -190,7 +199,7 @@ export function VideoCard({ video }: { video: PatientVideo }) {
           />
         )}
         <span
-          className={`absolute inset-0 flex items-center justify-center ${showThumbnail ? "bg-[#0F1B2D]/15" : ""}`}
+          className={`absolute inset-0 flex items-center justify-center ${showThumbnail || video.previewUrl ? "bg-[#0F1B2D]/15" : ""}`}
         >
           <span className="flex h-14 w-14 items-center justify-center rounded-full bg-white/90 text-[#0B63CE] shadow-md ring-1 ring-black/5 transition-transform group-hover:scale-105">
             <Play className="ml-0.5 h-6 w-6 fill-current" aria-hidden="true" />

@@ -35,6 +35,7 @@ import {
   useDoctorCache,
   useDoctorResources,
 } from "@/components/doctor/use-doctor-data";
+import { VideoThumbnail } from "@/components/VideoThumbnail";
 
 export const Route = createFileRoute("/cabinet/kine/ressources")({
   head: () => ({ meta: [{ title: "Ma bibliothèque kiné — Kivoir" }] }),
@@ -289,6 +290,9 @@ function KineResourcesPage() {
                   const isPhoto = itemKind === "photo" || item.contentType?.startsWith("image/");
                   const isAudio = itemKind === "audio" || item.contentType?.startsWith("audio/");
                   const thumbnail = isVideo ? videoThumbnail(item.url) : null;
+                  const isVideoFile =
+                    item.contentType?.startsWith("video/") ||
+                    /\.(mp4|webm|mov|m4v|ogv)(?:$|[?#])/i.test(item.url);
                   const hidden = item.status === "hidden";
                   return (
                     <li
@@ -300,6 +304,8 @@ function KineResourcesPage() {
                           <img src={item.url} alt="" className="h-full w-full object-cover" />
                         ) : thumbnail ? (
                           <img src={thumbnail} alt="" className="h-full w-full object-cover" />
+                        ) : isVideoFile ? (
+                          <VideoThumbnail src={item.url} className="h-full w-full object-cover" />
                         ) : (
                           <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-[#177e78] shadow-sm">
                             {isVideo ? (

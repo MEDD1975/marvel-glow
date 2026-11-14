@@ -9,6 +9,7 @@ import { EmptyState, ErrorState, LoadingState } from "@/components/doctor/states
 import { ConfirmationDialog } from "@/components/doctor/ConfirmationDialog";
 import { ResourceFormDialog } from "@/components/doctor/ResourceFormDialog";
 import { doctorKeys, sendJson, useDoctorCache, useDoctorResources } from "@/components/doctor/use-doctor-data";
+import { VideoThumbnail } from "@/components/VideoThumbnail";
 
 export const Route = createFileRoute("/cabinet/ressources")({
   head: () => ({ meta: [{ title: "Mes ressources — Kivoir" }] }),
@@ -124,12 +125,19 @@ function ResourcesPage() {
             {filtered.map((item) => {
               const hidden = item.status === "hidden";
               const isVideo = resourceKind(item) === "video" || item.contentType?.startsWith("video/");
-              const thumbnail = isVideo ? videoThumbnail(item.url) : null;
-              return (
+  const thumbnail = isVideo ? videoThumbnail(item.url) : null;
+  const isVideoFile =
+    item.contentType?.startsWith("video/") ||
+    /\.(mp4|webm|mov|m4v|ogv)(?:$|[?#])/i.test(item.url);
+  return (
                 <li key={item.id} className="flex flex-col gap-3 rounded-2xl border border-border bg-card p-4 shadow-sm md:flex-row md:items-center">
                   {isVideo ? (
                     <div className="relative aspect-video w-full shrink-0 overflow-hidden rounded-xl bg-gradient-to-br from-[#DCEBFF] via-[#E8F7F0] to-[#F8EFD9] md:w-36" aria-label="Aperçu de la vidéo">
-                      {thumbnail ? <img src={thumbnail} alt="" className="h-full w-full object-cover" /> : null}
+                      {thumbnail ? (
+                        <img src={thumbnail} alt="" className="h-full w-full object-cover" />
+                      ) : isVideoFile ? (
+                        <VideoThumbnail src={item.url} className="h-full w-full object-cover" />
+                      ) : null}
                       <span className="absolute inset-0 flex items-center justify-center bg-[#101C33]/15"><span className="flex h-10 w-10 items-center justify-center rounded-full bg-white/95 text-[#1769CF] shadow-sm"><Play className="ml-0.5 h-5 w-5 fill-current" aria-hidden="true" /></span></span>
                     </div>
                   ) : null}

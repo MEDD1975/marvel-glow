@@ -43,15 +43,6 @@ export const Route = createFileRoute("/cabinet/kine/ressources")({
   component: KineResourcesPage,
 });
 
-const contentFilters: Array<{ value: ResourceKind | "all"; label: string }> = [
-  { value: "all", label: "Tout" },
-  { value: "video", label: "Vidéos" },
-  { value: "document", label: "Documents" },
-  { value: "photo", label: "Photos" },
-  { value: "audio", label: "Audio" },
-  { value: "link", label: "Liens" },
-];
-
 function videoThumbnail(url: string) {
   return youtubeThumbnail(url) ?? null;
 }
@@ -61,7 +52,7 @@ function KineResourcesPage() {
   const resources = useDoctorResources(session?.user?.id);
   const cache = useDoctorCache();
   const [query, setQuery] = useState("");
-  const [kind, setKind] = useState<ResourceKind | "all">("all");
+  const [kind, setKind] = useState<ResourceKind | "all" | "files">("all");
   const [editing, setEditing] = useState<{
     open: boolean;
     resource: DoctorResourceRecord | null;
@@ -73,11 +64,21 @@ function KineResourcesPage() {
   const refresh = () => cache.invalidateQueries({ queryKey: doctorKeys.resources });
   const openForm = (resource: DoctorResourceRecord | null) =>
     setEditing((current) => ({ open: true, resource, key: current.key + 1 }));
+  const selectKind = (nextKind: ResourceKind | "all" | "files") => {
+    setKind(nextKind);
+    document.getElementById("library-items-heading")?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  };
 
   const filtered = useMemo(() => {
     const needle = query.trim().toLowerCase();
     return (resources.data ?? []).filter((item) => {
-      const matchesKind = kind === "all" || resourceKind(item) === kind;
+      const itemKind = resourceKind(item);
+      const matchesKind =
+        kind === "all" ||
+        (kind === "files" ? itemKind === "document" || itemKind === "photo" : itemKind === kind);
       const matchesQuery =
         !needle ||
         item.title.toLowerCase().includes(needle) ||
@@ -165,40 +166,90 @@ function KineResourcesPage() {
             </div>
 
             <div className="grid grid-cols-2 gap-3 self-end md:self-center">
-              <div className="col-span-2 rounded-2xl bg-[#176b5b] p-4 text-white md:p-5">
-                <p className="text-sm font-medium text-white/75">
+              <button
+                type="button"
+                aria-pressed={kind === "all"}
+                onClick={() => selectKind("all")}
+                className={`col-span-2 rounded-2xl border p-4 text-left text-white transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#177e78] focus-visible:ring-offset-2 md:p-5 ${
+                  kind === "all"
+                    ? "border-[#176b5b] bg-[#176b5b]"
+                    : "border-[#176b5b] bg-[#176b5b] hover:bg-[#12594d]"
+                }`}
+              >
+                <span className="block text-sm font-medium text-white/75">
                   Contenus dans votre bibliothèque
-                </p>
-                <p className="mt-2 text-4xl font-bold tabular-nums">{totals.total}</p>
-              </div>
-              <div className="rounded-2xl border border-[#cfe2d5] bg-white/85 p-4">
+                </span>
+                <span className="mt-2 block text-4xl font-bold tabular-nums">{totals.total}</span>
+                <span className="mt-2 block text-xs font-medium text-white/75">
+                  Afficher toute la bibliothèque
+                </span>
+              </button>
+              <button
+                type="button"
+                aria-pressed={kind === "video"}
+                onClick={() => selectKind("video")}
+                className={`rounded-2xl border p-4 text-left transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#177e78] focus-visible:ring-offset-2 ${
+                  kind === "video"
+                    ? "border-[#176b5b] bg-[#edf6ef] ring-1 ring-inset ring-[#176b5b]/30"
+                    : "border-[#cfe2d5] bg-white/85 hover:-translate-y-0.5 hover:border-[#177e78] hover:shadow-sm"
+                }`}
+              >
                 <Video className="h-5 w-5 text-[#177e78]" aria-hidden="true" />
-                <p className="mt-3 text-2xl font-bold tabular-nums text-[#19392f]">
+                <span className="mt-3 block text-2xl font-bold tabular-nums text-[#19392f]">
                   {totals.videos}
-                </p>
-                <p className="text-xs font-medium text-[#587269]">Vidéos</p>
-              </div>
-              <div className="rounded-2xl border border-[#cfe2d5] bg-white/85 p-4">
+                </span>
+                <span className="block text-xs font-medium text-[#587269]">Vidéos</span>
+              </button>
+              <button
+                type="button"
+                aria-pressed={kind === "files"}
+                onClick={() => selectKind("files")}
+                className={`rounded-2xl border p-4 text-left transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#177e78] focus-visible:ring-offset-2 ${
+                  kind === "files"
+                    ? "border-[#176b5b] bg-[#edf6ef] ring-1 ring-inset ring-[#176b5b]/30"
+                    : "border-[#cfe2d5] bg-white/85 hover:-translate-y-0.5 hover:border-[#177e78] hover:shadow-sm"
+                }`}
+              >
                 <FileText className="h-5 w-5 text-[#177e78]" aria-hidden="true" />
-                <p className="mt-3 text-2xl font-bold tabular-nums text-[#19392f]">
+                <span className="mt-3 block text-2xl font-bold tabular-nums text-[#19392f]">
                   {totals.files}
-                </p>
-                <p className="text-xs font-medium text-[#587269]">Documents & photos</p>
-              </div>
-              <div className="rounded-2xl border border-[#cfe2d5] bg-white/85 p-4">
+                </span>
+                <span className="block text-xs font-medium text-[#587269]">
+                  Documents &amp; photos
+                </span>
+              </button>
+              <button
+                type="button"
+                aria-pressed={kind === "audio"}
+                onClick={() => selectKind("audio")}
+                className={`rounded-2xl border p-4 text-left transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#177e78] focus-visible:ring-offset-2 ${
+                  kind === "audio"
+                    ? "border-[#176b5b] bg-[#edf6ef] ring-1 ring-inset ring-[#176b5b]/30"
+                    : "border-[#cfe2d5] bg-white/85 hover:-translate-y-0.5 hover:border-[#177e78] hover:shadow-sm"
+                }`}
+              >
                 <Music2 className="h-5 w-5 text-[#177e78]" aria-hidden="true" />
-                <p className="mt-3 text-2xl font-bold tabular-nums text-[#19392f]">
+                <span className="mt-3 block text-2xl font-bold tabular-nums text-[#19392f]">
                   {totals.audios}
-                </p>
-                <p className="text-xs font-medium text-[#587269]">Audios</p>
-              </div>
-              <div className="rounded-2xl border border-[#cfe2d5] bg-white/85 p-4">
+                </span>
+                <span className="block text-xs font-medium text-[#587269]">Audios</span>
+              </button>
+              <button
+                type="button"
+                aria-pressed={kind === "link"}
+                onClick={() => selectKind("link")}
+                className={`rounded-2xl border p-4 text-left transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#177e78] focus-visible:ring-offset-2 ${
+                  kind === "link"
+                    ? "border-[#176b5b] bg-[#edf6ef] ring-1 ring-inset ring-[#176b5b]/30"
+                    : "border-[#cfe2d5] bg-white/85 hover:-translate-y-0.5 hover:border-[#177e78] hover:shadow-sm"
+                }`}
+              >
                 <Link2 className="h-5 w-5 text-[#177e78]" aria-hidden="true" />
-                <p className="mt-3 text-2xl font-bold tabular-nums text-[#19392f]">
+                <span className="mt-3 block text-2xl font-bold tabular-nums text-[#19392f]">
                   {totals.links}
-                </p>
-                <p className="text-xs font-medium text-[#587269]">Liens</p>
-              </div>
+                </span>
+                <span className="block text-xs font-medium text-[#587269]">Liens</span>
+              </button>
             </div>
           </div>
         </header>
@@ -227,24 +278,6 @@ function KineResourcesPage() {
                 className="min-h-11 w-full rounded-xl border border-[#d4e2d9] bg-white pl-9 pr-3 text-sm text-[#19392f] outline-none transition placeholder:text-[#7d9389] focus:border-[#177e78] focus:ring-2 focus:ring-[#177e78]/15"
               />
             </label>
-          </div>
-
-          <div className="mt-5 flex flex-wrap gap-2" aria-label="Filtrer par type de contenu">
-            {contentFilters.map((filter) => (
-              <button
-                key={filter.value}
-                type="button"
-                aria-pressed={kind === filter.value}
-                onClick={() => setKind(filter.value)}
-                className={`min-h-10 rounded-full border px-4 text-sm font-semibold transition ${
-                  kind === filter.value
-                    ? "border-[#176b5b] bg-[#176b5b] text-white"
-                    : "border-[#d4e2d9] bg-white text-[#49685d] hover:border-[#177e78] hover:text-[#176b5b]"
-                }`}
-              >
-                {filter.label}
-              </button>
-            ))}
           </div>
 
           <div className="mt-5">

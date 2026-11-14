@@ -3,7 +3,6 @@ import { useState } from "react";
 import {
   ArrowRight,
   BookOpen,
-  CheckCircle2,
   ExternalLink,
   Eye,
   EyeOff,
@@ -35,21 +34,6 @@ import type { DoctorResourceRecord } from "@/lib/doctor-resource-db";
 export const Route = createFileRoute("/cabinet/kine")({
   component: KineWorkspace,
 });
-
-const recentTransmissions = [
-  {
-    patient: "Patient transmis par le cabinet",
-    focus: "Entorse de cheville",
-    date: "Aujourd’hui",
-    count: "4 contenus",
-  },
-  {
-    patient: "Nouvelle transmission",
-    focus: "Reprise progressive de l’appui",
-    date: "Hier",
-    count: "3 contenus",
-  },
-];
 
 function KineWorkspace() {
   const pathname = useLocation({ select: (location) => location.pathname });
@@ -212,8 +196,7 @@ function KineWorkspace() {
           </span>
         </button>
         <Link
-          to="/cabinet/kine"
-          hash="transmissions"
+          to="/cabinet/kine/transmissions"
           className="group rounded-2xl border border-border bg-card p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-[#177e78]/40 hover:shadow-md"
         >
           <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#F3EFE6] text-[#9A6B28]">
@@ -227,53 +210,6 @@ function KineWorkspace() {
             Voir l’historique <ArrowRight className="h-4 w-4" aria-hidden="true" />
           </span>
         </Link>
-      </section>
-
-      <section
-        id="transmissions"
-        className="rounded-2xl border border-border bg-card p-5 shadow-sm md:p-6"
-      >
-        <div className="flex flex-wrap items-end justify-between gap-3">
-          <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.14em] text-[#177e78]">
-              Le fil de vos séances
-            </p>
-            <h2 className="mt-1 text-2xl font-bold text-foreground">Dernières transmissions</h2>
-          </div>
-          <button
-            type="button"
-            onClick={() => startTransmission()}
-            className="inline-flex min-h-10 items-center gap-2 rounded-xl border border-border px-3 text-sm font-semibold text-foreground hover:bg-muted"
-          >
-            <Plus className="h-4 w-4" aria-hidden="true" />
-            Nouvelle transmission
-          </button>
-        </div>
-        <div className="mt-5 divide-y divide-border">
-          {recentTransmissions.map((item) => (
-            <div
-              key={`${item.focus}-${item.date}`}
-              className="flex flex-wrap items-center justify-between gap-4 py-4 first:pt-0 last:pb-0"
-            >
-              <div>
-                <p className="font-semibold text-foreground">{item.focus}</p>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  {item.patient} · {item.count}
-                </p>
-              </div>
-              <div className="flex items-center gap-3">
-                <span className="text-sm text-muted-foreground">{item.date}</span>
-                <button
-                  type="button"
-                  onClick={() => startTransmission(item.focus)}
-                  className="text-sm font-semibold text-[#177e78] hover:underline"
-                >
-                  Reprendre
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
       </section>
 
       <section

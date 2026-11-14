@@ -200,7 +200,7 @@ export function ResourceFormDialog({
                         <button
                           type="button"
                           onClick={() => fileInputRef.current?.click()}
-                          className="min-h-11 w-fit rounded-xl border border-border px-4 text-sm font-medium hover:bg-muted"
+                          className="min-h-11 w-fit rounded-xl bg-care px-4 text-sm font-semibold text-care-foreground shadow-sm transition-colors hover:bg-care/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                         >
                           {selectedFileName ? "Changer de fichier" : "Choisir un fichier"}
                         </button>

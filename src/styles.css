@@ -68,25 +68,25 @@
 :root {
   --radius: 0.75rem;
 
-  --bg-page: #F7FAFC;
-  --card-bg: #FFFFFF;
-  --card-border: #E2E8F0;
-  --text-primary: #0F172A;
+  --bg-page: #f7fafc;
+  --card-bg: #ffffff;
+  --card-border: #e2e8f0;
+  --text-primary: #0f172a;
   --text-secondary: #475569;
-  --action: #0B63CE;
-  --action-hover: #0A52A8;
-  --doctor-bg: #ECF8F1;
-  --doctor-border: #2F9E6B;
-  --doctor-text: #1F6F4A;
-  --alert-bg: #FDECEC;
-  --alert-border: #E5484D;
-  --alert-text: #7A1F22;
-  --caution-bg: #FFF6E5;
-  --caution-border: #F0A92E;
-  --caution-text: #7A4B00;
-  --violet-bg: #F3F0FF;
-  --violet-border: #8B7CF6;
-  --violet-text: #4C3A9E;
+  --action: #0b63ce;
+  --action-hover: #0a52a8;
+  --doctor-bg: #ecf8f1;
+  --doctor-border: #2f9e6b;
+  --doctor-text: #1f6f4a;
+  --alert-bg: #fdecec;
+  --alert-border: #e5484d;
+  --alert-text: #7a1f22;
+  --caution-bg: #fff6e5;
+  --caution-border: #f0a92e;
+  --caution-text: #7a4b00;
+  --violet-bg: #f3f0ff;
+  --violet-border: #8b7cf6;
+  --violet-text: #4c3a9e;
 
   --background: var(--bg-page);
   --foreground: var(--text-primary);
@@ -95,51 +95,51 @@
   --popover: var(--card-bg);
   --popover-foreground: var(--text-primary);
   --primary: var(--action);
-  --primary-foreground: #FFFFFF;
-  --secondary: #F1F5F9;
+  --primary-foreground: #ffffff;
+  --secondary: #f1f5f9;
   --secondary-foreground: var(--text-primary);
-  --muted: #F1F5F9;
+  --muted: #f1f5f9;
   --muted-foreground: var(--text-secondary);
-  --accent: #EAF2FB;
+  --accent: #eaf2fb;
   --accent-foreground: var(--text-primary);
   --destructive: var(--alert-border);
-  --destructive-foreground: #FFFFFF;
+  --destructive-foreground: #ffffff;
   --border: var(--card-border);
   --input: var(--card-border);
   --ring: var(--action);
   --care: var(--action);
-  --care-foreground: #FFFFFF;
-  --care-muted: #EAF2FB;
+  --care-foreground: #ffffff;
+  --care-muted: #eaf2fb;
   --urgent: var(--alert-border);
-  --urgent-foreground: #FFFFFF;
+  --urgent-foreground: #ffffff;
   --soothe: var(--caution-bg);
   --soothe-foreground: var(--caution-text);
-  --patient-hero: #0B63CE;
-  --patient-hero-soft: #EAF3FF;
+  --patient-hero: #0b63ce;
+  --patient-hero-soft: #eaf3ff;
 }
 
 .dark {
-  --bg-page: #0F172A;
+  --bg-page: #0f172a;
   --card-bg: #172235;
   --card-border: #334155;
-  --text-primary: #F8FAFC;
-  --text-secondary: #CBD5E1;
-  --action: #60A5FA;
-  --action-hover: #93C5FD;
+  --text-primary: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --action: #60a5fa;
+  --action-hover: #93c5fd;
   --doctor-bg: #123525;
-  --doctor-border: #55B98A;
-  --doctor-text: #B9F0D2;
-  --alert-bg: #431D22;
-  --alert-border: #FF7B80;
-  --alert-text: #FFD1D3;
-  --caution-bg: #46351A;
-  --caution-border: #F6C35B;
-  --caution-text: #FFE6AD;
+  --doctor-border: #55b98a;
+  --doctor-text: #b9f0d2;
+  --alert-bg: #431d22;
+  --alert-border: #ff7b80;
+  --alert-text: #ffd1d3;
+  --caution-bg: #46351a;
+  --caution-border: #f6c35b;
+  --caution-text: #ffe6ad;
   --violet-bg: #272046;
-  --violet-border: #A79BFA;
-  --violet-text: #DCD6FF;
-  --patient-hero: #60A5FA;
-  --patient-hero-soft: #172D48;
+  --violet-border: #a79bfa;
+  --violet-text: #dcd6ff;
+  --patient-hero: #60a5fa;
+  --patient-hero-soft: #172d48;
 }
 
 @layer base {
@@ -156,7 +156,12 @@
   input,
   select,
   textarea {
-    transition: background-color 180ms ease-out, border-color 180ms ease-out, color 180ms ease-out, opacity 180ms ease-out, box-shadow 180ms ease-out;
+    transition:
+      background-color 180ms ease-out,
+      border-color 180ms ease-out,
+      color 180ms ease-out,
+      opacity 180ms ease-out,
+      box-shadow 180ms ease-out;
   }
 
   :where(button, a, input, select, textarea):focus-visible {
@@ -192,72 +197,90 @@
 }
 
 .doctor-card-advice {
-  background-color: #EFF6FF;
-  border-color: #93C5FD;
+  background-color: #eff6ff;
+  border-color: #93c5fd;
 }
 
 .doctor-card-advice:hover {
-  background-color: #E0F2FE;
-  border-color: #3B82F6;
+  background-color: #e0f2fe;
+  border-color: #3b82f6;
 }
 
 .doctor-card-network {
-  background-color: #F0FDF4;
-  border-color: #86EFAC;
+  background-color: #f0fdf4;
+  border-color: #86efac;
 }
 
 .doctor-card-network:hover {
-  background-color: #DCFCE7;
-  border-color: #22C55E;
+  background-color: #dcfce7;
+  border-color: #22c55e;
 }
 
 .doctor-card-patient {
-  background-color: #F5F3FF;
-  border-color: #C4B5FD;
+  background-color: #f5f3ff;
+  border-color: #c4b5fd;
 }
 
 .doctor-card-patient:hover {
-  background-color: #EDE9FE;
-  border-color: #8B5CF6;
+  background-color: #ede9fe;
+  border-color: #8b5cf6;
 }
 
-.dark .doctor-card-advice { background-color: #172B4D; border-color: #3B82F6; }
-.dark .doctor-card-network { background-color: #153B2A; border-color: #22C55E; }
-.dark .doctor-card-patient { background-color: #2B234C; border-color: #8B5CF6; }
+.dark .doctor-card-advice {
+  background-color: #172b4d;
+  border-color: #3b82f6;
+}
+.dark .doctor-card-network {
+  background-color: #153b2a;
+  border-color: #22c55e;
+}
+.dark .doctor-card-patient {
+  background-color: #2b234c;
+  border-color: #8b5cf6;
+}
 
 .home-card-library {
-  background-color: #EFF6FF;
-  border-color: #93C5FD;
+  background-color: #eff6ff;
+  border-color: #93c5fd;
 }
 
 .home-card-library:hover {
-  border-color: #3B82F6;
-  background-color: #E0F2FE;
+  border-color: #3b82f6;
+  background-color: #e0f2fe;
 }
 
 .home-card-network {
-  background-color: #F0FDF4;
-  border-color: #86EFAC;
+  background-color: #f0fdf4;
+  border-color: #86efac;
 }
 
 .home-card-network:hover {
-  border-color: #22C55E;
-  background-color: #DCFCE7;
+  border-color: #22c55e;
+  background-color: #dcfce7;
 }
 
 .home-card-followup {
-  background-color: #F5F3FF;
-  border-color: #C4B5FD;
+  background-color: #f5f3ff;
+  border-color: #c4b5fd;
 }
 
 .home-card-followup:hover {
-  border-color: #8B5CF6;
-  background-color: #EDE9FE;
+  border-color: #8b5cf6;
+  background-color: #ede9fe;
 }
 
-.dark .home-card-library { background-color: #172B4D; border-color: #3B82F6; }
-.dark .home-card-network { background-color: #153B2A; border-color: #22C55E; }
-.dark .home-card-followup { background-color: #2B234C; border-color: #8B5CF6; }
+.dark .home-card-library {
+  background-color: #172b4d;
+  border-color: #3b82f6;
+}
+.dark .home-card-network {
+  background-color: #153b2a;
+  border-color: #22c55e;
+}
+.dark .home-card-followup {
+  background-color: #2b234c;
+  border-color: #8b5cf6;
+}
 
 .alert-section {
   background-color: var(--alert-bg);
@@ -303,7 +326,8 @@
   margin-bottom: 0.25rem;
 }
 
-.directory-print-sheet {
+.directory-print-sheet,
+.kine-qr-print-sheet {
   display: none;
 }
 
@@ -335,6 +359,31 @@
     background: white !important;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
+  }
+
+  body.printing-kine-qr * {
+    visibility: hidden !important;
+  }
+
+  body.printing-kine-qr .kine-qr-print-sheet,
+  body.printing-kine-qr .kine-qr-print-sheet * {
+    visibility: visible !important;
+  }
+
+  body.printing-kine-qr .kine-qr-print-sheet {
+    display: block !important;
+    position: fixed;
+    inset: 0;
+    padding: 18mm;
+    color: #17382f;
+    background: #fff;
+    text-align: center;
+  }
+
+  body.printing-kine-qr .kine-qr-print-sheet img {
+    width: 82mm !important;
+    height: 82mm !important;
+    margin: 12mm auto !important;
   }
 
   /* Choix de ce qui part à l'imprimante : affiche OU cartes patient */
@@ -459,4 +508,3 @@
     margin: 0;
   }
 }
-

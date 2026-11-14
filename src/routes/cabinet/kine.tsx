@@ -3,18 +3,24 @@ import { useEffect, useRef, useState } from "react";
 import {
   ArrowRight,
   BookOpen,
+  Check,
   CheckCircle2,
+  Copy,
+  Download,
   ExternalLink,
   Eye,
   EyeOff,
+  FileDown,
   FileText,
   Image as ImageIcon,
   Link2,
   Music2,
   Pencil,
   Plus,
+  Printer,
   QrCode,
   Search,
+  Share2,
   Trash2,
   Video,
   X,
@@ -78,6 +84,7 @@ function KineWorkspace() {
   const [patientLabel, setPatientLabel] = useState("");
   const [transmissionQr, setTransmissionQr] = useState<{ image: string; url: string } | null>(null);
   const [qrError, setQrError] = useState("");
+  const [linkCopied, setLinkCopied] = useState(false);
   const previewScrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -118,6 +125,73 @@ function KineWorkspace() {
     if (transmissionQr) previewScrollRef.current?.scrollTo({ top: 0 });
   }, [transmissionQr]);
 
+  const qrActionButtonClass =
+    "flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[#d4e2da] bg-white px-3 text-sm font-semibold text-[#315a4c] transition hover:bg-[#f8fbf8]";
+
+  const printTransmissionQr = () => {
+    document.body.classList.add("printing-kine-qr");
+    const clearPrintMode = () => document.body.classList.remove("printing-kine-qr");
+    window.addEventListener("afterprint", clearPrintMode, { once: true });
+    window.print();
+    window.setTimeout(clearPrintMode, 1000);
+  };
+
+  const shareTransmissionQr = async () => {
+    if (!transmissionQr) return;
+    setQrError("");
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: `Kivoir — ${selectedTransmission.label}`,
+          text: "Parcours de suivi patient",
+          url: transmissionQr.url,
+        });
+        return;
+      }
+      const link = document.createElement("a");
+      link.href = transmissionQr.image;
+      link.download = "kivoir-qr-code.png";
+      link.click();
+    } catch (error) {
+      if (error instanceof DOMException && error.name === "AbortError") return;
+      setQrError("Le partage n’a pas pu s’ouvrir. Copiez le lien ou téléchargez le QR code.");
+    }
+  };
+
+  const copyTransmissionLink = async () => {
+    if (!transmissionQr) return;
+    setQrError("");
+    try {
+      await navigator.clipboard.writeText(transmissionQr.url);
+      setLinkCopied(true);
+      window.setTimeout(() => setLinkCopied(false), 2500);
+    } catch {
+      setQrError("Copie impossible. Vous pouvez sélectionner le lien affiché sous le QR code.");
+    }
+  };
+
+  const exportTransmissionPdf = async () => {
+    if (!transmissionQr) return;
+    setQrError("");
+    try {
+      const { jsPDF } = await import("jspdf");
+      const pdf = new jsPDF({ unit: "mm", format: "a4" });
+      pdf.setTextColor(23, 56, 47);
+      pdf.setFontSize(18);
+      pdf.text("Kivoir — Parcours patient", 20, 24);
+      pdf.setFontSize(12);
+      pdf.text(selectedTransmission.label, 20, 34);
+      pdf.setFontSize(10);
+      pdf.text("Scannez ce QR code pour accéder au parcours patient.", 20, 42);
+      pdf.addImage(transmissionQr.image, "PNG", 20, 50, 82, 82);
+      pdf.text("Lien patient :", 20, 142);
+      pdf.text(pdf.splitTextToSize(transmissionQr.url, 165), 20, 149);
+      pdf.save("kivoir-parcours-patient.pdf");
+    } catch {
+      setQrError("Impossible de créer le PDF. Téléchargez le QR code ou imprimez-le.");
+    }
+  };
+
   const refreshResources = () => cache.invalidateQueries({ queryKey: doctorKeys.resources });
   const openResourceForm = (resource: DoctorResourceRecord | null) =>
     setEditing((current) => ({ open: true, resource, key: current.key + 1 }));
@@ -132,6 +206,7 @@ function KineWorkspace() {
     setPreviewOpen(false);
     setTransmissionQr(null);
     setQrError("");
+    setLinkCopied(false);
     setTransmissionOpen(true);
   };
 
@@ -535,24 +610,82 @@ function KineWorkspace() {
                       </div>
                     </>
                   ) : (
-                    <div className="rounded-2xl border border-[#cfe2d6] bg-white px-4 py-3 text-center shadow-sm">
-                      <p className="font-semibold text-slate-900" role="status">
-                        QR code prêt à partager
-                      </p>
-                      <img
-                        src={transmissionQr.image}
-                        alt={`QR code du parcours ${selectedTransmission.label}`}
-                        className="mx-auto mt-2 size-[min(34dvh,13rem)] max-w-[62vw] rounded-xl bg-white p-2"
-                      />
-                      <a
-                        href={transmissionQr.url}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="mt-2 block break-all text-sm text-[#177e78] underline"
+                    <>
+                      <div className="rounded-2xl border border-[#cfe2d6] bg-white px-4 py-3 text-center shadow-sm">
+                        <p className="font-semibold text-slate-900" role="status">
+                          QR code généré
+                        </p>
+                        <img
+                          src={transmissionQr.image}
+                          alt={`QR code du parcours ${selectedTransmission.label}`}
+                          className="mx-auto mt-2 size-[min(34dvh,13rem)] max-w-[62vw] rounded-xl bg-white p-2"
+                        />
+                        <a
+                          href={transmissionQr.url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="mt-2 block text-sm font-semibold text-[#177e78] underline"
+                        >
+                          Ouvrir le lien patient
+                        </a>
+                        <p className="mt-1 select-all break-all text-xs text-slate-500">
+                          {transmissionQr.url}
+                        </p>
+                      </div>
+                      <div
+                        role="group"
+                        aria-label="Partager ou enregistrer le QR code"
+                        className="grid grid-cols-2 gap-2"
                       >
-                        Ouvrir le lien patient
-                      </a>
-                    </div>
+                        <button
+                          type="button"
+                          onClick={printTransmissionQr}
+                          className={qrActionButtonClass}
+                        >
+                          <Printer className="h-4 w-4" aria-hidden="true" />
+                          Imprimer
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => void shareTransmissionQr()}
+                          className={qrActionButtonClass}
+                        >
+                          <Share2 className="h-4 w-4" aria-hidden="true" />
+                          Partager
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => void copyTransmissionLink()}
+                          className={qrActionButtonClass}
+                        >
+                          {linkCopied ? (
+                            <Check className="h-4 w-4 text-emerald-700" aria-hidden="true" />
+                          ) : (
+                            <Copy className="h-4 w-4" aria-hidden="true" />
+                          )}
+                          {linkCopied ? "Lien copié" : "Copier le lien"}
+                        </button>
+                        <a
+                          href={transmissionQr.image}
+                          download="kivoir-qr-code.png"
+                          className={qrActionButtonClass}
+                        >
+                          <Download className="h-4 w-4" aria-hidden="true" />
+                          Télécharger le QR
+                        </a>
+                        <button
+                          type="button"
+                          onClick={() => void exportTransmissionPdf()}
+                          className={`${qrActionButtonClass} col-span-2`}
+                        >
+                          <FileDown className="h-4 w-4" aria-hidden="true" />
+                          Exporter en PDF
+                        </button>
+                        <p aria-live="polite" className="sr-only">
+                          {linkCopied ? "Lien du patient copié dans le presse-papiers" : ""}
+                        </p>
+                      </div>
+                    </>
                   )}
                   {qrError ? (
                     <p role="alert" className="text-sm text-red-700">
@@ -601,7 +734,7 @@ function KineWorkspace() {
                       className="min-h-12 w-full rounded-2xl bg-[#279b6b] px-5 py-3 text-base font-semibold text-white shadow-md shadow-[#215346]/10 transition hover:bg-[#208b60] disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
                     >
                       <span key={transmissionQr ? "qr-ready" : "qr-action"}>
-                        {transmissionQr ? "QR code prêt" : "Générer le QR code"}
+                        {transmissionQr ? "Régénérer le QR code" : "Générer le QR code"}
                       </span>
                     </button>
                   </div>
@@ -694,6 +827,21 @@ function KineWorkspace() {
               )}
             </div>
           </section>
+          {transmissionQr ? (
+            <div className="kine-qr-print-sheet" aria-hidden="true">
+              <p className="text-sm font-semibold uppercase tracking-wide">
+                Kivoir · Parcours patient
+              </p>
+              <h1 className="mt-4 text-3xl font-bold">{selectedTransmission.label}</h1>
+              <p className="mt-3 text-base">Scannez ce QR code pour accéder au parcours patient.</p>
+              <img
+                src={transmissionQr.image}
+                alt=""
+                className="mx-auto mt-8 h-80 w-80 object-contain"
+              />
+              <p className="mt-8 break-all text-sm">{transmissionQr.url}</p>
+            </div>
+          ) : null}
         </div>
       )}
     </main>

@@ -37,6 +37,10 @@ import {
   useDoctorResources,
 } from "@/components/doctor/use-doctor-data";
 import { findCondition, resourceKind, resourceKindLabels } from "@/lib/doctor-pathway-info";
+import {
+  DEFAULT_KINE_LIBRARY_PATHWAY,
+  getKineLibraryPathwaySelection,
+} from "@/lib/kine-library-pathway";
 import type { DoctorResourceRecord } from "@/lib/doctor-resource-db";
 
 export const Route = createFileRoute("/cabinet/kine")({
@@ -185,7 +189,9 @@ function KineWorkspace() {
   const openResourceForm = (resource: DoctorResourceRecord | null) =>
     setEditing((current) => ({ open: true, resource, key: current.key + 1 }));
   const startTransmission = (conditionId = "") => {
-    setSelectedCondition(conditionId);
+    setSelectedCondition(
+      conditionId || getKineLibraryPathwaySelection() || DEFAULT_KINE_LIBRARY_PATHWAY,
+    );
     setSelectedItems([]);
     setPreviewOpen(false);
     setTransmissionQr(null);

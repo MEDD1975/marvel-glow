@@ -36,6 +36,7 @@ export function ResourceFormDialog({
   resource,
   onSaved,
   defaultSource,
+  defaultConditionId,
   simplifiedKineForm = false,
 }: {
   open: boolean;
@@ -43,6 +44,7 @@ export function ResourceFormDialog({
   resource: DoctorResourceRecord | null;
   onSaved: () => Promise<void>;
   defaultSource?: string;
+  defaultConditionId?: string;
   simplifiedKineForm?: boolean;
 }) {
   const editing = Boolean(resource);
@@ -189,7 +191,7 @@ export function ResourceFormDialog({
                   <select
                     name="conditionId"
                     required
-                    defaultValue={resource?.conditionId ?? ""}
+                    defaultValue={resource?.conditionId ?? defaultConditionId ?? ""}
                     className={field}
                   >
                     <option value="" disabled>
@@ -333,7 +335,7 @@ export function ResourceFormDialog({
                   <select
                     name="conditionId"
                     required
-                    defaultValue={resource?.conditionId ?? ""}
+                    defaultValue={resource?.conditionId ?? defaultConditionId ?? ""}
                     className={field}
                   >
                     <option value="" disabled>

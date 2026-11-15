@@ -52,6 +52,7 @@ function KineResourcesPage() {
   const resources = useDoctorResources(session?.user?.id);
   const cache = useDoctorCache();
   const [query, setQuery] = useState("");
+  const [pathwayId, setPathwayId] = useState("entorse-cheville");
   const [kind, setKind] = useState<ResourceKind | "all" | "files">("all");
   const [editing, setEditing] = useState<{
     open: boolean;
@@ -79,13 +80,14 @@ function KineResourcesPage() {
       const matchesKind =
         kind === "all" ||
         (kind === "files" ? itemKind === "document" || itemKind === "photo" : itemKind === kind);
+      const matchesPathway = pathwayId === "all" || item.conditionId === pathwayId;
       const matchesQuery =
         !needle ||
         item.title.toLowerCase().includes(needle) ||
         (item.description ?? "").toLowerCase().includes(needle);
-      return matchesKind && matchesQuery;
+      return matchesKind && matchesPathway && matchesQuery;
     });
-  }, [kind, query, resources.data]);
+  }, [kind, pathwayId, query, resources.data]);
 
   const totals = useMemo(() => {
     const items = resources.data ?? [];
@@ -264,20 +266,37 @@ function KineResourcesPage() {
                 Contenus enregistrés
               </h2>
             </div>
-            <label className="relative w-full md:max-w-xs">
-              <span className="sr-only">Rechercher dans ma bibliothèque</span>
-              <Search
-                className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#668075]"
-                aria-hidden="true"
-              />
-              <input
-                type="search"
-                value={query}
-                onChange={(event) => setQuery(event.target.value)}
-                placeholder="Rechercher un contenu"
-                className="min-h-11 w-full rounded-xl border border-[#d4e2d9] bg-white pl-9 pr-3 text-sm text-[#19392f] outline-none transition placeholder:text-[#7d9389] focus:border-[#177e78] focus:ring-2 focus:ring-[#177e78]/15"
-              />
-            </label>
+            <div className="grid w-full gap-3 sm:grid-cols-2 md:max-w-2xl">
+              <label className="block text-sm font-semibold text-[#355c4e]">
+                Parcours
+                <select
+                  value={pathwayId}
+                  onChange={(event) => setPathwayId(event.target.value)}
+                  className="mt-1 min-h-11 w-full rounded-xl border border-[#d4e2d9] bg-white px-3 text-sm font-normal text-[#19392f] outline-none transition focus:border-[#177e78] focus:ring-2 focus:ring-[#177e78]/15"
+                >
+                  <option value="all">Tous les parcours</option>
+                  {conditions.map((condition) => (
+                    <option key={condition.id} value={condition.id}>
+                      {condition.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label className="relative block self-end">
+                <span className="sr-only">Rechercher dans ma bibliothèque</span>
+                <Search
+                  className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#668075]"
+                  aria-hidden="true"
+                />
+                <input
+                  type="search"
+                  value={query}
+                  onChange={(event) => setQuery(event.target.value)}
+                  placeholder="Rechercher un contenu"
+                  className="min-h-11 w-full rounded-xl border border-[#d4e2d9] bg-white pl-9 pr-3 text-sm text-[#19392f] outline-none transition placeholder:text-[#7d9389] focus:border-[#177e78] focus:ring-2 focus:ring-[#177e78]/15"
+                />
+              </label>
+            </div>
           </div>
 
           <div className="mt-5">
@@ -437,6 +456,7 @@ function KineResourcesPage() {
         onOpenChange={(open) => setEditing((current) => ({ ...current, open }))}
         resource={editing.resource}
         onSaved={refresh}
+        defaultConditionId={pathwayId === "all" ? undefined : pathwayId}
         defaultSource="Partagé par le kinésithérapeute"
         simplifiedKineForm
       />

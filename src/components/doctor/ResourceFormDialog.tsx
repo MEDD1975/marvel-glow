@@ -1,4 +1,5 @@
 import { useEffect, useId, useRef, useState, type FormEvent } from "react";
+import { put as putBlob } from "@vercel/blob/client";
 import { BookOpen, Camera, Square, Upload } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -311,13 +312,42 @@ export function ResourceFormDialog({
         const file = recordedVideo ?? form.get("file");
         if (!(file instanceof File) || file.size === 0)
           return setState({ status: "error", message: "Sélectionnez un fichier." });
-        const upload = new FormData();
-        upload.set("file", file);
-        Object.entries(common).forEach(([key, value]) => upload.set(key, value));
-        if (!common.source) upload.set("source", defaultSource ?? "Fichier partagé par le médecin");
-        const response = await fetch("/api/doctor-file", { method: "POST", body: upload });
+        const tokenResponse = await fetch("/api/doctor-file-token", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ filename: file.name, contentType: file.type }),
+        });
+        const tokenData = (await tokenResponse.json().catch(() => ({}))) as {
+          error?: string;
+          token?: string;
+          pathname?: string;
+        };
+        if (!tokenResponse.ok || !tokenData.token || !tokenData.pathname) {
+          throw new Error(tokenData.error ?? "Impossible de préparer l’envoi du fichier.");
+        }
+
+        const blob = await putBlob(tokenData.pathname, file, {
+          access: "public",
+          token: tokenData.token,
+          multipart: file.size > 5 * 1024 * 1024,
+          ...(file.type ? { contentType: file.type } : {}),
+        });
+        const response = await fetch("/api/doctor-resources", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            ...common,
+            url: blob.url,
+            filename: file.name,
+            contentType: blob.contentType || file.type,
+            source: common.source || defaultSource || "Fichier partagé par le médecin",
+          }),
+        });
         const data = (await response.json().catch(() => ({}))) as { error?: string };
-        if (!response.ok) throw new Error(data.error ?? "L’envoi du fichier a échoué.");
+        if (!response.ok)
+          throw new Error(
+            data.error ?? "La vidéo a été envoyée, mais pas ajoutée à la bibliothèque.",
+          );
       } else {
         const url = String(form.get("url") ?? "").trim();
         if (!/^https?:\/\//i.test(url))

@@ -2,6 +2,7 @@ import { useEffect, useId, useRef, useState, type FormEvent } from "react";
 import { put as putBlob } from "@vercel/blob/client";
 import { BookOpen, Camera, Square, Upload } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog,
   DialogContent,
@@ -283,7 +284,17 @@ export function ResourceFormDialog({
   const [selectedFileName, setSelectedFileName] = useState("");
   const [recordedVideo, setRecordedVideo] = useState<File | null>(null);
   const [isVideoRecording, setIsVideoRecording] = useState(false);
+  const [videoPrivacyConfirmed, setVideoPrivacyConfirmed] = useState(false);
   const availableKinds = simplifiedKineForm ? kineSelectableResourceKinds : selectableResourceKinds;
+  const handleOpenChange = (nextOpen: boolean) => {
+    if (!nextOpen) {
+      setVideoPrivacyConfirmed(false);
+      setRecordedVideo(null);
+      setSelectedFileName("");
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+    onOpenChange(nextOpen);
+  };
 
   const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -295,6 +306,13 @@ export function ResourceFormDialog({
     if (!title)
       return setState({ status: "error", message: "Le titre affiché au patient est obligatoire." });
     if (!conditionId) return setState({ status: "error", message: "Choisissez un parcours." });
+    if (!resource && mode === "file" && kind === "video" && !videoPrivacyConfirmed) {
+      return setState({
+        status: "error",
+        message:
+          "La bibliothèque est réservée aux vidéos de démonstration du kiné, sans patient identifiable.",
+      });
+    }
     const common = {
       title,
       conditionId,
@@ -366,7 +384,7 @@ export function ResourceFormDialog({
         status: "saved",
         message: editing ? "Ressource mise à jour." : "Ressource ajoutée.",
       });
-      window.setTimeout(() => onOpenChange(false), 700);
+      window.setTimeout(() => handleOpenChange(false), 700);
     } catch (cause) {
       setState({
         status: "error",
@@ -376,7 +394,7 @@ export function ResourceFormDialog({
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent
         className={cn(
           "max-h-[90dvh] overflow-y-auto sm:max-w-lg",
@@ -471,6 +489,7 @@ export function ResourceFormDialog({
                       setMode(nextKind === "link" ? "link" : "file");
                       setSelectedFileName("");
                       setRecordedVideo(null);
+                      setVideoPrivacyConfirmed(false);
                       if (fileInputRef.current) fileInputRef.current.value = "";
                     }}
                     className={field}
@@ -518,6 +537,7 @@ export function ResourceFormDialog({
                           if (file) {
                             setRecordedVideo(null);
                             setSelectedFileName(file.name);
+                            setVideoPrivacyConfirmed(false);
                           }
                         }}
                       />
@@ -559,10 +579,29 @@ export function ResourceFormDialog({
                             if (fileInputRef.current) fileInputRef.current.value = "";
                             setRecordedVideo(file);
                             setSelectedFileName(file.name);
+                            setVideoPrivacyConfirmed(false);
                           }}
                           onRecordingChange={setIsVideoRecording}
                           recordingSelected={Boolean(recordedVideo)}
                         />
+                      ) : null}
+                      {kind === "video" ? (
+                        <label
+                          htmlFor={`video-privacy-confirmed-${formId}`}
+                          className="flex items-start gap-3 rounded-xl border border-[#d4e2d9] bg-[#f3f8f4] p-3 text-sm text-[#355c4e]"
+                        >
+                          <Checkbox
+                            id={`video-privacy-confirmed-${formId}`}
+                            checked={videoPrivacyConfirmed}
+                            onCheckedChange={(checked) =>
+                              setVideoPrivacyConfirmed(checked === true)
+                            }
+                          />
+                          <span>
+                            Je confirme qu’il s’agit d’une démonstration du kiné, sans patient
+                            identifiable.
+                          </span>
+                        </label>
                       ) : null}
                     </>
                   )}
@@ -591,7 +630,10 @@ export function ResourceFormDialog({
                   Type
                   <select
                     value={kind}
-                    onChange={(event) => setKind(event.target.value as ResourceKind)}
+                    onChange={(event) => {
+                      setKind(event.target.value as ResourceKind);
+                      setVideoPrivacyConfirmed(false);
+                    }}
                     className={field}
                   >
                     {!availableKinds.includes(kind) ? (
@@ -633,7 +675,10 @@ export function ResourceFormDialog({
                         type="button"
                         role="radio"
                         aria-checked={mode === value}
-                        onClick={() => setMode(value)}
+                        onClick={() => {
+                          setMode(value);
+                          setVideoPrivacyConfirmed(false);
+                        }}
                         className={`min-h-11 rounded-xl border text-sm font-medium ${mode === value ? "border-care bg-care/10 text-care" : "border-border"}`}
                       >
                         {value === "file" ? "Fichier" : "Lien"}
@@ -645,6 +690,7 @@ export function ResourceFormDialog({
                       name="file"
                       type="file"
                       accept=".pdf,.jpg,.jpeg,.png,.heic,.heif,.webp,.mp4,.mov,.m4v,.webm"
+                      onChange={() => setVideoPrivacyConfirmed(false)}
                       className="text-sm file:mr-3 file:min-h-10 file:rounded-lg file:border-0 file:bg-muted file:px-3 file:font-medium"
                     />
                   ) : (
@@ -659,6 +705,22 @@ export function ResourceFormDialog({
                   <p className="text-xs text-muted-foreground">
                     PDF, images ou vidéos, 50 Mo maximum.
                   </p>
+                  {!editing && mode === "file" && kind === "video" ? (
+                    <label
+                      htmlFor={`video-privacy-confirmed-${formId}`}
+                      className="flex items-start gap-3 rounded-xl border border-border p-3 text-sm"
+                    >
+                      <Checkbox
+                        id={`video-privacy-confirmed-${formId}`}
+                        checked={videoPrivacyConfirmed}
+                        onCheckedChange={(checked) => setVideoPrivacyConfirmed(checked === true)}
+                      />
+                      <span>
+                        Je confirme qu’il s’agit d’une démonstration du kiné, sans patient
+                        identifiable.
+                      </span>
+                    </label>
+                  ) : null}
                 </fieldset>
               ) : null}
             </>

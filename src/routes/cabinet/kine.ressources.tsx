@@ -166,13 +166,18 @@ function KineResourcesPage() {
                   onChange={(event) => setPathwayId(event.target.value)}
                   className="mt-1 min-h-11 w-full rounded-xl border border-[#d4e2d9] bg-white px-3 text-sm font-normal text-[#19392f] outline-none transition focus:border-[#177e78] focus:ring-2 focus:ring-[#177e78]/15"
                 >
-                  <option value="all">Tous les parcours</option>
+                  <option value="all" disabled>
+                    Tous les parcours
+                  </option>
                   {conditions.map((condition) => (
                     <option key={condition.id} value={condition.id}>
                       {condition.name}
                     </option>
                   ))}
                 </select>
+                <span className="mt-1 block text-xs font-normal text-[#668075]">
+                  Choisissez un parcours précis pour afficher ses contenus.
+                </span>
               </label>
             </div>
 

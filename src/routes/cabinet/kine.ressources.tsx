@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   ArrowLeft,
   BookOpen,
@@ -17,6 +17,11 @@ import {
   Video,
 } from "lucide-react";
 import { conditions } from "@/lib/conditions";
+import {
+  DEFAULT_KINE_LIBRARY_PATHWAY,
+  getKineLibraryPathwaySelection,
+  setKineLibraryPathwaySelection,
+} from "@/lib/kine-library-pathway";
 import {
   findCondition,
   formatDate,
@@ -52,8 +57,13 @@ function KineResourcesPage() {
   const resources = useDoctorResources(session?.user?.id);
   const cache = useDoctorCache();
   const [query, setQuery] = useState("");
-  const [pathwayId, setPathwayId] = useState("entorse-cheville");
+  const [pathwayId, setPathwayId] = useState(DEFAULT_KINE_LIBRARY_PATHWAY);
   const [kind, setKind] = useState<ResourceKind | "all" | "files">("all");
+
+  useEffect(() => {
+    const savedPathwayId = getKineLibraryPathwaySelection();
+    if (savedPathwayId) setPathwayId(savedPathwayId);
+  }, []);
   const [editing, setEditing] = useState<{
     open: boolean;
     resource: DoctorResourceRecord | null;
@@ -163,7 +173,11 @@ function KineResourcesPage() {
                 Parcours
                 <select
                   value={pathwayId}
-                  onChange={(event) => setPathwayId(event.target.value)}
+                  onChange={(event) => {
+                    const nextPathwayId = event.target.value;
+                    setPathwayId(nextPathwayId);
+                    setKineLibraryPathwaySelection(nextPathwayId);
+                  }}
                   className="mt-1 min-h-11 w-full rounded-xl border border-[#d4e2d9] bg-white px-3 text-sm font-normal text-[#19392f] outline-none transition focus:border-[#177e78] focus:ring-2 focus:ring-[#177e78]/15"
                 >
                   <option value="all" disabled>

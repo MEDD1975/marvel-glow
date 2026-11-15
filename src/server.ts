@@ -189,13 +189,19 @@ export default {
           const extensionToType: Record<string, string> = {
             pdf: "application/pdf", jpg: "image/jpeg", jpeg: "image/jpeg", png: "image/png",
             heic: "image/heic", heif: "image/heif", webp: "image/webp",
-            mp4: "video/mp4", mov: "video/quicktime", m4v: "video/x-m4v",
+            mp4: "video/mp4", mov: "video/quicktime", m4v: "video/x-m4v", webm: "video/webm",
             mp3: "audio/mpeg", wav: "audio/wav", m4a: "audio/mp4", aac: "audio/aac", ogg: "audio/ogg",
           };
           const resolvedType = uploadedFile.type || extensionToType[extension] || "";
           const allowedExtensions = Object.keys(extensionToType);
           if (!allowedExtensions.includes(extension) && !Object.values(extensionToType).includes(resolvedType)) {
-            return Response.json({ error: "Formats acceptés : PDF, JPG, PNG, HEIC, WEBP, MP4, MOV, MP3, WAV, M4A, AAC ou OGG." }, { status: 400 });
+            return Response.json(
+              {
+                error:
+                  "Formats acceptés : PDF, JPG, PNG, HEIC, WEBP, MP4, MOV, WEBM, MP3, WAV, M4A, AAC ou OGG.",
+              },
+              { status: 400 },
+            );
           }
           const title = String(formData.get("title") ?? uploadedFile.name).trim() || uploadedFile.name;
           const conditionId = String(formData.get("conditionId") ?? "").trim();

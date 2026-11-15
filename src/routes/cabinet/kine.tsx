@@ -26,6 +26,7 @@ import {
   X,
 } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
+import { conditions } from "@/lib/conditions";
 import { ConfirmationDialog } from "@/components/doctor/ConfirmationDialog";
 import { ResourceFormDialog } from "@/components/doctor/ResourceFormDialog";
 import {
@@ -37,15 +38,6 @@ import {
 } from "@/components/doctor/use-doctor-data";
 import { findCondition, resourceKind, resourceKindLabels } from "@/lib/doctor-pathway-info";
 import type { DoctorResourceRecord } from "@/lib/doctor-resource-db";
-
-const transmissionFocusOptions = [
-  { key: "entorse-cheville", label: "Entorse de cheville", pathwayId: "entorse-cheville" },
-  { key: "reprise-appui", label: "Reprise progressive de l’appui", pathwayId: "entorse-cheville" },
-  { key: "arthrose-genou", label: "Arthrose du genou", pathwayId: "arthrose-genou" },
-  { key: "equilibre", label: "Exercices d’équilibre", pathwayId: "entorse-cheville" },
-] as const;
-
-type TransmissionFocusKey = (typeof transmissionFocusOptions)[number]["key"];
 
 export const Route = createFileRoute("/cabinet/kine")({
   component: KineWorkspace,
@@ -76,11 +68,8 @@ function KineWorkspace() {
   const [transmissionOpen, setTransmissionOpen] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
-  const [selectedCondition, setSelectedCondition] =
-    useState<TransmissionFocusKey>("entorse-cheville");
-  const selectedTransmission =
-    transmissionFocusOptions.find((option) => option.key === selectedCondition) ??
-    transmissionFocusOptions[0];
+  const [selectedCondition, setSelectedCondition] = useState("");
+  const selectedTransmission = conditions.find((condition) => condition.id === selectedCondition);
   const [patientLabel, setPatientLabel] = useState("");
   const [transmissionQr, setTransmissionQr] = useState<{ image: string; url: string } | null>(null);
   const [qrError, setQrError] = useState("");
@@ -142,7 +131,7 @@ function KineWorkspace() {
     try {
       if (navigator.share) {
         await navigator.share({
-          title: `Kivoir — ${selectedTransmission.label}`,
+          title: `Kivoir — ${selectedTransmission?.name ?? "Parcours patient"}`,
           text: "Parcours de suivi patient",
           url: transmissionQr.url,
         });
@@ -180,7 +169,7 @@ function KineWorkspace() {
       pdf.setFontSize(18);
       pdf.text("Kivoir — Parcours patient", 20, 24);
       pdf.setFontSize(12);
-      pdf.text(selectedTransmission.label, 20, 34);
+      pdf.text(selectedTransmission?.name ?? "Parcours patient", 20, 34);
       pdf.setFontSize(10);
       pdf.text("Scannez ce QR code pour accéder au parcours patient.", 20, 42);
       pdf.addImage(transmissionQr.image, "PNG", 20, 50, 82, 82);
@@ -195,14 +184,9 @@ function KineWorkspace() {
   const refreshResources = () => cache.invalidateQueries({ queryKey: doctorKeys.resources });
   const openResourceForm = (resource: DoctorResourceRecord | null) =>
     setEditing((current) => ({ open: true, resource, key: current.key + 1 }));
-  const startTransmission = (condition: TransmissionFocusKey = "entorse-cheville") => {
-    setSelectedCondition(condition);
-    setSelectedItems(
-      (resources.data ?? [])
-        .filter((item) => item.status === "active")
-        .slice(0, 3)
-        .map((item) => item.id),
-    );
+  const startTransmission = (conditionId = "") => {
+    setSelectedCondition(conditionId);
+    setSelectedItems([]);
     setPreviewOpen(false);
     setTransmissionQr(null);
     setQrError("");
@@ -244,6 +228,9 @@ function KineWorkspace() {
 
   const libraryItems = (resources.data ?? []).filter((item) =>
     item.title.toLowerCase().includes(librarySearch.trim().toLowerCase()),
+  );
+  const transmissionItems = (resources.data ?? []).filter(
+    (item) => item.status === "active" && item.conditionId === selectedCondition,
   );
 
   const toggleItem = (title: string) => {
@@ -584,7 +571,7 @@ function KineWorkspace() {
                       <div className="rounded-2xl border border-[#d4e5da] bg-white/80 p-4 shadow-sm">
                         <p className="text-sm text-slate-600">Parcours</p>
                         <p className="mt-1 font-semibold text-slate-900">
-                          {selectedTransmission.label}
+                          {selectedTransmission?.name ?? "Parcours patient"}
                         </p>
                         {patientLabel.trim() && (
                           <p className="mt-2 text-sm text-slate-600">
@@ -617,7 +604,7 @@ function KineWorkspace() {
                         </p>
                         <img
                           src={transmissionQr.image}
-                          alt={`QR code du parcours ${selectedTransmission.label}`}
+                          alt={`QR code du parcours ${selectedTransmission?.name ?? "Parcours patient"}`}
                           className="mx-auto mt-2 size-[min(34dvh,13rem)] max-w-[62vw] rounded-xl bg-white p-2"
                         />
                         <a
@@ -704,7 +691,7 @@ function KineWorkspace() {
                       type="button"
                       onClick={async () => {
                         setQrError("");
-                        const condition = findCondition(selectedTransmission.pathwayId);
+                        const condition = selectedTransmission;
                         const cabinetId = cabinetRef.data?.ref;
                         if (!condition || !cabinetId) {
                           setQrError("Le parcours ou le cabinet est indisponible. Réessayez.");
@@ -715,7 +702,10 @@ function KineWorkspace() {
                           patientUrl.searchParams.set("pathway", condition.id);
                           patientUrl.searchParams.set("ref", cabinetId);
                           patientUrl.searchParams.set("items", selectedItems.join(","));
-                          patientUrl.searchParams.set("focus", selectedTransmission.label);
+                          patientUrl.searchParams.set(
+                            "focus",
+                            selectedTransmission?.name ?? "Parcours patient",
+                          );
                           const url = patientUrl.toString();
                           const qr = await import("qrcode");
                           const image = await qr.default.toDataURL(url, {
@@ -747,14 +737,21 @@ function KineWorkspace() {
                     </span>
                     <select
                       value={selectedCondition}
-                      onChange={(event) =>
-                        setSelectedCondition(event.target.value as TransmissionFocusKey)
-                      }
+                      required
+                      onChange={(event) => {
+                        setSelectedCondition(event.target.value);
+                        setSelectedItems([]);
+                        setTransmissionQr(null);
+                        setQrError("");
+                      }}
                       className="min-h-12 w-full rounded-2xl border border-[#d4e2da] bg-white px-4 text-base font-medium text-[#203d34] shadow-sm outline-none transition focus:border-[#178d86] focus:ring-2 focus:ring-[#178d86]/15"
                     >
-                      {transmissionFocusOptions.map((option) => (
-                        <option key={option.key} value={option.key}>
-                          {option.label}
+                      <option value="" disabled>
+                        Choisir un parcours
+                      </option>
+                      {conditions.map((condition) => (
+                        <option key={condition.id} value={condition.id}>
+                          {condition.name}
                         </option>
                       ))}
                     </select>
@@ -780,9 +777,12 @@ function KineWorkspace() {
                       </span>
                     </legend>
                     <div className="flex flex-col gap-2">
-                      {(resources.data ?? [])
-                        .filter((item) => item.status === "active")
-                        .map((item) => (
+                      {!selectedCondition ? (
+                        <p className="rounded-2xl border border-dashed border-[#c6dace] bg-white/70 p-4 text-sm text-[#668075]">
+                          Choisissez d’abord un parcours pour afficher les contenus associés.
+                        </p>
+                      ) : transmissionItems.length ? (
+                        transmissionItems.map((item) => (
                           <label
                             key={item.id}
                             className="flex cursor-pointer items-start gap-3 rounded-2xl border border-[#d4e2da] bg-white p-4 shadow-sm transition-colors hover:border-[#178d86]/60 has-[:checked]:border-[#178d86] has-[:checked]:bg-[#e8f4ec]"
@@ -798,12 +798,16 @@ function KineWorkspace() {
                                 {item.title}
                               </span>
                               <span className="mt-1 block text-sm text-[#688277]">
-                                {resourceKindLabels[resourceKind(item)]} ·{" "}
-                                {findCondition(item.conditionId)?.name ?? "Parcours"}
+                                {resourceKindLabels[resourceKind(item)]}
                               </span>
                             </span>
                           </label>
-                        ))}
+                        ))
+                      ) : (
+                        <p className="rounded-2xl border border-dashed border-[#c6dace] bg-white/70 p-4 text-sm text-[#668075]">
+                          Aucun contenu actif n’est encore associé à ce parcours.
+                        </p>
+                      )}
                     </div>
                   </fieldset>
                   <div className="-mx-5 flex flex-col-reverse gap-3 border-t border-[#d4e5da] bg-[#f1f8f3] px-5 pb-[max(1rem,env(safe-area-inset-bottom))] pt-4 sm:-mx-7 sm:flex-row sm:justify-end sm:px-7">
@@ -832,7 +836,9 @@ function KineWorkspace() {
               <p className="text-sm font-semibold uppercase tracking-wide">
                 Kivoir · Parcours patient
               </p>
-              <h1 className="mt-4 text-3xl font-bold">{selectedTransmission.label}</h1>
+              <h1 className="mt-4 text-3xl font-bold">
+                {selectedTransmission?.name ?? "Parcours patient"}
+              </h1>
               <p className="mt-3 text-base">Scannez ce QR code pour accéder au parcours patient.</p>
               <img
                 src={transmissionQr.image}

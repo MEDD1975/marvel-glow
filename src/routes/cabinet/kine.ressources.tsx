@@ -90,7 +90,9 @@ function KineResourcesPage() {
   }, [kind, pathwayId, query, resources.data]);
 
   const totals = useMemo(() => {
-    const items = resources.data ?? [];
+    const items = (resources.data ?? []).filter(
+      (item) => pathwayId === "all" || item.conditionId === pathwayId,
+    );
     return {
       total: items.length,
       videos: items.filter((item) => resourceKind(item) === "video").length,
@@ -98,7 +100,7 @@ function KineResourcesPage() {
       audios: items.filter((item) => resourceKind(item) === "audio").length,
       links: items.filter((item) => resourceKind(item) === "link").length,
     };
-  }, [resources.data]);
+  }, [pathwayId, resources.data]);
 
   const toggleVisibility = async (item: DoctorResourceRecord) => {
     setError(null);

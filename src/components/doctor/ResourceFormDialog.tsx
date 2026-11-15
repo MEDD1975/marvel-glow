@@ -1,6 +1,6 @@
-import { useEffect, useId, useRef, useState, type FormEvent } from "react";
+import { useId, useRef, useState, type FormEvent } from "react";
 import { put as putBlob } from "@vercel/blob/client";
-import { BookOpen, Camera, Square, Upload } from "lucide-react";
+import { BookOpen, Upload } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -32,231 +32,6 @@ const uploadAcceptByKind: Partial<Record<ResourceKind, string>> = {
   audio: ".mp3,.wav,.m4a,.aac,.ogg,audio/mpeg,audio/wav,audio/mp4,audio/aac,audio/ogg",
 };
 
-const MAX_VIDEO_SIZE = 50 * 1024 * 1024;
-
-function VideoRecorder({
-  onRecorded,
-  onRecordingChange,
-  recordingSelected,
-}: {
-  onRecorded: (file: File) => void;
-  onRecordingChange: (recording: boolean) => void;
-  recordingSelected: boolean;
-}) {
-  const [stream, setStream] = useState<MediaStream | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [isRecording, setIsRecording] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const recorderRef = useRef<MediaRecorder | null>(null);
-  const streamRef = useRef<MediaStream | null>(null);
-  const previewUrlRef = useRef<string | null>(null);
-  const chunksRef = useRef<Blob[]>([]);
-  const mountedRef = useRef(true);
-
-  useEffect(() => {
-    mountedRef.current = true;
-    return () => {
-      mountedRef.current = false;
-      onRecordingChange(false);
-      const recorder = recorderRef.current;
-      if (recorder && recorder.state !== "inactive") {
-        recorder.ondataavailable = null;
-        recorder.onstop = null;
-        recorder.onerror = null;
-        recorder.stop();
-      }
-      streamRef.current?.getTracks().forEach((track) => track.stop());
-      if (previewUrlRef.current) URL.revokeObjectURL(previewUrlRef.current);
-    };
-  }, [onRecordingChange]);
-
-  useEffect(() => {
-    if (recordingSelected || !previewUrlRef.current) return;
-    URL.revokeObjectURL(previewUrlRef.current);
-    previewUrlRef.current = null;
-  }, [recordingSelected]);
-
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-    video.srcObject = stream;
-    if (stream) void video.play().catch(() => undefined);
-    return () => {
-      video.srcObject = null;
-    };
-  }, [stream]);
-
-  const clearPreview = () => {
-    if (previewUrlRef.current) URL.revokeObjectURL(previewUrlRef.current);
-    previewUrlRef.current = null;
-    setPreviewUrl(null);
-  };
-
-  const startRecording = async () => {
-    setError(null);
-    clearPreview();
-    onRecordingChange(true);
-    if (!navigator.mediaDevices?.getUserMedia || typeof MediaRecorder === "undefined") {
-      onRecordingChange(false);
-      setError("L’enregistrement vidéo n’est pas pris en charge par ce navigateur.");
-      return;
-    }
-
-    let mediaStream: MediaStream | null = null;
-    try {
-      mediaStream = await navigator.mediaDevices.getUserMedia({
-        audio: true,
-        video: {
-          facingMode: { ideal: "environment" },
-          width: { ideal: 1280 },
-          height: { ideal: 720 },
-        },
-      });
-      if (!mountedRef.current) {
-        mediaStream.getTracks().forEach((track) => track.stop());
-        return;
-      }
-
-      const mimeType = [
-        "video/mp4;codecs=avc1.42E01E,mp4a.40.2",
-        "video/mp4",
-        "video/webm;codecs=vp9,opus",
-        "video/webm",
-      ].find((type) => MediaRecorder.isTypeSupported(type));
-      if (!mimeType) {
-        mediaStream.getTracks().forEach((track) => track.stop());
-        onRecordingChange(false);
-        setError("Aucun format vidéo compatible n’est disponible sur ce navigateur.");
-        return;
-      }
-
-      const recorder = new MediaRecorder(mediaStream, { mimeType });
-      chunksRef.current = [];
-      streamRef.current = mediaStream;
-      recorderRef.current = recorder;
-      setStream(mediaStream);
-      recorder.ondataavailable = (event) => {
-        if (event.data.size > 0) chunksRef.current.push(event.data);
-      };
-      recorder.onstop = () => {
-        const contentType = (recorder.mimeType || chunksRef.current[0]?.type || "video/webm").split(
-          ";",
-        )[0];
-        const blob = new Blob(chunksRef.current, { type: contentType });
-        mediaStream?.getTracks().forEach((track) => track.stop());
-        if (streamRef.current === mediaStream) streamRef.current = null;
-        recorderRef.current = null;
-        onRecordingChange(false);
-        setStream(null);
-        setIsRecording(false);
-
-        if (!blob.size) {
-          setError("Aucune vidéo n’a été enregistrée. Réessayez.");
-          return;
-        }
-        if (blob.size > MAX_VIDEO_SIZE) {
-          setError("La vidéo dépasse la limite de 50 Mo. Enregistrez un extrait plus court.");
-          return;
-        }
-
-        const extension = contentType === "video/mp4" ? "mp4" : "webm";
-        const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
-        const file = new File([blob], `demonstration-${timestamp}.${extension}`, {
-          type: contentType,
-        });
-        const nextPreviewUrl = URL.createObjectURL(file);
-        previewUrlRef.current = nextPreviewUrl;
-        setPreviewUrl(nextPreviewUrl);
-        onRecorded(file);
-      };
-      recorder.onerror = () => {
-        setError(
-          "L’enregistrement a été interrompu. Vérifiez les autorisations de la caméra et du micro.",
-        );
-        if (recorder.state === "recording") recorder.stop();
-      };
-      recorder.start(1000);
-      setIsRecording(true);
-    } catch (cause) {
-      mediaStream?.getTracks().forEach((track) => track.stop());
-      if (!mountedRef.current) return;
-      onRecordingChange(false);
-      setStream(null);
-      setError(
-        cause instanceof DOMException && cause.name === "NotAllowedError"
-          ? "Autorisez l’accès à la caméra et au micro pour enregistrer."
-          : "Impossible d’accéder à la caméra. Vérifiez les autorisations du navigateur.",
-      );
-    }
-  };
-
-  const stopRecording = () => {
-    const recorder = recorderRef.current;
-    if (recorder?.state === "recording") recorder.stop();
-  };
-  const hasSelectedRecording = recordingSelected && previewUrl !== null;
-
-  return (
-    <div className="rounded-xl border border-[#cfe2d5] bg-white/80 p-4">
-      <p className="text-sm font-semibold text-[#355c4e]">Ou filmez la vidéo maintenant</p>
-      <p className="mt-1 text-xs leading-5 text-[#668075]">
-        Caméra arrière et micro. La vidéo sera partagée après validation du formulaire · 50 Mo
-        maximum.
-      </p>
-      {stream ? (
-        <video
-          ref={videoRef}
-          autoPlay
-          muted
-          playsInline
-          aria-label="Aperçu de la caméra pendant l’enregistrement"
-          className="mt-3 aspect-video w-full rounded-xl bg-black object-cover"
-        />
-      ) : hasSelectedRecording ? (
-        <video
-          src={previewUrl ?? undefined}
-          controls
-          playsInline
-          aria-label="Aperçu de la vidéo enregistrée"
-          className="mt-3 aspect-video w-full rounded-xl bg-black object-cover"
-        />
-      ) : null}
-      {error ? (
-        <p role="alert" className="mt-3 text-sm font-medium text-red-700">
-          {error}
-        </p>
-      ) : null}
-      <div className="mt-3 flex flex-wrap items-center gap-3">
-        <button
-          type="button"
-          onClick={() => (isRecording ? stopRecording() : void startRecording())}
-          className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-[#176b5b] px-4 text-sm font-semibold text-white transition hover:bg-[#12594d] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#177e78] focus-visible:ring-offset-2"
-        >
-          {isRecording ? (
-            <>
-              <Square className="size-4 fill-current" aria-hidden="true" />
-              Arrêter et garder la vidéo
-            </>
-          ) : (
-            <>
-              <Camera className="size-4" aria-hidden="true" />
-              {hasSelectedRecording ? "Recommencer" : "Filmer maintenant"}
-            </>
-          )}
-        </button>
-        <span role="status" aria-live="polite" className="text-xs font-medium text-[#587269]">
-          {isRecording
-            ? "Enregistrement en cours"
-            : hasSelectedRecording
-              ? "Vidéo prête à être partagée"
-              : ""}
-        </span>
-      </div>
-    </div>
-  );
-}
-
 export function ResourceFormDialog({
   open,
   onOpenChange,
@@ -282,14 +57,11 @@ export function ResourceFormDialog({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const dialogTitleRef = useRef<HTMLHeadingElement>(null);
   const [selectedFileName, setSelectedFileName] = useState("");
-  const [recordedVideo, setRecordedVideo] = useState<File | null>(null);
-  const [isVideoRecording, setIsVideoRecording] = useState(false);
   const [videoPrivacyConfirmed, setVideoPrivacyConfirmed] = useState(false);
   const availableKinds = simplifiedKineForm ? kineSelectableResourceKinds : selectableResourceKinds;
   const handleOpenChange = (nextOpen: boolean) => {
     if (!nextOpen) {
       setVideoPrivacyConfirmed(false);
-      setRecordedVideo(null);
       setSelectedFileName("");
       if (fileInputRef.current) fileInputRef.current.value = "";
     }
@@ -327,7 +99,7 @@ export function ResourceFormDialog({
       if (resource) {
         await sendJson("/api/doctor-resources", "PATCH", { id: resource.id, ...common });
       } else if (mode === "file") {
-        const file = recordedVideo ?? form.get("file");
+        const file = form.get("file");
         if (!(file instanceof File) || file.size === 0)
           return setState({ status: "error", message: "Sélectionnez un fichier." });
         const tokenResponse = await fetch("/api/doctor-file-token", {
@@ -488,7 +260,6 @@ export function ResourceFormDialog({
                       setKind(nextKind);
                       setMode(nextKind === "link" ? "link" : "file");
                       setSelectedFileName("");
-                      setRecordedVideo(null);
                       setVideoPrivacyConfirmed(false);
                       if (fileInputRef.current) fileInputRef.current.value = "";
                     }}
@@ -535,8 +306,8 @@ export function ResourceFormDialog({
                         onChange={(event) => {
                           const file = event.currentTarget.files?.[0];
                           if (file) {
-                            setRecordedVideo(null);
                             setSelectedFileName(file.name);
+
                             setVideoPrivacyConfirmed(false);
                           }
                         }}
@@ -567,24 +338,11 @@ export function ResourceFormDialog({
                         <button
                           type="button"
                           onClick={() => fileInputRef.current?.click()}
-                          disabled={isVideoRecording}
-                          className="mt-4 min-h-11 w-full rounded-xl bg-tone-green-border px-4 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-tone-green-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-tone-green-border focus-visible:ring-offset-2 disabled:opacity-60 sm:w-auto"
+                          className="mt-4 min-h-11 w-full rounded-xl bg-tone-green-border px-4 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-tone-green-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-tone-green-border focus-visible:ring-offset-2 sm:w-auto"
                         >
                           {selectedFileName ? "Changer de fichier" : "Choisir un fichier"}
                         </button>
                       </div>
-                      {open && simplifiedKineForm && kind === "video" ? (
-                        <VideoRecorder
-                          onRecorded={(file) => {
-                            if (fileInputRef.current) fileInputRef.current.value = "";
-                            setRecordedVideo(file);
-                            setSelectedFileName(file.name);
-                            setVideoPrivacyConfirmed(false);
-                          }}
-                          onRecordingChange={setIsVideoRecording}
-                          recordingSelected={Boolean(recordedVideo)}
-                        />
-                      ) : null}
                       {kind === "video" ? (
                         <label
                           htmlFor={`video-privacy-confirmed-${formId}`}
@@ -845,7 +603,7 @@ export function ResourceFormDialog({
             <button
               type="submit"
               form={formId}
-              disabled={state.status === "saving" || isVideoRecording}
+              disabled={state.status === "saving"}
               className="min-h-11 flex-1 rounded-xl bg-tone-green-border px-5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-tone-green-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-tone-green-border focus-visible:ring-offset-2 disabled:opacity-60 sm:flex-none"
             >
               Enregistrer

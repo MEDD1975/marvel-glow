@@ -44,7 +44,7 @@ export function ResourceFormDialog({
   resource: DoctorResourceRecord | null;
   onSaved: () => Promise<void>;
   defaultSource?: string;
-  defaultConditionId?: string;
+  defaultConditionId?: string | undefined;
   simplifiedKineForm?: boolean;
 }) {
   const editing = Boolean(resource);

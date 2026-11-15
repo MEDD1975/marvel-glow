@@ -7,41 +7,20 @@ import {
   CheckCircle2,
   Copy,
   Download,
-  ExternalLink,
-  Eye,
-  EyeOff,
   FileDown,
-  FileText,
-  Image as ImageIcon,
-  Link2,
-  Music2,
-  Pencil,
-  Plus,
   Printer,
   QrCode,
-  Search,
   Share2,
-  Trash2,
-  Video,
   X,
 } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import { conditions } from "@/lib/conditions";
-import { ConfirmationDialog } from "@/components/doctor/ConfirmationDialog";
-import { ResourceFormDialog } from "@/components/doctor/ResourceFormDialog";
-import {
-  doctorKeys,
-  sendJson,
-  useCabinetRef,
-  useDoctorCache,
-  useDoctorResources,
-} from "@/components/doctor/use-doctor-data";
-import { findCondition, resourceKind, resourceKindLabels } from "@/lib/doctor-pathway-info";
+import { useCabinetRef, useDoctorResources } from "@/components/doctor/use-doctor-data";
+import { resourceKind, resourceKindLabels } from "@/lib/doctor-pathway-info";
 import {
   DEFAULT_KINE_LIBRARY_PATHWAY,
   getKineLibraryPathwaySelection,
 } from "@/lib/kine-library-pathway";
-import type { DoctorResourceRecord } from "@/lib/doctor-resource-db";
 
 export const Route = createFileRoute("/cabinet/kine")({
   component: KineWorkspace,
@@ -60,15 +39,6 @@ function KineWorkspace() {
   const hasKineAccess = !isPending && canAccess;
   const resources = useDoctorResources(session?.user?.id, hasKineAccess);
   const cabinetRef = useCabinetRef(hasKineAccess);
-  const cache = useDoctorCache();
-  const [librarySearch, setLibrarySearch] = useState("");
-  const [editing, setEditing] = useState<{
-    open: boolean;
-    resource: DoctorResourceRecord | null;
-    key: number;
-  }>({ open: false, resource: null, key: 0 });
-  const [toDelete, setToDelete] = useState<DoctorResourceRecord | null>(null);
-  const [libraryError, setLibraryError] = useState<string | null>(null);
   const [transmissionOpen, setTransmissionOpen] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
@@ -185,9 +155,6 @@ function KineWorkspace() {
     }
   };
 
-  const refreshResources = () => cache.invalidateQueries({ queryKey: doctorKeys.resources });
-  const openResourceForm = (resource: DoctorResourceRecord | null) =>
-    setEditing((current) => ({ open: true, resource, key: current.key + 1 }));
   const startTransmission = (conditionId = "") => {
     setSelectedCondition(
       conditionId || getKineLibraryPathwaySelection() || DEFAULT_KINE_LIBRARY_PATHWAY,
@@ -199,42 +166,6 @@ function KineWorkspace() {
     setLinkCopied(false);
     setTransmissionOpen(true);
   };
-
-  const toggleVisibility = async (item: DoctorResourceRecord) => {
-    setLibraryError(null);
-    try {
-      await sendJson("/api/doctor-resources", "PATCH", {
-        id: item.id,
-        title: item.title,
-        conditionId: item.conditionId,
-        source: item.source,
-        description: item.description,
-        validatedAt: item.validatedAt,
-        kind: item.kind,
-        status: item.status === "hidden" ? "active" : "hidden",
-      });
-      await refreshResources();
-    } catch (cause) {
-      setLibraryError(cause instanceof Error ? cause.message : "La modification a échoué.");
-    }
-  };
-
-  const confirmDelete = async () => {
-    if (!toDelete) return;
-    setLibraryError(null);
-    try {
-      await sendJson("/api/doctor-resources", "DELETE", { id: toDelete.id });
-      await refreshResources();
-    } catch (cause) {
-      setLibraryError(cause instanceof Error ? cause.message : "La suppression a échoué.");
-    } finally {
-      setToDelete(null);
-    }
-  };
-
-  const libraryItems = (resources.data ?? []).filter((item) =>
-    item.title.toLowerCase().includes(librarySearch.trim().toLowerCase()),
-  );
   const transmissionItems = (resources.data ?? []).filter(
     (item) => item.status === "active" && item.conditionId === selectedCondition,
   );
@@ -335,192 +266,6 @@ function KineWorkspace() {
         </Link>
       </section>
 
-      <section
-        id="bibliotheque"
-        className="scroll-mt-24 rounded-2xl border border-border bg-[#F5FAF8] p-5 md:p-6"
-      >
-        <div className="flex flex-wrap items-end justify-between gap-3">
-          <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.14em] text-[#177e78]">
-              Vos contenus enregistrés
-            </p>
-            <h2 className="mt-1 text-2xl font-bold text-foreground">Ma bibliothèque</h2>
-            <p className="mt-1 text-sm text-muted-foreground">
-              {resources.data?.length ?? 0} contenu{resources.data?.length === 1 ? "" : "s"} ·
-              vidéos, documents, photos et liens
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={() => openResourceForm(null)}
-            className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-[#177e78] px-4 text-sm font-semibold text-white hover:bg-[#177e78]/90"
-          >
-            <Plus className="h-4 w-4" aria-hidden="true" />
-            Ajouter un contenu
-          </button>
-        </div>
-        <label className="relative mt-5 block max-w-md">
-          <span className="sr-only">Rechercher dans ma bibliothèque</span>
-          <Search
-            className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
-            aria-hidden="true"
-          />
-          <input
-            type="search"
-            value={librarySearch}
-            onChange={(event) => setLibrarySearch(event.target.value)}
-            placeholder="Rechercher un contenu"
-            className="min-h-11 w-full rounded-xl border border-input bg-background pl-9 pr-3 text-sm outline-none focus:ring-2 focus:ring-ring"
-          />
-        </label>
-        {libraryError ? (
-          <p
-            role="alert"
-            className="mt-3 rounded-xl bg-destructive/10 p-3 text-sm text-destructive"
-          >
-            {libraryError}
-          </p>
-        ) : null}
-        {resources.isPending ? (
-          <p className="mt-5 text-sm text-muted-foreground">Chargement de votre bibliothèque…</p>
-        ) : resources.isError ? (
-          <div className="mt-5 rounded-xl border border-border bg-card p-5 text-sm text-muted-foreground">
-            <p>Impossible de charger votre bibliothèque.</p>
-            <button
-              type="button"
-              onClick={() => void resources.refetch()}
-              className="mt-2 font-semibold text-[#177e78] hover:underline"
-            >
-              Réessayer
-            </button>
-          </div>
-        ) : !libraryItems.length ? (
-          <div className="mt-5 rounded-xl border border-dashed border-border bg-card p-7 text-center">
-            <p className="font-semibold text-foreground">
-              {resources.data?.length ? "Aucun résultat" : "Votre bibliothèque est vide"}
-            </p>
-            <p className="mt-2 text-sm leading-6 text-muted-foreground">
-              Ajoutez une vidéo, un document PDF, une photo ou un lien à partager avec vos patients.
-            </p>
-            {!resources.data?.length ? (
-              <button
-                type="button"
-                onClick={() => openResourceForm(null)}
-                className="mt-4 min-h-11 rounded-xl bg-[#177e78] px-4 text-sm font-semibold text-white"
-              >
-                Ajouter mon premier contenu
-              </button>
-            ) : null}
-          </div>
-        ) : (
-          <ul className="mt-5 flex flex-col gap-3">
-            {libraryItems.map((item) => {
-              const kind = resourceKind(item);
-              const Icon =
-                item.contentType?.startsWith("video/") || kind === "video"
-                  ? Video
-                  : item.contentType?.startsWith("audio/") || kind === "audio"
-                    ? Music2
-                    : item.contentType?.startsWith("image/") || kind === "photo"
-                      ? ImageIcon
-                      : kind === "link"
-                        ? Link2
-                        : FileText;
-              const hidden = item.status === "hidden";
-              return (
-                <li
-                  key={item.id}
-                  className="flex flex-col gap-3 rounded-xl border border-border bg-card p-4 sm:flex-row sm:items-center"
-                >
-                  {item.contentType?.startsWith("image/") ? (
-                    <img
-                      src={item.url}
-                      alt={`Aperçu de ${item.title}`}
-                      className="h-20 w-20 rounded-lg object-cover"
-                    />
-                  ) : (
-                    <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[#177e78]/10 text-[#177e78]">
-                      <Icon className="h-5 w-5" aria-hidden="true" />
-                    </span>
-                  )}
-                  <div className="min-w-0 flex-1">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <span className="rounded-full bg-[#177e78]/10 px-2 py-1 text-xs font-medium text-[#177e78]">
-                        {resourceKindLabels[kind]}
-                      </span>
-                      {hidden ? (
-                        <span className="rounded-full bg-muted px-2 py-1 text-xs text-muted-foreground">
-                          Masqué
-                        </span>
-                      ) : null}
-                    </div>
-                    <p className="mt-1 truncate font-semibold text-foreground">{item.title}</p>
-                    <p className="text-sm text-muted-foreground">
-                      {findCondition(item.conditionId)?.name ?? "Parcours"}
-                      {item.filename ? ` · ${item.filename}` : ""}
-                    </p>
-                  </div>
-                  <div className="flex flex-wrap gap-1">
-                    <a
-                      href={item.url}
-                      target="_blank"
-                      rel="noreferrer"
-                      aria-label={`Ouvrir ${item.title}`}
-                      className="flex h-11 w-11 items-center justify-center rounded-xl border border-border hover:bg-muted"
-                    >
-                      <ExternalLink className="h-4 w-4" aria-hidden="true" />
-                    </a>
-                    <button
-                      type="button"
-                      onClick={() => openResourceForm(item)}
-                      aria-label={`Modifier ${item.title}`}
-                      className="flex h-11 w-11 items-center justify-center rounded-xl border border-border hover:bg-muted"
-                    >
-                      <Pencil className="h-4 w-4" aria-hidden="true" />
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => void toggleVisibility(item)}
-                      aria-label={hidden ? `Afficher ${item.title}` : `Masquer ${item.title}`}
-                      className="flex h-11 w-11 items-center justify-center rounded-xl border border-border hover:bg-muted"
-                    >
-                      {hidden ? (
-                        <Eye className="h-4 w-4" aria-hidden="true" />
-                      ) : (
-                        <EyeOff className="h-4 w-4" aria-hidden="true" />
-                      )}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setToDelete(item)}
-                      aria-label={`Supprimer ${item.title}`}
-                      className="flex h-11 w-11 items-center justify-center rounded-xl border border-border text-destructive hover:bg-destructive/5"
-                    >
-                      <Trash2 className="h-4 w-4" aria-hidden="true" />
-                    </button>
-                  </div>
-                </li>
-              );
-            })}
-          </ul>
-        )}
-      </section>
-      <ResourceFormDialog
-        key={editing.key}
-        open={editing.open}
-        onOpenChange={(open) => setEditing((current) => ({ ...current, open }))}
-        resource={editing.resource}
-        onSaved={refreshResources}
-        defaultSource="Partagé par le kinésithérapeute"
-        simplifiedKineForm
-      />
-      <ConfirmationDialog
-        open={Boolean(toDelete)}
-        onOpenChange={(open) => !open && setToDelete(null)}
-        title="Supprimer ce contenu ?"
-        description={`« ${toDelete?.title ?? ""} » ne sera plus accessible aux patients.`}
-        onConfirm={() => void confirmDelete()}
-      />
       {transmissionOpen && (
         <div
           className="fixed inset-0 z-50 flex items-end justify-center bg-slate-950/55 p-0 backdrop-blur-[2px] sm:items-center sm:p-5"

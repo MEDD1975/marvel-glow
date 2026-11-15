@@ -1,5 +1,5 @@
-import { useId, useRef, useState, type FormEvent } from "react";
-import { BookOpen, Upload } from "lucide-react";
+import { useEffect, useId, useRef, useState, type FormEvent } from "react";
+import { BookOpen, Camera, Square, Upload } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   Dialog,

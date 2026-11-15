@@ -159,14 +159,21 @@ function KineResourcesPage() {
                 Rassemblez les supports que vous utilisez en séance et retrouvez-les facilement pour
                 les partager avec vos patients.
               </p>
-              <button
-                type="button"
-                onClick={() => openForm(null)}
-                className="mt-6 inline-flex min-h-11 items-center gap-2 rounded-xl bg-[#177e78] px-5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#126b66] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#177e78] focus-visible:ring-offset-2"
-              >
-                <Plus className="h-4 w-4" aria-hidden="true" />
-                Ajouter une ressource
-              </button>
+              <label className="mt-6 block w-full max-w-sm text-sm font-semibold text-[#355c4e]">
+                Parcours
+                <select
+                  value={pathwayId}
+                  onChange={(event) => setPathwayId(event.target.value)}
+                  className="mt-1 min-h-11 w-full rounded-xl border border-[#d4e2d9] bg-white px-3 text-sm font-normal text-[#19392f] outline-none transition focus:border-[#177e78] focus:ring-2 focus:ring-[#177e78]/15"
+                >
+                  <option value="all">Tous les parcours</option>
+                  {conditions.map((condition) => (
+                    <option key={condition.id} value={condition.id}>
+                      {condition.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
             </div>
 
             <div className="grid grid-cols-2 gap-3 self-end md:self-center">
@@ -256,6 +263,16 @@ function KineResourcesPage() {
               </button>
             </div>
           </div>
+          <div className="px-6 pb-6 md:px-9 md:pb-9">
+            <button
+              type="button"
+              onClick={() => openForm(null)}
+              className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-[#177e78] px-5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#126b66] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#177e78] focus-visible:ring-offset-2 sm:w-fit"
+            >
+              <Plus className="h-4 w-4" aria-hidden="true" />
+              Ajouter une ressource
+            </button>
+          </div>
         </header>
 
         <section aria-labelledby="library-items-heading">
@@ -268,37 +285,20 @@ function KineResourcesPage() {
                 Contenus enregistrés
               </h2>
             </div>
-            <div className="grid w-full gap-3 sm:grid-cols-2 md:max-w-2xl">
-              <label className="block text-sm font-semibold text-[#355c4e]">
-                Parcours
-                <select
-                  value={pathwayId}
-                  onChange={(event) => setPathwayId(event.target.value)}
-                  className="mt-1 min-h-11 w-full rounded-xl border border-[#d4e2d9] bg-white px-3 text-sm font-normal text-[#19392f] outline-none transition focus:border-[#177e78] focus:ring-2 focus:ring-[#177e78]/15"
-                >
-                  <option value="all">Tous les parcours</option>
-                  {conditions.map((condition) => (
-                    <option key={condition.id} value={condition.id}>
-                      {condition.name}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <label className="relative block self-end">
-                <span className="sr-only">Rechercher dans ma bibliothèque</span>
-                <Search
-                  className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#668075]"
-                  aria-hidden="true"
-                />
-                <input
-                  type="search"
-                  value={query}
-                  onChange={(event) => setQuery(event.target.value)}
-                  placeholder="Rechercher un contenu"
-                  className="min-h-11 w-full rounded-xl border border-[#d4e2d9] bg-white pl-9 pr-3 text-sm text-[#19392f] outline-none transition placeholder:text-[#7d9389] focus:border-[#177e78] focus:ring-2 focus:ring-[#177e78]/15"
-                />
-              </label>
-            </div>
+            <label className="relative block w-full md:max-w-md">
+              <span className="sr-only">Rechercher dans ma bibliothèque</span>
+              <Search
+                className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#668075]"
+                aria-hidden="true"
+              />
+              <input
+                type="search"
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+                placeholder="Rechercher un contenu"
+                className="min-h-11 w-full rounded-xl border border-[#d4e2d9] bg-white pl-9 pr-3 text-sm text-[#19392f] outline-none transition placeholder:text-[#7d9389] focus:border-[#177e78] focus:ring-2 focus:ring-[#177e78]/15"
+              />
+            </label>
           </div>
 
           <div className="mt-5">

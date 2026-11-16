@@ -46,7 +46,6 @@ function KineWorkspace() {
   const [hiddenItems, setHiddenItems] = useState<string[]>([]);
   const [selectedCondition, setSelectedCondition] = useState("");
   const selectedTransmission = conditions.find((condition) => condition.id === selectedCondition);
-  const [patientLabel, setPatientLabel] = useState("");
   const [transmissionQr, setTransmissionQr] = useState<{ image: string; url: string } | null>(null);
   const [qrError, setQrError] = useState("");
   const [linkCopied, setLinkCopied] = useState(false);
@@ -329,11 +328,6 @@ function KineWorkspace() {
                         <p className="mt-1 font-semibold text-slate-900">
                           {selectedTransmission?.name ?? "Parcours patient"}
                         </p>
-                        {patientLabel.trim() && (
-                          <p className="mt-2 text-sm text-slate-600">
-                            Repère patient : {patientLabel}
-                          </p>
-                        )}
                       </div>
                       <div>
                         <h3 className="font-semibold text-slate-900">Contenus transmis</h3>
@@ -512,19 +506,6 @@ function KineWorkspace() {
                         </option>
                       ))}
                     </select>
-                  </label>
-                  <label className="block">
-                    <span className="mb-2 block text-sm font-semibold text-[#315a4c]">
-                      Repère patient{" "}
-                      <span className="font-normal text-[#688277]">(facultatif)</span>
-                    </span>
-                    <input
-                      value={patientLabel}
-                      onChange={(event) => setPatientLabel(event.target.value)}
-                      maxLength={50}
-                      placeholder="Initiales ou repère local"
-                      className="min-h-12 w-full rounded-2xl border border-[#d4e2da] bg-white px-4 text-base text-[#203d34] shadow-sm outline-none transition placeholder:text-[#8aa398] focus:border-[#178d86] focus:ring-2 focus:ring-[#178d86]/15"
-                    />
                   </label>
                   <fieldset>
                     <legend className="mb-3 flex w-full items-center justify-between gap-3 text-sm font-semibold text-[#315a4c]">

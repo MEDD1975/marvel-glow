@@ -7,6 +7,8 @@ import {
   CheckCircle2,
   Copy,
   Download,
+  Eye,
+  EyeOff,
   FileDown,
   Printer,
   QrCode,
@@ -41,7 +43,7 @@ function KineWorkspace() {
   const cabinetRef = useCabinetRef(hasKineAccess);
   const [transmissionOpen, setTransmissionOpen] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
-  const [selectedItems, setSelectedItems] = useState<string[]>([]);
+  const [hiddenItems, setHiddenItems] = useState<string[]>([]);
   const [selectedCondition, setSelectedCondition] = useState("");
   const selectedTransmission = conditions.find((condition) => condition.id === selectedCondition);
   const [patientLabel, setPatientLabel] = useState("");
@@ -156,10 +158,10 @@ function KineWorkspace() {
   };
 
   const startTransmission = (conditionId = "") => {
-    setSelectedCondition(
-      conditionId || getKineLibraryPathwaySelection() || DEFAULT_KINE_LIBRARY_PATHWAY,
-    );
-    setSelectedItems([]);
+    const nextConditionId =
+      conditionId || getKineLibraryPathwaySelection() || DEFAULT_KINE_LIBRARY_PATHWAY;
+    setSelectedCondition(nextConditionId);
+    setHiddenItems([]);
     setPreviewOpen(false);
     setTransmissionQr(null);
     setQrError("");
@@ -169,10 +171,13 @@ function KineWorkspace() {
   const transmissionItems = (resources.data ?? []).filter(
     (item) => item.status === "active" && item.conditionId === selectedCondition,
   );
+  const selectedItems = transmissionItems
+    .filter((item) => !hiddenItems.includes(item.id))
+    .map((item) => item.id);
 
-  const toggleItem = (title: string) => {
-    setSelectedItems((current) =>
-      current.includes(title) ? current.filter((item) => item !== title) : [...current, title],
+  const toggleItem = (id: string) => {
+    setHiddenItems((current) =>
+      current.includes(id) ? current.filter((item) => item !== id) : [...current, id],
     );
   };
   if (isPending)
@@ -490,8 +495,9 @@ function KineWorkspace() {
                       value={selectedCondition}
                       required
                       onChange={(event) => {
-                        setSelectedCondition(event.target.value);
-                        setSelectedItems([]);
+                        const nextConditionId = event.target.value;
+                        setSelectedCondition(nextConditionId);
+                        setHiddenItems([]);
                         setTransmissionQr(null);
                         setQrError("");
                       }}
@@ -533,27 +539,50 @@ function KineWorkspace() {
                           Choisissez d’abord un parcours pour afficher les contenus associés.
                         </p>
                       ) : transmissionItems.length ? (
-                        transmissionItems.map((item) => (
-                          <label
-                            key={item.id}
-                            className="flex cursor-pointer items-start gap-3 rounded-2xl border border-[#d4e2da] bg-white p-4 shadow-sm transition-colors hover:border-[#178d86]/60 has-[:checked]:border-[#178d86] has-[:checked]:bg-[#e8f4ec]"
-                          >
-                            <input
-                              type="checkbox"
-                              checked={selectedItems.includes(item.id)}
-                              onChange={() => toggleItem(item.id)}
-                              className="mt-1 size-5 shrink-0 accent-[#177e78]"
-                            />
-                            <span>
-                              <span className="block text-sm font-semibold text-slate-900">
-                                {item.title}
-                              </span>
-                              <span className="mt-1 block text-sm text-[#688277]">
-                                {resourceKindLabels[resourceKind(item)]}
-                              </span>
-                            </span>
-                          </label>
-                        ))
+                        transmissionItems.map((item) => {
+                          const isSelected = selectedItems.includes(item.id);
+                          const visibilityAction = isSelected ? "Masquer" : "Afficher";
+                          return (
+                            <div
+                              key={item.id}
+                              className="flex items-center gap-2 rounded-2xl border border-[#d4e2da] bg-white shadow-sm transition-colors has-[:checked]:border-[#178d86] has-[:checked]:bg-[#e8f4ec]"
+                            >
+                              <label
+                                htmlFor={`transmission-item-${item.id}`}
+                                className="flex min-w-0 flex-1 cursor-pointer items-start gap-3 rounded-2xl p-4"
+                              >
+                                <input
+                                  id={`transmission-item-${item.id}`}
+                                  type="checkbox"
+                                  checked={isSelected}
+                                  onChange={() => toggleItem(item.id)}
+                                  className="mt-1 size-5 shrink-0 accent-[#177e78]"
+                                />
+                                <span className="min-w-0">
+                                  <span className="block text-sm font-semibold text-slate-900">
+                                    {item.title}
+                                  </span>
+                                  <span className="mt-1 block text-sm text-[#688277]">
+                                    {resourceKindLabels[resourceKind(item)]}
+                                  </span>
+                                </span>
+                              </label>
+                              <button
+                                type="button"
+                                onClick={() => toggleItem(item.id)}
+                                aria-label={`${visibilityAction} ${item.title} pour cette transmission`}
+                                title={`${visibilityAction} pour cette transmission`}
+                                className="mr-3 flex size-10 shrink-0 items-center justify-center rounded-xl text-[#315a4c] transition hover:bg-[#dceee5] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#178d86]"
+                              >
+                                {isSelected ? (
+                                  <EyeOff className="size-5" aria-hidden="true" />
+                                ) : (
+                                  <Eye className="size-5" aria-hidden="true" />
+                                )}
+                              </button>
+                            </div>
+                          );
+                        })
                       ) : (
                         <p className="rounded-2xl border border-dashed border-[#c6dace] bg-white/70 p-4 text-sm text-[#668075]">
                           Aucun contenu actif n’est encore associé à ce parcours.

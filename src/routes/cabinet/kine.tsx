@@ -4,7 +4,6 @@ import {
   ArrowRight,
   BookOpen,
   Check,
-  CheckCircle2,
   Users,
   Copy,
   Download,
@@ -223,7 +222,7 @@ function KineWorkspace() {
       </header>
 
       <section
-        className="grid gap-4 md:grid-cols-2 xl:grid-cols-4"
+        className="grid gap-4 md:grid-cols-2 xl:grid-cols-3"
         aria-label="Actions principales"
       >
         <Link
@@ -257,21 +256,6 @@ function KineWorkspace() {
             Commencer <ArrowRight className="h-4 w-4" aria-hidden="true" />
           </span>
         </button>
-        <Link
-          to="/cabinet/kine/transmissions"
-          className="group rounded-2xl border border-border bg-card p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-[#177e78]/40 hover:shadow-md"
-        >
-          <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#F3EFE6] text-[#9A6B28]">
-            <CheckCircle2 className="h-5 w-5" aria-hidden="true" />
-          </span>
-          <h2 className="mt-5 text-lg font-bold text-foreground">Mes transmissions</h2>
-          <p className="mt-2 text-sm leading-6 text-muted-foreground">
-            Retrouvez ce qui a déjà été envoyé et reprenez le fil à la séance suivante.
-          </p>
-          <span className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-[#177e78]">
-            Voir l’historique <ArrowRight className="h-4 w-4" aria-hidden="true" />
-          </span>
-        </Link>
         <Link
           to="/cabinet/kine/reseau"
           className="group rounded-2xl border border-[#cfe2d6] bg-gradient-to-br from-[#f4faf6] to-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-[#177e78]/50 hover:shadow-md"

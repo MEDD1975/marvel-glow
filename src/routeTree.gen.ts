@@ -38,6 +38,7 @@ import { Route as PatientIndexRouteImport } from './routes/patient/index'
 import { Route as PatientFaqRouteImport } from './routes/patient/faq'
 import { Route as PatientParcoursRouteImport } from './routes/patient/parcours'
 import { Route as PatientSurveillerRouteImport } from './routes/patient/surveiller'
+import { Route as CabinetKineReseauRouteImport } from './routes/cabinet/kine.reseau'
 import { Route as CabinetKineRessourcesRouteImport } from './routes/cabinet/kine.ressources'
 import { Route as CabinetKineTransmissionsRouteImport } from './routes/cabinet/kine.transmissions'
 import { Route as PatientInfosPageRouteImport } from './routes/patient/infos/$page'
@@ -195,6 +196,11 @@ const PatientSurveillerRoute = PatientSurveillerRouteImport.update({
   path: '/surveiller',
   getParentRoute: () => PatientRouteRoute,
 } as any)
+const CabinetKineReseauRoute = CabinetKineReseauRouteImport.update({
+  id: '/reseau',
+  path: '/reseau',
+  getParentRoute: () => CabinetKineRoute,
+} as any)
 const CabinetKineRessourcesRoute = CabinetKineRessourcesRouteImport.update({
   id: '/ressources',
   path: '/ressources',
@@ -288,6 +294,7 @@ export interface FileRoutesByFullPath {
   '/patient/surveiller': typeof PatientSurveillerRoute
   '/cabinet/': typeof CabinetIndexRoute
   '/patient/': typeof PatientIndexRoute
+  '/cabinet/kine/reseau': typeof CabinetKineReseauRoute
   '/cabinet/kine/ressources': typeof CabinetKineRessourcesRoute
   '/cabinet/kine/transmissions': typeof CabinetKineTransmissionsRoute
   '/patient/infos/$page': typeof PatientInfosPageRoute
@@ -328,6 +335,7 @@ export interface FileRoutesByTo {
   '/patient/surveiller': typeof PatientSurveillerRoute
   '/cabinet': typeof CabinetIndexRoute
   '/patient': typeof PatientIndexRoute
+  '/cabinet/kine/reseau': typeof CabinetKineReseauRoute
   '/cabinet/kine/ressources': typeof CabinetKineRessourcesRoute
   '/cabinet/kine/transmissions': typeof CabinetKineTransmissionsRoute
   '/patient/infos/$page': typeof PatientInfosPageRoute
@@ -371,6 +379,7 @@ export interface FileRoutesById {
   '/patient/surveiller': typeof PatientSurveillerRoute
   '/cabinet/': typeof CabinetIndexRoute
   '/patient/': typeof PatientIndexRoute
+  '/cabinet/kine/reseau': typeof CabinetKineReseauRoute
   '/cabinet/kine/ressources': typeof CabinetKineRessourcesRoute
   '/cabinet/kine/transmissions': typeof CabinetKineTransmissionsRoute
   '/patient/infos/$page': typeof PatientInfosPageRoute
@@ -415,6 +424,7 @@ export interface FileRouteTypes {
     | '/patient/surveiller'
     | '/cabinet/'
     | '/patient/'
+    | '/cabinet/kine/reseau'
     | '/cabinet/kine/ressources'
     | '/cabinet/kine/transmissions'
     | '/patient/infos/$page'
@@ -455,6 +465,7 @@ export interface FileRouteTypes {
     | '/patient/surveiller'
     | '/cabinet'
     | '/patient'
+    | '/cabinet/kine/reseau'
     | '/cabinet/kine/ressources'
     | '/cabinet/kine/transmissions'
     | '/patient/infos/$page'
@@ -497,6 +508,7 @@ export interface FileRouteTypes {
     | '/patient/surveiller'
     | '/cabinet/'
     | '/patient/'
+    | '/cabinet/kine/reseau'
     | '/cabinet/kine/ressources'
     | '/cabinet/kine/transmissions'
     | '/patient/infos/$page'
@@ -734,6 +746,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PatientSurveillerRouteImport
       parentRoute: typeof PatientRouteRoute
     }
+    '/cabinet/kine/reseau': {
+      id: '/cabinet/kine/reseau'
+      path: '/reseau'
+      fullPath: '/cabinet/kine/reseau'
+      preLoaderRoute: typeof CabinetKineReseauRouteImport
+      parentRoute: typeof CabinetKineRoute
+    }
     '/cabinet/kine/ressources': {
       id: '/cabinet/kine/ressources'
       path: '/ressources'
@@ -815,11 +834,13 @@ declare module '@tanstack/react-router' {
 }
 
 interface CabinetKineRouteChildren {
+  CabinetKineReseauRoute: typeof CabinetKineReseauRoute
   CabinetKineRessourcesRoute: typeof CabinetKineRessourcesRoute
   CabinetKineTransmissionsRoute: typeof CabinetKineTransmissionsRoute
 }
 
 const CabinetKineRouteChildren: CabinetKineRouteChildren = {
+  CabinetKineReseauRoute: CabinetKineReseauRoute,
   CabinetKineRessourcesRoute: CabinetKineRessourcesRoute,
   CabinetKineTransmissionsRoute: CabinetKineTransmissionsRoute,
 }

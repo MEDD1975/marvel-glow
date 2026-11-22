@@ -43,7 +43,11 @@ function PublicKinePathwayPage() {
 
   return (
     <PatientProvider search={{ pathway, ref }}>
-      <KinePathwayContent pathway={pathway} focus={focus} resourceIds={resourceIds} />
+      <KinePathwayContent
+        pathway={pathway}
+        resourceIds={resourceIds}
+        {...(focus ? { focus } : {})}
+      />
     </PatientProvider>
   );
 }
